@@ -53,4 +53,4 @@ public DocumentCopyright urlCopyright() {
 @ApiReturnIgnore 标注在字段上. 如果不希望字段出现在结果文档中, 使用此注解
 #+END_EXAMPLE
 
-浏览 http://ip:port/api.html 查看文档
+运行项目, 浏览 http://ip:port/api-info.html 查看文档
