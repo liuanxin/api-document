@@ -12,19 +12,13 @@ import com.github.liuanxin.api.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.lang.annotation.Annotation;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -34,8 +28,8 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DocumentController {
 
     /** 没有办法标注 &#064;ApiIgnore 又需要忽略的请求, 只需要开头就可以了 */
-    private static final List<String> IGNORE_URL_LIST = Utils.lists(
-            "/error"
+    private static final List<String> IGNORE_URL_LIST = new ArrayList<String>(
+            Arrays.asList("/error")
     );
 
     private static final String CLASS_SUFFIX = "Controller";
@@ -64,9 +58,9 @@ public class DocumentController {
         if (documentCopyright == null || documentCopyright.isOnline()) {
             return Collections.emptyList();
         }
-//        if (module_list == null) {
-            init(mapping);
-//        }
+        if (module_list == null) {
+            init(mapping, documentCopyright);
+        }
         return module_list;
     }
 
@@ -75,18 +69,18 @@ public class DocumentController {
         if (documentCopyright == null || documentCopyright.isOnline()) {
             return Utils.EMPTY;
         }
-//        if (url_map == null) {
-            init(mapping);
-//        }
+        if (url_map == null) {
+            init(mapping, documentCopyright);
+        }
         return url_map.get(id).getReturnJson();
     }
 
-    private static void init(RequestMappingHandlerMapping mapping) {
+    private static void init(RequestMappingHandlerMapping mapping, DocumentCopyright documentCopyright) {
         LOCK.lock();
         try {
-//            if (url_map != null && module_list != null) {
-//                return;
-//            }
+            if (url_map != null && module_list != null) {
+                return;
+            }
             Map<String, DocumentModule> moduleMap = Utils.newLinkedHashMap();
             Map<String, DocumentUrl> urlMap = Utils.newLinkedHashMap();
             Map<RequestMappingInfo, HandlerMethod> handlerMethods = mapping.getHandlerMethods();
@@ -98,12 +92,13 @@ public class DocumentController {
                     ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
                     if (ignore == null || !ignore.value()) {
                         Set<String> urlArray = requestMappingInfo.getPatternsCondition().getPatterns();
-                        if (!ignore(urlArray)) {
+                        Set<RequestMethod> methodArray = requestMappingInfo.getMethodsCondition().getMethods();
+                        if (!ignore(urlArray, methodArray, documentCopyright)) {
                             DocumentUrl url = new DocumentUrl();
                             // url
                             url.setUrl(Utils.toStr(urlArray));
                             // method : get, post, put...
-                            url.setMethod(Utils.toStr(requestMappingInfo.getMethodsCondition().getMethods()));
+                            url.setMethod(Utils.toStr(methodArray));
                             // param
                             url.setParamList(ParamHandler.handlerParam(handlerMethod));
                             // return param
@@ -153,12 +148,38 @@ public class DocumentController {
         module.addUrl(url);
         moduleMap.put(group, module);
     }
-    /** 某些 url 需要忽略(只匹配 url, 无视 method) */
-    private static boolean ignore(Set<String> urlList) {
+    /** 某些 url 需要忽略 */
+    private static boolean ignore(Set<String> urlList, Set<RequestMethod> methodArray,
+                                  DocumentCopyright documentCopyright) {
+        Set<String> ignoreUrlList = documentCopyright.getIgnoreUrlList();
+
         for (String url : urlList) {
             for (String ignoreUrl : IGNORE_URL_LIST) {
                 if (url.startsWith(ignoreUrl)) {
                     return true;
+                }
+            }
+
+            if (Utils.isNotEmpty(ignoreUrlList)) {
+                for (String ignoreUrl : ignoreUrlList) {
+                    // url|method
+                    String[] urlAndMethod = ignoreUrl.split("\\|");
+                    if (urlAndMethod.length == 2) {
+                        // 如果有传入 method 则匹配
+                        String tmpUrl = urlAndMethod[0];
+                        String tmpMethod = urlAndMethod[1].toUpperCase();
+                        if (url.equals(tmpUrl)) {
+                            for (RequestMethod method : methodArray) {
+                                if (tmpMethod.equals(method.name())) {
+                                    return true;
+                                }
+                            }
+                        }
+                    } else {
+                        if (url.equals(ignoreUrl)) {
+                            return true;
+                        }
+                    }
                 }
             }
         }

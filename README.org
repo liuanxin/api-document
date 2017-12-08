@@ -16,11 +16,15 @@
 
 放一个 bean 进 spring 的上下文
 #+BEGIN_SRC java
-/** 版本信息 */
 @Bean
 public DocumentCopyright urlCopyright() {
     // 线上环境文档对应的接口将不会输出
-    return new DocumentCopyright("作者", "团队", "文档版本号", true 表示是线上环境);
+    return new DocumentCopyright()
+                .setAuth("作者").setTeam("团队")
+                .setVersion("文档版本号")
+                .setOnline(true 表示是线上环境)
+                // 当某些接口不好标 @ApiIgnore 时(格式: url|method, 也可以只传入 url 而忽略 method 匹配)
+                .setIgnoreUrlList(忽略的 url 列表);
 }
 #+END_SRC
 
