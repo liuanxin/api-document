@@ -58,3 +58,6 @@ public DocumentCopyright urlCopyright() {
 #+END_EXAMPLE
 
 运行项目, 浏览 http://ip:port/api-info.html 查看文档
+
+最终效果如下
+[[图片][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
