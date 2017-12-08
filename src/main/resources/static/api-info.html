@@ -280,14 +280,13 @@ $(function () {
     $('.bs-docs-sidebar').affix();
 });
 </script>
+
 <script src="//cdn.bootcss.com/jsrender/1.0.0-rc.70/jsrender.min.js"></script>
 <script type="text/javascript">
 $.get("/api-info", function(module) {
-    // render
     $(".col-md-9").html($("#url-render").render(module));
     $("#table-of-contents").find(".bs-docs-sidebar .nav").html($("#url-nav-render").render(module));
 
-    // line num
     $("pre[class='src src-json']").each(function() {
         var json = $(this).text();
         if (json !== null && json !== "") {
@@ -307,7 +306,6 @@ $.get("/api-info", function(module) {
         }
     });
 
-    // link anchor
     var href = window.location.href;
     if (href.includes("#")) {
         href = href.substring(href.indexOf("#"), href.length);
