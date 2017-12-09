@@ -11,7 +11,7 @@
 
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-info</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <description>收集 api 文档, 需要 spring mvc 支持</description>
 
     <developers>
