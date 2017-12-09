@@ -8,5 +8,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiGroup {
     /** 模块名, name-中文说明(如: user-用户). 一个接口必须隶属于某个模块 */
-    String[] value() default {};
+    String[] value();
 }
