@@ -28,6 +28,14 @@ public class Utils {
             double.class, Double.class, double[].class, Double[].class
     );
 
+    // ========== string ==========
+    public static boolean isBlank(Object obj) {
+        return obj == null || "".equals(obj.toString().trim());
+    }
+    public static boolean isNotBlank(Object obj) {
+        return !isBlank(obj);
+    }
+
     // ========== json ==========
     private static final ObjectMapper RENDER = new ObjectMapper();
     static String toJson(Object obj) {
@@ -48,11 +56,17 @@ public class Utils {
     private static <T> boolean isNotEmpty(T[] array) {
         return !isEmpty(array);
     }
-    private static <T> boolean isEmpty(Collection<T> collection) {
-        return collection == null || collection.size() == 0;
+    public static <T> boolean isEmpty(Collection<T> collection) {
+        return collection == null || collection.isEmpty();
     }
     public static <T> boolean isNotEmpty(Collection<T> collection) {
         return !isEmpty(collection);
+    }
+    public static boolean isEmpty(Map map) {
+        return map == null || map.isEmpty();
+    }
+    public static boolean isNotEmpty(Map map) {
+        return !isEmpty(map);
     }
     public static <T> String toStr(Collection<T> collection) {
         if (isEmpty(collection)) {
@@ -76,19 +90,10 @@ public class Utils {
         return new ArrayList(Arrays.asList(values));
     }
     public static <T> List<T> lists(Collection<T> values) {
-        return new ArrayList<T>(values);
+        return new ArrayList<>(values);
     }
     public static <K, V> HashMap<K, V> newLinkedHashMap() {
-        return new LinkedHashMap<K, V>();
-    }
-
-    // ========== string ==========
-    private static boolean isBlank(Object obj) {
-        return obj == null || "".equals(obj.toString().trim());
-    }
-    /** 对象非空时返回 true */
-    private static boolean isNotBlank(Object obj) {
-        return !isBlank(obj);
+        return new LinkedHashMap<>();
     }
 
     // ========== method ==========
@@ -127,7 +132,9 @@ public class Utils {
                         sbd.append(em.name()).append(", ");
                     }
                 }
-                return sbd.delete(sbd.length() - 2, sbd.length()).toString();
+                if (sbd.length() > 2) {
+                    return sbd.delete(sbd.length() - 2, sbd.length()).toString();
+                }
             }
         }
         return EMPTY;
@@ -148,7 +155,7 @@ public class Utils {
     }
 
     static String getInputType(String paramType) {
-        if (paramType == null || "".equals(paramType)) {
+        if (Utils.isBlank(paramType)) {
             return "";
         }
         else if ("Integer".equals(paramType) || "long".equals(paramType) || "Long".equals(paramType)) {

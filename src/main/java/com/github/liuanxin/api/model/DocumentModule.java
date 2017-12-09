@@ -14,13 +14,13 @@ import java.util.List;
 @Accessors(chain = true)
 public class DocumentModule {
 
-    private String name = "待完善";
-    private String info = "无模块说明";
+    private String name = "模块名待完善";
+    private String info = "模块说明待完善";
     @SuppressWarnings("unchecked")
     private List<DocumentUrl> urlList = Utils.lists();
 
     public DocumentModule(String groupName) {
-        if (groupName != null && !"".equals(groupName.trim())) {
+        if (Utils.isNotBlank(groupName)) {
             String[] split = groupName.split("-");
             if (split.length > 1) {
                 this.name = split[0];

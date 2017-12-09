@@ -29,14 +29,14 @@ public final class ParamHandler {
                     int mod= field.getModifiers();
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)) {
                         // 如果字段上标了 ignore 则忽略
-                        if (field.getAnnotation(ApiParamIgnore.class) == null) {
+                        if (Utils.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
                             String paramName = field.getName();
                             params.add(paramInfo(paramName, field.getType(), field.getAnnotation(ApiParam.class)));
                         }
                     }
                 }
             } else {
-                if (parameter.getParameterAnnotation(ApiParamIgnore.class) == null) {
+                if (Utils.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
                     // 受 jvm 编译时会擦除变量名的限制, parameter.parameterName 得到的都是 null 值
                     // String paramName = parameter.getParameterName();
                     String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
@@ -59,7 +59,7 @@ public final class ParamHandler {
         }
         param.setType(inputType);
 
-        if (apiParam != null) {
+        if (Utils.isNotBlank(apiParam)) {
             param.setMust(apiParam.must());
             param.setExample(apiParam.example());
             param.setDesc(apiParam.desc());
@@ -76,7 +76,7 @@ public final class ParamHandler {
         if (type.isEnum()) {
             String desc = param.getDesc();
             String enumInfo = Utils.enumInfo(type);
-            param.setDesc(desc == null || "".equals(desc) ? enumInfo : (desc + " -> " + enumInfo));
+            param.setDesc(Utils.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
         }
         return param;
     }

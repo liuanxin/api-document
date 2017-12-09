@@ -40,7 +40,7 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (outClass == null) {
+        if (Utils.isBlank(outClass)) {
             return;
         }
         if (outClass.isInterface()) {
@@ -74,14 +74,15 @@ public final class ReturnHandler {
             if (Utils.notBasicType(outClass)) {
                 for (Field field : outClass.getDeclaredFields()) {
                     int mod = field.getModifiers();
+                    // 字段不是 static, 不是 final, 也没有标 ignore 注解
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                            && field.getAnnotation(ApiReturnIgnore.class) == null) {
+                            && Utils.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
                         String fieldName = field.getName();
                         DocumentReturn documentReturn = new DocumentReturn().setName(space + fieldName + parent);
                         documentReturn.setType(Utils.getInputType(field.getType().getSimpleName()));
 
                         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                        if (apiReturn != null) {
+                        if (Utils.isNotBlank(apiReturn)) {
                             documentReturn.setDesc(apiReturn.desc());
                             String docType = apiReturn.type();
                             if (!"".equals(docType)) {
@@ -115,7 +116,7 @@ public final class ReturnHandler {
         String type = method.substring(method.indexOf(" ")).trim();
         type = type.substring(0, type.indexOf(" ")).trim();
         Object obj = handlerReturnJsonObj(type);
-        return obj != null ? Utils.toJson(obj) : "";
+        return Utils.isNotBlank(obj) ? Utils.toJson(obj) : "";
     }
     private static Object handlerReturnJsonObj(String type) {
         String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")) : type;
@@ -128,7 +129,7 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (outClass == null) {
+        if (Utils.isBlank(outClass)) {
             return null;
         }
         if (outClass.isInterface()) {
@@ -143,7 +144,7 @@ public final class ReturnHandler {
             }
         } else {
             Object obj = handlerReturnWithObjClazz(outClass);
-            if (obj != null) {
+            if (Utils.isNotBlank(obj)) {
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
                     handlerReturnJsonWithObj(outClass, innerType, obj);
@@ -164,7 +165,7 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (innerClass == null) {
+        if (Utils.isBlank(innerClass)) {
             return;
         }
         if (innerClass.isInterface()) {
@@ -179,7 +180,7 @@ public final class ReturnHandler {
             }
         } else {
             Object value = handlerReturnWithObjClazz(innerClass);
-            if (value != null) {
+            if (Utils.isNotBlank(value)) {
                 setData(outClass, innerClass, obj, value);
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
@@ -191,6 +192,7 @@ public final class ReturnHandler {
     private static void setData(Class<?> clazz, Class<?> fieldClazz, Object obj, Object value) {
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
+            // 字段不是 static, 也不是 final
             if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)) {
                 // 泛型在运行时已经被擦除了, 通过下面的方式获取的 getType() 总是 java.lang.Object
                 // if (field.getType() == fieldClazz) { setField(field, obj, value); }
@@ -217,7 +219,7 @@ public final class ReturnHandler {
             // 如果是 list, 加一条记录进去
             List list = Utils.lists();
             Object object = handlerReturnWithObj(obj);
-            if (object != null) {
+            if (Utils.isNotBlank(object)) {
                 list.add(object);
             }
             return list;
@@ -251,13 +253,13 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (clazz == null) {
+        if (Utils.isBlank(clazz)) {
             return null;
         }
         return handlerReturnWithObjClazz(clazz);
     }
     private static Object handlerReturnWithObjClazz(Class<?> clazz) {
-        if (clazz == null) {
+        if (Utils.isBlank(clazz)) {
             return null;
         }
         if (Utils.basicType(clazz)) {
@@ -273,27 +275,28 @@ public final class ReturnHandler {
         }
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
+            // 字段不是 static, 不是 final, 也没有标 ignore 注解
             if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                    && field.getAnnotation(ApiReturnIgnore.class) == null) {
+                    && Utils.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
                 Class<?> type = field.getType();
                 // 只在字符串的时候把注解上的值拿来用
                 if (type == String.class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                     String value = "";
-                    if (apiReturn != null) {
+                    if (Utils.isNotBlank(apiReturn)) {
                         value = apiReturn.desc();
                     }
                     setField(field, obj, value);
                 } else if (type == String[].class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                     String[] value = new String[] { "" };
-                    if (apiReturn != null) {
+                    if (Utils.isNotBlank(apiReturn)) {
                         value = new String[] { apiReturn.desc() };
                     }
                     setField(field, obj, value);
                 }
                 else if (type.isEnum()) {
-                    // 枚举拿第一个
+                    // 返回示例中的类型如果是枚举, 则拿第一个进行返回
                     Object value = null;
                     Object[] enumConstants = type.getEnumConstants();
                     if (enumConstants.length > 0) {

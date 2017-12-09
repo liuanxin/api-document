@@ -31,16 +31,14 @@ public class DocumentController {
     private static final List<String> IGNORE_URL_LIST = Collections.singletonList(
             "/error"
     );
-
     private static final String CLASS_SUFFIX = "Controller";
-
-
-    private final RequestMappingHandlerMapping mapping;
-    private final DocumentCopyright documentCopyright;
 
     private static List<DocumentModule> module_list = null;
     private static Map<String, DocumentUrl> url_map = null;
     private static final Lock LOCK = new ReentrantLock();
+
+    private final RequestMappingHandlerMapping mapping;
+    private final DocumentCopyright documentCopyright;
 
     @Autowired
     public DocumentController(RequestMappingHandlerMapping mapping, DocumentCopyright apiCopyright) {
@@ -55,10 +53,10 @@ public class DocumentController {
 
     @GetMapping("/info")
     public List<DocumentModule> url() {
-        if (documentCopyright == null || documentCopyright.isOnline()) {
+        if (Utils.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return Collections.emptyList();
         }
-        if (module_list == null) {
+        if (Utils.isEmpty(module_list)) {
             init(mapping, documentCopyright);
         }
         return module_list;
@@ -66,10 +64,10 @@ public class DocumentController {
 
     @GetMapping("/example/{id}.json")
     public String urlExample(@PathVariable("id") String id) {
-        if (documentCopyright == null || documentCopyright.isOnline()) {
+        if (Utils.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return Utils.EMPTY;
         }
-        if (url_map == null) {
+        if (Utils.isEmpty(url_map)) {
             init(mapping, documentCopyright);
         }
         return url_map.get(id).getReturnJson();
@@ -78,7 +76,7 @@ public class DocumentController {
     private static void init(RequestMappingHandlerMapping mapping, DocumentCopyright documentCopyright) {
         LOCK.lock();
         try {
-            if (url_map != null && module_list != null) {
+            if (Utils.isNotEmpty(url_map) && Utils.isNotEmpty(module_list)) {
                 return;
             }
             Map<String, DocumentModule> moduleMap = Utils.newLinkedHashMap();
@@ -87,10 +85,10 @@ public class DocumentController {
             for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
                 RequestMappingInfo requestMappingInfo = entry.getKey();
                 HandlerMethod handlerMethod = entry.getValue();
-                if (requestMappingInfo != null && handlerMethod != null && wasJsonApi(handlerMethod)) {
+                if (Utils.isNotBlank(requestMappingInfo) && Utils.isNotBlank(handlerMethod) && wasJsonApi(handlerMethod)) {
                     // 没忽略的才统计
                     ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
-                    if (ignore == null || !ignore.value()) {
+                    if (Utils.isBlank(ignore) || !ignore.value()) {
                         Set<String> urlArray = requestMappingInfo.getPatternsCondition().getPatterns();
                         Set<RequestMethod> methodArray = requestMappingInfo.getMethodsCondition().getMethods();
                         if (!ignore(urlArray, methodArray, documentCopyright)) {
@@ -108,14 +106,14 @@ public class DocumentController {
 
                             // meta info
                             ApiMethod apiMethod = getAnnotationByMethod(handlerMethod, ApiMethod.class);
-                            if (apiMethod != null) {
+                            if (Utils.isNotBlank(apiMethod)) {
                                 url.setTitle(apiMethod.title()).setDesc(apiMethod.desc()).setDevelop(apiMethod.develop());
                             }
 
                             urlMap.put(url.getId(), url);
                             // add DocumentUrl to DocumentModule
                             ApiGroup apiGroup = getAnnotation(handlerMethod, ApiGroup.class);
-                            if (apiGroup == null) {
+                            if (Utils.isBlank(apiGroup)) {
                                 // 如果在类上没有标注解, 则使用 类名, 如果类名中包含有 Controller 则去掉
                                 String className = handlerMethod.getBeanType().getSimpleName();
                                 String info = className;
@@ -142,7 +140,7 @@ public class DocumentController {
     /** 添加模块组 */
     private static void addGroup(Map<String, DocumentModule> moduleMap, String group, DocumentUrl url) {
         DocumentModule module = moduleMap.get(group);
-        if (module == null) {
+        if (Utils.isBlank(module)) {
             module = new DocumentModule(group);
         }
         module.addUrl(url);
@@ -188,11 +186,11 @@ public class DocumentController {
     /** 如果是一个 json api 就返回 true */
     private static boolean wasJsonApi(HandlerMethod handlerMethod) {
         ResponseBody annotation = getAnnotation(handlerMethod, ResponseBody.class);
-        if (annotation != null) {
+        if (Utils.isNotBlank(annotation)) {
             return true;
         }
         RestController controller = getAnnotationByClass(handlerMethod, RestController.class);
-        return controller != null;
+        return Utils.isNotBlank(controller);
     }
     /** 找方法上的注解 */
     private static <T extends Annotation> T getAnnotationByMethod(HandlerMethod handlerMethod, Class<T> clazz) {
@@ -205,7 +203,7 @@ public class DocumentController {
     /** 先找方法上的注解, 再找类上的注解 */
     private static <T extends Annotation> T getAnnotation(HandlerMethod handlerMethod, Class<T> clazz) {
         T annotation = handlerMethod.getMethodAnnotation(clazz);
-        if (annotation == null) {
+        if (Utils.isBlank(annotation)) {
             annotation = getAnnotationByClass(handlerMethod, clazz);
         }
         return annotation;
