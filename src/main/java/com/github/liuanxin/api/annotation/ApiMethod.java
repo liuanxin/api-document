@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiMethod {
     /** 接口标题 */
-    String title() default "";
+    String title();
     /** 接口详细说明 */
     String desc() default "";
     /** 开发者及联系方式 */
