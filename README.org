@@ -7,11 +7,11 @@
 
 添加引用(需要 jackson 和 lombok 以及 spring mvc 相关的包)
 #+BEGIN_SRC xml
-<!-- <dependency>
+<dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-info</artifactId>
     <version>1.0.0</version>
-</dependency> -->
+</dependency>
 #+END_SRC
 
 放一个 bean 进 spring 的上下文
