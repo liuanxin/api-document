@@ -15,6 +15,7 @@ import java.util.Map;
 public final class ReturnHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReturnHandler.class);
+    private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
 
     /** 返回结果的对象中用于泛型的类型 */
     @SuppressWarnings("unchecked")
@@ -22,14 +23,17 @@ public final class ReturnHandler {
 
     /** 接口上的返回结果 */
     @SuppressWarnings("unchecked")
-    public static List<DocumentReturn> handlerReturn(String method) {
+    public static List<DocumentReturn> handlerReturn(String method, boolean recordLevel) {
         String type = method.substring(method.indexOf(" ")).trim();
         type = type.substring(0, type.indexOf(" ")).trim();
         List<DocumentReturn> returnList = Utils.lists();
-        handlerReturn("", "", type, returnList);
+        handlerReturn(Utils.EMPTY, Utils.EMPTY, recordLevel, type, returnList);
         return returnList;
     }
-    private static void handlerReturn(String space, String parent, String type, List<DocumentReturn> returnList) {
+
+    private static void handlerReturn(String space, String parent,
+                                      boolean recordLevel, String type,
+                                      List<DocumentReturn> returnList) {
         String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")) : type;
         if ("void".equals(clazz)) {
             return;
@@ -47,7 +51,7 @@ public final class ReturnHandler {
             if (outClass == List.class) {
                 if (type.contains("<") && type.contains(">")) {
                     String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
-                    handlerReturn(space, parent, classType, returnList);
+                    handlerReturn(space, parent, recordLevel, classType, returnList);
                 }
             } else if (outClass == Map.class) {
                 // map 尽量用实体类代替, 这样可以在实体类的字段上标注注解
@@ -57,7 +61,7 @@ public final class ReturnHandler {
                     if (keyValue.length == 2) {
                         // handlerReturn(space, parent, keyValue[0].trim(), returnList);
                         // just handler value
-                        handlerReturn(space, parent, keyValue[1].trim(), returnList);
+                        handlerReturn(space, parent, recordLevel, keyValue[1].trim(), returnList);
                     } else {
                         if (LOGGER.isWarnEnabled()) {
                             LOGGER.warn("({})方法中 Map 的泛型有问题({})", type, keyAndValue);
@@ -72,41 +76,73 @@ public final class ReturnHandler {
         } else {
             // 非基础类型才需要进去获取字段
             if (Utils.notBasicType(outClass)) {
+                Map<String, String> tmpFieldMap = Utils.newHashMap();
                 for (Field field : outClass.getDeclaredFields()) {
                     int mod = field.getModifiers();
                     // 字段不是 static, 不是 final, 也没有标 ignore 注解
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                             && Utils.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
                         String fieldName = field.getName();
+                        Class<?> fieldType = field.getType();
+
                         DocumentReturn documentReturn = new DocumentReturn().setName(space + fieldName + parent);
-                        documentReturn.setType(Utils.getInputType(field.getType().getSimpleName()));
+                        documentReturn.setType(Utils.getInputType(fieldType.getSimpleName()));
 
                         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                         if (Utils.isNotBlank(apiReturn)) {
                             documentReturn.setDesc(apiReturn.desc());
                             String docType = apiReturn.type();
-                            if (!"".equals(docType)) {
+                            if (Utils.isNotBlank(docType)) {
                                 documentReturn.setType(docType);
                             }
+                        }
+                        if (fieldType.isEnum()) {
+                            // 如果是枚举, 则将自解释拼在说明中
+                            String desc = documentReturn.getDesc();
+                            String enumInfo = Utils.enumInfo(fieldType);
+                            documentReturn.setDesc(Utils.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
                         }
                         returnList.add(documentReturn);
 
                         // 如果返回字段不是基础数据类型则表示是一个类来接收的, 进去里面做一层
-                        if (Utils.notBasicType(field.getType())) {
+                        if (Utils.notBasicType(fieldType)) {
                             String innerType = field.getGenericType().toString();
-                            String innerParent = "";//" -> " + fieldName + parent;
-                            handlerReturn(space + "&nbsp;&nbsp;&nbsp;&nbsp;", innerParent, innerType, returnList);
+                            String innerParent = recordLevel ? (" -> " + fieldName + parent) : "";
+                            handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
                         }
+                        tmpFieldMap.put(field.getGenericType().toString(), fieldName);
                     }
                 }
                 // 处理泛型里面的内容
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
-                    String innerParent = "";//" -> " + parent;
-                    handlerReturn(space + "&nbsp;&nbsp;&nbsp;&nbsp;", innerParent, innerType, returnList);
+                    String fieldName = handlerReturnFieldName(tmpFieldMap, innerType, recordLevel);
+                    String innerParent = (" -> " + fieldName + parent);
+                    handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
                 }
             }
         }
+    }
+
+    private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType, boolean recordLevel) {
+        String innerOutType = innerType.contains("<") ? innerType.substring(0, innerType.indexOf("<")) : innerType;
+        if (recordLevel) {
+            String name = null;
+            for (String className : GENERIC_CLASS_NAME) {
+                name = fieldMap.get(className);
+                if (Utils.isBlank(name)) {
+                    return name;
+                }
+            }
+            if (Utils.isBlank(name)) {
+                name = fieldMap.get(innerOutType);
+            }
+            if (Utils.isBlank(name)) {
+                name = fieldMap.get(Object.class.getName());
+            }
+            return Utils.isBlank(name) ? Utils.EMPTY : name;
+        }
+        return Utils.EMPTY;
     }
 
     // ========== json ==========
@@ -116,8 +152,9 @@ public final class ReturnHandler {
         String type = method.substring(method.indexOf(" ")).trim();
         type = type.substring(0, type.indexOf(" ")).trim();
         Object obj = handlerReturnJsonObj(type);
-        return Utils.isNotBlank(obj) ? Utils.toJson(obj) : "";
+        return Utils.isNotBlank(obj) ? Utils.toJson(obj) : Utils.EMPTY;
     }
+
     private static Object handlerReturnJsonObj(String type) {
         String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")) : type;
         if ("void".equals(clazz)) {
@@ -154,6 +191,7 @@ public final class ReturnHandler {
         }
         return null;
     }
+
     private static void handlerReturnJsonWithObj(Class<?> outClass, String type, Object obj) {
         String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")) : type;
         if ("void".equals(clazz)) {
@@ -189,6 +227,7 @@ public final class ReturnHandler {
             }
         }
     }
+
     private static void setData(Class<?> clazz, Class<?> fieldClazz, Object obj, Object value) {
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
@@ -212,6 +251,7 @@ public final class ReturnHandler {
             }
         }
     }
+
     @SuppressWarnings("unchecked")
     private static List handlerReturnJsonList(String type) {
         if (type.contains("<") && type.contains(">")) {
@@ -226,6 +266,7 @@ public final class ReturnHandler {
         }
         return Collections.emptyList();
     }
+
     @SuppressWarnings("unchecked")
     private static Map handlerReturnJsonMap(String type) {
         if (type.contains("<") && type.contains(">")) {
@@ -236,7 +277,9 @@ public final class ReturnHandler {
                 Map map = Utils.newLinkedHashMap();
                 Object key = handlerReturnWithObj(keyValue[0]);
                 Object value = handlerReturnWithObj(keyValue[1]);
-                map.put(key, value);
+                if (Utils.isNotBlank(key) && Utils.isNotBlank(value)) {
+                    map.put(key, value);
+                }
                 return map;
             } else {
                 if (LOGGER.isWarnEnabled()) {
@@ -246,6 +289,7 @@ public final class ReturnHandler {
         }
         return Collections.emptyMap();
     }
+
     private static Object handlerReturnWithObj(String className) {
         Class<?> clazz = null;
         try {
@@ -258,6 +302,7 @@ public final class ReturnHandler {
         }
         return handlerReturnWithObjClazz(clazz);
     }
+
     private static Object handlerReturnWithObjClazz(Class<?> clazz) {
         if (Utils.isBlank(clazz)) {
             return null;
@@ -282,14 +327,14 @@ public final class ReturnHandler {
                 // 只在字符串的时候把注解上的值拿来用
                 if (type == String.class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                    String value = "";
+                    String value = Utils.EMPTY;
                     if (Utils.isNotBlank(apiReturn)) {
                         value = apiReturn.desc();
                     }
                     setField(field, obj, value);
                 } else if (type == String[].class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                    String[] value = new String[] { "" };
+                    String[] value = new String[] { Utils.EMPTY };
                     if (Utils.isNotBlank(apiReturn)) {
                         value = new String[] { apiReturn.desc() };
                     }
@@ -320,6 +365,7 @@ public final class ReturnHandler {
         }
         return obj;
     }
+
     private static void setField(Field field, Object obj, Object value) {
         try {
             field.setAccessible(true);
@@ -370,9 +416,9 @@ public final class ReturnHandler {
         }
 
         else if (clazz == String.class) {
-            return "";
+            return Utils.EMPTY;
         } else if (clazz == String[].class) {
-            return new String[] { "" };
+            return new String[] { Utils.EMPTY };
         }
 
         else {

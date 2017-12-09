@@ -55,6 +55,7 @@ public final class ParamHandler {
 
         String inputType = Utils.getInputType(type.getSimpleName());
         if (type.isEnum()) {
+            // 枚举就将枚举的具体类名拼在里面
             inputType = "Enum(" + inputType + ")";
         }
         param.setType(inputType);
@@ -65,15 +66,16 @@ public final class ParamHandler {
             param.setDesc(apiParam.desc());
 
             String paramName = apiParam.name();
-            if (!"".equals(paramName)) {
+            if (!Utils.EMPTY.equals(paramName)) {
                 param.setName(paramName);
             }
             String paramType = apiParam.type();
-            if (!"".equals(paramType)) {
+            if (!Utils.EMPTY.equals(paramType)) {
                 param.setType(apiParam.type());
             }
         }
         if (type.isEnum()) {
+            // 如果是枚举, 则将自解释拼在说明中
             String desc = param.getDesc();
             String enumInfo = Utils.enumInfo(type);
             param.setDesc(Utils.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));

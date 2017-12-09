@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @ConditionalOnBean({ DocumentCopyright.class })
 public class DocumentController {
 
-    private static final List<String> IGNORE_URL_LIST = Collections.singletonList(
+    private static final Set<String> IGNORE_URL_LIST = Collections.singleton(
             "/error"
     );
     private static final String CLASS_SUFFIX = "Controller";
@@ -73,7 +73,7 @@ public class DocumentController {
         return url_map.get(id).getReturnJson();
     }
 
-    private static void init(RequestMappingHandlerMapping mapping, DocumentCopyright documentCopyright) {
+    private static void init(RequestMappingHandlerMapping mapping, DocumentCopyright copyright) {
         LOCK.lock();
         try {
             if (Utils.isNotEmpty(url_map) && Utils.isNotEmpty(module_list)) {
@@ -91,7 +91,7 @@ public class DocumentController {
                     if (Utils.isBlank(ignore) || !ignore.value()) {
                         Set<String> urlArray = requestMappingInfo.getPatternsCondition().getPatterns();
                         Set<RequestMethod> methodArray = requestMappingInfo.getMethodsCondition().getMethods();
-                        if (!ignore(urlArray, methodArray, documentCopyright)) {
+                        if (!ignore(urlArray, methodArray, copyright.getIgnoreUrlList())) {
                             DocumentUrl url = new DocumentUrl();
                             // url
                             url.setUrl(Utils.toStr(urlArray));
@@ -99,15 +99,19 @@ public class DocumentController {
                             url.setMethod(Utils.toStr(methodArray));
                             // param
                             url.setParamList(ParamHandler.handlerParam(handlerMethod));
+
+                            String method = handlerMethod.toString();
                             // return param
-                            url.setReturnList(ReturnHandler.handlerReturn(handlerMethod.toString()));
+                            url.setReturnList(ReturnHandler.handlerReturn(method, copyright.isReturnRecordLevel()));
                             // return json
-                            url.setReturnJson(ReturnHandler.handlerReturnJson(handlerMethod.toString()));
+                            url.setReturnJson(ReturnHandler.handlerReturnJson(method));
 
                             // meta info
                             ApiMethod apiMethod = getAnnotationByMethod(handlerMethod, ApiMethod.class);
                             if (Utils.isNotBlank(apiMethod)) {
-                                url.setTitle(apiMethod.title()).setDesc(apiMethod.desc()).setDevelop(apiMethod.develop());
+                                url.setTitle(apiMethod.title())
+                                        .setDesc(apiMethod.desc())
+                                        .setDevelop(apiMethod.develop());
                             }
 
                             urlMap.put(url.getId(), url);
@@ -146,18 +150,15 @@ public class DocumentController {
         module.addUrl(url);
         moduleMap.put(group, module);
     }
+
     /** 某些 url 需要忽略 */
     private static boolean ignore(Set<String> urlList, Set<RequestMethod> methodArray,
-                                  DocumentCopyright documentCopyright) {
-        Set<String> ignoreUrlList = documentCopyright.getIgnoreUrlList();
-
+                                  Set<String> ignoreUrlList) {
+        if (Utils.isEmpty(ignoreUrlList)) {
+            ignoreUrlList = Utils.sets();
+        }
+        ignoreUrlList.addAll(IGNORE_URL_LIST);
         for (String url : urlList) {
-            for (String ignoreUrl : IGNORE_URL_LIST) {
-                if (url.startsWith(ignoreUrl)) {
-                    return true;
-                }
-            }
-
             if (Utils.isNotEmpty(ignoreUrlList)) {
                 for (String ignoreUrl : ignoreUrlList) {
                     // url|method
@@ -183,6 +184,7 @@ public class DocumentController {
         }
         return false;
     }
+
     /** 如果是一个 json api 就返回 true */
     private static boolean wasJsonApi(HandlerMethod handlerMethod) {
         ResponseBody annotation = getAnnotation(handlerMethod, ResponseBody.class);

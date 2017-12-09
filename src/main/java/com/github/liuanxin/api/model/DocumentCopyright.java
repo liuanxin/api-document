@@ -22,4 +22,6 @@ public class DocumentCopyright {
     private Set<String> ignoreUrlList;
     /** 是否是线上环境, 如果是线上环境将不会输出文档 */
     private boolean online = false;
+    /** 返回说明是否记录层级 */
+    private boolean returnRecordLevel = false;
 }

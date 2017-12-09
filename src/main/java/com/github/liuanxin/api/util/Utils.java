@@ -30,7 +30,7 @@ public class Utils {
 
     // ========== string ==========
     public static boolean isBlank(Object obj) {
-        return obj == null || "".equals(obj.toString().trim());
+        return obj == null || EMPTY.equals(obj.toString().trim());
     }
     public static boolean isNotBlank(Object obj) {
         return !isBlank(obj);
@@ -89,11 +89,17 @@ public class Utils {
     public static List lists(Object... values) {
         return new ArrayList(Arrays.asList(values));
     }
+    public static <T> Set<T> sets() {
+        return new HashSet<>();
+    }
     public static <T> List<T> lists(Collection<T> values) {
         return new ArrayList<>(values);
     }
     public static <K, V> HashMap<K, V> newLinkedHashMap() {
         return new LinkedHashMap<>();
+    }
+    public static <K, V> HashMap<K, V> newHashMap() {
+        return new HashMap<>();
     }
 
     // ========== method ==========
@@ -156,7 +162,7 @@ public class Utils {
 
     static String getInputType(String paramType) {
         if (Utils.isBlank(paramType)) {
-            return "";
+            return EMPTY;
         }
         else if ("Integer".equals(paramType) || "long".equals(paramType) || "Long".equals(paramType)) {
             return "int";
