@@ -16,6 +16,7 @@ public final class ReturnHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReturnHandler.class);
     private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
+    private static final String SPACE = " ";
 
     /** 返回结果的对象中用于泛型的类型 */
     @SuppressWarnings("unchecked")
@@ -24,8 +25,8 @@ public final class ReturnHandler {
     /** 接口上的返回结果 */
     @SuppressWarnings("unchecked")
     public static List<DocumentReturn> handlerReturn(String method, boolean recordLevel) {
-        String type = method.substring(method.indexOf(" ")).trim();
-        type = type.substring(0, type.indexOf(" ")).trim();
+        String type = method.substring(method.indexOf(SPACE)).trim();
+        type = type.substring(0, type.indexOf(SPACE)).trim();
         List<DocumentReturn> returnList = Utils.lists();
         handlerReturn(Utils.EMPTY, Utils.EMPTY, recordLevel, type, returnList);
         return returnList;
@@ -107,7 +108,7 @@ public final class ReturnHandler {
                         // 如果返回字段不是基础数据类型则表示是一个类来接收的, 进去里面做一层
                         if (Utils.notBasicType(fieldType)) {
                             String innerType = field.getGenericType().toString();
-                            String innerParent = recordLevel ? (" -> " + fieldName + parent) : "";
+                            String innerParent = recordLevel ? (" -> " + fieldName + parent) : Utils.EMPTY;
                             handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
                         }
                         tmpFieldMap.put(field.getGenericType().toString(), fieldName);
@@ -117,7 +118,7 @@ public final class ReturnHandler {
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
                     String fieldName = handlerReturnFieldName(tmpFieldMap, innerType, recordLevel);
-                    String innerParent = (" -> " + fieldName + parent);
+                    String innerParent = recordLevel ? (" -> " + fieldName + parent) : Utils.EMPTY;
                     handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
                 }
             }
@@ -126,31 +127,31 @@ public final class ReturnHandler {
 
     private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType, boolean recordLevel) {
         String innerOutType = innerType.contains("<") ? innerType.substring(0, innerType.indexOf("<")) : innerType;
-        if (recordLevel) {
-            String name = null;
-            for (String className : GENERIC_CLASS_NAME) {
-                name = fieldMap.get(className);
-                if (Utils.isBlank(name)) {
-                    return name;
-                }
-            }
-            if (Utils.isBlank(name)) {
-                name = fieldMap.get(innerOutType);
-            }
-            if (Utils.isBlank(name)) {
-                name = fieldMap.get(Object.class.getName());
-            }
-            return Utils.isBlank(name) ? Utils.EMPTY : name;
+        if (!recordLevel) {
+            return Utils.EMPTY;
         }
-        return Utils.EMPTY;
+        String name = null;
+        for (String className : GENERIC_CLASS_NAME) {
+            name = fieldMap.get(className);
+            if (Utils.isBlank(name)) {
+                return name;
+            }
+        }
+        if (Utils.isBlank(name)) {
+            name = fieldMap.get(innerOutType);
+        }
+        if (Utils.isBlank(name)) {
+            name = fieldMap.get(Object.class.getName());
+        }
+        return Utils.isBlank(name) ? Utils.EMPTY : name;
     }
 
     // ========== json ==========
 
     /** 处理结果 json */
     public static String handlerReturnJson(String method) {
-        String type = method.substring(method.indexOf(" ")).trim();
-        type = type.substring(0, type.indexOf(" ")).trim();
+        String type = method.substring(method.indexOf(SPACE)).trim();
+        type = type.substring(0, type.indexOf(SPACE)).trim();
         Object obj = handlerReturnJsonObj(type);
         return Utils.isNotBlank(obj) ? Utils.toJson(obj) : Utils.EMPTY;
     }

@@ -28,8 +28,8 @@ public class DocumentUrl {
     private String returnJson;
 
     public String getId() {
-        String url = this.url.replace("/", "-").replace("{", "").replace("}", "");
-        return method.toLowerCase() + (url.startsWith("-") ? "" : "-") + url;
+        String url = this.url.replace("/", "-").replace("{", Utils.EMPTY).replace("}", Utils.EMPTY);
+        return method.toLowerCase() + (url.startsWith("-") ? Utils.EMPTY : "-") + url;
     }
     public String getTitle() {
         return Utils.isBlank(title) ? getId() : title;
