@@ -31,18 +31,18 @@ public DocumentCopyright urlCopyright() {
 而后需要在对应的 controller 层标注相应的注解. 相关注解如下
 #+BEGIN_EXAMPLE
 @ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
-  value   参数格式 (name-说明, 如: user-用户模块), 可以有多个, 也就是说一个接口可以在多个模块中出现
+  value   请务必设置此值, 示例(name-说明, 如: user-用户模块), 可以有多个, 也就是说一个接口可以在多个模块中出现
 
 @ApiIgnore  标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
   value   值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
 
 @ApiMethod  标注在方法上
-  title   接口标题
+  title   接口标题, 请务必设置此值
   desc    接口详细说明
   develop 开发者及联系方式
 
 @ApiParam   标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
-  name    参数名, 如果设置了将会无视方法名或字段名. 如果一致请不要设置此值
+  name    参数名, 如果设置了将会无视参数名或字段名
   type    参数类型, 当需要自定义时(比如参数类型是枚举, 但是可以传 int 时)有用
   must    参数是否必须
   example 参数示例, 请务必设置此值
@@ -52,9 +52,9 @@ public DocumentCopyright urlCopyright() {
 
 @ApiReturn  标注在字段上. 用来说明返回结果
   type    返回类型, 当需要自定义时(比如字段类型是枚举, 但是返回却是 int 时)有用
-  desc    返回说明
+  desc    返回说明, 请务必设置此值
 
-@ApiReturnIgnore 标注在字段上. 如果不希望字段出现在结果文档中, 使用此注解
+@ApiReturnIgnore 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
 #+END_EXAMPLE
 
 运行项目, 浏览 http://ip:port/api-info.html 查看文档
