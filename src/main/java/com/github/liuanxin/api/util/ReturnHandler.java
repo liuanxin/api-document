@@ -17,9 +17,11 @@ public final class ReturnHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReturnHandler.class);
 
     /** 返回结果的对象中用于泛型的类型 */
+    @SuppressWarnings("unchecked")
     private static final List<String> GENERIC_CLASS_NAME = Utils.lists("T");
 
     /** 接口上的返回结果 */
+    @SuppressWarnings("unchecked")
     public static List<DocumentReturn> handlerReturn(String method) {
         String type = method.substring(method.indexOf(" ")).trim();
         type = type.substring(0, type.indexOf(" ")).trim();
@@ -193,12 +195,12 @@ public final class ReturnHandler {
                 // 泛型在运行时已经被擦除了, 通过下面的方式获取的 getType() 总是 java.lang.Object
                 // if (field.getType() == fieldClazz) { setField(field, obj, value); }
                 Type type = field.getGenericType();
-                if (GENERIC_CLASS_NAME.contains(type.getTypeName())) {
+                if (GENERIC_CLASS_NAME.contains(type.toString())) {
                     setField(field, obj, value);
                 } else if (type instanceof ParameterizedType) {
                     Type clazzType = ((ParameterizedType) type).getActualTypeArguments()[0];
-                    if (GENERIC_CLASS_NAME.contains(clazzType.getTypeName()) || clazzType == fieldClazz) {
-                        if (type.getTypeName().startsWith(List.class.getName())) {
+                    if (GENERIC_CLASS_NAME.contains(clazzType.toString()) || clazzType == fieldClazz) {
+                        if (clazzType.toString().startsWith(List.class.getName())) {
                             setField(field, obj, Utils.lists(value));
                         } else {
                             setField(field, obj, value);

@@ -10,7 +10,7 @@ import com.github.liuanxin.api.util.ParamHandler;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
@@ -24,12 +24,12 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @ApiIgnore
 @RestController
-@ConditionalOnClass({ DocumentCopyright.class })
+@RequestMapping("/api")
+@ConditionalOnBean({ DocumentCopyright.class })
 public class DocumentController {
 
-    /** 没有办法标注 &#064;ApiIgnore 又需要忽略的请求, 只需要开头就可以了 */
-    private static final List<String> IGNORE_URL_LIST = new ArrayList<String>(
-            Arrays.asList("/error")
+    private static final List<String> IGNORE_URL_LIST = Collections.singletonList(
+            "/error"
     );
 
     private static final String CLASS_SUFFIX = "Controller";
@@ -48,12 +48,12 @@ public class DocumentController {
         this.documentCopyright = apiCopyright;
     }
 
-    @GetMapping("/api-version")
+    @GetMapping("/version")
     public DocumentCopyright urlVersion() {
         return documentCopyright;
     }
 
-    @GetMapping("/api-info")
+    @GetMapping("/info")
     public List<DocumentModule> url() {
         if (documentCopyright == null || documentCopyright.isOnline()) {
             return Collections.emptyList();
@@ -64,7 +64,7 @@ public class DocumentController {
         return module_list;
     }
 
-    @GetMapping("/api-example/{id}.json")
+    @GetMapping("/example/{id}.json")
     public String urlExample(@PathVariable("id") String id) {
         if (documentCopyright == null || documentCopyright.isOnline()) {
             return Utils.EMPTY;

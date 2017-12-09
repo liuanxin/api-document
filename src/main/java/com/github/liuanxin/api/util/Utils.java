@@ -54,19 +54,6 @@ public class Utils {
     public static <T> boolean isNotEmpty(Collection<T> collection) {
         return !isEmpty(collection);
     }
-    public static String toStr(Object[] array, String split) {
-        if (isEmpty(array)) {
-            return EMPTY;
-        }
-        StringBuilder sbd = new StringBuilder();
-        for (int i = 0; i < array.length; i++) {
-            sbd.append(array[i]);
-            if (i + 1 != array.length) {
-                sbd.append(split);
-            }
-        }
-        return sbd.toString();
-    }
     public static <T> String toStr(Collection<T> collection) {
         if (isEmpty(collection)) {
             return EMPTY;

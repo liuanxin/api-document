@@ -17,6 +17,7 @@ public final class ParamHandler {
     private static final LocalVariableTableParameterNameDiscoverer VARIABLE = new LocalVariableTableParameterNameDiscoverer();
 
     /** 处理参数 */
+    @SuppressWarnings("unchecked")
     public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
         List<DocumentParam> params = Utils.lists();
         int i = 0;

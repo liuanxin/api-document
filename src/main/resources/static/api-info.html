@@ -178,7 +178,7 @@
 开发: {{:develop}}
 说明: {{:desc}}
 
-返回结果示例地址: http://ip:port/api-example/{{:id}}.json
+<a target="_blank" href="/api/example/{{:id}}.json">返回结果示例地址</a>
 </pre>
                         <p>
                         接口地址 <code>{{:method}} {{:url}}</code>
@@ -283,7 +283,7 @@ $(function () {
 
 <script src="//cdn.bootcss.com/jsrender/1.0.0-rc.70/jsrender.min.js"></script>
 <script type="text/javascript">
-$.get("/api-info", function(module) {
+$.get("/api/info", function(module) {
     $(".col-md-9").html($("#url-render").render(module));
     $("#table-of-contents").find(".bs-docs-sidebar .nav").html($("#url-nav-render").render(module));
 
@@ -321,7 +321,7 @@ $.get("/api-info", function(module) {
     }
 });
 
-$.get("/api-version", function(urlCopyright) {
+$.get("/api/version", function(urlCopyright) {
     $(".postamble").html($("#copyright").render(urlCopyright));
 });
 </script>
