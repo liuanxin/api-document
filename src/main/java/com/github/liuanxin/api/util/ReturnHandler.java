@@ -20,15 +20,15 @@ public final class ReturnHandler {
 
     /** 返回结果的对象中用于泛型的类型 */
     @SuppressWarnings("unchecked")
-    private static final List<String> GENERIC_CLASS_NAME = Utils.lists("T");
+    private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T");
 
     /** 接口上的返回结果 */
     @SuppressWarnings("unchecked")
     public static List<DocumentReturn> handlerReturn(String method, boolean recordLevel) {
         String type = method.substring(method.indexOf(SPACE)).trim();
         type = type.substring(0, type.indexOf(SPACE)).trim();
-        List<DocumentReturn> returnList = Utils.lists();
-        handlerReturn(Utils.EMPTY, Utils.EMPTY, recordLevel, type, returnList);
+        List<DocumentReturn> returnList = Tools.lists();
+        handlerReturn(Tools.EMPTY, Tools.EMPTY, recordLevel, type, returnList);
         return returnList;
     }
 
@@ -45,7 +45,7 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (Utils.isBlank(outClass)) {
+        if (Tools.isBlank(outClass)) {
             return;
         }
         if (outClass.isInterface()) {
@@ -76,39 +76,39 @@ public final class ReturnHandler {
             }
         } else {
             // 非基础类型才需要进去获取字段
-            if (Utils.notBasicType(outClass)) {
-                Map<String, String> tmpFieldMap = Utils.newHashMap();
+            if (Tools.notBasicType(outClass)) {
+                Map<String, String> tmpFieldMap = Tools.newHashMap();
                 for (Field field : outClass.getDeclaredFields()) {
                     int mod = field.getModifiers();
                     // 字段不是 static, 不是 final, 也没有标 ignore 注解
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                            && Utils.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
+                            && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
                         String fieldName = field.getName();
                         Class<?> fieldType = field.getType();
 
                         DocumentReturn documentReturn = new DocumentReturn().setName(space + fieldName + parent);
-                        documentReturn.setType(Utils.getInputType(fieldType.getSimpleName()));
+                        documentReturn.setType(Tools.getInputType(fieldType.getSimpleName()));
 
                         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                        if (Utils.isNotBlank(apiReturn)) {
+                        if (Tools.isNotBlank(apiReturn)) {
                             documentReturn.setDesc(apiReturn.desc());
                             String docType = apiReturn.type();
-                            if (Utils.isNotBlank(docType)) {
+                            if (Tools.isNotBlank(docType)) {
                                 documentReturn.setType(docType);
                             }
                         }
                         if (fieldType.isEnum()) {
                             // 如果是枚举, 则将自解释拼在说明中
                             String desc = documentReturn.getDesc();
-                            String enumInfo = Utils.enumInfo(fieldType);
-                            documentReturn.setDesc(Utils.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
+                            String enumInfo = Tools.enumInfo(fieldType);
+                            documentReturn.setDesc(Tools.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
                         }
                         returnList.add(documentReturn);
 
                         // 如果返回字段不是基础数据类型则表示是一个类来接收的, 进去里面做一层
-                        if (Utils.notBasicType(fieldType)) {
+                        if (Tools.notBasicType(fieldType)) {
                             String innerType = field.getGenericType().toString();
-                            String innerParent = recordLevel ? (" -> " + fieldName + parent) : Utils.EMPTY;
+                            String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
                             handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
                         }
                         tmpFieldMap.put(field.getGenericType().toString(), fieldName);
@@ -118,7 +118,7 @@ public final class ReturnHandler {
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
                     String fieldName = handlerReturnFieldName(tmpFieldMap, innerType, recordLevel);
-                    String innerParent = recordLevel ? (" -> " + fieldName + parent) : Utils.EMPTY;
+                    String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
                     handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
                 }
             }
@@ -128,22 +128,22 @@ public final class ReturnHandler {
     private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType, boolean recordLevel) {
         String innerOutType = innerType.contains("<") ? innerType.substring(0, innerType.indexOf("<")) : innerType;
         if (!recordLevel) {
-            return Utils.EMPTY;
+            return Tools.EMPTY;
         }
         String name = null;
         for (String className : GENERIC_CLASS_NAME) {
             name = fieldMap.get(className);
-            if (Utils.isBlank(name)) {
+            if (Tools.isBlank(name)) {
                 return name;
             }
         }
-        if (Utils.isBlank(name)) {
+        if (Tools.isBlank(name)) {
             name = fieldMap.get(innerOutType);
         }
-        if (Utils.isBlank(name)) {
+        if (Tools.isBlank(name)) {
             name = fieldMap.get(Object.class.getName());
         }
-        return Utils.isBlank(name) ? Utils.EMPTY : name;
+        return Tools.isBlank(name) ? Tools.EMPTY : name;
     }
 
     // ========== json ==========
@@ -153,7 +153,7 @@ public final class ReturnHandler {
         String type = method.substring(method.indexOf(SPACE)).trim();
         type = type.substring(0, type.indexOf(SPACE)).trim();
         Object obj = handlerReturnJsonObj(type);
-        return Utils.isNotBlank(obj) ? Utils.toJson(obj) : Utils.EMPTY;
+        return Tools.isNotBlank(obj) ? Tools.toJson(obj) : Tools.EMPTY;
     }
 
     private static Object handlerReturnJsonObj(String type) {
@@ -167,7 +167,7 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (Utils.isBlank(outClass)) {
+        if (Tools.isBlank(outClass)) {
             return null;
         }
         if (outClass.isInterface()) {
@@ -182,11 +182,9 @@ public final class ReturnHandler {
             }
         } else {
             Object obj = handlerReturnWithObjClazz(outClass);
-            if (Utils.isNotBlank(obj)) {
-                if (type.contains("<") && type.contains(">")) {
-                    String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
-                    handlerReturnJsonWithObj(outClass, innerType, obj);
-                }
+            if (Tools.isNotBlank(obj) && type.contains("<") && type.contains(">")) {
+                String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
+                handlerReturnJsonWithObj(outClass, innerType, obj);
             }
             return obj;
         }
@@ -204,7 +202,7 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (Utils.isBlank(innerClass)) {
+        if (Tools.isBlank(innerClass)) {
             return;
         }
         if (innerClass.isInterface()) {
@@ -219,7 +217,7 @@ public final class ReturnHandler {
             }
         } else {
             Object value = handlerReturnWithObjClazz(innerClass);
-            if (Utils.isNotBlank(value)) {
+            if (Tools.isNotBlank(value)) {
                 setData(outClass, innerClass, obj, value);
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
@@ -243,7 +241,7 @@ public final class ReturnHandler {
                     Type clazzType = ((ParameterizedType) type).getActualTypeArguments()[0];
                     if (GENERIC_CLASS_NAME.contains(clazzType.toString()) || clazzType == fieldClazz) {
                         if (clazzType.toString().startsWith(List.class.getName())) {
-                            setField(field, obj, Utils.lists(value));
+                            setField(field, obj, Tools.lists(value));
                         } else {
                             setField(field, obj, value);
                         }
@@ -258,9 +256,9 @@ public final class ReturnHandler {
         if (type.contains("<") && type.contains(">")) {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
             // 如果是 list, 加一条记录进去
-            List list = Utils.lists();
+            List list = Tools.lists();
             Object object = handlerReturnWithObj(obj);
-            if (Utils.isNotBlank(object)) {
+            if (Tools.isNotBlank(object)) {
                 list.add(object);
             }
             return list;
@@ -275,10 +273,10 @@ public final class ReturnHandler {
             String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
             String[] keyValue = keyAndValue.split(",");
             if (keyValue.length == 2) {
-                Map map = Utils.newLinkedHashMap();
+                Map map = Tools.newLinkedHashMap();
                 Object key = handlerReturnWithObj(keyValue[0]);
                 Object value = handlerReturnWithObj(keyValue[1]);
-                if (Utils.isNotBlank(key) && Utils.isNotBlank(value)) {
+                if (Tools.isNotBlank(key) && Tools.isNotBlank(value)) {
                     map.put(key, value);
                 }
                 return map;
@@ -298,17 +296,17 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (Utils.isBlank(clazz)) {
+        if (Tools.isBlank(clazz)) {
             return null;
         }
         return handlerReturnWithObjClazz(clazz);
     }
 
     private static Object handlerReturnWithObjClazz(Class<?> clazz) {
-        if (Utils.isBlank(clazz)) {
+        if (Tools.isBlank(clazz) || clazz == Object.class) {
             return null;
         }
-        if (Utils.basicType(clazz)) {
+        if (Tools.basicType(clazz)) {
             return getReturnType(clazz);
         }
 
@@ -323,20 +321,20 @@ public final class ReturnHandler {
             int mod = field.getModifiers();
             // 字段不是 static, 不是 final, 也没有标 ignore 注解
             if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                    && Utils.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
+                    && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
                 Class<?> type = field.getType();
                 // 只在字符串的时候把注解上的值拿来用
                 if (type == String.class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                    String value = Utils.EMPTY;
-                    if (Utils.isNotBlank(apiReturn)) {
+                    String value = Tools.EMPTY;
+                    if (Tools.isNotBlank(apiReturn)) {
                         value = apiReturn.desc();
                     }
                     setField(field, obj, value);
                 } else if (type == String[].class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                    String[] value = new String[] { Utils.EMPTY };
-                    if (Utils.isNotBlank(apiReturn)) {
+                    String[] value = new String[] { Tools.EMPTY };
+                    if (Tools.isNotBlank(apiReturn)) {
                         value = new String[] { apiReturn.desc() };
                     }
                     setField(field, obj, value);
@@ -356,7 +354,7 @@ public final class ReturnHandler {
                 else if (type == Map.class) {
                     setField(field, obj, handlerReturnJsonMap(field.getGenericType().toString()));
                 }
-                else if (Utils.basicType(type)) {
+                else if (Tools.basicType(type)) {
                     setField(field, obj, getReturnType(type));
                 }
                 else {
@@ -417,9 +415,9 @@ public final class ReturnHandler {
         }
 
         else if (clazz == String.class) {
-            return Utils.EMPTY;
+            return Tools.EMPTY;
         } else if (clazz == String[].class) {
-            return new String[] { Utils.EMPTY };
+            return new String[] { Tools.EMPTY };
         }
 
         else {

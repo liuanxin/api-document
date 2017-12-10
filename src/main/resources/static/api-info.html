@@ -175,8 +175,8 @@
                     </h3>
                     <div class="outline-text-3">
 <pre class="example">
-开发: {{:develop}}
-说明: {{:desc}}
+{{if develop && develop != ''}}开发: {{:develop}}{{else}}未标明开发者{{/if}}{{if desc}}
+说明: {{:desc}}{{/if}}
 
 <a target="_blank" href="/api/example/{{:id}}.json">返回结果示例地址</a>
 </pre>
@@ -191,7 +191,6 @@
                                     <th scope="col" class="text-left">名称</th>
                                     <th scope="col" class="text-left">类型</th>
                                     <th scope="col" class="text-left">必须</th>
-                                    <th scope="col" class="text-left">示例</th>
                                     <th scope="col" class="text-left">说明</th>
                                 </tr>
                             </thead>
@@ -201,7 +200,6 @@
                                     <td class="text-left">{{:name}}</td>
                                     <td class="text-left">{{:type}}</td>
                                     <td class="text-left">{{if must}}<b>Yes</b>{{else}}No{{/if}}</td>
-                                    <td class="text-left">{{:example}}</td>
                                     <td class="text-left">{{:desc}}</td>
                                 </tr>
                             {{/for}}
@@ -264,9 +262,9 @@
 <footer class="postamble">
     <script id="copyright" type="text/x-jsrender">
     <div>
-        <p class="author">{{:auth}}</p>
-        <p class="team">由 {{:team}} 构建</p>
-        <p class="date">版本: {{:version}}</p>
+        <p class="contact">Contact: {{:contact}}</p>
+        <p class="team">Team: {{:team}}</p>
+        <p class="version">Version: {{:version}}</p>
     </div>
     </script>
 </footer>

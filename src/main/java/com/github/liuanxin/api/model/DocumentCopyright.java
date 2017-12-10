@@ -13,7 +13,7 @@ import java.util.Set;
 @Accessors(chain = true)
 public class DocumentCopyright {
     /** 作者 */
-    private String auth;
+    private String contact;
     /** 团队 */
     private String team;
     /** 版本 */

@@ -10,22 +10,25 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-info</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 #+END_SRC
 
-放一个 bean 进 spring 的上下文
+添如下配置
 #+BEGIN_SRC java
-@Bean
-public DocumentCopyright urlCopyright() {
-    // 线上环境文档对应的接口将不会输出
-    return new DocumentCopyright()
-                .setAuth("作者")
-                .setTeam("团队")
-                .setVersion("文档版本号")
-                .setOnline(true 表示是线上环境)
-                // 当某些接口不好标 @ApiIgnore 时(格式: url|method, 也可以只传入 url 而忽略 method 匹配)
-                .setIgnoreUrlList(忽略的 url 列表);
+@EnableApiInfo
+public class ApiInfoConfig {
+    @Bean
+    public DocumentCopyright urlCopyright() {
+        // 线上环境文档对应的接口将不会输出
+        return new DocumentCopyright()
+                    .setContact("作者")
+                    .setTeam("团队")
+                    .setVersion("文档版本号")
+                    .setOnline(true 表示是线上环境)
+                    // 当某些接口不好标 @ApiIgnore 时(格式: url|method, 也可以只传入 url 而忽略 method 匹配)
+                    .setIgnoreUrlList(忽略的 url 列表);
+    }
 }
 #+END_SRC
 
@@ -40,13 +43,12 @@ public DocumentCopyright urlCopyright() {
 @ApiMethod  标注在方法上
   title   接口标题, 请务必设置此值
   desc    接口详细说明
-  develop 开发者及联系方式
+  develop 开发者及联系方式, 请务必设置此值
 
 @ApiParam   标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
   name    参数名, 如果设置了将会无视参数名或字段名
   type    参数类型, 当需要自定义时(比如参数类型是枚举, 但是可以传 int 时)有用
   must    参数是否必须
-  example 参数示例, 请务必设置此值
   desc    参数说明, 请务必设置此值
 
 @ApiParamIgnore 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
@@ -58,7 +60,12 @@ public DocumentCopyright urlCopyright() {
 @ApiReturnIgnore 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
 #+END_EXAMPLE
 
-运行项目, 浏览 http://ip:port/api-info.html 查看文档
+运行项目, 浏览 http://ip:port/api-info.html 查看文档(如果使用了下面的配置将会无法查看)
+#+BEGIN_SRC yml
+spring:
+  mvc.throw-exception-if-no-handler-found: true
+  resources.add-mappings: false
+#+END_SRC
 
 最终效果如下
 [[图片][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]

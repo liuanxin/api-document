@@ -7,9 +7,9 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class Utils {
+public class Tools {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Tools.class);
 
     public static final String EMPTY = "";
     private static final String SPLIT = ",";
@@ -161,7 +161,7 @@ public class Utils {
     }
 
     static String getInputType(String paramType) {
-        if (Utils.isBlank(paramType)) {
+        if (Tools.isBlank(paramType)) {
             return EMPTY;
         }
         else if ("Integer".equals(paramType) || "long".equals(paramType) || "Long".equals(paramType)) {

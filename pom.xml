@@ -11,7 +11,7 @@
 
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-info</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <description>收集 api 文档, 需要 spring mvc 支持</description>
 
     <developers>
@@ -26,16 +26,24 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <spring-boot.version>1.5.8.RELEASE</spring-boot.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <spring-webmvc.version>4.3.12.RELEASE</spring-webmvc.version>
         <jackson.version>2.8.10</jackson.version>
         <lombok.version>1.16.18</lombok.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring-webmvc.version}</version>
             <scope>provided</scope>
         </dependency>
 

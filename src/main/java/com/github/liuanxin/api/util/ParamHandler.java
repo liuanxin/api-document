@@ -19,24 +19,24 @@ public final class ParamHandler {
     /** 处理参数 */
     @SuppressWarnings("unchecked")
     public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
-        List<DocumentParam> params = Utils.lists();
+        List<DocumentParam> params = Tools.lists();
         int i = 0;
         for (MethodParameter parameter : handlerMethod.getMethodParameters()) {
             // 如果参数不是基础数据类型则表示是一个类来接收的, 进去里面做一层
             Class<?> parameterType = parameter.getParameterType();
-            if (Utils.notBasicType(parameterType)) {
+            if (Tools.notBasicType(parameterType)) {
                 for (Field field : parameterType.getDeclaredFields()) {
                     int mod= field.getModifiers();
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)) {
                         // 如果字段上标了 ignore 则忽略
-                        if (Utils.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
+                        if (Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
                             String paramName = field.getName();
                             params.add(paramInfo(paramName, field.getType(), field.getAnnotation(ApiParam.class)));
                         }
                     }
                 }
             } else {
-                if (Utils.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
+                if (Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
                     // 受 jvm 编译时会擦除变量名的限制, parameter.parameterName 得到的都是 null 值
                     // String paramName = parameter.getParameterName();
                     String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
@@ -53,32 +53,32 @@ public final class ParamHandler {
         DocumentParam param = new DocumentParam();
         param.setName(name);
 
-        String inputType = Utils.getInputType(type.getSimpleName());
+        String inputType = Tools.getInputType(type.getSimpleName());
         if (type.isEnum()) {
             // 枚举就将枚举的具体类名拼在里面
             inputType = "Enum(" + inputType + ")";
         }
         param.setType(inputType);
 
-        if (Utils.isNotBlank(apiParam)) {
+        if (Tools.isNotBlank(apiParam)) {
             param.setMust(apiParam.must());
-            param.setExample(apiParam.example());
+            // param.setExample(apiParam.example());
             param.setDesc(apiParam.desc());
 
             String paramName = apiParam.name();
-            if (!Utils.EMPTY.equals(paramName)) {
+            if (!Tools.EMPTY.equals(paramName)) {
                 param.setName(paramName);
             }
             String paramType = apiParam.type();
-            if (!Utils.EMPTY.equals(paramType)) {
+            if (!Tools.EMPTY.equals(paramType)) {
                 param.setType(apiParam.type());
             }
         }
         if (type.isEnum()) {
             // 如果是枚举, 则将自解释拼在说明中
             String desc = param.getDesc();
-            String enumInfo = Utils.enumInfo(type);
-            param.setDesc(Utils.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
+            String enumInfo = Tools.enumInfo(type);
+            param.setDesc(Tools.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
         }
         return param;
     }

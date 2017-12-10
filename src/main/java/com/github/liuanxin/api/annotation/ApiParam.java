@@ -13,8 +13,6 @@ public @interface ApiParam {
     String type() default "";
     /** 参数是否必须 */
     boolean must() default false;
-    /** 参数示例 */
-    String example();
     /** 参数说明 */
     String desc();
 }

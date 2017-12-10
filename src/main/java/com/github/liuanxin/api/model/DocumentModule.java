@@ -1,6 +1,6 @@
 package com.github.liuanxin.api.model;
 
-import com.github.liuanxin.api.util.Utils;
+import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,13 +14,13 @@ import java.util.List;
 @Accessors(chain = true)
 public class DocumentModule {
 
-    private String name = "模块名待完善";
-    private String info = "模块说明待完善";
+    private String name;
+    private String info;
     @SuppressWarnings("unchecked")
-    private List<DocumentUrl> urlList = Utils.lists();
+    private List<DocumentUrl> urlList = Tools.lists();
 
     public DocumentModule(String groupName) {
-        if (Utils.isNotBlank(groupName)) {
+        if (Tools.isNotBlank(groupName)) {
             String[] split = groupName.split("-");
             if (split.length > 1) {
                 this.name = split[0];
