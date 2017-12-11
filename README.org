@@ -117,7 +117,7 @@ class DemoVo {
 }
 
 enum Gender {
-    Male(1, "男"), Female(2, "女");
+    Male(0, "男"), Female(1, "女");
 
     int code;
     String value;
