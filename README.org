@@ -69,6 +69,7 @@ spring:
 
 当前项目只是针对文档. 相比于 springfox(swagger) 做了很多的精简, 比如没有即时调试, 返回结果的呈现格式, 参数类型等
 
+** example
 比如有如下相关的代码(去掉了 set get 方法)
 #+BEGIN_SRC java
 @RestController
@@ -139,5 +140,4 @@ enum Gender {
 }
 #+END_SRC
 
-最终效果如下
-[[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+[[#example][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
