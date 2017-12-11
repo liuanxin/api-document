@@ -18,9 +18,9 @@ public final class ReturnHandler {
     private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
     private static final String SPACE = " ";
 
-    /** 返回结果的对象中用于泛型的类型 */
+    /** 返回结果的对象中用于泛型的类型: List&lt;T&gt;, List&lt;E&gt;, List&lt;A&gt;, Map&lt;K, V&gt; */
     @SuppressWarnings("unchecked")
-    private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T");
+    private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T", "E", "A", "K", "V");
 
     /** 接口上的返回结果 */
     @SuppressWarnings("unchecked")
@@ -240,7 +240,8 @@ public final class ReturnHandler {
                 } else if (type instanceof ParameterizedType) {
                     Type clazzType = ((ParameterizedType) type).getActualTypeArguments()[0];
                     if (GENERIC_CLASS_NAME.contains(clazzType.toString()) || clazzType == fieldClazz) {
-                        if (clazzType.toString().startsWith(List.class.getName())) {
+                        String listName = List.class.getName();
+                        if (type.toString().startsWith(listName) || clazzType.toString().startsWith(listName)) {
                             setField(field, obj, Tools.lists(value));
                         } else {
                             setField(field, obj, value);
