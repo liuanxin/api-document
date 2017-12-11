@@ -141,4 +141,4 @@ enum Gender {
 #+END_SRC
 
 最终文档收集如下
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+[[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
