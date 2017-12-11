@@ -146,34 +146,37 @@ enum Gender {
     public String getValue() {
         return value;
     }
-    @JsonValue
-    public int getCode() {
+    @JsonValue // 序列化规则
+    public int getCode() {
         return code;
     }
-    @JsonCreator
+    @JsonCreator // 反序列化规则
     public static Gender deserializer(Object obj) {
-        if (obj != null) {
-            String source = obj.toString().trim();
-            for (Gender em : values()) {
-                // 如果传递过来的是枚举名, 且能匹配上则返回
-                if (source.equalsIgnoreCase(em.name())) {
-                    return em;
-                }
-                // 如果传递过来的值跟枚举的 getCode(数字) 相同则返回
-                Object code = getMethod(em, "getCode");
-                if (code != null && source.equalsIgnoreCase(code.toString().trim())) {
-                    return em;
-                }
+        if (obj == null) {
+            return null;
+        }
 
-                // 如果传递过来的值跟枚举的 getValue(中文) 相同则返回
-                code = getMethod(em, "getValue");
-                if (code != null && source.equalsIgnoreCase(code.toString().trim())) {
-                    return em;
-                }
-
-                // 如果传递过来的值跟枚举的 ordinal(数字. 表示枚举所在的索引) 相同则返回
-                // if (source.equalsIgnoreCase(String.valueOf(em.ordinal()))) return em;
+        String source = obj.toString().trim();
+        for (Gender em : values()) {
+            // 如果传递过来的是枚举名, 且能匹配上则返回
+            if (source.equalsIgnoreCase(em.name())) {
+                return em;
             }
+            // 如果传递过来的值跟枚举的 code(数字) 相同则返回
+            if (source.equalsIgnoreCase(String.valueOf(em.getCode()))) {
+                return em;
+            }
+
+            // 如果传递过来的值跟枚举的 value(中文) 相同则返回
+            code = getMethod(em, "getValue");
+            if (source.equalsIgnoreCase(em.getValue())) {
+                return em;
+            }
+
+            // 如果传递过来的值跟枚举的 ordinal(数字. 表示枚举所在的索引) 相同则返回
+            // if (source.equalsIgnoreCase(String.valueOf(em.ordinal()))) {
+                // return em;
+            // }
         }
         return null;
     }
