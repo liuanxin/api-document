@@ -68,6 +68,33 @@ spring:
 #+END_SRC
 
 最终效果如下
-[[图片][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+[[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
 
 当前项目只是针对文档. 相比于 springfox(swagger) 做了很多的精简, 比如没有了即时调试, 在参数类型和返回结果的呈现上也有很大不同.
+
+比如有如下 enum
+#+BEGIN_SRC java
+public enum Gender {
+    Male(1, "男"), Female(2, "女");
+
+    int code;
+    String value;
+    Gender(int code, String value) {
+        this.code = code;
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+    @JsonValue
+    public int getCode() {
+        return code;
+    }
+    @JsonCreator
+    public static Gender deserializer(Object obj) {
+        return U.toEnum(Gender.class, obj);
+    }
+}
+#+END_SRC
+只要枚举中有 getCode 和 getValue 两个方法, 在页面上显示时将会自动收集起说明, 如(1.男, 2.女)
