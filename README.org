@@ -151,8 +151,31 @@ enum Gender {
         return code;
     }
     @JsonCreator
-    public static Gender deserializer(Object obj) {
-        return U.toEnum(Gender.class, obj);
+    public static Gender deserializer(Object obj) {
+        if (obj != null) {
+            String source = obj.toString().trim();
+            for (Gender em : values()) {
+                // 如果传递过来的是枚举名, 且能匹配上则返回
+                if (source.equalsIgnoreCase(em.name())) {
+                    return em;
+                }
+                // 如果传递过来的值跟枚举的 getCode(数字) 相同则返回
+                Object code = getMethod(em, "getCode");
+                if (code != null && source.equalsIgnoreCase(code.toString().trim())) {
+                    return em;
+                }
+
+                // 如果传递过来的值跟枚举的 getValue(中文) 相同则返回
+                code = getMethod(em, "getValue");
+                if (code != null && source.equalsIgnoreCase(code.toString().trim())) {
+                    return em;
+                }
+
+                // 如果传递过来的值跟枚举的 ordinal(数字. 表示枚举所在的索引) 相同则返回
+                // if (source.equalsIgnoreCase(String.valueOf(em.ordinal()))) return em;
+            }
+        }
+        return null;
     }
 }
 #+END_SRC
