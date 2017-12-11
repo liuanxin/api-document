@@ -22,7 +22,7 @@ public class ApiInfoConfig {
     public DocumentCopyright urlCopyright() {
         // 线上环境文档对应的接口将不会输出
         return new DocumentCopyright()
-                    .setContact("作者")
+                    .setContact("联系")
                     .setTeam("团队")
                     .setVersion("文档版本号")
                     .setOnline(true 表示是线上环境)
