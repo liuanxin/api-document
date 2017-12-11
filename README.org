@@ -16,6 +16,7 @@
 
 添加如下配置
 #+BEGIN_SRC java
+@Configuration
 @EnableApiInfo
 public class ApiInfoConfig {
     @Bean
