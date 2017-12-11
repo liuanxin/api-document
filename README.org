@@ -14,7 +14,7 @@
 </dependency>
 #+END_SRC
 
-添如下配置
+添加如下配置
 #+BEGIN_SRC java
 @EnableApiInfo
 public class ApiInfoConfig {
@@ -32,7 +32,7 @@ public class ApiInfoConfig {
 }
 #+END_SRC
 
-而后需要在对应的 controller 层标注相应的注解. 相关注解如下
+而后需要在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行收集). 相关注解如下
 #+BEGIN_EXAMPLE
 @ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
   value   请务必设置此值, 示例(name-说明, 如: user-用户模块), 可以有多个, 也就是说一个接口可以在多个模块中出现
@@ -69,53 +69,71 @@ spring:
 
 当前项目只是针对文档. 相比于 springfox(swagger) 做了很多的精简, 比如没有即时调试, 返回结果的呈现格式, 参数类型等
 
+** 示例
 比如有如下相关的代码(去掉了 set get 方法)
 #+BEGIN_SRC java
-@ApiGroup({"product-商品模块"})
 @RestController
-public class ProductController {
+@RequestMapping("/user")
+@ApiGroup({"user-用户模块"})
+public class UserController {
+
     @ApiMethod(title = "接口测试")
     @GetMapping("/demo")
-    public JsonResult<PageInfo<DemoVo>> demo(DemoDto demoDto, Page page) {
+    public JsonResult<PageInfo<DemoVo>> demo(@ApiParam(desc = "用户名") String name, DemoDto demoDto, Page page) {
         return JsonResult.success("msg", null);
     }
 }
+
 class DemoDto {
-    @ApiParam(desc = "用户 id")
+
+    @ApiParam(must = true, desc = "用户 id")
     private Long userId;
+    
     @ApiParam(type = "int", desc = "性别")
     private Gender gender;
 }
+
 class Page {
+
     @ApiParam(desc = "当前页数. 不传或传入 0, 或负数, 或非数字则默认是 1")
     private Integer page;
+    
     @ApiParam(desc = "每页条数. 不传或传入 0, 或负数, 或非数字, 或大于 1000 则默认是 15")
     private Integer limit;
 }
+
 class JsonResult<T> {
-    @ApiReturn(desc = "返回码. 前台根据此值控制页面扭转: 0.显示 msg, 1.业务处理, 10.导向登录页")
+
+    @ApiReturn(desc = "返回码. 根据此值控制页面扭转: 0.显示 msg, 1.业务处理, 10.导向登录页")
     private int code;
+    
     @ApiReturn(desc = "返回说明. 如: 用户名密码错误, 收货地址添加成功 等")
     private String msg;
-    @ApiReturn(desc = "返回的数据. 具体是返回实体 {\"id\":1} 还是列表 [{\"id\":1},{\"id\":2}] 依具体的业务而定")
+    
+    @ApiReturn(desc = "返回的数据. 返回实体 {\"id\":1} 还是列表 [{\"id\":1},{\"id\":2}] 依具体的业务而定")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
     // success fail...
 }
+
 class PageInfo<T> {
+
     @ApiReturn(desc = "总条数. 根据此值和 page limit 构建分页按钮")
     private int total;
+    
     @ApiReturn(desc = "当前页的数据")
     private List<T> list;
 }
+
 class DemoVo {
+
     @ApiReturn(desc = "用户 id")
     private String userId;
 }
 
 enum Gender {
-    Male(1, "男"), Female(2, "女");
+    Male(0, "男"), Female(1, "女");
 
     int code;
     String value;
@@ -138,5 +156,5 @@ enum Gender {
 }
 #+END_SRC
 
-最终效果如下
+最终文档收集如下
 [[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
