@@ -26,7 +26,7 @@ public class DocumentModule {
                 this.name = split[0];
                 this.info = split[1];
             } else {
-                this.name = groupName;
+                this.name = this.info = groupName;
             }
         }
     }
