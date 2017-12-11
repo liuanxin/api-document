@@ -80,7 +80,8 @@ public class UserController {
 
     @ApiMethod(title = "接口测试")
     @GetMapping("/demo")
-    public JsonResult<PageInfo<DemoVo>> demo(@ApiParam(desc = "用户名") String name, DemoDto demoDto, Page page) {
+    public JsonResult<PageInfo<DemoVo>> demo(@ApiParam(desc = "用户名") String name,
+                                             DemoDto demoDto, Page page) {
         return JsonResult.success("msg", null);
     }
 }
