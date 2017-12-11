@@ -146,34 +146,30 @@ public class DocumentController {
     }
 
     /** 某些 url 需要忽略 */
-    private static boolean ignore(Set<String> urlList, Set<RequestMethod> methodArray,
-                                  Set<String> ignoreUrlList) {
-        if (Tools.isEmpty(ignoreUrlList)) {
-            ignoreUrlList = Tools.sets();
+    @SuppressWarnings("unchecked")
+    private static boolean ignore(Set<String> urlSet, Set<RequestMethod> methodSet,
+                                  Set<String> ignoreUrlSet) {
+        if (Tools.isEmpty(ignoreUrlSet)) {
+            ignoreUrlSet = Tools.sets();
         }
-        ignoreUrlList.addAll(IGNORE_URL_LIST);
-        for (String url : urlList) {
-            if (Tools.isNotEmpty(ignoreUrlList)) {
-                for (String ignoreUrl : ignoreUrlList) {
-                    // url|method
-                    String[] urlAndMethod = ignoreUrl.split("\\|");
-                    if (urlAndMethod.length == 2) {
-                        // 如果有传入 method 则匹配
-                        String tmpUrl = urlAndMethod[0];
-                        String tmpMethod = urlAndMethod[1].toUpperCase();
-                        if (url.equals(tmpUrl)) {
-                            for (RequestMethod method : methodArray) {
-                                if (tmpMethod.equals(method.name())) {
-                                    return true;
-                                }
-                            }
-                        }
-                    } else {
-                        if (url.equals(ignoreUrl)) {
-                            return true;
-                        }
-                    }
+        List<String> methodList = Tools.lists();
+        for (RequestMethod method : methodSet) {
+            methodList.add(method.name());
+        }
+        ignoreUrlSet.addAll(IGNORE_URL_LIST);
+        for (String ignoreUrl : ignoreUrlSet) {
+            if (!ignoreUrl.startsWith("/")) {
+                ignoreUrl = "/" + ignoreUrl;
+            }
+            String[] urlAndMethod = ignoreUrl.split("\\|");
+            if (urlAndMethod.length == 2) {
+                String tmpUrl = urlAndMethod[0];
+                String tmpMethod = urlAndMethod[1].toUpperCase();
+                if (urlSet.contains(tmpUrl) && methodList.contains(tmpMethod)) {
+                    return true;
                 }
+            } else if (urlSet.contains(ignoreUrl)) {
+                return true;
             }
         }
         return false;
