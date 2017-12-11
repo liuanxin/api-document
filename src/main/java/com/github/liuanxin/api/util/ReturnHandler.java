@@ -87,8 +87,11 @@ public final class ReturnHandler {
                         Class<?> fieldType = field.getType();
 
                         DocumentReturn documentReturn = new DocumentReturn().setName(space + fieldName + parent);
-                        documentReturn.setType(Tools.getInputType(fieldType.getSimpleName()));
-
+                        if (fieldType.isEnum()) {
+                            documentReturn.setType("enum(" + fieldType.getSimpleName() + ")");
+                        } else {
+                            documentReturn.setType(Tools.getInputType(fieldType.getSimpleName()));
+                        }
                         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                         if (Tools.isNotBlank(apiReturn)) {
                             documentReturn.setDesc(apiReturn.desc());

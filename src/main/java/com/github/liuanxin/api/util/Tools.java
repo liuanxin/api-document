@@ -127,13 +127,11 @@ public class Tools {
             if (isNotEmpty(constants)) {
                 StringBuilder sbd = new StringBuilder();
                 for (Enum em : constants) {
+                    // 收集 enum 的 code 和 value, 都不为空时生成一个字符串返回
                     Object code = getMethod(em, "getCode");
                     Object value = getMethod(em, "getValue");
-                    if (isNotBlank(code)) {
-                        sbd.append(code).append(":");
-                        if (isNotBlank(value)) {
-                            sbd.append(value).append(", ");
-                        }
+                    if (isNotBlank(code) && isNotBlank(value)) {
+                        sbd.append(code).append(":").append(value).append(", ");
                     } else {
                         sbd.append(em.name()).append(", ");
                     }
