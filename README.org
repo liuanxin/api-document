@@ -69,3 +69,5 @@ spring:
 
 最终效果如下
 [[图片][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+
+当前项目只是针对文档. 相比于 springfox(swagger) 做了很多的精简, 比如没有了即时调试, 在参数类型和返回结果的呈现上也有很大不同.
