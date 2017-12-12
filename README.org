@@ -16,6 +16,7 @@
 
 添加如下配置
 #+BEGIN_SRC java
+@Configuration
 @EnableApiInfo
 public class ApiInfoConfig {
     @Bean
@@ -79,7 +80,8 @@ public class UserController {
 
     @ApiMethod(title = "接口测试")
     @GetMapping("/demo")
-    public JsonResult<PageInfo<DemoVo>> demo(@ApiParam(desc = "用户名") String name, DemoDto demoDto, Page page) {
+    public JsonResult<PageInfo<DemoVo>> demo(@ApiParam(desc = "用户名") String name,
+                                             DemoDto demoDto, Page page) {
         return JsonResult.success("msg", null);
     }
 }
@@ -145,13 +147,39 @@ enum Gender {
     public String getValue() {
         return value;
     }
-    @JsonValue
-    public int getCode() {
+    @JsonValue // 序列化规则
+    public int getCode() {
         return code;
     }
-    @JsonCreator
-    public static Gender deserializer(Object obj) {
-        return U.toEnum(Gender.class, obj);
+    @JsonCreator // 反序列化规则
+    public static Gender deserializer(Object obj) {
+        if (obj == null) {
+            return null;
+        }
+
+        String source = obj.toString().trim();
+        for (Gender em : values()) {
+            // 如果传递过来的是枚举名, 且能匹配上则返回
+            if (source.equalsIgnoreCase(em.name())) {
+                return em;
+            }
+            // 如果传递过来的值跟枚举的 code(数字) 相同则返回
+            if (source.equalsIgnoreCase(String.valueOf(em.getCode()))) {
+                return em;
+            }
+
+            // 如果传递过来的值跟枚举的 value(中文) 相同则返回
+            code = getMethod(em, "getValue");
+            if (source.equalsIgnoreCase(em.getValue())) {
+                return em;
+            }
+
+            // 如果传递过来的值跟枚举的 ordinal(数字. 表示枚举所在的索引) 相同则返回
+            // if (source.equalsIgnoreCase(String.valueOf(em.ordinal()))) {
+                // return em;
+            // }
+        }
+        return null;
     }
 }
 #+END_SRC

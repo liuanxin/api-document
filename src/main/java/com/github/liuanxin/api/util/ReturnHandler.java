@@ -373,7 +373,7 @@ public final class ReturnHandler {
         try {
             field.setAccessible(true);
             field.set(obj, value);
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             // ignore
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("无法给 {} 对象的字段 {} 赋值 {}", obj, field, value);
