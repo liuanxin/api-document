@@ -38,7 +38,7 @@ public class Tools {
 
     // ========== json ==========
     private static final ObjectMapper RENDER = new ObjectMapper();
-    static String toJson(Object obj) {
+    public static String toJson(Object obj) {
         try {
             return RENDER.writeValueAsString(obj);
         } catch (Exception e) {

@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,10 +19,14 @@ public class DocumentCopyright {
     private String team;
     /** 版本 */
     private String version;
+
     /** 忽略收集的 url 列表(格式 url|method, 如果没有 method 则只匹配 url) */
+    @JsonIgnore
     private Set<String> ignoreUrlSet;
     /** 是否是线上环境, 如果是线上环境将不会输出文档 */
+    @JsonIgnore
     private boolean online = false;
     /** 返回说明是否记录层级 */
+    @JsonIgnore
     private boolean returnRecordLevel = false;
 }

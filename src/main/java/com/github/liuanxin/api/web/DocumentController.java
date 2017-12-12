@@ -42,7 +42,11 @@ public class DocumentController {
 
     @GetMapping("/version")
     public DocumentCopyright urlVersion() {
-        return documentCopyright;
+        if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
+            return null;
+        } else {
+            return documentCopyright;
+        }
     }
 
     @GetMapping("/info")

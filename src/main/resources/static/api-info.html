@@ -71,7 +71,7 @@
         }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
-            max-height: 82vh;
+            max-height: 80vh;
         }
         .bs-docs-sidebar .nav > li > a {
             display: block;
@@ -287,45 +287,53 @@ $(function () {
 <script src="//cdn.bootcss.com/jsrender/1.0.0-rc.70/jsrender.min.js"></script>
 <script type="text/javascript">
 $.get("/api/info", function(module) {
-    $(".col-md-9").html($("#url-render").render(module));
-    $("#table-of-contents").find(".bs-docs-sidebar .nav").html($("#url-nav-render").render(module));
-
-    $("pre[class='src src-json']").each(function() {
-        var json = $(this).text();
-        if (json !== null && json !== "") {
-            $(this).text(JSON.stringify(JSON.parse(json), null, '  '));
-        }
-
-        var html = $(this).html();
-        if (html !== null && html !== "") {
-            var lineNum = html.split(/\n/).length;
-
-            var lineHtml = '<span class="line-number">';
-            for (var i = 0; i < lineNum; i++) {
-                lineHtml += '<span>' + (i + 1) + '</span>';
-            }
-            lineHtml += '</span>';
-            $(this).html(lineHtml + html);
-        }
-    });
-
-    var href = window.location.href;
-    if (href.includes("#")) {
-        href = href.substring(href.indexOf("#"), href.length);
-        var anchor = $(href);
-        if (anchor.length > 0) {
-            var li = $("a[href='" + href + "']").parent();
-            li.addClass("active");
-            li.parent().parent().addClass("active");
-            $("html,body").animate({ scrollTop: anchor.offset().top}, 0);
-        }
+    if (module === null || module === "") {
+        $(".col-md-9").html("<span style='color:red;'>无接口信息</span>");
     } else {
-        $('.bs-docs-sidebar li').first().addClass('active');
+        $(".col-md-9").html($("#url-render").render(module));
+        $("#table-of-contents").find(".bs-docs-sidebar .nav").html($("#url-nav-render").render(module));
+
+        $("pre[class='src src-json']").each(function () {
+            var json = $(this).text();
+            if (json !== null && json !== "") {
+                $(this).text(JSON.stringify(JSON.parse(json), null, '  '));
+            }
+
+            var html = $(this).html();
+            if (html !== null && html !== "") {
+                var lineNum = html.split(/\n/).length;
+
+                var lineHtml = '<span class="line-number">';
+                for (var i = 0; i < lineNum; i++) {
+                    lineHtml += '<span>' + (i + 1) + '</span>';
+                }
+                lineHtml += '</span>';
+                $(this).html(lineHtml + html);
+            }
+        });
+
+        var href = window.location.href;
+        if (href.includes("#")) {
+            href = href.substring(href.indexOf("#"), href.length);
+            var anchor = $(href);
+            if (anchor.length > 0) {
+                var li = $("a[href='" + href + "']").parent();
+                li.addClass("active");
+                li.parent().parent().addClass("active");
+                $("html,body").animate({scrollTop: anchor.offset().top}, 0);
+            }
+        } else {
+            $('.bs-docs-sidebar li').first().addClass('active');
+        }
     }
+}).error(function() {
+    $(".col-md-9").html("<span style='color:red;'>接口请求错误</span>");
 });
 
 $.get("/api/version", function(urlCopyright) {
-    $(".postamble").html($("#copyright").render(urlCopyright));
+    if (urlCopyright !== null && urlCopyright !== "") {
+        $(".postamble").html($("#copyright").render(urlCopyright));
+    }
 });
 </script>
 </body>
