@@ -172,14 +172,13 @@ enum Gender {
             }
 
             // 如果传递过来的值跟枚举的 value(中文) 相同则返回
-            code = getMethod(em, "getValue");
             if (source.equalsIgnoreCase(em.getValue())) {
                 return em;
             }
 
             // 如果传递过来的值跟枚举的 ordinal(数字. 表示枚举所在的索引) 相同则返回
             // if (source.equalsIgnoreCase(String.valueOf(em.ordinal()))) {
-                // return em;
+            //     return em;
             // }
         }
         return null;
