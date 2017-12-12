@@ -28,7 +28,7 @@ public class ApiInfoConfig {
                     .setVersion("文档版本号")
                     // true 表示是线上环境
                     .setOnline(true)
-                    // 当某些接口不好标 @ApiIgnore 时(格式: url|method, 也可以只传入 url 而忽略 method 匹配. url 可以使用 * 匹配符)
+                    // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 匹配符, method 可以忽略.)
                     .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"));
     }
 }
