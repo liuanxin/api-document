@@ -26,7 +26,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @RequestMapping("/api")
 public class DocumentController {
 
-    private static final Set<String> IGNORE_URL_LIST = Collections.singleton(
+    private static final Set<String> IGNORE_URL_SET = Collections.singleton(
             "/error"
     );
     private static final String CLASS_SUFFIX = "Controller";
@@ -85,7 +85,7 @@ public class DocumentController {
                     if (Tools.isBlank(ignore) || !ignore.value()) {
                         Set<String> urlArray = requestMappingInfo.getPatternsCondition().getPatterns();
                         Set<RequestMethod> methodArray = requestMappingInfo.getMethodsCondition().getMethods();
-                        if (!ignore(urlArray, methodArray, copyright.getIgnoreUrlList())) {
+                        if (!ignore(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
                             DocumentUrl url = new DocumentUrl();
                             // url
                             url.setUrl(Tools.toStr(urlArray));
@@ -152,24 +152,49 @@ public class DocumentController {
         if (Tools.isEmpty(ignoreUrlSet)) {
             ignoreUrlSet = Tools.sets();
         }
+        ignoreUrlSet.addAll(IGNORE_URL_SET);
+
         List<String> methodList = Tools.lists();
         for (RequestMethod method : methodSet) {
             methodList.add(method.name());
         }
-        ignoreUrlSet.addAll(IGNORE_URL_LIST);
         for (String ignoreUrl : ignoreUrlSet) {
             if (!ignoreUrl.startsWith("/")) {
                 ignoreUrl = "/" + ignoreUrl;
             }
-            String[] urlAndMethod = ignoreUrl.split("\\|");
-            if (urlAndMethod.length == 2) {
-                String tmpUrl = urlAndMethod[0];
-                String tmpMethod = urlAndMethod[1].toUpperCase();
-                if (urlSet.contains(tmpUrl) && methodList.contains(tmpMethod)) {
+            if (ignoreUrl.contains("*")) {
+                // 通配符
+                ignoreUrl = ignoreUrl.replace("*", "(.*)?");
+                String[] urlAndMethod = ignoreUrl.split("\\|");
+                if (urlAndMethod.length == 2) {
+                    String tmpUrl = urlAndMethod[0];
+                    String tmpMethod = urlAndMethod[1].toUpperCase();
+                    if (methodList.contains(tmpMethod)) {
+                        for (String url : urlSet) {
+                            if (url.matches(tmpUrl)) {
+                                return true;
+                            }
+                        }
+                    }
+                } else {
+                    for (String url : urlSet) {
+                        if (url.matches(ignoreUrl)) {
+                            return true;
+                        }
+                    }
+                }
+            } else {
+                // 全匹配
+                String[] urlAndMethod = ignoreUrl.split("\\|");
+                if (urlAndMethod.length == 2) {
+                    String tmpUrl = urlAndMethod[0];
+                    String tmpMethod = urlAndMethod[1].toUpperCase();
+                    if (urlSet.contains(tmpUrl) && methodList.contains(tmpMethod)) {
+                        return true;
+                    }
+                } else if (urlSet.contains(ignoreUrl)) {
                     return true;
                 }
-            } else if (urlSet.contains(ignoreUrl)) {
-                return true;
             }
         }
         return false;

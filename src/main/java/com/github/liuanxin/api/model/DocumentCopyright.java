@@ -19,7 +19,7 @@ public class DocumentCopyright {
     /** 版本 */
     private String version;
     /** 忽略收集的 url 列表(格式 url|method, 如果没有 method 则只匹配 url) */
-    private Set<String> ignoreUrlList;
+    private Set<String> ignoreUrlSet;
     /** 是否是线上环境, 如果是线上环境将不会输出文档 */
     private boolean online = false;
     /** 返回说明是否记录层级 */

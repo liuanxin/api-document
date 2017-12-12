@@ -10,7 +10,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-info</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 </dependency>
 #+END_SRC
 
@@ -26,14 +26,17 @@ public class ApiInfoConfig {
                     .setContact("联系")
                     .setTeam("团队")
                     .setVersion("文档版本号")
-                    .setOnline(true 表示是线上环境)
-                    // 当某些接口不好标 @ApiIgnore 时(格式: url|method, 也可以只传入 url 而忽略 method 匹配)
-                    .setIgnoreUrlList(忽略的 url 列表);
+                    // true 表示是线上环境
+                    .setOnline(true)
+                    // 当某些接口不好标 @ApiIgnore 时(格式: url|method, 也可以只传入 url 而忽略 method 匹配. url 可以使用 * 匹配符)
+                    .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"));
     }
 }
 #+END_SRC
 
-而后需要在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行收集). 相关注解如下
+而后需要在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行收集, 不支持 ResponseEntity 这一类无构造的返回).
+
+相关注解如下
 #+BEGIN_EXAMPLE
 @ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
   value   请务必设置此值, 示例(name-说明, 如: user-用户模块), 可以有多个, 也就是说一个接口可以在多个模块中出现

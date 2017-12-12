@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.*;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,12 +50,12 @@ public final class ReturnHandler {
             return;
         }
         if (outClass.isInterface()) {
-            if (outClass == List.class) {
+            if (Collection.class.isAssignableFrom(outClass)) {
                 if (type.contains("<") && type.contains(">")) {
                     String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
                     handlerReturn(space, parent, recordLevel, classType, returnList);
                 }
-            } else if (outClass == Map.class) {
+            } else if (Map.class.isAssignableFrom(outClass)) {
                 // map 尽量用实体类代替, 这样可以在实体类的字段上标注注解
                 if (type.contains("<") && type.contains(">")) {
                     String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
@@ -155,7 +156,14 @@ public final class ReturnHandler {
     public static String handlerReturnJson(String method) {
         String type = method.substring(method.indexOf(SPACE)).trim();
         type = type.substring(0, type.indexOf(SPACE)).trim();
-        Object obj = handlerReturnJsonObj(type);
+        Object obj = null;
+        try {
+            obj = handlerReturnJsonObj(type);
+        } catch (Exception e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(String.format("method(%s)return instance exception(%s)", method, e.getMessage()));
+            }
+        }
         return Tools.isNotBlank(obj) ? Tools.toJson(obj) : Tools.EMPTY;
     }
 
@@ -174,9 +182,9 @@ public final class ReturnHandler {
             return null;
         }
         if (outClass.isInterface()) {
-            if (outClass == List.class) {
+            if (Collection.class.isAssignableFrom(outClass)) {
                 return handlerReturnJsonList(type);
-            } else if (outClass == Map.class) {
+            } else if (Map.class.isAssignableFrom(outClass)) {
                 return handlerReturnJsonMap(type);
             } else {
                 if (LOGGER.isWarnEnabled()) {
@@ -209,9 +217,9 @@ public final class ReturnHandler {
             return;
         }
         if (innerClass.isInterface()) {
-            if (innerClass == List.class) {
-                setData(outClass, List.class, obj, handlerReturnJsonList(type));
-            } else if (innerClass == Map.class) {
+            if (Collection.class.isAssignableFrom(innerClass)) {
+                setData(outClass, Collection.class, obj, handlerReturnJsonList(type));
+            } else if (Map.class.isAssignableFrom(innerClass)) {
                 setData(outClass, Map.class, obj, handlerReturnJsonMap(type));
             } else {
                 if (LOGGER.isWarnEnabled()) {
@@ -243,8 +251,10 @@ public final class ReturnHandler {
                 } else if (type instanceof ParameterizedType) {
                     Type clazzType = ((ParameterizedType) type).getActualTypeArguments()[0];
                     if (GENERIC_CLASS_NAME.contains(clazzType.toString()) || clazzType == fieldClazz) {
-                        String listName = List.class.getName();
-                        if (type.toString().startsWith(listName) || clazzType.toString().startsWith(listName)) {
+                        Class<?> tmpClazz = getParameterizedType(type);
+                        Class<?> tmpType = getParameterizedType(clazzType);
+                        if ((tmpClazz != null && Collection.class.isAssignableFrom(tmpClazz))
+                                || (tmpType != null && Collection.class.isAssignableFrom(tmpType))) {
                             setField(field, obj, Tools.lists(value));
                         } else {
                             setField(field, obj, value);
@@ -253,6 +263,20 @@ public final class ReturnHandler {
                 }
             }
         }
+    }
+
+    private static Class<?> getParameterizedType(Type type) {
+        Class<?> tmpType = null;
+        try {
+            String className = type.toString();
+            if (className.contains("<") && className.contains(">")) {
+                className = className.substring(0, className.indexOf("<"));
+            }
+            tmpType = Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            // ignore
+        }
+        return tmpType;
     }
 
     @SuppressWarnings("unchecked")
@@ -319,7 +343,8 @@ public final class ReturnHandler {
             obj = clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException
                 | InvocationTargetException | NoSuchMethodException e) {
-            throw new RuntimeException(String.format("%s can't instance", clazz), e);
+            // 当返回结果无法实例化时此处将会异常
+            throw new RuntimeException(e);
         }
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
@@ -352,10 +377,10 @@ public final class ReturnHandler {
                     }
                     setField(field, obj, value);
                 }
-                else if (type == List.class) {
+                else if (Collection.class.isAssignableFrom(type)) {
                     setField(field, obj, handlerReturnJsonList(field.getGenericType().toString()));
                 }
-                else if (type == Map.class) {
+                else if (Map.class.isAssignableFrom(type)) {
                     setField(field, obj, handlerReturnJsonMap(field.getGenericType().toString()));
                 }
                 else if (Tools.basicType(type)) {

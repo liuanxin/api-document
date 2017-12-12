@@ -69,6 +69,10 @@
                 padding-left: 20px;
             }
         }
+        .bs-docs-sidebar > .nav {
+            overflow-y: auto;
+            max-height: 82vh;
+        }
         .bs-docs-sidebar .nav > li > a {
             display: block;
             padding: 4px 20px;
@@ -183,7 +187,7 @@
 </pre>
                         <p>
                         接口地址 <code>{{:method}} {{:url}}</code>
-                        {{if paramList && paramList.length}} 参数说明如下{{else}} 不需要参数, 返回示例及参数说明如下 {{/if}}
+                        {{if paramList && paramList.length}} 参数说明如下{{else}} 不需要参数. 返回示例及参数说明如下{{/if}}
                         </p>
                         {{if paramList && paramList.length}}
                         <table class="table table-striped table-bordered table-hover table-condensed">
