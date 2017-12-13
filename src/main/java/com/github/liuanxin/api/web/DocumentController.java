@@ -125,7 +125,9 @@ public class DocumentController {
                                 addGroup(moduleMap, info.toLowerCase() + "-" + className, url);
                             } else {
                                 for (String group : apiGroup.value()) {
-                                    addGroup(moduleMap, group, url);
+                                    if (Tools.isNotBlank(group)) {
+                                        addGroup(moduleMap, group, url);
+                                    }
                                 }
                             }
                         }
