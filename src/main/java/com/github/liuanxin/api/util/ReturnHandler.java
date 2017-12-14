@@ -36,7 +36,7 @@ public final class ReturnHandler {
     private static void handlerReturn(String space, String parent,
                                       boolean recordLevel, String type,
                                       List<DocumentReturn> returnList) {
-        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")) : type;
+        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
         if ("void".equals(clazz)) {
             return;
         }
@@ -52,13 +52,13 @@ public final class ReturnHandler {
         if (outClass.isInterface()) {
             if (Collection.class.isAssignableFrom(outClass)) {
                 if (type.contains("<") && type.contains(">")) {
-                    String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
+                    String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                     handlerReturn(space, parent, recordLevel, classType, returnList);
                 }
             } else if (Map.class.isAssignableFrom(outClass)) {
                 // map 尽量用实体类代替, 这样可以在实体类的字段上标注注解
                 if (type.contains("<") && type.contains(">")) {
-                    String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
+                    String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                     String[] keyValue = keyAndValue.split(",");
                     if (keyValue.length == 2) {
                         // handlerReturn(space, parent, keyValue[0].trim(), returnList);
@@ -120,7 +120,7 @@ public final class ReturnHandler {
                 }
                 // 处理泛型里面的内容
                 if (type.contains("<") && type.contains(">")) {
-                    String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
+                    String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                     String fieldName = handlerReturnFieldName(tmpFieldMap, innerType, recordLevel);
                     String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
                     handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
@@ -130,7 +130,7 @@ public final class ReturnHandler {
     }
 
     private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType, boolean recordLevel) {
-        String innerOutType = innerType.contains("<") ? innerType.substring(0, innerType.indexOf("<")) : innerType;
+        String innerOutType = innerType.contains("<") ? innerType.substring(0, innerType.indexOf("<")).trim() : innerType;
         if (!recordLevel) {
             return Tools.EMPTY;
         }
@@ -168,7 +168,7 @@ public final class ReturnHandler {
     }
 
     private static Object handlerReturnJsonObj(String type) {
-        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")) : type;
+        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
         if ("void".equals(clazz)) {
             return null;
         }
@@ -194,7 +194,7 @@ public final class ReturnHandler {
         } else {
             Object obj = handlerReturnWithObjClazz(outClass);
             if (Tools.isNotBlank(obj) && type.contains("<") && type.contains(">")) {
-                String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
+                String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                 handlerReturnJsonWithObj(outClass, innerType, obj);
             }
             return obj;
@@ -203,7 +203,7 @@ public final class ReturnHandler {
     }
 
     private static void handlerReturnJsonWithObj(Class<?> outClass, String type, Object obj) {
-        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")) : type;
+        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
         if ("void".equals(clazz)) {
             return;
         }
@@ -231,7 +231,7 @@ public final class ReturnHandler {
             if (Tools.isNotBlank(value)) {
                 setData(outClass, innerClass, obj, value);
                 if (type.contains("<") && type.contains(">")) {
-                    String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
+                    String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                     handlerReturnJsonWithObj(innerClass, innerType, value);
                 }
             }
@@ -270,7 +270,7 @@ public final class ReturnHandler {
         try {
             String className = type.toString();
             if (className.contains("<") && className.contains(">")) {
-                className = className.substring(0, className.indexOf("<"));
+                className = className.substring(0, className.indexOf("<")).trim();
             }
             tmpType = Class.forName(className);
         } catch (ClassNotFoundException e) {
@@ -282,10 +282,10 @@ public final class ReturnHandler {
     @SuppressWarnings("unchecked")
     private static List handlerReturnJsonList(String type) {
         if (type.contains("<") && type.contains(">")) {
-            String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
+            String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             // 如果是 list, 加一条记录进去
             List list = Tools.lists();
-            Object object = handlerReturnWithObj(obj);
+            Object object = handlerReturnJsonObj(obj);
             if (Tools.isNotBlank(object)) {
                 list.add(object);
             }
@@ -302,9 +302,10 @@ public final class ReturnHandler {
             String[] keyValue = keyAndValue.split(",");
             if (keyValue.length == 2) {
                 Map map = Tools.newLinkedHashMap();
-                Object key = handlerReturnWithObj(keyValue[0]);
-                Object value = handlerReturnWithObj(keyValue[1]);
-                if (Tools.isNotBlank(key) && Tools.isNotBlank(value)) {
+                // map 的 key 通常不会再是 List 或 Map 了
+                Object key = handlerReturnWithObj(keyValue[0].trim());
+                Object value = handlerReturnJsonObj(keyValue[1].trim());
+                if (Tools.isNotBlank(value)) {
                     map.put(key, value);
                 }
                 return map;
