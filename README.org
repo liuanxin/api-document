@@ -10,7 +10,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-info</artifactId>
-    <version>1.0.6</version>
+    <version>1.1.0</version>
 </dependency>
 #+END_SRC
 
@@ -23,6 +23,7 @@ public class ApiInfoConfig {
     public DocumentCopyright urlCopyright() {
         // 线上环境文档对应的接口将不会输出
         return new DocumentCopyright()
+                    .setTitle("标题")
                     .setContact("联系")
                     .setTeam("团队")
                     .setVersion("文档版本号")

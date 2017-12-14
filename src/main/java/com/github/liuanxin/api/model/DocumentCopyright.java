@@ -13,6 +13,8 @@ import java.util.Set;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class DocumentCopyright {
+    /** 标题 */
+    private String title;
     /** 作者 */
     private String contact;
     /** 团队 */

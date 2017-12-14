@@ -332,6 +332,7 @@ $.get("/api/info", function(module) {
 
 $.get("/api/version", function(urlCopyright) {
     if (urlCopyright !== null && urlCopyright !== "") {
+        $("title").html(urlCopyright.title);
         $(".postamble").html($("#copyright").render(urlCopyright));
     }
 });
