@@ -10,6 +10,7 @@ import com.github.liuanxin.api.util.ParamHandler;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
@@ -36,7 +37,9 @@ public class DocumentController {
     private static final Lock LOCK = new ReentrantLock();
 
     @Autowired
+    @Qualifier("requestMappingHandlerMapping")
     private RequestMappingHandlerMapping mapping;
+
     @Autowired
     private DocumentCopyright documentCopyright;
 
