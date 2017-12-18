@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.util.*;
 
 public class Tools {
@@ -14,19 +15,52 @@ public class Tools {
     public static final String EMPTY = "";
     private static final String SPLIT = ",";
 
+    /** 整数类型 */
+    @SuppressWarnings("unchecked")
+    private static final List<Class<?>> INT_TYPE = lists(
+            byte.class, Byte.class,
+            char.class, Character.class,
+            short.class, Short.class,
+            int.class, Integer.class,
+            long.class, Long.class
+    );
+    /** 浮点数类型 */
+    @SuppressWarnings("unchecked")
+    private static final List<Class<?>> DOUBLE_TYPE = lists(
+            float.class, Float.class,
+            double.class, Double.class,
+            BigDecimal.class
+    );
+
+    /** 整数的数组类型 */
+    @SuppressWarnings("unchecked")
+    private static final List<Class<?>> INT_ARRAY_TYPE = lists(
+            byte[].class, Byte[].class,
+            char[].class, Character[].class,
+            short[].class, Short[].class,
+            int[].class, Integer[].class,
+            long[].class, Long[].class
+    );
+    /** 浮点数的数组类型 */
+    @SuppressWarnings("unchecked")
+    private static final List<Class<?>> DOUBLE_ARRAY_TYPE = lists(
+            float[].class, Float[].class,
+            double[].class, Double[].class,
+            BigDecimal[].class
+    );
+
     /** 基础类型 */
     @SuppressWarnings("unchecked")
     private static final List<Class<?>> BASIC_TYPE = lists(
             String.class, String[].class,
-            boolean.class, Boolean.class, boolean[].class, Boolean[].class,
-            byte.class, Byte.class, byte[].class, Byte[].class,
-            char.class, Character.class, char[].class, Character[].class,
-            short.class, Short.class, short[].class, Short[].class,
-            int.class, Integer.class, int[].class, Integer[].class,
-            long.class, Long.class, long[].class, Long[].class,
-            float.class, Float.class, float[].class, Float[].class,
-            double.class, Double.class, double[].class, Double[].class
+            boolean.class, Boolean.class, boolean[].class, Boolean[].class
     );
+    static {
+        BASIC_TYPE.addAll(INT_TYPE);
+        BASIC_TYPE.addAll(DOUBLE_TYPE);
+        BASIC_TYPE.addAll(INT_ARRAY_TYPE);
+        BASIC_TYPE.addAll(DOUBLE_ARRAY_TYPE);
+    }
 
     // ========== string ==========
     public static boolean isBlank(Object obj) {
@@ -157,20 +191,43 @@ public class Tools {
     static boolean notBasicType(Class<?> clazz) {
         return !basicType(clazz);
     }
-
-    static String getInputType(String paramType) {
+    static String getInputType(Class<?> type) {
+        if (type == null) {
+            return EMPTY;
+        }
+        String paramType = type.getSimpleName();
         if (Tools.isBlank(paramType)) {
             return EMPTY;
         }
-        else if ("Integer".equals(paramType) || "long".equals(paramType) || "Long".equals(paramType)) {
-            return "int";
+        if (type == String.class || type == String[].class) {
+            return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
         }
-        else if ("float".equals(paramType) || "Float".equals(paramType)
-                || "Double".equals(paramType) || "BigDecimal".equals(paramType)) {
-            return "double";
+        if (type.isEnum()) {
+            return "Enum(" + paramType + ")";
         }
-        else {
-            return paramType.toLowerCase();
+
+        for (Class<?> typeClass : INT_TYPE) {
+            if (type == typeClass) {
+                return int.class.getSimpleName();
+            }
         }
+        for (Class<?> typeClass : DOUBLE_TYPE) {
+            if (type == typeClass) {
+                return double.class.getSimpleName();
+            }
+        }
+
+        // 逗号分隔(comma-separated)
+        for (Class<?> typeClass : INT_ARRAY_TYPE) {
+            if (type == typeClass) {
+                return int[].class.getSimpleName();
+            }
+        }
+        for (Class<?> typeClass : DOUBLE_ARRAY_TYPE) {
+            if (type == typeClass) {
+                return double[].class.getSimpleName();
+            }
+        }
+        return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
     }
 }

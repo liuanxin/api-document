@@ -88,17 +88,15 @@ public final class ReturnHandler {
                         Class<?> fieldType = field.getType();
 
                         DocumentReturn documentReturn = new DocumentReturn().setName(space + fieldName + parent);
-                        if (fieldType.isEnum()) {
-                            documentReturn.setType("enum(" + fieldType.getSimpleName() + ")");
-                        } else {
-                            documentReturn.setType(Tools.getInputType(fieldType.getSimpleName()));
-                        }
+                        documentReturn.setType(Tools.getInputType(fieldType));
+
                         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                         if (Tools.isNotBlank(apiReturn)) {
                             documentReturn.setDesc(apiReturn.desc());
-                            String docType = apiReturn.type();
-                            if (Tools.isNotBlank(docType)) {
-                                documentReturn.setType(docType);
+                            // 有在注解上标返回类型就使用
+                            String returnType = apiReturn.type();
+                            if (Tools.isNotBlank(returnType)) {
+                                documentReturn.setType(returnType);
                             }
                         }
                         if (fieldType.isEnum()) {
@@ -110,12 +108,12 @@ public final class ReturnHandler {
                         returnList.add(documentReturn);
 
                         // 如果返回字段不是基础数据类型则表示是一个类来接收的, 进去里面做一层
+                        String genericType = field.getGenericType().toString();
                         if (Tools.notBasicType(fieldType)) {
-                            String innerType = field.getGenericType().toString();
                             String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
-                            handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
+                            handlerReturn(space + TAB, innerParent, recordLevel, genericType, returnList);
                         }
-                        tmpFieldMap.put(field.getGenericType().toString(), fieldName);
+                        tmpFieldMap.put(genericType, fieldName);
                     }
                 }
                 // 处理泛型里面的内容

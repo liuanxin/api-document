@@ -52,13 +52,7 @@ public final class ParamHandler {
     private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam) {
         DocumentParam param = new DocumentParam();
         param.setName(name);
-
-        String inputType = Tools.getInputType(type.getSimpleName());
-        if (type.isEnum()) {
-            // 枚举就将枚举的具体类名拼在里面
-            inputType = "Enum(" + inputType + ")";
-        }
-        param.setType(inputType);
+        param.setType(Tools.getInputType(type));
 
         if (Tools.isNotBlank(apiParam)) {
             param.setMust(apiParam.must());
