@@ -85,7 +85,7 @@ spring:
 @ApiGroup({"user-用户模块"})
 public class UserController {
 
-    @ApiMethod(title = "接口测试")
+    @ApiMethod(title = "测试接口")
     @GetMapping("/demo")
     public JsonResult<PageInfo<DemoVo>> demo(@ApiParam(desc = "用户名") String name,
                                              DemoDto demoDto, Page page) {
