@@ -1,9 +1,14 @@
 package com.github.liuanxin.api.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -69,15 +74,38 @@ public class Tools {
     public static boolean isNotBlank(Object obj) {
         return !isBlank(obj);
     }
+    public static String addPrefix(String src) {
+        if (isBlank(src)) {
+            return "/";
+        }
+        if (src.startsWith("/")) {
+            return src;
+        }
+        return "/" + src;
+    }
 
     // ========== json ==========
     private static final ObjectMapper RENDER = new ObjectMapper();
-    public static String toJson(Object obj) {
+    private static final ObjectWriter PRETTY_RENDER = new ObjectMapper().writerWithDefaultPrettyPrinter();
+    static String toJson(Object obj) {
         try {
             return RENDER.writeValueAsString(obj);
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("to json exception", e);
+            }
+            return EMPTY;
+        }
+    }
+    public static String toPrettyJson(String json) {
+        if (isBlank(json)) {
+            return EMPTY;
+        }
+        try {
+            return PRETTY_RENDER.writeValueAsString(RENDER.readValue(json, Object.class));
+        } catch (IOException e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("to pretty json exception", e);
             }
             return EMPTY;
         }
@@ -229,5 +257,102 @@ public class Tools {
             }
         }
         return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
+    }
+    static Object getReturnType(Class<?> clazz) {
+        if (clazz == null) {
+            return null;
+        }
+
+        else if (clazz == boolean.class || clazz == Boolean.class) {
+            return false;
+        } else if (clazz == boolean[].class || clazz == Boolean[].class) {
+            return new boolean[] { false };
+        }
+
+        else if (clazz == byte.class || clazz == Byte.class) {
+            return (byte) 0;
+        } else if (clazz == byte[].class || clazz == Byte[].class) {
+            return new byte[] { (byte) 0 };
+        }
+
+        else if (clazz == char.class || clazz == Character.class) {
+            return (char) 0;
+        } else if (clazz == char[].class || clazz == Character[].class) {
+            return new char[] { (char) 0 };
+        }
+
+        else if (clazz == short.class || clazz == Short.class) {
+            return (short) 0;
+        } else if (clazz == short[].class || clazz == Short[].class) {
+            return new short[] { (short) 0 };
+        }
+
+        else if (clazz == int.class || clazz == Integer.class) {
+            return 0;
+        } else if (clazz == int[].class || clazz == Integer[].class) {
+            return new int[] { 0 };
+        }
+
+        else if (clazz == long.class || clazz == Long.class) {
+            return 0L;
+        } else if (clazz == long[].class || clazz == Long[].class) {
+            return new long[] { 0L };
+        }
+
+        else if (clazz == float.class || clazz == Float.class) {
+            return 0F;
+        } else if (clazz == float[].class || clazz == Float[].class) {
+            return new float[] { 0F };
+        }
+
+        else if (clazz == double.class || clazz == Double.class) {
+            return 0D;
+        } else if (clazz == double[].class || clazz == Double[].class) {
+            return new double[] { 0D };
+        }
+
+        else if (clazz == BigDecimal.class) {
+            return new BigDecimal(0D);
+        } else if (clazz == BigDecimal[].class) {
+            return new BigDecimal[] { new BigDecimal(0D) };
+        }
+
+        else if (clazz == String.class) {
+            return Tools.EMPTY;
+        } else if (clazz == String[].class) {
+            return new String[] { Tools.EMPTY };
+        }
+
+        else if (clazz.isEnum()) {
+            // 类型如果是枚举, 则拿第一个进行返回
+            Object[] enumConstants = clazz.getEnumConstants();
+            return (enumConstants.length > 0) ? enumConstants[0] : null;
+        }
+
+        else {
+            return null;
+        }
+    }
+
+    // ========== mvc ==========
+    public static String getDomain() {
+        HttpServletRequest request = getRequestAttributes().getRequest();
+        String scheme = request.getScheme();
+        int port = request.getServerPort();
+        if (port < 0) {
+            port = 80;
+        }
+
+        StringBuilder sbd = new StringBuilder();
+        sbd.append(scheme).append("://").append(request.getServerName());
+        boolean http = "http".equalsIgnoreCase(scheme) && (port != 80);
+        if (http || ("https".equalsIgnoreCase(scheme) && (port != 443))) {
+            sbd.append(':').append(port);
+        }
+        return sbd.toString();
+    }
+
+    private static ServletRequestAttributes getRequestAttributes() {
+        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
     }
 }

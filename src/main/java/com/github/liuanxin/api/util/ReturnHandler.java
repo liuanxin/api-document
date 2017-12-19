@@ -7,17 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.*;
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class ReturnHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReturnHandler.class);
-    private static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
+    public static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
     private static final String SPACE = " ";
+    private static final Date TMP_DATE = new Date();
 
     /** 返回结果的对象中用于泛型的类型: List&lt;T&gt;, List&lt;E&gt;, List&lt;A&gt;, Map&lt;K, V&gt; */
     @SuppressWarnings("unchecked")
@@ -62,7 +59,7 @@ public final class ReturnHandler {
                     String[] keyValue = keyAndValue.split(",");
                     if (keyValue.length == 2) {
                         // handlerReturn(space, parent, keyValue[0].trim(), returnList);
-                        // just handler value
+                        // just handler value, key don't handler
                         handlerReturn(space, parent, recordLevel, keyValue[1].trim(), returnList);
                     } else {
                         if (LOGGER.isWarnEnabled()) {
@@ -78,7 +75,7 @@ public final class ReturnHandler {
         } else {
             // 非基础类型才需要进去获取字段
             if (Tools.notBasicType(outClass)) {
-                Map<String, String> tmpFieldMap = Tools.newHashMap();
+                Map<String, String> tmpFieldMap = Tools.newLinkedHashMap();
                 for (Field field : outClass.getDeclaredFields()) {
                     int mod = field.getModifiers();
                     // 字段不是 static, 不是 final, 也没有标 ignore 注解
@@ -128,20 +125,24 @@ public final class ReturnHandler {
     }
 
     private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType, boolean recordLevel) {
-        String innerOutType = innerType.contains("<") ? innerType.substring(0, innerType.indexOf("<")).trim() : innerType;
         if (!recordLevel) {
             return Tools.EMPTY;
         }
-        String name = null;
-        for (String className : GENERIC_CLASS_NAME) {
-            name = fieldMap.get(className);
-            if (Tools.isBlank(name)) {
-                return name;
+        for (Map.Entry<String, String> entry : fieldMap.entrySet()) {
+            String key = entry.getKey();
+            for (String className : GENERIC_CLASS_NAME) {
+                if (key.contains(className)) {
+                    return entry.getValue();
+                }
             }
         }
-        if (Tools.isBlank(name)) {
-            name = fieldMap.get(innerOutType);
+
+        String innerOutType = innerType;
+        if (innerType.contains("<")) {
+            innerOutType = innerType.substring(0, innerType.indexOf("<")).trim();
         }
+        String name = fieldMap.get(innerOutType);
+
         if (Tools.isBlank(name)) {
             name = fieldMap.get(Object.class.getName());
         }
@@ -159,7 +160,7 @@ public final class ReturnHandler {
             obj = handlerReturnJsonObj(type);
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(String.format("method(%s)return instance exception(%s)", method, e.getMessage()));
+                LOGGER.error(String.format("Method(%s)return instance exception, Please ignore the relevant url", method), e);
             }
         }
         return Tools.isNotBlank(obj) ? Tools.toJson(obj) : Tools.EMPTY;
@@ -334,7 +335,7 @@ public final class ReturnHandler {
             return null;
         }
         if (Tools.basicType(clazz)) {
-            return getReturnType(clazz);
+            return Tools.getReturnType(clazz);
         }
 
         Object obj;
@@ -367,23 +368,17 @@ public final class ReturnHandler {
                     }
                     setField(field, obj, value);
                 }
-                else if (type.isEnum()) {
-                    // 返回示例中的类型如果是枚举, 则拿第一个进行返回
-                    Object value = null;
-                    Object[] enumConstants = type.getEnumConstants();
-                    if (enumConstants.length > 0) {
-                        value = enumConstants[0];
-                    }
-                    setField(field, obj, value);
+                else if (Tools.basicType(type)) {
+                    setField(field, obj, Tools.getReturnType(type));
+                }
+                else if (Date.class.isAssignableFrom(type)) {
+                    setField(field, obj, TMP_DATE);
                 }
                 else if (Collection.class.isAssignableFrom(type)) {
                     setField(field, obj, handlerReturnJsonList(field.getGenericType().toString()));
                 }
                 else if (Map.class.isAssignableFrom(type)) {
                     setField(field, obj, handlerReturnJsonMap(field.getGenericType().toString()));
-                }
-                else if (Tools.basicType(type)) {
-                    setField(field, obj, getReturnType(type));
                 }
                 else {
                     handlerReturnWithObj(field.getGenericType().toString());
@@ -400,56 +395,8 @@ public final class ReturnHandler {
         } catch (Exception e) {
             // ignore
             if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("无法给 {} 对象的字段 {} 赋值 {}", obj, field, value);
+                LOGGER.warn(String.format("无法给 %s 对象的字段 %s 赋值 %s", obj, field, value), e);
             }
-        }
-    }
-
-    private static Object getReturnType(Class<?> clazz) {
-        if (clazz == boolean.class || clazz == Boolean.class) {
-            return false;
-        } else if (clazz == boolean[].class || clazz == Boolean[].class) {
-            return new boolean[] { false };
-        }
-
-        else if (clazz == byte.class || clazz == Byte.class
-                || clazz == char.class || clazz == Character.class
-                || clazz == short.class || clazz == Short.class
-                || clazz == int.class || clazz == Integer.class) {
-            return 0;
-        } else if (clazz == byte[].class || clazz == Byte[].class
-                || clazz == char[].class || clazz == Character[].class
-                || clazz == short[].class || clazz == Short[].class
-                || clazz == int[].class || clazz == Integer[].class) {
-            return new int[] { 0 };
-        }
-
-        else if (clazz == long.class || clazz == Long.class) {
-            return 0L;
-        } else if (clazz == long[].class || clazz == Long[].class) {
-            return new long[] { 0L };
-        }
-
-        else if (clazz == float.class || clazz == Float.class) {
-            return 0F;
-        } else if (clazz == float[].class || clazz == Float[].class) {
-            return new float[] { 0F };
-        }
-
-        else if (clazz == double.class || clazz == Double.class || clazz == BigDecimal.class) {
-            return 0D;
-        } else if (clazz == double[].class || clazz == Double[].class || clazz == BigDecimal[].class) {
-            return new double[] { 0D };
-        }
-
-        else if (clazz == String.class) {
-            return Tools.EMPTY;
-        } else if (clazz == String[].class) {
-            return new String[] { Tools.EMPTY };
-        }
-
-        else {
-            return null;
         }
     }
 }

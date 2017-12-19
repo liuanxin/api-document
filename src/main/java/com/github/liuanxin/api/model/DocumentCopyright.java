@@ -28,7 +28,10 @@ public class DocumentCopyright {
     /** 是否是线上环境, 如果是线上环境将不会输出文档 */
     @JsonIgnore
     private boolean online = false;
-    /** 返回说明是否记录层级 */
+    /** 返回示例中是否包含注释 */
+    @JsonIgnore
+    private boolean commentInReturnExample = false;
+    /** 返回字段说明在单独罗列时是否记录父属性, 无视此值当 commentInReturnExample 为 true 时. forget this. It's a bad ide */
     @JsonIgnore
     private boolean returnRecordLevel = false;
 }

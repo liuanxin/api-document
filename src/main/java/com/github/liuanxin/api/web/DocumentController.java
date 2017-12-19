@@ -24,8 +24,13 @@ import java.util.concurrent.locks.ReentrantLock;
 
 @ApiIgnore
 @RestController
-@RequestMapping("/api")
+@RequestMapping(DocumentController.PARENT_URL_PREFIX)
 public class DocumentController {
+
+    static final String PARENT_URL_PREFIX = "/api";
+    private static final String VERSION_URL = "/version";
+    private static final String INFO_URL = "/info";
+    private static final String EXAMPLE_URL = "/example/{id}.json";
 
     private static final Set<String> IGNORE_URL_SET = Collections.singleton(
             "/error"
@@ -43,7 +48,7 @@ public class DocumentController {
     @Autowired
     private DocumentCopyright documentCopyright;
 
-    @GetMapping("/version")
+    @GetMapping(VERSION_URL)
     public DocumentCopyright urlVersion() {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return null;
@@ -52,7 +57,7 @@ public class DocumentController {
         }
     }
 
-    @GetMapping("/info")
+    @GetMapping(INFO_URL)
     public List<DocumentModule> url() {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return Collections.emptyList();
@@ -63,7 +68,7 @@ public class DocumentController {
         return module_list;
     }
 
-    @GetMapping("/example/{id}.json")
+    @GetMapping(EXAMPLE_URL)
     public String urlExample(@PathVariable("id") String id) {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return Tools.EMPTY;
@@ -114,6 +119,9 @@ public class DocumentController {
                                 url.setDesc(apiMethod.desc());
                                 url.setDevelop(apiMethod.develop());
                             }
+                            // 注释是否写在返回示例里面(从全局获取即可, 没有必要在 ApiMethod 上加一个更颗粒的配置来处理)
+                            url.setCommentInReturnExample(copyright.isCommentInReturnExample());
+                            url.setExampleUrl(getExampleUrl(url.getId()));
 
                             urlMap.put(url.getId(), url);
                             // add DocumentUrl to DocumentModule
@@ -142,6 +150,15 @@ public class DocumentController {
         } finally {
             LOCK.unlock();
         }
+    }
+
+    private static String getExampleUrl(String param) {
+        String domain = Tools.getDomain();
+        if (domain.endsWith("/")) {
+            domain = domain.substring(0, domain.length() - 1);
+        }
+        String exampleUrl = domain + Tools.addPrefix(PARENT_URL_PREFIX) + Tools.addPrefix(EXAMPLE_URL);
+        return exampleUrl.replaceFirst("\\{.*?\\}", param);
     }
 
     /** 添加模块组 */
