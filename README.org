@@ -51,7 +51,7 @@ public class ApiInfoConfig {
 @ApiMethod  标注在方法上
   title   接口标题, 请务必设置此值
   desc    接口详细说明
-  develop 开发者及联系方式, 请务必设置此值
+  develop 开发者信息, 请务必设置此值
 
 @ApiParam   标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
   name    参数名, 如果设置了将会无视参数名或字段名
