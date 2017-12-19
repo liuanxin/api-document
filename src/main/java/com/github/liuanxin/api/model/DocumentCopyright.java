@@ -30,7 +30,7 @@ public class DocumentCopyright {
     private boolean online = false;
     /** 返回示例中是否包含注释 */
     @JsonIgnore
-    private boolean commentInReturnExample = false;
+    private boolean commentInReturnExample = true;
     /** 返回字段说明在单独罗列时是否记录父属性, 无视此值当 commentInReturnExample 为 true 时. forget this. It's a bad ide */
     @JsonIgnore
     private boolean returnRecordLevel = false;
