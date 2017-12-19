@@ -30,8 +30,8 @@ public class ApiInfoConfig {
 
                     // true 表示是线上环境, 默认是 false
                     .setOnline(true)
-                    // 返回字段说明是否写在返回示例中, 默认是 false
-                    .setCommentInReturnExample(true)
+                    // 返回字段说明是否写在返回示例中, 默认是 true
+                    .setCommentInReturnExample(false)
                     // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
                     .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"));
     }
