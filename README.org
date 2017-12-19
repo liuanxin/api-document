@@ -100,6 +100,8 @@ public class DemoDto {
     
     @ApiParam(type = "int", desc = "性别")
     private Gender gender;
+    
+    // set get ...
 }
 
 public class Page {
@@ -109,6 +111,8 @@ public class Page {
     
     @ApiParam(desc = "每页条数. 不传或传入 0, 或负数, 或非数字, 或大于 1000 则默认是 15")
     private Integer limit;
+    
+    // set get ...
 }
 
 public class JsonResult<T> {
@@ -123,7 +127,8 @@ public class JsonResult<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
-    // success fail...
+    // set get ...
+    // static success fail...
 }
 
 public class PageInfo<T> {
@@ -133,12 +138,19 @@ public class PageInfo<T> {
     
     @ApiReturn(desc = "当前页的数据")
     private List<T> list;
+    
+    // set get ...
 }
 
 public class DemoVo {
 
     @ApiReturn(desc = "用户 id")
     private String userId;
+    
+    @ApiReturn(type = "int", desc = "性别")
+    private Gender gender;
+    
+    // set get ...
 }
 
 public enum Gender {
