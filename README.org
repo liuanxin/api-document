@@ -93,7 +93,7 @@ public class UserController {
     }
 }
 
-class DemoDto {
+public class DemoDto {
 
     @ApiParam(must = true, desc = "用户 id")
     private Long userId;
@@ -102,7 +102,7 @@ class DemoDto {
     private Gender gender;
 }
 
-class Page {
+public class Page {
 
     @ApiParam(desc = "当前页数. 不传或传入 0, 或负数, 或非数字则默认是 1")
     private Integer page;
@@ -111,7 +111,7 @@ class Page {
     private Integer limit;
 }
 
-class JsonResult<T> {
+public class JsonResult<T> {
 
     @ApiReturn(desc = "返回码. 根据此值控制页面扭转: 0.显示 msg, 1.业务处理, 10.导向登录页")
     private int code;
@@ -126,7 +126,7 @@ class JsonResult<T> {
     // success fail...
 }
 
-class PageInfo<T> {
+public class PageInfo<T> {
 
     @ApiReturn(desc = "总条数. 根据此值和 page limit 构建分页按钮")
     private int total;
@@ -135,13 +135,13 @@ class PageInfo<T> {
     private List<T> list;
 }
 
-class DemoVo {
+public class DemoVo {
 
     @ApiReturn(desc = "用户 id")
     private String userId;
 }
 
-enum Gender {
+public enum Gender {
     Male(0, "男"), Female(1, "女");
 
     int code;
@@ -192,6 +192,8 @@ enum Gender {
 
 最终文档收集如下
 [[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+
+-----
 
 如果将 commentInReturnExample 设置为 false 后最终将会显示成这样
 [[https://raw.githubusercontent.com/liuanxin/image/master/api2.png]]
