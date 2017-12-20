@@ -155,13 +155,15 @@ public class DemoVo {
 
 public enum Gender {
     Male(0, "男"), Female(1, "女");
-
-    int code;
+    
+    int code;
     String value;
     Gender(int code, String value) {
         this.code = code;
         this.value = value;
     }
+
+    // 收集文档时遇到枚举会自动获取 getCode() 和 getValue() 进行显示, 如果没有则会收集 name() 返回
 
     public String getValue() {
         return value;
