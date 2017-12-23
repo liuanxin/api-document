@@ -33,13 +33,17 @@ public final class ReturnHandler {
     private static void handlerReturn(String space, String parent,
                                       boolean recordLevel, String type,
                                       List<DocumentReturn> returnList) {
-        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
-        if ("void".equals(clazz)) {
+        String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
+        if ("void".equals(className)) {
             return;
+        }
+        // 「class java.lang.Object」 etc ...
+        if (className.contains(" ")) {
+            className = className.substring(className.indexOf(" ")).trim();
         }
         Class<?> outClass = null;
         try {
-            outClass = Class.forName(clazz);
+            outClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
             // ignore
         }
@@ -167,13 +171,17 @@ public final class ReturnHandler {
     }
 
     private static Object handlerReturnJsonObj(String type) {
-        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
-        if ("void".equals(clazz)) {
+        String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
+        if ("void".equals(className)) {
             return null;
+        }
+        // 「class java.lang.Object」 etc ...
+        if (className.contains(" ")) {
+            className = className.substring(className.indexOf(" ")).trim();
         }
         Class<?> outClass = null;
         try {
-            outClass = Class.forName(clazz);
+            outClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
             // ignore
         }
@@ -202,13 +210,17 @@ public final class ReturnHandler {
     }
 
     private static void handlerReturnJsonWithObj(Class<?> outClass, String type, Object obj) {
-        String clazz = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
-        if ("void".equals(clazz)) {
+        String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
+        if ("void".equals(className)) {
             return;
+        }
+        // 「class java.lang.Object」 etc ...
+        if (className.contains(" ")) {
+            className = className.substring(className.indexOf(" ")).trim();
         }
         Class<?> innerClass = null;
         try {
-            innerClass = Class.forName(clazz);
+            innerClass = Class.forName(className);
         } catch (ClassNotFoundException e) {
             // ignore
         }
@@ -271,6 +283,10 @@ public final class ReturnHandler {
             if (className.contains("<") && className.contains(">")) {
                 className = className.substring(0, className.indexOf("<")).trim();
             }
+            // 「class java.lang.Object」 etc ...
+            if (className.contains(" ")) {
+                className = className.substring(className.indexOf(" ")).trim();
+            }
             tmpType = Class.forName(className);
         } catch (ClassNotFoundException e) {
             // ignore
@@ -318,6 +334,10 @@ public final class ReturnHandler {
     }
 
     private static Object handlerReturnWithObj(String className) {
+        // 「class java.lang.Object」 etc ...
+        if (className.contains(" ")) {
+            className = className.substring(className.indexOf(" ")).trim();
+        }
         Class<?> clazz = null;
         try {
             clazz = Class.forName(className);
@@ -381,7 +401,7 @@ public final class ReturnHandler {
                     setField(field, obj, handlerReturnJsonMap(field.getGenericType().toString()));
                 }
                 else {
-                    handlerReturnWithObj(field.getGenericType().toString());
+                    setField(field, obj, handlerReturnWithObj(field.getGenericType().toString()));
                 }
             }
         }
