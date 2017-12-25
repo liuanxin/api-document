@@ -18,7 +18,9 @@ import java.util.regex.Pattern;
 @Accessors(chain = true)
 public class DocumentUrl {
 
-    private static final String JSON_SPLIT = "\n";
+    private static final String WRAP = "\n";
+    private static final String WRAP_REPLACE = " <> ";
+    private static final String DOUBLE_QUOTE = "\"";
     private static final String COMMENT_START = "  /* ";
     private static final String COMMENT_END = " */";
     private static final String STR = String.class.getSimpleName();
@@ -75,7 +77,7 @@ public class DocumentUrl {
         }
 
         StringBuilder sbd = new StringBuilder();
-        String[] split = commentJson.split(JSON_SPLIT);
+        String[] split = commentJson.split(WRAP);
         int index = 0;
         for (String comment : split) {
             sbd.append(comment);
@@ -85,18 +87,18 @@ public class DocumentUrl {
                 DocumentReturn documentReturn = returnList.get(index);
                 if (Tools.isNotBlank(documentReturn)) {
                     String returnName = documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY).trim();
-                    if (trim.startsWith("\"" + returnName + "\"")) {
+                    if (trim.startsWith(DOUBLE_QUOTE + returnName + DOUBLE_QUOTE)) {
                         if (!STR.equalsIgnoreCase(documentReturn.getType())) {
                             String desc = documentReturn.getDesc();
                             if (Tools.isNotBlank(desc)) {
-                                sbd.append(COMMENT_START).append(desc.replace("\n", " <> ")).append(COMMENT_END);
+                                sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
                             }
                         }
                         index++;
                     }
                 }
             }
-            sbd.append(JSON_SPLIT);
+            sbd.append(WRAP);
         }
         return sbd.delete(sbd.length() - 1, sbd.length()).toString();
     }
