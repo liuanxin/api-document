@@ -10,9 +10,9 @@
     </parent>
 
     <groupId>com.github.liuanxin</groupId>
-    <artifactId>api-info</artifactId>
-    <version>1.2.3</version>
-    <description>收集 api 文档, 需要 spring mvc 支持</description>
+    <artifactId>api-document</artifactId>
+    <version>0.0.1</version>
+    <description>Collect api document, support to spring mvc</description>
 
     <developers>
         <developer>
