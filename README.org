@@ -68,12 +68,11 @@ public class ApiInfoConfig {
 @ApiReturnIgnore 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
 #+END_EXAMPLE
 
-运行项目, 浏览 http://ip:port/api-info.html 查看文档(如果使用了下面的配置将会无法查看)
-#+BEGIN_SRC yml
-spring:
-  mvc.throw-exception-if-no-handler-found: true
-  resources.add-mappings: false
+如果是非 spring boot 项目, 添加如下配置
+#+BEGIN_SRC xml
+<mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
+运行项目, 浏览 http://ip:port/static/api-info.html 查看文档(spring boot 则不需要 /static 二级目录)
 
 当前项目只是针对文档. 相比于 springfox(swagger) 做了很多的精简, 比如没有即时调试, 返回结果的呈现格式, 参数类型等
 
