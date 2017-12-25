@@ -88,7 +88,7 @@ public class UserController {
     @GetMapping("/demo")
     public JsonResult<PageInfo<DemoVo>> demo(@ApiParam(desc = "用户名") String name,
                                              DemoDto demoDto, Page page) {
-        return JsonResult.success("msg", null);
+        return JsonResult.success("test");
     }
 }
 
