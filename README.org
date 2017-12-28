@@ -40,7 +40,7 @@ public class ApiInfoConfig {
 }
 #+END_SRC
 
-而后需要在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行收集, 不支持 ResponseEntity 这一类没有无参构造的返回).
+而后需要在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集, 不收集返回结果是 ResponseEntity 这一类 没有无参构造 的返回).
 
 相关注解如下
 #+BEGIN_EXAMPLE
