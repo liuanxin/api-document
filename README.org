@@ -12,7 +12,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
 </dependency>
 #+END_SRC
 
@@ -164,7 +164,10 @@ public enum Gender {
         this.value = value;
     }
 
-    // 收集文档时遇到枚举会自动获取 getCode() 和 getValue() 进行显示, 如果没有则会收集 name() 返回
+    // 如果枚举中有 getCode()
+    //    且有 getValue() 则显示成 code1:value1, code2:value2 ...
+    //    没有 getValue() 则显示成 code1:name1, code2:name2 ...
+    // 没有 getCode() 则显示成 name1, name2 ...
 
     public String getValue() {
         return value;
