@@ -18,6 +18,7 @@ public class Tools {
     private static final Logger LOGGER = LoggerFactory.getLogger(Tools.class);
 
     public static final String EMPTY = "";
+    private static final String SPACE = " ";
     private static final String SPLIT = ",";
 
     /** 整数类型 */
@@ -189,13 +190,23 @@ public class Tools {
             if (isNotEmpty(constants)) {
                 StringBuilder sbd = new StringBuilder();
                 for (Enum em : constants) {
-                    // 收集 enum 的 code 和 value, 都不为空时生成一个字符串返回
                     Object code = getMethod(em, "getCode");
-                    Object value = getMethod(em, "getValue");
-                    if (isNotBlank(code) && isNotBlank(value)) {
-                        sbd.append(code).append(":").append(value).append(", ");
+                    if (isNotBlank(code)) {
+                        // has getCode
+                        sbd.append(code).append(":");
+                        Object value = getMethod(em, "getValue");
+                        if (isNotBlank(value)) {
+                            // has getValue return <code1: value1, code2: value2 ...>
+                            sbd.append(value).append(SPLIT + SPACE);
+                        } else {
+                            // no getValue return <code1: name1, code2: name2 ...>
+                            sbd.append(em.name());
+                        }
+                        sbd.append(SPLIT + SPACE);
                     } else {
-                        sbd.append(em.name()).append(", ");
+                        // no getCode return <name1, name2>
+                        // sbd.append(em.ordinal()).append(":");
+                        sbd.append(em.name()).append(SPLIT + SPACE);
                     }
                 }
                 if (sbd.length() > 2) {
