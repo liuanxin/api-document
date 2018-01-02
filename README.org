@@ -31,11 +31,12 @@ public class ApiInfoConfig {
                     .setVersion("文档版本号")
 
                     // true 表示是线上环境, 默认是 false
-                    .setOnline(true)
+                    // .setOnline(true)
                     // 返回字段说明是否写在返回示例中, 默认是 true
-                    .setCommentInReturnExample(false)
+                    // .setCommentInReturnExample(false)
                     // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
-                    .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"));
+                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+                    ;
     }
 }
 #+END_SRC
@@ -45,7 +46,7 @@ public class ApiInfoConfig {
 相关注解如下
 #+BEGIN_EXAMPLE
 @ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
-  value   请务必设置此值, 示例(name-说明, 如: user-用户模块), 可以有多个, 也就是说一个接口可以在多个模块中出现
+  value   请务必设置此值, 示例(name-说明, 如: user-用户模块, 说明可以忽略), 可以有多个, 也就是说一个接口可以在多个模块中出现
 
 @ApiIgnore  标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
   value   值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
