@@ -22,7 +22,7 @@
 @EnableApiInfo
 public class ApiInfoConfig {
     @Bean
-    public DocumentCopyright urlCopyright() {
+    public DocumentCopyright apiCopyright() {
         // 线上环境文档对应的接口将不会输出
         return new DocumentCopyright()
                     .setTitle("文档总标题")
