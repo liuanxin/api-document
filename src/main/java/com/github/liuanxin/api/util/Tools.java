@@ -189,28 +189,26 @@ public class Tools {
             Enum[] constants = (Enum[]) clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
                 StringBuilder sbd = new StringBuilder();
+                String split = SPLIT + SPACE;
                 for (Enum em : constants) {
                     Object code = getMethod(em, "getCode");
                     if (isNotBlank(code)) {
                         // has getCode
                         sbd.append(code).append(":");
                         Object value = getMethod(em, "getValue");
-                        if (isNotBlank(value)) {
-                            // has getValue return <code1: value1, code2: value2 ...>
-                            sbd.append(value).append(SPLIT + SPACE);
-                        } else {
-                            // no getValue return <code1: name1, code2: name2 ...>
-                            sbd.append(em.name());
-                        }
-                        sbd.append(SPLIT + SPACE);
+                        // has getValue return <code1: value1, code2: value2 ...>
+                        // no getValue return <code1: name1, code2: name2 ...>
+                        sbd.append(isNotBlank(value) ? value : em.name());
                     } else {
                         // no getCode return <name1, name2>
                         // sbd.append(em.ordinal()).append(":");
-                        sbd.append(em.name()).append(SPLIT + SPACE);
+                        sbd.append(em.name());
                     }
+                    sbd.append(split);
                 }
-                if (sbd.length() > 2) {
-                    return sbd.delete(sbd.length() - 2, sbd.length()).toString();
+                int len = split.length();
+                if (sbd.length() > len) {
+                    return sbd.delete(sbd.length() - len, sbd.length()).toString();
                 }
             }
         }
