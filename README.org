@@ -7,7 +7,7 @@
 
 ** 使用
 
-添加引用(需要 jackson 和 lombok 以及 spring mvc 相关的包)
+添加引用
 #+BEGIN_SRC xml
 <dependency>
     <groupId>com.github.liuanxin</groupId>
