@@ -13,13 +13,9 @@ import java.util.Set;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class DocumentCopyright {
-    /** 标题 */
     private String title;
-    /** 作者 */
+    private String copyright;
     private String contact;
-    /** 团队 */
-    private String team;
-    /** 版本 */
     private String version;
 
     /** 忽略收集的 url 列表(格式 url|method, 如果没有 method 则只匹配 url) */

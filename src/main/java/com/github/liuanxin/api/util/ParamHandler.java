@@ -27,12 +27,11 @@ public final class ParamHandler {
             if (Tools.notBasicType(parameterType)) {
                 for (Field field : parameterType.getDeclaredFields()) {
                     int mod= field.getModifiers();
-                    if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)) {
-                        // 如果字段上标了 ignore 则忽略
-                        if (Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
-                            String paramName = field.getName();
-                            params.add(paramInfo(paramName, field.getType(), field.getAnnotation(ApiParam.class)));
-                        }
+                    // 字段不是 static, 不是 final, 也没有标 ignore 注解
+                    if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
+                            && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
+                        String paramName = field.getName();
+                        params.add(paramInfo(paramName, field.getType(), field.getAnnotation(ApiParam.class)));
                     }
                 }
             } else {

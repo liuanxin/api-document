@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 public class DocumentReturn {
     /** 返回名称 */
     private String name;
-    /** 返回类型. 字符串需要用双引号包住, bool 和 数字 不用 */
+    /** 返回类型 */
     private String type;
     /** 返回说明 */
     private String desc;

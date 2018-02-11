@@ -16,8 +16,8 @@ public class DocumentParam {
     private String type;
     /** 参数是否必须 */
     private boolean must;
-    /** 参数示例 */
-    private String example;
     /** 参数说明 */
     private String desc;
+    // /** 参数示例 */
+    // private String example;
 }

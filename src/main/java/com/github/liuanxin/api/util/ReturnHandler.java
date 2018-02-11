@@ -86,31 +86,11 @@ public final class ReturnHandler {
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                             && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
                         String fieldName = field.getName();
-                        Class<?> fieldType = field.getType();
-
-                        DocumentReturn documentReturn = new DocumentReturn().setName(space + fieldName + parent);
-                        documentReturn.setType(Tools.getInputType(fieldType));
-
-                        ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                        if (Tools.isNotBlank(apiReturn)) {
-                            documentReturn.setDesc(apiReturn.desc());
-                            // 有在注解上标返回类型就使用
-                            String returnType = apiReturn.type();
-                            if (Tools.isNotBlank(returnType)) {
-                                documentReturn.setType(returnType);
-                            }
-                        }
-                        if (fieldType.isEnum()) {
-                            // 如果是枚举, 则将自解释拼在说明中
-                            String desc = documentReturn.getDesc();
-                            String enumInfo = Tools.enumInfo(fieldType);
-                            documentReturn.setDesc(Tools.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
-                        }
-                        returnList.add(documentReturn);
+                        returnList.add(returnInfo(field, space + fieldName + parent));
 
                         // 如果返回字段不是基础数据类型则表示是一个类来接收的, 进去里面做一层
                         String genericType = field.getGenericType().toString();
-                        if (Tools.notBasicType(fieldType)) {
+                        if (Tools.notBasicType(field.getType())) {
                             String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
                             handlerReturn(space + TAB, innerParent, recordLevel, genericType, returnList);
                         }
@@ -128,6 +108,30 @@ public final class ReturnHandler {
         }
     }
 
+    /** 收集返回结果的信息 */
+    private static DocumentReturn returnInfo(Field field, String name) {
+        Class<?> fieldType = field.getType();
+        DocumentReturn documentReturn = new DocumentReturn();
+        documentReturn.setName(name).setType(Tools.getInputType(fieldType));
+
+        ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
+        if (Tools.isNotBlank(apiReturn)) {
+            documentReturn.setDesc(apiReturn.desc());
+            // 有在注解上标返回类型就使用
+            String returnType = apiReturn.type();
+            if (Tools.isNotBlank(returnType)) {
+                documentReturn.setType(returnType);
+            }
+        }
+        if (fieldType.isEnum()) {
+            // 如果是枚举, 则将自解释拼在说明中
+            String desc = documentReturn.getDesc();
+            String enumInfo = Tools.enumInfo(fieldType);
+            documentReturn.setDesc(Tools.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
+        }
+        return documentReturn;
+    }
+
     private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType, boolean recordLevel) {
         if (!recordLevel) {
             return Tools.EMPTY;
@@ -135,7 +139,7 @@ public final class ReturnHandler {
         for (Map.Entry<String, String> entry : fieldMap.entrySet()) {
             String key = entry.getKey();
             for (String className : GENERIC_CLASS_NAME) {
-                if (key.contains(className)) {
+                if (key.equals(className)) {
                     return entry.getValue();
                 }
             }
@@ -164,7 +168,7 @@ public final class ReturnHandler {
             obj = handlerReturnJsonObj(type);
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(String.format("Method(%s)return instance exception, Please ignore the relevant url", method), e);
+                LOGGER.error(String.format("方法(%s)的返回结果无法实例化, 请忽略相关的 url", method), e);
             }
         }
         return Tools.isNotBlank(obj) ? Tools.toJson(obj) : Tools.EMPTY;
@@ -413,7 +417,6 @@ public final class ReturnHandler {
             field.setAccessible(true);
             field.set(obj, value);
         } catch (Exception e) {
-            // ignore
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn(String.format("无法给 %s 对象的字段 %s 赋值 %s", obj, field, value), e);
             }
