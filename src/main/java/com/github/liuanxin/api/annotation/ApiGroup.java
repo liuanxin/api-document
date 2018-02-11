@@ -9,4 +9,7 @@ import java.lang.annotation.*;
 public @interface ApiGroup {
     /** 模块名, name-中文说明(如: user-用户). 一个接口必须隶属于某个模块 */
     String[] value();
+
+    /** 排序, 越小越靠前 */
+    int index() default Integer.MAX_VALUE;
 }

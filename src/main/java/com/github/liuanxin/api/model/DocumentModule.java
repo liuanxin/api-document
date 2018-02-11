@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,9 @@ import java.util.List;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class DocumentModule {
+
+    @JsonIgnore
+    private int index = Integer.MAX_VALUE;
 
     private String name;
     private String info;

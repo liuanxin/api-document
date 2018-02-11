@@ -25,7 +25,9 @@ public class DocumentUrl {
     private static final String COMMENT_END = " */";
     private static final String STR = String.class.getSimpleName();
 
-    private String id;
+    @JsonIgnore
+    private int index = Integer.MAX_VALUE;
+
     /** 接口标题 */
     private String title;
     /** 接口详细说明 */

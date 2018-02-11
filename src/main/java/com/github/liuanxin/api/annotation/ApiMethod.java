@@ -13,4 +13,7 @@ public @interface ApiMethod {
     String desc() default "";
     /** 开发者及联系方式 */
     String develop();
+
+    /** 排序, 越小越靠前 */
+    int index() default Integer.MAX_VALUE;
 }

@@ -118,6 +118,7 @@ public class DocumentController {
                                 url.setTitle(apiMethod.title());
                                 url.setDesc(apiMethod.desc());
                                 url.setDevelop(apiMethod.develop());
+                                url.setIndex(apiMethod.index());
                             }
                             // 注释是否写在返回示例里面(从全局获取即可, 没有必要在 ApiMethod 上加一个更颗粒的配置来处理)
                             url.setCommentInReturnExample(copyright.isCommentInReturnExample());
@@ -133,11 +134,12 @@ public class DocumentController {
                                 if (className.contains(CLASS_SUFFIX)) {
                                     info = className.substring(0, className.indexOf(CLASS_SUFFIX));
                                 }
-                                addGroup(moduleMap, info.toLowerCase() + "-" + className, url);
+                                addGroup(moduleMap, 0, info.toLowerCase() + "-" + className, url);
                             } else {
+                                int index = apiGroup.index();
                                 for (String group : apiGroup.value()) {
                                     if (Tools.isNotBlank(group)) {
-                                        addGroup(moduleMap, group, url);
+                                        addGroup(moduleMap, index, group, url);
                                     }
                                 }
                             }
@@ -146,7 +148,28 @@ public class DocumentController {
                 }
             }
             url_map = urlMap;
-            module_list = Tools.lists(moduleMap.values());
+            Collection<DocumentModule> modules = moduleMap.values();
+            List<DocumentModule> moduleList = new ArrayList<DocumentModule>();
+            if (Tools.isNotEmpty(modules)) {
+                for (DocumentModule module : modules) {
+                    // 模块里面的地址列表从小到大排序
+                    Collections.sort(module.getUrlList(), new Comparator<DocumentUrl>() {
+                        @Override
+                        public int compare(DocumentUrl o1, DocumentUrl o2) {
+                            return o1.getIndex() - o2.getIndex();
+                        }
+                    });
+                    moduleList.add(module);
+                }
+                // 模块从小到大排序
+                Collections.sort(moduleList, new Comparator<DocumentModule>() {
+                    @Override
+                    public int compare(DocumentModule o1, DocumentModule o2) {
+                        return o1.getIndex() - o2.getIndex();
+                    }
+                });
+            }
+            module_list = moduleList;
         } finally {
             LOCK.unlock();
         }
@@ -162,10 +185,13 @@ public class DocumentController {
     }
 
     /** 添加模块组 */
-    private static void addGroup(Map<String, DocumentModule> moduleMap, String group, DocumentUrl url) {
+    private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {
         DocumentModule module = moduleMap.get(group);
         if (Tools.isBlank(module)) {
             module = new DocumentModule(group);
+            if (index > 0) {
+                module.setIndex(index);
+            }
         }
         module.addUrl(url);
         moduleMap.put(group, module);

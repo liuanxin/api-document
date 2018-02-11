@@ -156,7 +156,7 @@ public class Tools {
         return new HashSet<>();
     }
     public static <T> List<T> lists(Collection<T> values) {
-        return new ArrayList<>(values);
+        return isEmpty(values) ? new ArrayList<T>() : new ArrayList<>(values);
     }
     public static <K, V> HashMap<K, V> newLinkedHashMap() {
         return new LinkedHashMap<>();
