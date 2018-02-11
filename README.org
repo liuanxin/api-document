@@ -12,7 +12,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
 </dependency>
 #+END_SRC
 
@@ -24,24 +24,19 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         // 线上环境文档对应的接口将不会输出
-        return new DocumentCopyright()
-                    .setTitle("文档总标题")
-                    .setContact("文档项目组")
-                    .setTeam("开发团队")
-                    .setVersion("文档版本号")
-
+        return new DocumentCopyright("标题", "联系", "版本号", "版权");
                     // true 表示是线上环境, 默认是 false
                     // .setOnline(true)
                     // 返回字段说明是否写在返回示例中, 默认是 true
                     // .setCommentInReturnExample(false)
                     // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
-                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
-                    ;
+                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"));
     }
 }
 #+END_SRC
 
-而后需要在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集, 不收集返回结果是 ResponseEntity 这一类 没有无参构造 的返回).
+而后需要在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
+如果返回结果是 List 或 Map 会以 ArrayList 及 LinkedHashMap 进行处理. 不收集返回结果是 ResponseEntity 这一类 没有无参构造 的返回)
 
 相关注解如下
 #+BEGIN_EXAMPLE
