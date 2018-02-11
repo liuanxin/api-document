@@ -14,9 +14,9 @@ import java.util.Set;
 @Accessors(chain = true)
 public class DocumentCopyright {
     private String title;
-    private String copyright;
     private String contact;
     private String version;
+    private String copyright;
 
     /** 忽略收集的 url 列表(格式 url|method, 如果没有 method 则只匹配 url) */
     @JsonIgnore
@@ -30,4 +30,11 @@ public class DocumentCopyright {
     /** 返回字段说明在单独罗列时是否记录父属性, 无视此值当 commentInReturnExample 为 true 时. forget this. It's a bad ide */
     @JsonIgnore
     private boolean returnRecordLevel = false;
+
+    public DocumentCopyright(String title, String contact, String version, String copyright) {
+        this.title = title;
+        this.contact = contact;
+        this.version = version;
+        this.copyright = copyright;
+    }
 }
