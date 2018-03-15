@@ -9,6 +9,7 @@ import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class ParamHandler {
@@ -19,9 +20,10 @@ public final class ParamHandler {
     /** 处理参数 */
     @SuppressWarnings("unchecked")
     public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
-        List<DocumentParam> params = Tools.lists();
-        int i = 0;
-        for (MethodParameter parameter : handlerMethod.getMethodParameters()) {
+        List<DocumentParam> params = new ArrayList<>();
+        MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
+        for (int i = 0; i < methodParameters.length; i++) {
+            MethodParameter parameter = methodParameters[i];
             // 如果参数不是基础数据类型则表示是一个类来接收的, 进去里面做一层
             Class<?> parameterType = parameter.getParameterType();
             if (Tools.notBasicType(parameterType)) {
@@ -42,7 +44,6 @@ public final class ParamHandler {
                     params.add(paramInfo(paramName, parameterType, parameter.getParameterAnnotation(ApiParam.class)));
                 }
             }
-            i++;
         }
         return params;
     }
@@ -51,21 +52,31 @@ public final class ParamHandler {
     private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam) {
         DocumentParam param = new DocumentParam();
         param.setName(name);
-        param.setType(Tools.getInputType(type));
+        param.setDataType(Tools.getInputType(type));
 
         if (Tools.isNotBlank(apiParam)) {
-            param.setMust(apiParam.must());
-            // param.setExample(apiParam.example());
-            param.setDesc(apiParam.desc());
+            String desc = apiParam.desc();
+            if (Tools.isNotBlank(desc)) {
+                param.setDesc(desc);
+            }
 
             String paramName = apiParam.name();
-            if (!Tools.EMPTY.equals(paramName)) {
+            if (Tools.isNotBlank(paramName)) {
                 param.setName(paramName);
             }
-            String paramType = apiParam.type();
-            if (!Tools.EMPTY.equals(paramType)) {
-                param.setType(apiParam.type());
+            String dataType = apiParam.dataType();
+            if (Tools.isNotBlank(dataType)) {
+                param.setDataType(apiParam.dataType());
             }
+
+            param.setParamType(apiParam.paramType().toString());
+
+            String example = apiParam.example();
+            if (Tools.isNotBlank(example)) {
+                param.setExample(example);
+            }
+
+            param.setMust(apiParam.must());
         }
         if (type.isEnum()) {
             // 如果是枚举, 则将自解释拼在说明中

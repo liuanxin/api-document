@@ -39,6 +39,7 @@ public class DocumentUrl {
     private String method;
     private String url;
     private List<DocumentParam> paramList;
+    private List<DocumentResponse> responseList;
 
     /** 返回示例中是否包含注释 */
     @JsonIgnore

@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,18 +9,11 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @Accessors(chain = true)
-public class DocumentParam {
+public class DocumentResponse {
 
-    private String name;
+    private int code;
 
-    private String dataType;
-
-    private String paramType;
-
-    private boolean must;
-
-    private String desc;
-
-    private String example;
+    private String msg;
 }

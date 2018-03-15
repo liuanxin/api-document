@@ -2,9 +2,12 @@ package com.github.liuanxin.api.annotation;
 
 import java.lang.annotation.*;
 
-/** want to ignore some return comment, use this */
-@Target(ElementType.FIELD)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ApiReturnIgnore {
+public @interface ApiResponse {
+
+    int code();
+
+    String msg();
 }

@@ -16,7 +16,6 @@ public final class ReturnHandler {
     private static final String SPACE = " ";
     private static final Date TMP_DATE = new Date();
 
-    /** 返回结果的对象中用于泛型的类型: List&lt;T&gt;, List&lt;E&gt;, List&lt;A&gt;, Map&lt;K, V&gt; */
     @SuppressWarnings("unchecked")
     private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T", "E", "A", "K", "V");
 
@@ -25,7 +24,7 @@ public final class ReturnHandler {
     public static List<DocumentReturn> handlerReturn(String method, boolean recordLevel) {
         String type = method.substring(method.indexOf(SPACE)).trim();
         type = type.substring(0, type.indexOf(SPACE)).trim();
-        List<DocumentReturn> returnList = Tools.lists();
+        List<DocumentReturn> returnList = new ArrayList<>();
         handlerReturn(Tools.EMPTY, Tools.EMPTY, recordLevel, type, returnList);
         return returnList;
     }
@@ -303,7 +302,7 @@ public final class ReturnHandler {
         if (type.contains("<") && type.contains(">")) {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             // 如果是 list, 加一条记录进去
-            List list = Tools.lists();
+            List list = new ArrayList();
             Object object = handlerReturnJsonObj(obj);
             if (Tools.isNotBlank(object)) {
                 list.add(object);

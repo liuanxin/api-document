@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -20,8 +21,7 @@ public class DocumentModule {
 
     private String name;
     private String info;
-    @SuppressWarnings("unchecked")
-    private List<DocumentUrl> urlList = Tools.lists();
+    private List<DocumentUrl> urlList = new ArrayList<>();
 
     public DocumentModule(String groupName) {
         if (Tools.isNotBlank(groupName)) {

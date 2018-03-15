@@ -1,10 +1,9 @@
 package com.github.liuanxin.api.web;
 
-import com.github.liuanxin.api.annotation.ApiGroup;
-import com.github.liuanxin.api.annotation.ApiIgnore;
-import com.github.liuanxin.api.annotation.ApiMethod;
+import com.github.liuanxin.api.annotation.*;
 import com.github.liuanxin.api.model.DocumentCopyright;
 import com.github.liuanxin.api.model.DocumentModule;
+import com.github.liuanxin.api.model.DocumentResponse;
 import com.github.liuanxin.api.model.DocumentUrl;
 import com.github.liuanxin.api.util.ParamHandler;
 import com.github.liuanxin.api.util.ReturnHandler;
@@ -105,6 +104,18 @@ public class DocumentController {
                             url.setMethod(Tools.toStr(methodArray));
                             // param
                             url.setParamList(ParamHandler.handlerParam(handlerMethod));
+                            // response
+                            ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
+                            if (Tools.isNotBlank(responses)) {
+                                ApiResponse[] responseArr = responses.value();
+                                if (responseArr.length > 0) {
+                                    List<DocumentResponse> responseList = new ArrayList<>();
+                                    for (ApiResponse response : responseArr) {
+                                        responseList.add(new DocumentResponse(response.code(), response.msg()));
+                                    }
+                                    url.setResponseList(responseList);
+                                }
+                            }
 
                             String method = handlerMethod.toString();
                             // return param
@@ -198,7 +209,6 @@ public class DocumentController {
     }
 
     /** 某些 url 需要忽略 */
-    @SuppressWarnings("unchecked")
     private static boolean ignore(Set<String> urlSet, Set<RequestMethod> methodSet,
                                   Set<String> ignoreUrlSet) {
         if (Tools.isEmpty(ignoreUrlSet)) {
@@ -206,7 +216,7 @@ public class DocumentController {
         }
         ignoreUrlSet.addAll(IGNORE_URL_SET);
 
-        List<String> methodList = Tools.lists();
+        List<String> methodList = new ArrayList<>();
         for (RequestMethod method : methodSet) {
             methodList.add(method.name());
         }
@@ -252,7 +262,6 @@ public class DocumentController {
         return false;
     }
 
-    /** 如果是一个 json api 就返回 true */
     private static boolean wasJsonApi(HandlerMethod handlerMethod) {
         ResponseBody annotation = getAnnotation(handlerMethod, ResponseBody.class);
         if (Tools.isNotBlank(annotation)) {
@@ -261,15 +270,13 @@ public class DocumentController {
         RestController controller = getAnnotationByClass(handlerMethod, RestController.class);
         return Tools.isNotBlank(controller);
     }
-    /** 找方法上的注解 */
+
     private static <T extends Annotation> T getAnnotationByMethod(HandlerMethod handlerMethod, Class<T> clazz) {
         return handlerMethod.getMethodAnnotation(clazz);
     }
-    /** 找类上的注解 */
     private static <T extends Annotation> T getAnnotationByClass(HandlerMethod handlerMethod, Class<T> clazz) {
         return AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), clazz);
     }
-    /** 先找方法上的注解, 再找类上的注解 */
     private static <T extends Annotation> T getAnnotation(HandlerMethod handlerMethod, Class<T> clazz) {
         T annotation = handlerMethod.getMethodAnnotation(clazz);
         if (Tools.isBlank(annotation)) {
