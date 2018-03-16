@@ -164,11 +164,11 @@
         <div class="col-md-9">
             <script id="url-render" type="text/x-jsrender">
                 <div class="outline-2">
-                    <h2 id="{{:name}}"><span class="section-number-2">{{:#index + 1}}</span>{{:info}}</h2>
+                    <h2 id="{{:name}}"><span class="section-number-2">{{:#index + 1}}</span> {{:info}}</h2>
                     {{for urlList ~name = name ~index = #index + 1}}
                         <div class="outline-3">
                             <h3 id="{{:~name}}-{{:id}}">
-                                <span class="section-number-3">{{:~index}}.{{:#index + 1}}</span>{{:title}}
+                                <span class="section-number-3">{{:~index}}.{{:#index + 1}}</span> {{:title}}
                             </h3>
                             <div class="outline-text-3">
 <pre class="example">
