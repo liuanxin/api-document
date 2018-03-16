@@ -88,8 +88,6 @@ public class ApiInfoConfig {
 #+END_SRC
 运行项目, 浏览 http://ip:port/static/api-info.html 查看文档(spring boot 则不需要 /static 二级目录)
 
-当前项目只是针对文档. 相比于 springfox(swagger) 做了很多的精简, 比如没有即时调试, 返回结果的呈现格式, 参数类型等
-
 -----
 
 最终文档收集如下
