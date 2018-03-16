@@ -12,7 +12,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
 </dependency>
 #+END_SRC
 
@@ -24,7 +24,7 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         // 线上环境文档对应的接口将不会输出
-        return new DocumentCopyright("标题", "联系", "版本号", "版权");
+        return new DocumentCopyright("标题", "团队", "版本号", "版权");
                     // true 表示是线上环境, 默认是 false
                     // .setOnline(true)
                     // 返回字段说明是否写在返回示例中, 默认是 true

@@ -15,7 +15,7 @@ import java.util.Set;
 public class DocumentCopyright {
 
     private String title;
-    private String contact;
+    private String team;
     private String version;
     private String copyright;
 
@@ -40,9 +40,9 @@ public class DocumentCopyright {
     @JsonIgnore
     private boolean returnRecordLevel = false;
 
-    public DocumentCopyright(String title, String contact, String version, String copyright) {
+    public DocumentCopyright(String title, String team, String version, String copyright) {
         this.title = title;
-        this.contact = contact;
+        this.team = team;
         this.version = version;
         this.copyright = copyright;
     }

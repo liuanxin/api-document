@@ -1,19 +1,19 @@
 <!doctype html>
 <html lang="en">
-<head><title>接口文档</title>
+<head>
+    <title>接口文档</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <style type="text/css"> html {
+    <style type="text/css">
+    html {
         position: relative;
         min-height: 100%;
     }
-
     body {
         font-size: 16px;
         margin-bottom: 105px;
     }
-
     footer {
         position: absolute;
         bottom: 0;
@@ -21,33 +21,27 @@
         height: 101px;
         background-color: #f5f5f5;
     }
-
     footer > div {
         padding: 10px;
     }
-
     footer p {
         margin: 0 0 5px;
         text-align: center;
         font-size: 16px;
     }
-
     #table-of-contents {
         margin-top: 20px;
         margin-bottom: 20px;
     }
-
     blockquote p {
         font-size: 18px;
     }
-
     pre {
         font-size: 14px;
         overflow: auto;
         margin: 0 0 1em;
         padding: .5em 1em;
     }
-
     pre .line-number {
         color: #2B91AF;
         display: block;
@@ -56,39 +50,32 @@
         border-right: 1px solid;
         text-align: right;
     }
-
     pre .line-number span {
         display: block;
         padding: 0 .5em 0 1em;
     }
-
     pre .comment {
         color: #998;
         font-style: italic;
     }
-
     figcaption {
         font-size: 16px;
         color: #666;
         font-style: italic;
         padding-bottom: 15px;
     }
-
     .bs-docs-sidebar.affix {
         position: static;
     }
-
     @media (min-width: 768px) {
         .bs-docs-sidebar {
             padding-left: 20px;
         }
     }
-
     .bs-docs-sidebar > .nav {
         overflow-y: auto;
         max-height: 80vh;
     }
-
     .bs-docs-sidebar .nav > li > a {
         display: block;
         padding: 4px 20px;
@@ -96,7 +83,6 @@
         font-weight: 500;
         color: #999;
     }
-
     .bs-docs-sidebar .nav > li > a:hover, .bs-docs-sidebar .nav > li > a:focus {
         padding-left: 19px;
         color: #A1283B;
@@ -104,7 +90,6 @@
         background-color: transparent;
         border-left: 1px solid #A1283B;
     }
-
     .bs-docs-sidebar .nav > .active > a, .bs-docs-sidebar .nav > .active:hover > a, .bs-docs-sidebar .nav > .active:focus > a {
         padding-left: 18px;
         font-weight: bold;
@@ -112,12 +97,10 @@
         background-color: transparent;
         border-left: 2px solid #A1283B;
     }
-
     .bs-docs-sidebar .nav .nav {
         display: none;
         padding-bottom: 10px;
     }
-
     .bs-docs-sidebar .nav .nav > li > a {
         padding-top: 1px;
         padding-bottom: 1px;
@@ -125,20 +108,16 @@
         font-size: 12px;
         font-weight: normal;
     }
-
     .bs-docs-sidebar .nav .nav > li > a:hover, .bs-docs-sidebar .nav .nav > li > a:focus {
         padding-left: 29px;
     }
-
     .bs-docs-sidebar .nav .nav > .active > a, .bs-docs-sidebar .nav .nav > .active:hover > a, .bs-docs-sidebar .nav .nav > .active:focus > a {
         padding-left: 28px;
         font-weight: 500;
     }
-
     .bs-docs-sidebar .nav .nav .nav {
         padding-bottom: 10px;
     }
-
     .bs-docs-sidebar .nav .nav .nav > li > a {
         padding-top: 1px;
         padding-bottom: 1px;
@@ -146,45 +125,38 @@
         font-size: 12px;
         font-weight: normal;
     }
-
     .bs-docs-sidebar .nav .nav .nav > li > a:hover, .bs-docs-sidebar .nav .nav .nav > li > a:focus {
         padding-left: 39px;
     }
-
     .bs-docs-sidebar .nav .nav .nav > .active > a, .bs-docs-sidebar .nav .nav .nav > .active:hover > a, .bs-docs-sidebar .nav .nav .nav > .active:focus > a {
         padding-left: 38px;
         font-weight: 500;
     }
-
     @media (min-width: 992px) {
         .bs-docs-sidebar .nav > .active > ul {
             display: block;
         }
-
         .bs-docs-sidebar.affix, .bs-docs-sidebar.affix-bottom {
             width: 213px;
         }
-
         .bs-docs-sidebar.affix {
             position: fixed;
             top: 20px;
         }
-
         .bs-docs-sidebar.affix-bottom {
             position: absolute;
         }
-
         .bs-docs-sidebar.affix .bs-docs-sidenav, .bs-docs-sidebar.affix-bottom .bs-docs-sidenav {
             margin-top: 0;
             margin-bottom: 0
         }
     }
-
     @media (min-width: 1200px) {
         .bs-docs-sidebar.affix-bottom, .bs-docs-sidebar.affix {
             width: 263px;
         }
-    } </style>
+    }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -312,7 +284,7 @@
 <footer class="postamble">
     <script id="copyright" type="text/x-jsrender">
         <div>
-             <p class="contact">Contact: {{:contact}}</p>
+             <p class="team">Team: {{:team}}</p>
              <p class="version">Version: {{:version}}</p>
              <p class="copyright">Copyright: {{:copyright}}</p>
         </div>
@@ -321,7 +293,8 @@
 
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script type="text/javascript"> $(function () {
+<script type="text/javascript">
+$(function () {
     'use strict';
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
     $('.bs-docs-sidebar').affix();
@@ -330,7 +303,8 @@
 
 <script src="//cdn.bootcss.com/jsrender/1.0.0-rc.70/jsrender.min.js"></script>
 <script type="text/javascript">
-var projectDomain = "";
+/* var projectDomain = "//api.example.net"; */
+var projectDomain = ""; // 如果自定义使用上面的
 $.get(projectDomain + "/api/info", function (module) {
     if (module === null || module === "") {
         $(".col-md-9").html("<span style='color:red;'>无接口信息</span>");
