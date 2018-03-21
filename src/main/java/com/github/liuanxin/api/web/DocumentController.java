@@ -96,7 +96,7 @@ public class DocumentController {
                     if (Tools.isBlank(ignore) || !ignore.value()) {
                         Set<String> urlArray = requestMappingInfo.getPatternsCondition().getPatterns();
                         Set<RequestMethod> methodArray = requestMappingInfo.getMethodsCondition().getMethods();
-                        if (!ignore(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
+                        if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
                             DocumentUrl url = new DocumentUrl();
                             // url
                             url.setUrl(Tools.toStr(urlArray));
@@ -105,17 +105,7 @@ public class DocumentController {
                             // param
                             url.setParamList(ParamHandler.handlerParam(handlerMethod));
                             // response
-                            ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
-                            if (Tools.isNotBlank(responses)) {
-                                ApiResponse[] responseArr = responses.value();
-                                if (responseArr.length > 0) {
-                                    List<DocumentResponse> responseList = new ArrayList<>();
-                                    for (ApiResponse response : responseArr) {
-                                        responseList.add(new DocumentResponse(response.code(), response.msg()));
-                                    }
-                                    url.setResponseList(responseList);
-                                }
-                            }
+                            url.setResponseList(handlerResponse(handlerMethod, copyright));
 
                             String method = handlerMethod.toString();
                             // return param
@@ -139,7 +129,7 @@ public class DocumentController {
                             // add DocumentUrl to DocumentModule
                             ApiGroup apiGroup = getAnnotation(handlerMethod, ApiGroup.class);
                             if (Tools.isBlank(apiGroup)) {
-                                // 如果在类上没有标注解, 则使用 类名, 如果类名中包含有 Controller 则去掉
+                                // if no annotation on class, use ClassName(if className include Controller then remove)
                                 String className = handlerMethod.getBeanType().getSimpleName();
                                 String info = className;
                                 if (className.contains(CLASS_SUFFIX)) {
@@ -163,7 +153,7 @@ public class DocumentController {
             List<DocumentModule> moduleList = new ArrayList<DocumentModule>();
             if (Tools.isNotEmpty(modules)) {
                 for (DocumentModule module : modules) {
-                    // 模块里面的地址列表从小到大排序
+                    // url sort
                     Collections.sort(module.getUrlList(), new Comparator<DocumentUrl>() {
                         @Override
                         public int compare(DocumentUrl o1, DocumentUrl o2) {
@@ -172,7 +162,7 @@ public class DocumentController {
                     });
                     moduleList.add(module);
                 }
-                // 模块从小到大排序
+                // module sort
                 Collections.sort(moduleList, new Comparator<DocumentModule>() {
                     @Override
                     public int compare(DocumentModule o1, DocumentModule o2) {
@@ -186,6 +176,24 @@ public class DocumentController {
         }
     }
 
+    private static List<DocumentResponse> handlerResponse(HandlerMethod handlerMethod, DocumentCopyright copyright) {
+        List<DocumentResponse> responseList = new ArrayList<>();
+        ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
+        if (Tools.isNotBlank(responses)) {
+            ApiResponse[] responseArr = responses.value();
+            if (responseArr.length > 0) {
+                for (ApiResponse response : responseArr) {
+                    responseList.add(new DocumentResponse(response.code(), response.msg()));
+                }
+            }
+        }
+        if (Tools.isEmpty(responseList)) {
+            // if method no response, use the global
+            responseList = copyright.getGlobalResponse();
+        }
+        return responseList;
+    }
+
     private static String getExampleUrl(String param) {
         String domain = Tools.getDomain();
         if (domain.endsWith("/")) {
@@ -195,7 +203,6 @@ public class DocumentController {
         return exampleUrl.replaceFirst("\\{.*?\\}", param);
     }
 
-    /** 添加模块组 */
     private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {
         DocumentModule module = moduleMap.get(group);
         if (Tools.isBlank(module)) {
@@ -208,9 +215,7 @@ public class DocumentController {
         moduleMap.put(group, module);
     }
 
-    /** 某些 url 需要忽略 */
-    private static boolean ignore(Set<String> urlSet, Set<RequestMethod> methodSet,
-                                  Set<String> ignoreUrlSet) {
+    private static boolean ignoreUrl(Set<String> urlSet, Set<RequestMethod> methodSet, Set<String> ignoreUrlSet) {
         if (Tools.isEmpty(ignoreUrlSet)) {
             ignoreUrlSet = Tools.sets();
         }
@@ -225,7 +230,6 @@ public class DocumentController {
                 ignoreUrl = "/" + ignoreUrl;
             }
             if (ignoreUrl.contains("*")) {
-                // 通配符
                 ignoreUrl = ignoreUrl.replace("*", "(.*)?");
                 String[] urlAndMethod = ignoreUrl.split("\\|");
                 if (urlAndMethod.length == 2) {
@@ -246,7 +250,6 @@ public class DocumentController {
                     }
                 }
             } else {
-                // 全匹配
                 String[] urlAndMethod = ignoreUrl.split("\\|");
                 if (urlAndMethod.length == 2) {
                     String tmpUrl = urlAndMethod[0];

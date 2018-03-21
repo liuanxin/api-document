@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -27,6 +29,10 @@ public class DocumentCopyright {
     @JsonIgnore
     private boolean online = false;
 
+    /** if method set, ignore global */
+    @JsonIgnore
+    private List<DocumentResponse> globalResponse;
+
     /** return whether the sample contains a comment */
     @JsonIgnore
     private boolean commentInReturnExample = true;
@@ -45,5 +51,9 @@ public class DocumentCopyright {
         this.team = team;
         this.version = version;
         this.copyright = copyright;
+        setGlobalResponse(Arrays.asList(
+                new DocumentResponse(400, "请求参数有误"),
+                new DocumentResponse(500, "请求异常")
+        ));
     }
 }
