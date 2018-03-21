@@ -207,26 +207,6 @@
                                     </table>
                                 {{/if}}
 
-                                {{if responseList && responseList.length}}
-                                    <p>响应编码如下</p>
-                                    <table class="table table-striped table-bordered table-hover table-condensed">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col" class="text-left">响应码</th>
-                                                <th scope="col" class="text-left">说明</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {{for responseList}}
-                                                <tr>
-                                                    <td class="text-left">{{:code}}</td>
-                                                    <td class="text-left">{{:msg}}</td>
-                                                </tr>
-                                            {{/for}}
-                                        </tbody>
-                                    </table>
-                                {{/if}}
-
                                 <p>返回示例及说明如下</p>
                                 <div class="org-src-container">
                                     <pre class="src src-json">{{:commentJson}}</pre>
@@ -247,6 +227,26 @@
                                                     <td class="text-left">{{:name}}</td>
                                                     <td class="text-left">{{:type}}</td>
                                                     <td class="text-left">{{:desc}}</td>
+                                                </tr>
+                                            {{/for}}
+                                        </tbody>
+                                    </table>
+                                {{/if}}
+
+                                {{if responseList && responseList.length}}
+                                    <p>返回码说明如下</p>
+                                    <table class="table table-striped table-bordered table-hover table-condensed">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="text-left">响应码</th>
+                                                <th scope="col" class="text-left">说明</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {{for responseList}}
+                                                <tr>
+                                                    <td class="text-left">{{:code}}</td>
+                                                    <td class="text-left">{{:msg}}</td>
                                                 </tr>
                                             {{/for}}
                                         </tbody>
