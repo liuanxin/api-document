@@ -27,7 +27,7 @@ public class ApiInfoConfig {
         return new DocumentCopyright("标题", "团队", "版本号", "版权");
                     // 如果设置成 true 则接口会返回空, 默认是 false
                     // .setOnline(true)
-                    // 全局的响应说明, 如果使用 @ApiResponses 注解在方法上时, 以方法上的为准
+                    // 全局的响应说明, 如果在方法上使用 @ApiResponses 注解则以方法上的为准
                     // setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "请求参数有误"),
                     //         new DocumentResponse(500, "请求异常")
@@ -38,8 +38,9 @@ public class ApiInfoConfig {
 }
 #+END_SRC
 
-而后需要在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
-如果返回结果是 List 或 Map 会以 ArrayList 及 LinkedHashMap 进行处理. 不收集返回结果是 ResponseEntity 这一类 没有无参构造 的返回)
+而后在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
+如果方法上的返回结果是 List 或 Map 会以 ArrayList 及 LinkedHashMap 进行处理.
+因此也无法处理 ResponseEntity 这一类 没有无参构造 的返回示例)
 
 相关注解如下
 #+BEGIN_EXAMPLE
