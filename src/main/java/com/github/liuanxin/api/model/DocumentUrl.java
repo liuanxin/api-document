@@ -1,6 +1,7 @@
 package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.liuanxin.api.annotation.ParamType;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
@@ -28,11 +29,8 @@ public class DocumentUrl {
     @JsonIgnore
     private int index = Integer.MAX_VALUE;
 
-    /** 接口标题 */
     private String title;
-    /** 接口详细说明 */
     private String desc;
-    /** 开发者及联系方式 */
     private String develop;
 
     private String exampleUrl;
@@ -41,7 +39,6 @@ public class DocumentUrl {
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
 
-    /** 返回示例中是否包含注释 */
     @JsonIgnore
     private boolean commentInReturnExample;
     @JsonIgnore
@@ -111,5 +108,29 @@ public class DocumentUrl {
             return Collections.emptyList();
         }
         return returnList;
+    }
+
+    public boolean getHasExample() {
+        if (Tools.isEmpty(paramList)) {
+            return false;
+        }
+        for (DocumentParam param : paramList) {
+            if (Tools.isNotBlank(param) && Tools.isNotBlank(param.getExample())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean getHasHeader() {
+        if (Tools.isEmpty(paramList)) {
+            return false;
+        }
+        for (DocumentParam param : paramList) {
+            if (Tools.isNotBlank(param) && ParamType.hasHeader(param.getParamType())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
