@@ -120,9 +120,10 @@ public class DocumentController {
                                 url.setDesc(apiMethod.desc());
                                 url.setDevelop(apiMethod.develop());
                                 url.setIndex(apiMethod.index());
+                                url.setCommentInReturnExample(apiMethod.commentInReturnExample());
+                            } else {
+                                url.setCommentInReturnExample(copyright.isCommentInReturnExample());
                             }
-                            // 注释是否写在返回示例里面(从全局获取即可, 没有必要在 ApiMethod 上加一个更颗粒的配置来处理)
-                            url.setCommentInReturnExample(copyright.isCommentInReturnExample());
                             url.setExampleUrl(getExampleUrl(url.getId()));
 
                             urlMap.put(url.getId(), url);

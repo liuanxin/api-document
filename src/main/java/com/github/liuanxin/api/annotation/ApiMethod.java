@@ -15,4 +15,6 @@ public @interface ApiMethod {
 
     /** more forward when smaller */
     int index() default Integer.MAX_VALUE;
+
+    boolean commentInReturnExample() default true;
 }
