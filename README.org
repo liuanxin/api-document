@@ -92,7 +92,7 @@ public class ApiInfoConfig {
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
 运行项目, 浏览 http://ip:port/static/api-info.html 查看文档(spring boot 则不需要 /static 二级目录).
-见 [[https://github.com/liuanxin/api-document-example][api-document-example]]
+见 [[https://github.com/liuanxin/api-document-example][example]]
 
 -----
 
