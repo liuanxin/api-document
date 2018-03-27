@@ -21,7 +21,6 @@ public class Tools {
     private static final String SPACE = " ";
     private static final String SPLIT = ",";
 
-    /** 整数类型 */
     @SuppressWarnings("unchecked")
     private static final List<Class<?>> INT_TYPE = lists(
             byte.class, Byte.class,
@@ -30,7 +29,6 @@ public class Tools {
             int.class, Integer.class,
             long.class, Long.class
     );
-    /** 浮点数类型 */
     @SuppressWarnings("unchecked")
     private static final List<Class<?>> DOUBLE_TYPE = lists(
             float.class, Float.class,
@@ -38,7 +36,6 @@ public class Tools {
             BigDecimal.class
     );
 
-    /** 整数的数组类型 */
     @SuppressWarnings("unchecked")
     private static final List<Class<?>> INT_ARRAY_TYPE = lists(
             byte[].class, Byte[].class,
@@ -47,7 +44,6 @@ public class Tools {
             int[].class, Integer[].class,
             long[].class, Long[].class
     );
-    /** 浮点数的数组类型 */
     @SuppressWarnings("unchecked")
     private static final List<Class<?>> DOUBLE_ARRAY_TYPE = lists(
             float[].class, Float[].class,
@@ -55,7 +51,6 @@ public class Tools {
             BigDecimal[].class
     );
 
-    /** 基础类型 */
     @SuppressWarnings("unchecked")
     private static final List<Class<?>> BASIC_TYPE = lists(
             String.class, String[].class,
@@ -149,20 +144,14 @@ public class Tools {
 
     // ========== list map ==========
     @SuppressWarnings("unchecked")
-    public static List lists(Object... values) {
+    static List lists(Object... values) {
         return new ArrayList(Arrays.asList(values));
     }
     public static <T> Set<T> sets() {
         return new HashSet<>();
     }
-    public static <T> List<T> lists(Collection<T> values) {
-        return isEmpty(values) ? new ArrayList<T>() : new ArrayList<>(values);
-    }
     public static <K, V> HashMap<K, V> newLinkedHashMap() {
         return new LinkedHashMap<>();
-    }
-    public static <K, V> HashMap<K, V> newHashMap() {
-        return new HashMap<>();
     }
 
     // ========== method ==========
@@ -173,7 +162,7 @@ public class Tools {
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 // ignore
             }
-            // getMethod 会将从父类继承过来的 public 方法也查询出来
+
             try {
                 return obj.getClass().getMethod(method).invoke(obj, param);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
@@ -222,7 +211,7 @@ public class Tools {
                 return true;
             }
         }
-        // 枚举也当成是基础类型
+        // include enum
         return clazz.isEnum();
     }
     static boolean notBasicType(Class<?> clazz) {
@@ -254,7 +243,6 @@ public class Tools {
             }
         }
 
-        // 逗号分隔(comma-separated)
         for (Class<?> typeClass : INT_ARRAY_TYPE) {
             if (type == typeClass) {
                 return int[].class.getSimpleName();

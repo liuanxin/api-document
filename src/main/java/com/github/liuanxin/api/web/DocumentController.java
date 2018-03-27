@@ -88,14 +88,13 @@ public class DocumentController {
             Map<String, DocumentUrl> urlMap = Tools.newLinkedHashMap();
             Map<RequestMappingInfo, HandlerMethod> handlerMethods = mapping.getHandlerMethods();
             for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
-                RequestMappingInfo requestMappingInfo = entry.getKey();
+                RequestMappingInfo requestMapping = entry.getKey();
                 HandlerMethod handlerMethod = entry.getValue();
-                if (Tools.isNotBlank(requestMappingInfo) && Tools.isNotBlank(handlerMethod) && wasJsonApi(handlerMethod)) {
-                    // 没忽略的才统计
+                if (Tools.isNotBlank(requestMapping) && Tools.isNotBlank(handlerMethod) && wasJsonApi(handlerMethod)) {
                     ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
                     if (Tools.isBlank(ignore) || !ignore.value()) {
-                        Set<String> urlArray = requestMappingInfo.getPatternsCondition().getPatterns();
-                        Set<RequestMethod> methodArray = requestMappingInfo.getMethodsCondition().getMethods();
+                        Set<String> urlArray = requestMapping.getPatternsCondition().getPatterns();
+                        Set<RequestMethod> methodArray = requestMapping.getMethodsCondition().getMethods();
                         if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
                             DocumentUrl url = new DocumentUrl();
                             // url

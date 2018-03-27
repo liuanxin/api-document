@@ -19,7 +19,6 @@ public final class ReturnHandler {
     @SuppressWarnings("unchecked")
     private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T", "E", "A", "K", "V");
 
-    /** 接口上的返回结果 */
     @SuppressWarnings("unchecked")
     public static List<DocumentReturn> handlerReturn(String method, boolean recordLevel) {
         String type = method.substring(method.indexOf(SPACE)).trim();
@@ -56,7 +55,6 @@ public final class ReturnHandler {
                     handlerReturn(space, parent, recordLevel, classType, returnList);
                 }
             } else if (Map.class.isAssignableFrom(outClass)) {
-                // map 尽量用实体类代替, 这样可以在实体类的字段上标注注解
                 if (type.contains("<") && type.contains(">")) {
                     String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                     String[] keyValue = keyAndValue.split(",");
@@ -66,28 +64,27 @@ public final class ReturnHandler {
                         handlerReturn(space, parent, recordLevel, keyValue[1].trim(), returnList);
                     } else {
                         if (LOGGER.isWarnEnabled()) {
-                            LOGGER.warn("({})方法中 Map 的泛型有问题({})", type, keyAndValue);
+                            LOGGER.warn("method ({}) map returnType({}) has problem", type, keyAndValue);
                         }
                     }
                 }
             } else {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("不明确的接口类: {}", type);
+                    LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
                 }
             }
         } else {
-            // 非基础类型才需要进去获取字段
             if (Tools.notBasicType(outClass)) {
                 Map<String, String> tmpFieldMap = Tools.newLinkedHashMap();
                 for (Field field : outClass.getDeclaredFields()) {
                     int mod = field.getModifiers();
-                    // 字段不是 static, 不是 final, 也没有标 ignore 注解
+                    // field not static, not final, and not annotation ignore
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                             && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
                         String fieldName = field.getName();
                         returnList.add(returnInfo(field, space + fieldName + parent));
 
-                        // 如果返回字段不是基础数据类型则表示是一个类来接收的, 进去里面做一层
+                        // if not basic type, recursive handle
                         String genericType = field.getGenericType().toString();
                         if (Tools.notBasicType(field.getType())) {
                             String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
@@ -96,7 +93,7 @@ public final class ReturnHandler {
                         tmpFieldMap.put(genericType, fieldName);
                     }
                 }
-                // 处理泛型里面的内容
+                // handler generic
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                     String fieldName = handlerReturnFieldName(tmpFieldMap, innerType, recordLevel);
@@ -107,7 +104,7 @@ public final class ReturnHandler {
         }
     }
 
-    /** 收集返回结果的信息 */
+    /** collect return info */
     private static DocumentReturn returnInfo(Field field, String name) {
         Class<?> fieldType = field.getType();
         DocumentReturn documentReturn = new DocumentReturn();
@@ -116,14 +113,13 @@ public final class ReturnHandler {
         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
         if (Tools.isNotBlank(apiReturn)) {
             documentReturn.setDesc(apiReturn.desc());
-            // 有在注解上标返回类型就使用
             String returnType = apiReturn.type();
             if (Tools.isNotBlank(returnType)) {
                 documentReturn.setType(returnType);
             }
         }
         if (fieldType.isEnum()) {
-            // 如果是枚举, 则将自解释拼在说明中
+            // enum append (code:value)
             String desc = documentReturn.getDesc();
             String enumInfo = Tools.enumInfo(fieldType);
             documentReturn.setDesc(Tools.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
@@ -158,7 +154,6 @@ public final class ReturnHandler {
 
     // ========== json ==========
 
-    /** 处理结果 json */
     public static String handlerReturnJson(String method) {
         String type = method.substring(method.indexOf(SPACE)).trim();
         type = type.substring(0, type.indexOf(SPACE)).trim();
@@ -167,7 +162,7 @@ public final class ReturnHandler {
             obj = handlerReturnJsonObj(type);
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(String.format("方法(%s)的返回结果无法实例化, 请忽略相关的 url", method), e);
+                LOGGER.error(String.format("method(%s) return Type can't Constructor, please ignore the related url", method), e);
             }
         }
         return Tools.isNotBlank(obj) ? Tools.toJson(obj) : Tools.EMPTY;
@@ -198,7 +193,7 @@ public final class ReturnHandler {
                 return handlerReturnJsonMap(type);
             } else {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("不明确的接口类: {}", type);
+                    LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
                 }
             }
         } else {
@@ -237,7 +232,7 @@ public final class ReturnHandler {
                 setData(outClass, Map.class, obj, handlerReturnJsonMap(type));
             } else {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("不明确的接口类: {}", type);
+                    LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
                 }
             }
         } else {
@@ -255,9 +250,8 @@ public final class ReturnHandler {
     private static void setData(Class<?> clazz, Class<?> fieldClazz, Object obj, Object value) {
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
-            // 字段不是 static, 也不是 final
             if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)) {
-                // 泛型在运行时已经被擦除了, 通过下面的方式获取的 getType() 总是 java.lang.Object
+                // Generics have been erased at runtime, Following way getType() is always java.lang.Object
                 // if (field.getType() == fieldClazz) { setField(field, obj, value); }
                 Type type = field.getGenericType();
                 if (GENERIC_CLASS_NAME.contains(type.toString())) {
@@ -301,7 +295,7 @@ public final class ReturnHandler {
     private static List handlerReturnJsonList(String type) {
         if (type.contains("<") && type.contains(">")) {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-            // 如果是 list, 加一条记录进去
+            // add one record in list
             List list = new ArrayList();
             Object object = handlerReturnJsonObj(obj);
             if (Tools.isNotBlank(object)) {
@@ -315,12 +309,12 @@ public final class ReturnHandler {
     @SuppressWarnings("unchecked")
     private static Map handlerReturnJsonMap(String type) {
         if (type.contains("<") && type.contains(">")) {
-            // 如果是 map, 加一条记录进去
+            // add one key:value in map
             String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
             String[] keyValue = keyAndValue.split(",");
             if (keyValue.length == 2) {
                 Map map = Tools.newLinkedHashMap();
-                // map 的 key 通常不会再是 List 或 Map 了
+                // key can't be List or Map
                 Object key = handlerReturnWithObj(keyValue[0].trim());
                 Object value = handlerReturnJsonObj(keyValue[1].trim());
                 if (Tools.isNotBlank(value)) {
@@ -329,7 +323,7 @@ public final class ReturnHandler {
                 return map;
             } else {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("({})方法中 Map 的泛型有问题({})", type, keyAndValue);
+                    LOGGER.warn("method ({}) map returnType({}) has problem", type, keyAndValue);
                 }
             }
         }
@@ -366,16 +360,15 @@ public final class ReturnHandler {
             obj = clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException
                 | InvocationTargetException | NoSuchMethodException e) {
-            // 当返回结果无法实例化时此处将会异常
+            // return type must have constructor with default
             throw new RuntimeException(e);
         }
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
-            // 字段不是 static, 不是 final, 也没有标 ignore 注解
             if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                     && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
                 Class<?> type = field.getType();
-                // 只在字符串的时候把注解上的值拿来用
+                // if type is String, use the annotation comment with the value
                 if (type == String.class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                     String value = Tools.EMPTY;
@@ -417,7 +410,7 @@ public final class ReturnHandler {
             field.set(obj, value);
         } catch (Exception e) {
             if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn(String.format("无法给 %s 对象的字段 %s 赋值 %s", obj, field, value), e);
+                LOGGER.warn(String.format("Cannot assignment field %s to %s with %s", field, value, obj), e);
             }
         }
     }

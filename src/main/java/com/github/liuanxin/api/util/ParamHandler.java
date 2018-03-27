@@ -14,22 +14,20 @@ import java.util.List;
 
 public final class ParamHandler {
 
-    /** 如果使用 8 且在编译时打开了 javac -parameters 开关, 使用 parameter.getMethod().getParameters()[i].getName() 也可以获取 */
-    private static final LocalVariableTableParameterNameDiscoverer VARIABLE = new LocalVariableTableParameterNameDiscoverer();
+    private static final LocalVariableTableParameterNameDiscoverer VARIABLE
+            = new LocalVariableTableParameterNameDiscoverer();
 
-    /** 处理参数 */
-    @SuppressWarnings("unchecked")
     public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
         List<DocumentParam> params = new ArrayList<>();
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];
-            // 如果参数不是基础数据类型则表示是一个类来接收的, 进去里面做一层
+            // if param not basicType, into a layer of processing
             Class<?> parameterType = parameter.getParameterType();
             if (Tools.notBasicType(parameterType)) {
                 for (Field field : parameterType.getDeclaredFields()) {
                     int mod= field.getModifiers();
-                    // 字段不是 static, 不是 final, 也没有标 ignore 注解
+                    // field not static, not final, not annotation ignore
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                             && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
                         String paramName = field.getName();
@@ -38,7 +36,8 @@ public final class ParamHandler {
                 }
             } else {
                 if (Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
-                    // 受 jvm 编译时会擦除变量名的限制, parameter.parameterName 得到的都是 null 值
+                    // The variable name is erased when compiled by jvm, parameter.parameterName() is null
+                    // if use java 8 and open options in javac -parameters, parameter.parameterName() can be get
                     // String paramName = parameter.getParameterName();
                     String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
                     params.add(paramInfo(paramName, parameterType, parameter.getParameterAnnotation(ApiParam.class)));
@@ -48,7 +47,7 @@ public final class ParamHandler {
         return params;
     }
 
-    /** 收集参数信息 */
+    /** collect param info */
     private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam) {
         DocumentParam param = new DocumentParam();
         param.setName(name);
@@ -79,7 +78,7 @@ public final class ParamHandler {
             param.setMust(apiParam.must());
         }
         if (type.isEnum()) {
-            // 如果是枚举, 则将自解释拼在说明中
+            // enum append (code:value)
             String desc = param.getDesc();
             String enumInfo = Tools.enumInfo(type);
             param.setDesc(Tools.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
