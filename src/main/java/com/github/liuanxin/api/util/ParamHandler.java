@@ -5,6 +5,7 @@ import com.github.liuanxin.api.annotation.ApiParamIgnore;
 import com.github.liuanxin.api.model.DocumentParam;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Field;
@@ -31,7 +32,7 @@ public final class ParamHandler {
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                             && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
                         String paramName = field.getName();
-                        params.add(paramInfo(paramName, field.getType(), field.getAnnotation(ApiParam.class)));
+                        params.add(paramInfo(paramName, field.getType(), field.getAnnotation(ApiParam.class), false));
                     }
                 }
             } else {
@@ -40,7 +41,12 @@ public final class ParamHandler {
                     // if use java 8 and open options in javac -parameters, parameter.parameterName() can be get
                     // String paramName = parameter.getParameterName();
                     String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
-                    params.add(paramInfo(paramName, parameterType, parameter.getParameterAnnotation(ApiParam.class)));
+
+                    // if param was required, use it.
+                    RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
+                    boolean must = (requestParam != null && requestParam.required());
+
+                    params.add(paramInfo(paramName, parameterType, parameter.getParameterAnnotation(ApiParam.class), must));
                 }
             }
         }
@@ -48,7 +54,7 @@ public final class ParamHandler {
     }
 
     /** collect param info */
-    private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam) {
+    private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam, boolean must) {
         DocumentParam param = new DocumentParam();
         param.setName(name);
         param.setDataType(Tools.getInputType(type));
@@ -75,7 +81,7 @@ public final class ParamHandler {
                 param.setExample(example);
             }
 
-            param.setMust(apiParam.must());
+            param.setMust(must ? true : apiParam.must());
         }
         if (type.isEnum()) {
             // enum append (code:value)

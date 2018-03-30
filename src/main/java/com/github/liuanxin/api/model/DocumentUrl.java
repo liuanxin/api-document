@@ -29,9 +29,9 @@ public class DocumentUrl {
     @JsonIgnore
     private int index = Integer.MAX_VALUE;
 
-    private String title;
-    private String desc;
-    private String develop;
+    private String title = Tools.EMPTY;
+    private String desc = Tools.EMPTY;
+    private String develop = Tools.EMPTY;
 
     private String exampleUrl;
     private String method;

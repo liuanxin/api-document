@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import com.github.liuanxin.api.util.Tools;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,5 +18,5 @@ public class DocumentReturn {
 
     private String type;
 
-    private String desc;
+    private String desc = Tools.EMPTY;
 }

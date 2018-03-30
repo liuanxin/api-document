@@ -20,7 +20,7 @@ public class DocumentModule {
     private int index = Integer.MAX_VALUE;
 
     private String name;
-    private String info;
+    private String info = Tools.EMPTY;
     private List<DocumentUrl> urlList = new ArrayList<>();
 
     public DocumentModule(String groupName) {

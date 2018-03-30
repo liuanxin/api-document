@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,11 +16,11 @@ public class DocumentParam {
 
     private String dataType;
 
-    private String paramType;
+    private String paramType = Tools.EMPTY;
 
-    private boolean must;
+    private boolean must = false;
 
-    private String desc;
+    private String desc = Tools.EMPTY;
 
-    private String example;
+    private String example = Tools.EMPTY;
 }
