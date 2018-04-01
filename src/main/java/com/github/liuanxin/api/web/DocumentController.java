@@ -135,7 +135,7 @@ public class DocumentController {
                                 if (className.contains(CLASS_SUFFIX)) {
                                     info = className.substring(0, className.indexOf(CLASS_SUFFIX));
                                 }
-                                addGroup(moduleMap, 0, info.toLowerCase() + "-" + className, url);
+                                addGroup(moduleMap, 0, info + "-" + className, url);
                             } else {
                                 int index = apiGroup.index();
                                 for (String group : apiGroup.value()) {
@@ -210,6 +210,9 @@ public class DocumentController {
             if (index > 0) {
                 module.setIndex(index);
             }
+        } else if (index != 0 && module.getIndex() > index) {
+            // if set multi module and different index, use the smaller
+            module.setIndex(index);
         }
         module.addUrl(url);
         moduleMap.put(group, module);
