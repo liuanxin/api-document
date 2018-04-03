@@ -150,6 +150,9 @@ public class Tools {
     public static <T> Set<T> sets() {
         return new HashSet<>();
     }
+    public static <K, V> HashMap<K, V> newHashMap() {
+        return new HashMap<>();
+    }
     public static <K, V> HashMap<K, V> newLinkedHashMap() {
         return new LinkedHashMap<>();
     }

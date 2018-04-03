@@ -75,7 +75,7 @@ public final class ReturnHandler {
             }
         } else {
             if (Tools.notBasicType(outClass)) {
-                Map<String, String> tmpFieldMap = Tools.newLinkedHashMap();
+                Map<String, String> tmpFieldMap = Tools.newHashMap();
                 for (Field field : outClass.getDeclaredFields()) {
                     int mod = field.getModifiers();
                     // field not static, not final, and not annotation ignore
@@ -321,7 +321,7 @@ public final class ReturnHandler {
             String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
             String[] keyValue = keyAndValue.split(",");
             if (keyValue.length == 2) {
-                Map map = Tools.newLinkedHashMap();
+                Map map = Tools.newHashMap();
                 // key can't be List or Map
                 Object key = handlerReturnWithObj(keyValue[0].trim());
                 Object value = handlerReturnJsonObj(keyValue[1].trim());
