@@ -85,12 +85,15 @@ public final class ReturnHandler {
                         returnList.add(returnInfo(field, space + fieldName + parent));
 
                         // if not basic type, recursive handle
-                        String genericType = field.getGenericType().toString();
-                        if (Tools.notBasicType(field.getType())) {
-                            String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
-                            handlerReturn(space + TAB, innerParent, recordLevel, genericType, returnList);
+                        boolean notRecursive = notRecursiveGeneric(outClass, field);
+                        if (notRecursive) {
+                            String genericType = field.getGenericType().toString();
+                            if (Tools.notBasicType(field.getType())) {
+                                String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
+                                handlerReturn(space + TAB, innerParent, recordLevel, genericType, returnList);
+                            }
+                            tmpFieldMap.put(genericType, fieldName);
                         }
-                        tmpFieldMap.put(genericType, fieldName);
                     }
                 }
                 // handler generic
@@ -161,9 +164,7 @@ public final class ReturnHandler {
         try {
             obj = handlerReturnJsonObj(type);
         } catch (Exception e) {
-            if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(String.format("method(%s) return Type can't Constructor, please ignore the related url", method), e);
-            }
+            // ignore
         }
         return Tools.isNotBlank(obj) ? Tools.toJson(obj) : Tools.EMPTY;
     }
@@ -188,7 +189,7 @@ public final class ReturnHandler {
         }
         if (outClass.isInterface()) {
             if (Collection.class.isAssignableFrom(outClass)) {
-                return handlerReturnJsonList(type);
+                return handlerReturnJsonList(type, outClass);
             } else if (Map.class.isAssignableFrom(outClass)) {
                 return handlerReturnJsonMap(type);
             } else {
@@ -227,7 +228,7 @@ public final class ReturnHandler {
         }
         if (innerClass.isInterface()) {
             if (Collection.class.isAssignableFrom(innerClass)) {
-                setData(outClass, Collection.class, obj, handlerReturnJsonList(type));
+                setData(outClass, Collection.class, obj, handlerReturnJsonList(type, innerClass));
             } else if (Map.class.isAssignableFrom(innerClass)) {
                 setData(outClass, Map.class, obj, handlerReturnJsonMap(type));
             } else {
@@ -292,11 +293,18 @@ public final class ReturnHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private static List handlerReturnJsonList(String type) {
+    private static Collection handlerReturnJsonList(String type, Class clazz) {
         if (type.contains("<") && type.contains(">")) {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             // add one record in list
-            List list = new ArrayList();
+            Collection list;
+            if (List.class.isAssignableFrom(clazz)) {
+                list = new ArrayList();
+            } else if (Set.class.isAssignableFrom(clazz)) {
+                list = new HashSet();
+            } else {
+                return Collections.emptyList();
+            }
             Object object = handlerReturnJsonObj(obj);
             if (Tools.isNotBlank(object)) {
                 list.add(object);
@@ -360,6 +368,14 @@ public final class ReturnHandler {
             obj = clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException
                 | InvocationTargetException | NoSuchMethodException e) {
+            if (LOGGER.isWarnEnabled()) {
+                StringBuilder sbd = new StringBuilder();
+                sbd.append("Cannot constructor class(").append(clazz.getName()).append(")");
+                if (clazz.isArray()) {
+                    sbd.append(", It's a Array, Sorry! Cannot instantiate an array! Please use List to replace.");
+                }
+                LOGGER.warn(sbd.toString(), e);
+            }
             // return type must have constructor with default
             throw new RuntimeException(e);
         }
@@ -390,14 +406,18 @@ public final class ReturnHandler {
                 else if (Date.class.isAssignableFrom(type)) {
                     setField(field, obj, TMP_DATE);
                 }
-                else if (Collection.class.isAssignableFrom(type)) {
-                    setField(field, obj, handlerReturnJsonList(field.getGenericType().toString()));
-                }
-                else if (Map.class.isAssignableFrom(type)) {
-                    setField(field, obj, handlerReturnJsonMap(field.getGenericType().toString()));
-                }
                 else {
-                    setField(field, obj, handlerReturnWithObj(field.getGenericType().toString()));
+                    boolean notRecursive = notRecursiveGeneric(clazz, field);
+                    if (notRecursive) {
+                        String genericInfo = field.getGenericType().toString();
+                        if (Collection.class.isAssignableFrom(type)) {
+                            setField(field, obj, handlerReturnJsonList(genericInfo, type));
+                        } else if (Map.class.isAssignableFrom(type)) {
+                            setField(field, obj, handlerReturnJsonMap(genericInfo));
+                        } else {
+                            setField(field, obj, handlerReturnWithObj(genericInfo));
+                        }
+                    }
                 }
             }
         }
@@ -412,6 +432,33 @@ public final class ReturnHandler {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn(String.format("Cannot assignment field %s to %s with %s", field, value, obj), e);
             }
+        }
+    }
+
+    /** if not, return true */
+    private static boolean notRecursiveGeneric(Class clazz, Field field) {
+        try {
+            Field signatureField = field.getClass().getDeclaredField("signature");
+            signatureField.setAccessible(true);
+            Object signature = signatureField.get(field);
+            if (Tools.isBlank(signature)) {
+                return true;
+            }
+
+            String fieldInfo = signature.toString();
+            if (Tools.isBlank(fieldInfo)) {
+                return true;
+            }
+
+            if (fieldInfo.contains("/") && fieldInfo.contains("<") && fieldInfo.contains(">")) {
+                return !fieldInfo.replace("/", ".").contains(clazz.getName() + ";>;");
+            }
+            return true;
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn(String.format("class(%s), field(%s)", clazz, field.getName()), e);
+            }
+            return true;
         }
     }
 }

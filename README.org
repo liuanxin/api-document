@@ -12,7 +12,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.1.2</version>
+    <version>0.1.3</version>
 </dependency>
 #+END_SRC
 
@@ -39,7 +39,7 @@ public class ApiInfoConfig {
 #+END_SRC
 
 而后在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
-如果方法上的返回结果是 List 或 Map 会以 ArrayList 及 LinkedHashMap 进行处理.
+如果方法上的返回结果是 List Set 或 Map 会以 ArrayList HashSet 及 LinkedHashMap 进行处理.
 因此也无法处理 ResponseEntity 这一类 没有无参构造 的返回示例)
 
 相关注解如下
