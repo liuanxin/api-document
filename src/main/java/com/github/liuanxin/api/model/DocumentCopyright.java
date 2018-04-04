@@ -51,4 +51,8 @@ public class DocumentCopyright {
         this.version = version;
         this.copyright = copyright;
     }
+
+    // basic statistics
+    private int groupCount = 0;
+    private int apiCount = 0;
 }

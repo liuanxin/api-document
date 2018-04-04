@@ -51,7 +51,15 @@ public class DocumentController {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return null;
         } else {
-            return documentCopyright;
+            if (Tools.isEmpty(module_list)) {
+                init(mapping, documentCopyright);
+            }
+
+            int apiCount = 0;
+            for (DocumentModule module : module_list) {
+                apiCount += module.getUrlList().size();
+            }
+            return documentCopyright.setGroupCount(module_list.size()).setApiCount(apiCount);
         }
     }
 

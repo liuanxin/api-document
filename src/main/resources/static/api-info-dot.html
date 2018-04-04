@@ -286,9 +286,9 @@
 <footer class="postamble">
     <script id="copyright" type="text/x-dot-template">
         <div>
-            <p class="team">Team: {{= it.team}}</p>
-            <p class="version">Version: {{= it.version}}</p>
-            <p class="copyright">Copyright: {{= it.copyright}}</p>
+            <p class="version">Version:{{? it.version}} {{= it.version}}</p>
+            <p class="copyright">Copyright:{{? it.copyright}} {{= it.copyright}}{{?}}</p>
+            <p class="team">{{? it.team}}Team: {{= it.team}}. {{?}} 共 {{= it.groupCount}} 个组, {{= it.apiCount}} 个接口{{?}}</p>
         </div>
     </script>
 </footer>
