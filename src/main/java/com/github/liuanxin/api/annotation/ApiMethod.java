@@ -9,9 +9,9 @@ public @interface ApiMethod {
 
     String title();
 
-    String desc() default "";
-
     String develop();
+
+    String desc() default "";
 
     /** more forward when smaller */
     int index() default Integer.MAX_VALUE;

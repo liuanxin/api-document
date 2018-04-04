@@ -11,7 +11,7 @@
 
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.1.3</version>
+    <version>0.1.4</version>
     <description>Collect api document, support to spring mvc</description>
 
     <developers>
