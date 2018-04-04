@@ -32,7 +32,6 @@ public class DocumentController {
     private static final String INFO_URL = "/info";
     private static final String EXAMPLE_URL = "/example/{id}.json";
 
-    private static final Set<String> IGNORE_URL_SET = Collections.singleton("/error");
     private static final String CLASS_SUFFIX = "Controller";
 
     private static List<DocumentModule> module_list = null;
@@ -230,7 +229,6 @@ public class DocumentController {
         if (Tools.isEmpty(ignoreUrlSet)) {
             ignoreUrlSet = Tools.sets();
         }
-        ignoreUrlSet.addAll(IGNORE_URL_SET);
 
         List<String> methodList = new ArrayList<>();
         for (RequestMethod method : methodSet) {
