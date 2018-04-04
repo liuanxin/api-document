@@ -31,8 +31,8 @@ public final class ParamHandler {
                     // field not static, not final, not annotation ignore
                     if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                             && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
-                        String paramName = field.getName();
-                        params.add(paramInfo(paramName, field.getType(), field.getAnnotation(ApiParam.class), false));
+                        ApiParam apiParam = field.getAnnotation(ApiParam.class);
+                        params.add(paramInfo(field.getName(), field.getType(), apiParam, false));
                     }
                 }
             } else {
@@ -46,7 +46,8 @@ public final class ParamHandler {
                     RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
                     boolean must = (requestParam != null && requestParam.required());
 
-                    params.add(paramInfo(paramName, parameterType, parameter.getParameterAnnotation(ApiParam.class), must));
+                    ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
+                    params.add(paramInfo(paramName, parameterType, apiParam, must));
                 }
             }
         }
@@ -60,7 +61,7 @@ public final class ParamHandler {
         param.setDataType(Tools.getInputType(type));
 
         if (Tools.isNotBlank(apiParam)) {
-            String desc = apiParam.desc();
+            String desc = apiParam.value();
             if (Tools.isNotBlank(desc)) {
                 param.setDesc(desc);
             }
@@ -80,8 +81,8 @@ public final class ParamHandler {
             if (Tools.isNotBlank(example)) {
                 param.setExample(example);
             }
-
-            param.setMust(must ? true : apiParam.must());
+            // if param has @RequestParam and required() is true, use it, else use custom value
+            param.setMust(must || apiParam.must());
         }
         if (type.isEnum()) {
             // enum append (code:value)

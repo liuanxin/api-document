@@ -115,7 +115,7 @@ public final class ReturnHandler {
 
         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
         if (Tools.isNotBlank(apiReturn)) {
-            documentReturn.setDesc(apiReturn.desc());
+            documentReturn.setDesc(apiReturn.value());
             String returnType = apiReturn.type();
             if (Tools.isNotBlank(returnType)) {
                 documentReturn.setType(returnType);
@@ -387,14 +387,14 @@ public final class ReturnHandler {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                     String value = Tools.EMPTY;
                     if (Tools.isNotBlank(apiReturn)) {
-                        value = apiReturn.desc();
+                        value = apiReturn.value();
                     }
                     setField(field, obj, value);
                 } else if (type == String[].class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                     String[] value = new String[] { Tools.EMPTY };
                     if (Tools.isNotBlank(apiReturn)) {
-                        value = new String[] { apiReturn.desc() };
+                        value = new String[] { apiReturn.value() };
                     }
                     setField(field, obj, value);
                 }
