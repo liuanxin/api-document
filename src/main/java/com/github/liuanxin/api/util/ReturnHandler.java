@@ -160,16 +160,11 @@ public final class ReturnHandler {
     public static String handlerReturnJson(String method) {
         String type = method.substring(method.indexOf(SPACE)).trim();
         type = type.substring(0, type.indexOf(SPACE)).trim();
-        Object obj = null;
-        try {
-            obj = handlerReturnJsonObj(type);
-        } catch (Exception e) {
-            // ignore
-        }
+        Object obj = handlerReturnJsonObj(method, type);
         return Tools.isNotBlank(obj) ? Tools.toJson(obj) : Tools.EMPTY;
     }
 
-    private static Object handlerReturnJsonObj(String type) {
+    private static Object handlerReturnJsonObj(String method, String type) {
         String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
         if ("void".equals(className)) {
             return null;
@@ -189,26 +184,26 @@ public final class ReturnHandler {
         }
         if (outClass.isInterface()) {
             if (Collection.class.isAssignableFrom(outClass)) {
-                return handlerReturnJsonList(type, outClass);
+                return handlerReturnJsonList(method, type, outClass);
             } else if (Map.class.isAssignableFrom(outClass)) {
-                return handlerReturnJsonMap(type);
+                return handlerReturnJsonMap(method, type);
             } else {
                 if (LOGGER.isWarnEnabled()) {
                     LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
                 }
             }
         } else {
-            Object obj = handlerReturnWithObjClazz(outClass);
+            Object obj = handlerReturnWithObjClazz(method, outClass);
             if (Tools.isNotBlank(obj) && type.contains("<") && type.contains(">")) {
                 String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                handlerReturnJsonWithObj(outClass, innerType, obj);
+                handlerReturnJsonWithObj(method, outClass, innerType, obj);
             }
             return obj;
         }
         return null;
     }
 
-    private static void handlerReturnJsonWithObj(Class<?> outClass, String type, Object obj) {
+    private static void handlerReturnJsonWithObj(String method, Class<?> outClass, String type, Object obj) {
         String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
         if ("void".equals(className)) {
             return;
@@ -228,21 +223,21 @@ public final class ReturnHandler {
         }
         if (innerClass.isInterface()) {
             if (Collection.class.isAssignableFrom(innerClass)) {
-                setData(outClass, Collection.class, obj, handlerReturnJsonList(type, innerClass));
+                setData(outClass, Collection.class, obj, handlerReturnJsonList(method, type, innerClass));
             } else if (Map.class.isAssignableFrom(innerClass)) {
-                setData(outClass, Map.class, obj, handlerReturnJsonMap(type));
+                setData(outClass, Map.class, obj, handlerReturnJsonMap(method, type));
             } else {
                 if (LOGGER.isWarnEnabled()) {
                     LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
                 }
             }
         } else {
-            Object value = handlerReturnWithObjClazz(innerClass);
+            Object value = handlerReturnWithObjClazz(method, innerClass);
             if (Tools.isNotBlank(value)) {
                 setData(outClass, innerClass, obj, value);
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                    handlerReturnJsonWithObj(innerClass, innerType, value);
+                    handlerReturnJsonWithObj(method, innerClass, innerType, value);
                 }
             }
         }
@@ -293,7 +288,7 @@ public final class ReturnHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private static Collection handlerReturnJsonList(String type, Class clazz) {
+    private static Collection handlerReturnJsonList(String method, String type, Class clazz) {
         if (type.contains("<") && type.contains(">")) {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             // add one record in list
@@ -305,7 +300,7 @@ public final class ReturnHandler {
             } else {
                 return Collections.emptyList();
             }
-            Object object = handlerReturnJsonObj(obj);
+            Object object = handlerReturnJsonObj(method, obj);
             if (Tools.isNotBlank(object)) {
                 list.add(object);
             }
@@ -315,7 +310,7 @@ public final class ReturnHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map handlerReturnJsonMap(String type) {
+    private static Map handlerReturnJsonMap(String method, String type) {
         if (type.contains("<") && type.contains(">")) {
             // add one key:value in map
             String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
@@ -323,9 +318,10 @@ public final class ReturnHandler {
             if (keyValue.length == 2) {
                 Map map = Tools.newHashMap();
                 // key can't be List or Map
-                Object key = handlerReturnWithObj(keyValue[0].trim());
-                Object value = handlerReturnJsonObj(keyValue[1].trim());
-                if (Tools.isNotBlank(value)) {
+                Object key = handlerReturnWithObj(method, keyValue[0].trim());
+                Object value = handlerReturnJsonObj(method, keyValue[1].trim());
+                // key may be empty String: ""
+                if (key != null && Tools.isNotBlank(value)) {
                     map.put(key, value);
                 }
                 return map;
@@ -338,7 +334,7 @@ public final class ReturnHandler {
         return Collections.emptyMap();
     }
 
-    private static Object handlerReturnWithObj(String className) {
+    private static Object handlerReturnWithObj(String method, String className) {
         // 「class java.lang.Object」 etc ...
         if (className.contains(" ")) {
             className = className.substring(className.indexOf(" ")).trim();
@@ -352,15 +348,22 @@ public final class ReturnHandler {
         if (Tools.isBlank(clazz)) {
             return null;
         }
-        return handlerReturnWithObjClazz(clazz);
+        return handlerReturnWithObjClazz(method, clazz);
     }
 
-    private static Object handlerReturnWithObjClazz(Class<?> clazz) {
+    private static Object handlerReturnWithObjClazz(String method, Class<?> clazz) {
         if (Tools.isBlank(clazz) || clazz == Object.class) {
             return null;
         }
         if (Tools.basicType(clazz)) {
             return Tools.getReturnType(clazz);
+        } else if (clazz.isArray()) {
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("In the ({}) method, The entity({}) in the return class is an array, " +
+                        "unable to instantiate, please use List to replace. " +
+                        "here will be ignored return with field", method, clazz.getName());
+            }
+            return null;
         }
 
         Object obj;
@@ -368,16 +371,12 @@ public final class ReturnHandler {
             obj = clazz.getConstructor().newInstance();
         } catch (InstantiationException | IllegalAccessException
                 | InvocationTargetException | NoSuchMethodException e) {
-            if (LOGGER.isWarnEnabled()) {
-                StringBuilder sbd = new StringBuilder();
-                sbd.append("Cannot constructor class(").append(clazz.getName()).append(")");
-                if (clazz.isArray()) {
-                    sbd.append(", It's a Array, Sorry! Cannot instantiate an array! Please use List to replace.");
-                }
-                LOGGER.warn(sbd.toString(), e);
-            }
             // return type must have constructor with default
-            throw new RuntimeException(e);
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn("In the ({}) method, The entity({}) in the return class can't constructor, " +
+                        "please ignore this url. here will be ignored return", method, clazz.getName());
+            }
+            return null;
         }
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
@@ -411,11 +410,11 @@ public final class ReturnHandler {
                     if (notRecursive) {
                         String genericInfo = field.getGenericType().toString();
                         if (Collection.class.isAssignableFrom(type)) {
-                            setField(field, obj, handlerReturnJsonList(genericInfo, type));
+                            setField(field, obj, handlerReturnJsonList(method, genericInfo, type));
                         } else if (Map.class.isAssignableFrom(type)) {
-                            setField(field, obj, handlerReturnJsonMap(genericInfo));
+                            setField(field, obj, handlerReturnJsonMap(method, genericInfo));
                         } else {
-                            setField(field, obj, handlerReturnWithObj(genericInfo));
+                            setField(field, obj, handlerReturnWithObj(method, genericInfo));
                         }
                     }
                 }

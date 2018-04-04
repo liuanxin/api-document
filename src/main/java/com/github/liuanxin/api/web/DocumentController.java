@@ -27,13 +27,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DocumentController {
 
     static final String PARENT_URL_PREFIX = "/api";
+
     private static final String VERSION_URL = "/version";
     private static final String INFO_URL = "/info";
     private static final String EXAMPLE_URL = "/example/{id}.json";
 
-    private static final Set<String> IGNORE_URL_SET = Collections.singleton(
-            "/error"
-    );
+    private static final Set<String> IGNORE_URL_SET = Collections.singleton("/error");
     private static final String CLASS_SUFFIX = "Controller";
 
     private static List<DocumentModule> module_list = null;
