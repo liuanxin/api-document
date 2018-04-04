@@ -53,13 +53,14 @@ public class DocumentController {
         } else {
             if (Tools.isEmpty(module_list)) {
                 init(mapping, documentCopyright);
+                
+                int apiCount = 0;
+                for (DocumentModule module : module_list) {
+                    apiCount += module.getUrlList().size();
+                }
+                documentCopyright.setGroupCount(module_list.size()).setApiCount(apiCount);
             }
-
-            int apiCount = 0;
-            for (DocumentModule module : module_list) {
-                apiCount += module.getUrlList().size();
-            }
-            return documentCopyright.setGroupCount(module_list.size()).setApiCount(apiCount);
+            return documentCopyright;
         }
     }
 
