@@ -359,9 +359,8 @@ public final class ReturnHandler {
             return Tools.getReturnType(clazz);
         } else if (clazz.isArray()) {
             if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("In the ({}) method, The entity({}) in the return class is an array, " +
-                        "unable to instantiate, please use List to replace. " +
-                        "here will be ignored return with field", method, clazz.getName());
+                LOGGER.warn("In the ({}) method, The entity({}) on return class is an array, unable to instantiate, " +
+                        "please use List to replace. here will be ignored return", method, clazz.getName());
             }
             return null;
         }
@@ -373,7 +372,7 @@ public final class ReturnHandler {
                 | InvocationTargetException | NoSuchMethodException e) {
             // return type must have constructor with default
             if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("In the ({}) method, The entity({}) in the return class can't constructor, " +
+                LOGGER.warn("In the ({}) method, The entity({}) on return class can't constructor, " +
                         "please ignore this url. here will be ignored return", method, clazz.getName());
             }
             return null;
