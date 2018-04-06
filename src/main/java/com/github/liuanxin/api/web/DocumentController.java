@@ -18,9 +18,10 @@ import java.lang.annotation.Annotation;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
 
 @ApiIgnore
-@RestController
+@RestController("document-collect-controller")
 @RequestMapping(DocumentController.PARENT_URL_PREFIX)
 public class DocumentController {
 
@@ -29,13 +30,14 @@ public class DocumentController {
     private static final String VERSION_URL = "/version";
     private static final String INFO_URL = "/info";
     private static final String EXAMPLE_URL = "/example/{id}.json";
+    private static final String PRODUCES = "application/json; charset=UTF-8";
 
     private static final String CLASS_SUFFIX = "Controller";
 
     // cache
-    private static volatile String document_str = null;
-    private static volatile DocumentInfo document_info = null;
-    private static volatile Map<String, DocumentUrl> url_map = null;
+    private static String document_str = null;
+    private static DocumentInfo document_info = null;
+    private static Map<String, DocumentUrl> url_map = null;
 
     private static final Lock LOCK = new ReentrantLock();
 
@@ -71,7 +73,7 @@ public class DocumentController {
         }
     }
 
-    @GetMapping(value = INFO_URL, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = INFO_URL, produces = PRODUCES)
     public String url() {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return Tools.EMPTY;
@@ -82,7 +84,7 @@ public class DocumentController {
         return document_str;
     }
 
-    @GetMapping(value = EXAMPLE_URL, produces = "application/json; charset=UTF-8")
+    @GetMapping(value = EXAMPLE_URL, produces = PRODUCES)
     public String urlExample(@PathVariable("id") String id) {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return Tools.EMPTY;
@@ -208,13 +210,15 @@ public class DocumentController {
         return responseList;
     }
 
+    private static final Pattern ID_URL_PATTERN = Pattern.compile("\\{.*?\\}");
     private static String getExampleUrl(String param) {
         String domain = Tools.getDomain();
         if (domain.endsWith("/")) {
             domain = domain.substring(0, domain.length() - 1);
         }
         String exampleUrl = domain + Tools.addPrefix(PARENT_URL_PREFIX) + Tools.addPrefix(EXAMPLE_URL);
-        return exampleUrl.replaceFirst("\\{.*?\\}", param);
+        // return exampleUrl.replaceFirst("\\{.*?\\}", param);
+        return ID_URL_PATTERN.matcher(exampleUrl).replaceFirst(param);
     }
 
     private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {
