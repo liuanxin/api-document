@@ -1,16 +1,14 @@
 package com.github.liuanxin.api.web;
 
 import com.github.liuanxin.api.annotation.*;
-import com.github.liuanxin.api.model.DocumentCopyright;
-import com.github.liuanxin.api.model.DocumentModule;
-import com.github.liuanxin.api.model.DocumentResponse;
-import com.github.liuanxin.api.model.DocumentUrl;
+import com.github.liuanxin.api.model.*;
 import com.github.liuanxin.api.util.ParamHandler;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -34,8 +32,11 @@ public class DocumentController {
 
     private static final String CLASS_SUFFIX = "Controller";
 
-    private static List<DocumentModule> module_list = null;
-    private static Map<String, DocumentUrl> url_map = null;
+    // cache
+    private static volatile String document_str = null;
+    private static volatile DocumentInfo document_info = null;
+    private static volatile Map<String, DocumentUrl> url_map = null;
+
     private static final Lock LOCK = new ReentrantLock();
 
     @Autowired
@@ -50,31 +51,38 @@ public class DocumentController {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return null;
         } else {
-            if (Tools.isEmpty(module_list)) {
+            if (Tools.isBlank(document_str)) {
                 init(mapping, documentCopyright);
-                
-                int apiCount = 0;
-                for (DocumentModule module : module_list) {
-                    apiCount += module.getUrlList().size();
+
+                if (Tools.isNotBlank(document_info)) {
+                    List<DocumentModule> moduleList = document_info.getModuleList();
+                    if (Tools.isNotEmpty(moduleList)) {
+                        int apiCount = 0;
+                        for (DocumentModule module : moduleList) {
+                            apiCount += module.getUrlList().size();
+                        }
+                        documentCopyright.setGroupCount(moduleList.size()).setApiCount(apiCount);
+
+                        document_info = null;
+                    }
                 }
-                documentCopyright.setGroupCount(module_list.size()).setApiCount(apiCount);
             }
             return documentCopyright;
         }
     }
 
-    @GetMapping(INFO_URL)
-    public List<DocumentModule> url() {
+    @GetMapping(value = INFO_URL, produces = "application/json; charset=UTF-8")
+    public String url() {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
-            return Collections.emptyList();
+            return Tools.EMPTY;
         }
-        if (Tools.isEmpty(module_list)) {
+        if (Tools.isBlank(document_str)) {
             init(mapping, documentCopyright);
         }
-        return module_list;
+        return document_str;
     }
 
-    @GetMapping(EXAMPLE_URL)
+    @GetMapping(value = EXAMPLE_URL, produces = "application/json; charset=UTF-8")
     public String urlExample(@PathVariable("id") String id) {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return Tools.EMPTY;
@@ -88,7 +96,7 @@ public class DocumentController {
     private static void init(RequestMappingHandlerMapping mapping, DocumentCopyright copyright) {
         LOCK.lock();
         try {
-            if (Tools.isNotEmpty(url_map) && Tools.isNotEmpty(module_list)) {
+            if (Tools.isNotEmpty(url_map) && Tools.isNotBlank(document_str)) {
                 return;
             }
             Map<String, DocumentModule> moduleMap = Tools.newLinkedHashMap();
@@ -156,6 +164,7 @@ public class DocumentController {
                 }
             }
             url_map = urlMap;
+
             Collection<DocumentModule> modules = moduleMap.values();
             List<DocumentModule> moduleList = new ArrayList<DocumentModule>();
             if (Tools.isNotEmpty(modules)) {
@@ -177,7 +186,9 @@ public class DocumentController {
                     }
                 });
             }
-            module_list = moduleList;
+            DocumentInfo documentInfo = new DocumentInfo(copyright.getGlobalResponse(), moduleList);
+            document_str = Tools.toJson(documentInfo);
+            document_info = documentInfo;
         } finally {
             LOCK.unlock();
         }
@@ -193,10 +204,6 @@ public class DocumentController {
                     responseList.add(new DocumentResponse(response.code(), response.msg()));
                 }
             }
-        }
-        if (Tools.isEmpty(responseList)) {
-            // if method no response, use the global
-            responseList = copyright.getGlobalResponse();
         }
         return responseList;
     }

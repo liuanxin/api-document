@@ -1,6 +1,7 @@
 package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ParamType;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
@@ -36,14 +37,15 @@ public class DocumentUrl {
     private String exampleUrl;
     private String method;
     private String url;
+
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
+    private List<DocumentReturn> returnList;
 
     @JsonIgnore
     private boolean commentInReturnExample;
     @JsonIgnore
     private String returnJson;
-    private List<DocumentReturn> returnList;
 
     private static final Pattern SPLIT_PATTERN = Pattern.compile("\\/");
     private static final Pattern START_BIG_PATTERN = Pattern.compile("\\{");

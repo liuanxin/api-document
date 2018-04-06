@@ -1,6 +1,7 @@
 package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

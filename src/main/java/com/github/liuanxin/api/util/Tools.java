@@ -1,7 +1,9 @@
 package com.github.liuanxin.api.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -82,8 +84,11 @@ public class Tools {
 
     // ========== json ==========
     private static final ObjectMapper RENDER = new ObjectMapper();
-    private static final ObjectWriter PRETTY_RENDER = new ObjectMapper().writerWithDefaultPrettyPrinter();
-    static String toJson(Object obj) {
+    static {
+        RENDER.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+    }
+    private static final ObjectWriter PRETTY_RENDER = RENDER.writerWithDefaultPrettyPrinter();
+    public static String toJson(Object obj) {
         try {
             return RENDER.writeValueAsString(obj);
         } catch (Exception e) {

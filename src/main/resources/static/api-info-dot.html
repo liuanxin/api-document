@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <title>接口文档</title>
     <meta charset="utf-8">
@@ -163,21 +163,21 @@
     <div class="row">
         <div class="col-md-9">
             <script id="url-render" type="text/x-dot-template">
-                {{~ it :value:index}}
+                {{~ it.moduleList  :value:index}}
                 <div class="outline-2">
-                    <h2 id="{{= value.name}}"><span class="section-number-2">{{= index + 1}}</span> {{= value.info}}</h2>
+                    <h2 id="{{! value.name}}"><span class="section-number-2">{{! index + 1}}</span> {{! value.info}}</h2>
                     {{~ value.urlList  :url:urlIndex}}
                     <div class="outline-3">
-                        <h3 id="{{= value.name}}-{{= url.id}}">
-                            <span class="section-number-3">{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
+                        <h3 id="{{! value.name}}-{{! url.id}}">
+                            <span class="section-number-3">{{! index + 1}}.{{! urlIndex + 1}}</span> {{! url.title}}
                         </h3>
                         <div class="outline-text-3">
 <pre class="example">
-{{? url.develop && url.develop !== ''}}开发: {{= url.develop}}{{??}}未标明开发者{{?}}<br>
-{{? url.desc}}说明: {{= url.desc}}<br>{{?}}<br>
-<a target="_blank" href="{{= url.exampleUrl}}">返回结果示例地址</a>
+{{? url.develop && url.develop !== ''}}开发: {{! url.develop}}{{??}}未标明开发者{{?}}<br>
+{{? url.desc}}说明: {{! url.desc}}<br>{{?}}<br>
+<a target="_blank" href="{{! url.exampleUrl}}">返回结果示例地址</a>
 </pre>
-                            <p> 接口地址 <code>{{= url.method}} {{= url.url}}</code></p>
+                            <p> 接口地址 <code>{{! url.method}} {{! url.url}}</code></p>
 
                             {{? url.paramList && url.paramList.length}}
                             <p>参数说明如下</p>
@@ -195,12 +195,12 @@
                                 <tbody>
                                 {{~ url.paramList  :param:paramIndex}}
                                 <tr>
-                                    <td class="text-left">{{= param.name}}</td>
-                                    <td class="text-left">{{= param.dataType}}</td>
+                                    <td class="text-left">{{! param.name}}</td>
+                                    <td class="text-left">{{! param.dataType}}</td>
                                     <td class="text-left">{{? param.must}}<b>Yes</b>{{??}}No{{?}}</td>
-                                    <td class="text-left">{{= param.desc}}</td>
-                                    {{? url.hasExample}} <td class="text-left">{{= param.example}}</td> {{?}}
-                                    {{? url.hasHeader}} <td class="text-left">{{= param.paramType}}</td> {{?}}
+                                    <td class="text-left">{{! param.desc}}</td>
+                                    {{? url.hasExample}} <td class="text-left">{{! param.example}}</td> {{?}}
+                                    {{? url.hasHeader}} <td class="text-left">{{! param.paramType}}</td> {{?}}
                                 </tr>
                                 {{~}}
                                 </tbody>
@@ -209,7 +209,7 @@
 
                             <p>返回示例及说明如下</p>
                             <div class="org-src-container">
-                                <pre class="src src-json">{{= url.commentJson}}</pre>
+                                <pre class="src src-json">{{! url.commentJson}}</pre>
                                 {{? url.returnList && url.returnList.length}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
@@ -222,9 +222,9 @@
                                     <tbody>
                                     {{~ url.returnList  :rtn}}
                                     <tr>
-                                        <td class="text-left">{{= rtn.name}}</td>
-                                        <td class="text-left">{{= rtn.type}}</td>
-                                        <td class="text-left">{{= rtn.desc}}</td>
+                                        <td class="text-left">{{! rtn.name}}</td>
+                                        <td class="text-left">{{! rtn.type}}</td>
+                                        <td class="text-left">{{! rtn.desc}}</td>
                                     </tr>
                                     {{~}}
                                     </tbody>
@@ -232,7 +232,7 @@
                                 {{?}}
                             </div>
 
-                            {{? url.responseList && url.responseList.length}}
+                            {{? (it.responseList && it.responseList.length > 0) || (url.responseList && url.responseList.length > 0)}}
                             <p>返回码说明如下</p>
                             <table class="table table-striped table-bordered table-hover table-condensed">
                                 <thead>
@@ -242,15 +242,16 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {{~ url.responseList  :response}}
-                                <tr>
-                                    <td class="text-left">{{= response.code}}</td>
-                                    <td class="text-left">{{= response.msg}}</td>
-                                </tr>
-                                {{~}}
+                                    {{~ (url.responseList || it.responseList)  :response}}
+                                    <tr>
+                                        <td class="text-left">{{! response.code}}</td>
+                                        <td class="text-left">{{! response.msg}}</td>
+                                    </tr>
+                                    {{~}}
                                 </tbody>
                             </table>
                             {{?}}
+
                             <hr/>
                         </div>
                     </div>
@@ -264,13 +265,13 @@
                 <div class="bs-docs-sidebar">
                     <ul class="nav">
                         <script id="url-nav-render" type="text/x-dot-template">
-                            {{~ it :value:index}}
+                            {{~ it.moduleList  :value:index}}
                             <li>
-                                <a href="#{{= value.name}}">{{= index + 1}} {{= value.info}}</a>
+                                <a href="#{{! value.name}}">{{! index + 1}} {{! value.info}}</a>
                                 <ul class="nav">
                                     {{~ value.urlList  :url:urlIndex}}
                                     <li>
-                                        <a href="#{{= value.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title}}</a>
+                                        <a href="#{{! value.name}}-{{! url.id}}">{{! index + 1}}.{{! urlIndex + 1}} {{! url.title}}</a>
                                     </li>
                                     {{~}}
                                 </ul>
@@ -286,10 +287,10 @@
 <footer class="postamble">
     <script id="copyright" type="text/x-dot-template">
         <div>
-            <p class="version">Version:{{? it.version}} {{= it.version}}{{?}}</p>
-            <p class="copyright">Copyright:{{? it.copyright}} {{= it.copyright}}{{?}}</p>
-            <p class="team">Team:{{? it.team}} {{= it.team}}{{?}}</p>
-            <p class="statistics">共 {{= it.groupCount}} 个组, {{= it.apiCount}} 个接口</p>
+            <p class="version">Version: {{! it.version}}</p>
+            <p class="copyright">Copyright: {{! it.copyright}}</p>
+            <p class="team">Team: {{! it.team}}</p>
+            <p class="statistics">共 {{! it.groupCount}} 个模块, {{! it.apiCount}} 个接口</p>
         </div>
     </script>
 </footer>
