@@ -1,7 +1,6 @@
 package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ParamType;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;

@@ -8,7 +8,6 @@ import com.github.liuanxin.api.util.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -64,7 +63,7 @@ public class DocumentController {
                             apiCount += module.getUrlList().size();
                         }
                         documentCopyright.setGroupCount(moduleList.size()).setApiCount(apiCount);
-
+                        // don't need this
                         document_info = null;
                     }
                 }
@@ -121,7 +120,7 @@ public class DocumentController {
                             // param
                             url.setParamList(ParamHandler.handlerParam(handlerMethod));
                             // response
-                            url.setResponseList(handlerResponse(handlerMethod, copyright));
+                            url.setResponseList(handlerResponse(handlerMethod/*, copyright*/));
 
                             String method = handlerMethod.toString();
                             // return param
@@ -168,7 +167,7 @@ public class DocumentController {
             url_map = urlMap;
 
             Collection<DocumentModule> modules = moduleMap.values();
-            List<DocumentModule> moduleList = new ArrayList<DocumentModule>();
+            List<DocumentModule> moduleList = new ArrayList<>();
             if (Tools.isNotEmpty(modules)) {
                 for (DocumentModule module : modules) {
                     // url sort
@@ -196,7 +195,7 @@ public class DocumentController {
         }
     }
 
-    private static List<DocumentResponse> handlerResponse(HandlerMethod handlerMethod, DocumentCopyright copyright) {
+    private static List<DocumentResponse> handlerResponse(HandlerMethod handlerMethod/*, DocumentCopyright copyright*/) {
         List<DocumentResponse> responseList = new ArrayList<>();
         ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
         if (Tools.isNotBlank(responses)) {
@@ -207,6 +206,12 @@ public class DocumentController {
                 }
             }
         }
+        /*
+        if (Tools.isEmpty(responseList)) {
+            // if method no response, use the global
+            responseList = copyright.getGlobalResponse();
+        }
+        */
         return responseList;
     }
 
