@@ -120,7 +120,7 @@ public class DocumentController {
                             // param
                             url.setParamList(ParamHandler.handlerParam(handlerMethod));
                             // response
-                            url.setResponseList(handlerResponse(handlerMethod/*, copyright*/));
+                            url.setResponseList(handlerResponse(handlerMethod));
 
                             String method = handlerMethod.toString();
                             // return param
@@ -195,7 +195,7 @@ public class DocumentController {
         }
     }
 
-    private static List<DocumentResponse> handlerResponse(HandlerMethod handlerMethod/*, DocumentCopyright copyright*/) {
+    private static List<DocumentResponse> handlerResponse(HandlerMethod handlerMethod) {
         List<DocumentResponse> responseList = new ArrayList<>();
         ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
         if (Tools.isNotBlank(responses)) {
@@ -206,12 +206,6 @@ public class DocumentController {
                 }
             }
         }
-        /*
-        if (Tools.isEmpty(responseList)) {
-            // if method no response, use the global
-            responseList = copyright.getGlobalResponse();
-        }
-        */
         return responseList;
     }
 
