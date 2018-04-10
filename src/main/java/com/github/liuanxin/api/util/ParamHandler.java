@@ -5,6 +5,7 @@ import com.github.liuanxin.api.annotation.ApiParamIgnore;
 import com.github.liuanxin.api.model.DocumentParam;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.method.HandlerMethod;
 
@@ -44,7 +45,9 @@ public final class ParamHandler {
 
                     // if param was required, use it.
                     RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
-                    boolean must = (requestParam != null && requestParam.required());
+                    PathVariable pathVariable = parameter.getParameterAnnotation(PathVariable.class);
+                    boolean must = (requestParam != null && requestParam.required())
+                            || (pathVariable != null && pathVariable.required());
 
                     ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
                     params.add(paramInfo(paramName, parameterType, apiParam, must));
