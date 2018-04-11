@@ -39,7 +39,7 @@ public class ApiInfoConfig {
 #+END_SRC
 
 而后在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
-如果方法上的返回结果是 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理.
+如果方法上的返回结果有 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理.
 
 PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无参构造 的类将无法处理(
 可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的处理
