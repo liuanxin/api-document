@@ -66,7 +66,7 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
   name      参数名, 可以不设置, 如果设置了将会无视参数名或字段名
   dataType  数据类型. 可以不设置, 当需要自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用
   paramType 参数类型. 可以不设置, 主要是 Header 或 Query 两种, 默认是 Query
-  must      参数是否必须. 可以不设置, 标有 @RequestParam(required = true) 或 @PathVariable(required = true) 将无视此设置
+  must      参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
 
 @ApiParamIgnore 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
 

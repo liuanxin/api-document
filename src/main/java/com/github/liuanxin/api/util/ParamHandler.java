@@ -5,8 +5,7 @@ import com.github.liuanxin.api.annotation.ApiParamIgnore;
 import com.github.liuanxin.api.model.DocumentParam;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Field;
@@ -42,19 +41,62 @@ public final class ParamHandler {
                     // if use java 8 and open options in javac -parameters, parameter.parameterName() can be get
                     // String paramName = parameter.getParameterName();
                     String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
-
-                    // if param was required, use it.
-                    RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
-                    PathVariable pathVariable = parameter.getParameterAnnotation(PathVariable.class);
-                    boolean must = (requestParam != null && requestParam.required())
-                            || (pathVariable != null && pathVariable.required());
-
                     ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
-                    params.add(paramInfo(paramName, parameterType, apiParam, must));
+                    // if param was required, use it.
+                    params.add(paramInfo(paramName, parameterType, apiParam, paramHasMust(parameter)));
                 }
             }
         }
         return params;
+    }
+
+    private static boolean paramHasMust(MethodParameter parameter) {
+        RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
+        if (requestParam != null && requestParam.required()) {
+            return true;
+        }
+
+        PathVariable pathVariable = parameter.getParameterAnnotation(PathVariable.class);
+        if (pathVariable != null && pathVariable.required()) {
+            return true;
+        }
+
+        RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
+        if (requestBody != null && requestBody.required()) {
+            return true;
+        }
+
+        RequestAttribute requestAttribute = parameter.getParameterAnnotation(RequestAttribute.class);
+        if (requestAttribute != null && requestAttribute.required()) {
+            return true;
+        }
+
+        RequestHeader requestHeader = parameter.getParameterAnnotation(RequestHeader.class);
+        if (requestHeader != null && requestHeader.required()) {
+            return true;
+        }
+
+        RequestPart requestPart = parameter.getParameterAnnotation(RequestPart.class);
+        if (requestPart != null && requestPart.required()) {
+            return true;
+        }
+
+        SessionAttribute sessionAttribute = parameter.getParameterAnnotation(SessionAttribute.class);
+        if (sessionAttribute != null && sessionAttribute.required()) {
+            return true;
+        }
+
+        MatrixVariable matrixVariable = parameter.getParameterAnnotation(MatrixVariable.class);
+        if (matrixVariable != null && matrixVariable.required()) {
+            return true;
+        }
+
+        CookieValue cookieValue = parameter.getParameterAnnotation(CookieValue.class);
+        if (cookieValue != null && cookieValue.required()) {
+            return true;
+        }
+        // else
+        return false;
     }
 
     /** collect param info */
@@ -84,7 +126,7 @@ public final class ParamHandler {
             if (Tools.isNotBlank(example)) {
                 param.setExample(example);
             }
-            // if param no @RequestParam(required = true) or @PathVariable(required = true), use custom value
+            // if param has no @RequestParam(required = true) etc..., use custom value
             param.setMust(must || apiParam.must());
         }
         if (type.isEnum()) {
