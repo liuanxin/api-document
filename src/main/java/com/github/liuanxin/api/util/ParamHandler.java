@@ -84,7 +84,7 @@ public final class ParamHandler {
             if (Tools.isNotBlank(example)) {
                 param.setExample(example);
             }
-            // if param has @RequestParam and required() is true, use it, else use custom value
+            // if param no @RequestParam(required = true) or @PathVariable(required = true), use custom value
             param.setMust(must || apiParam.must());
         }
         if (type.isEnum()) {
