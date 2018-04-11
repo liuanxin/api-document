@@ -43,7 +43,7 @@ public class ApiInfoConfig {
 
 PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无参构造 的类将无法处理(
 可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的处理
-). 另外, 当返回值中有数组时也无法实例, 请使用 List 替换
+). 另外, 当返回值中有 非基础数据类型的数组 时也无法实例, 请使用 List 替换
 
 相关注解如下
 #+BEGIN_EXAMPLE
