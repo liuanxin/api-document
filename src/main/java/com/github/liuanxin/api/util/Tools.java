@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 public class Tools {
@@ -34,7 +35,7 @@ public class Tools {
     private static final List<Class<?>> DOUBLE_TYPE = lists(
             float.class, Float.class,
             double.class, Double.class,
-            BigDecimal.class
+            BigInteger.class, BigDecimal.class
     );
 
     @SuppressWarnings("unchecked")
@@ -49,7 +50,7 @@ public class Tools {
     private static final List<Class<?>> DOUBLE_ARRAY_TYPE = lists(
             float[].class, Float[].class,
             double[].class, Double[].class,
-            BigDecimal[].class
+            BigInteger[].class, BigDecimal[].class
     );
 
     @SuppressWarnings("unchecked")
@@ -88,11 +89,14 @@ public class Tools {
     }
     private static final ObjectWriter PRETTY_RENDER = RENDER.writerWithDefaultPrettyPrinter();
     public static String toJson(Object obj) {
+        if (isBlank(obj)) {
+            return EMPTY;
+        }
         try {
             return RENDER.writeValueAsString(obj);
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("to json exception", e);
+                LOGGER.error(String.format("obj(%s) to json exception", obj.toString()), e);
             }
             return EMPTY;
         }
@@ -105,7 +109,7 @@ public class Tools {
             return PRETTY_RENDER.writeValueAsString(RENDER.readValue(json, Object.class));
         } catch (IOException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("to pretty json exception", e);
+                LOGGER.error(String.format("str(%s) to pretty json exception", json), e);
             }
             return EMPTY;
         }
@@ -154,7 +158,7 @@ public class Tools {
     public static <T> Set<T> sets() {
         return new HashSet<>();
     }
-    public static <K, V> HashMap<K, V> newHashMap() {
+    static <K, V> HashMap<K, V> newHashMap() {
         return new HashMap<>();
     }
     public static <K, V> HashMap<K, V> newLinkedHashMap() {
@@ -229,7 +233,7 @@ public class Tools {
             return EMPTY;
         }
         String paramType = type.getSimpleName();
-        if (Tools.isBlank(paramType)) {
+        if (isBlank(paramType)) {
             return EMPTY;
         }
         if (type == String.class || type == String[].class) {
@@ -315,6 +319,12 @@ public class Tools {
             return new double[] { 0D };
         }
 
+        else if (clazz == BigInteger.class) {
+            return new BigInteger("0");
+        } else if (clazz == BigInteger[].class) {
+            return new BigInteger[] { new BigInteger("0") };
+        }
+
         else if (clazz == BigDecimal.class) {
             return new BigDecimal(0D);
         } else if (clazz == BigDecimal[].class) {
@@ -322,9 +332,9 @@ public class Tools {
         }
 
         else if (clazz == String.class) {
-            return Tools.EMPTY;
+            return EMPTY;
         } else if (clazz == String[].class) {
-            return new String[] { Tools.EMPTY };
+            return new String[] { EMPTY };
         }
 
         else if (clazz.isEnum()) {

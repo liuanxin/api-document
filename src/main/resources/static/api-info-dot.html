@@ -179,7 +179,7 @@
 </pre>
                             <p> 接口地址 <code>{{! url.method}} {{! url.url}}</code></p>
 
-                            {{? url.paramList && url.paramList.length}}
+                            {{? url.paramList && url.paramList.length > 0}}
                             <p>参数说明如下</p>
                             <table class="table table-striped table-bordered table-hover table-condensed">
                                 <thead>
@@ -219,7 +219,7 @@
                             <p>返回示例及说明如下</p>
                             <div class="org-src-container">
                                 <pre class="src src-json">{{! url.commentJson}}</pre>
-                                {{? url.returnList && url.returnList.length}}
+                                {{? url.returnList && url.returnList.length > 0}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
                                     <tr>
@@ -333,8 +333,9 @@
             $("pre[class='src src-json']").each(function () {
                 var html = $(this).html();
                 if (html !== null && html !== "") {
-                    var lineNum = html.split(/\n/).length;
                     html = html.replace(/(.*?)(\/\*.*?\*\/)/g, "$1<span class=\"comment\">$2</span>");
+
+                    var lineNum = html.split(/\n/).length;
                     var lineHtml = '<span class="line-number">';
                     for (var i = 0; i < lineNum; i++) {
                         lineHtml += '<span>' + (i) + '</span>';
