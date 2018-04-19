@@ -216,6 +216,7 @@
                             </table>
                             {{?}}
 
+                            {{? url.commentJson && url.commentJson !== '' }}
                             <p>返回示例及说明如下</p>
                             <div class="org-src-container">
                                 <pre class="src src-json">{{! url.commentJson}}</pre>
@@ -240,6 +241,7 @@
                                 </table>
                                 {{?}}
                             </div>
+                            {{?}}
 
                             {{? (it.responseList && it.responseList.length > 0) || (url.responseList && url.responseList.length > 0)}}
                             <p>返回码说明如下</p>
