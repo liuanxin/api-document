@@ -42,7 +42,7 @@ public class ApiInfoConfig {
 如果方法上的返回结果有 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理.
 
 PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无参构造 的类将无法处理(
-可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的全局处理方式
+可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的全局处理
 ). 另外, 当返回值中有 非基础数据类型的数组 时也无法实例, 请使用 List 替换
 
 相关注解如下
