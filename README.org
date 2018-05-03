@@ -23,9 +23,8 @@
 public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
-        // 线上环境文档对应的接口将不会输出
         return new DocumentCopyright("标题", "团队", "版本号", "版权")
-                    // 如果设置成 true 则接口会返回空, 默认是 false
+                    // 如果设置成 true 则接口会返回空(生产环境时开启), 默认是 false
                     // .setOnline(true)
                     // 全局的响应说明, 如果在方法上使用 @ApiResponses 注解则以方法上的为准
                     // setGlobalResponse(Arrays.asList(
