@@ -24,7 +24,7 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         // 线上环境文档对应的接口将不会输出
-        return new DocumentCopyright("标题", "团队", "版本号", "版权");
+        return new DocumentCopyright("标题", "团队", "版本号", "版权")
                     // 如果设置成 true 则接口会返回空, 默认是 false
                     // .setOnline(true)
                     // 全局的响应说明, 如果在方法上使用 @ApiResponses 注解则以方法上的为准
@@ -33,7 +33,8 @@ public class ApiInfoConfig {
                     //         new DocumentResponse(500, "请求异常")
                     // ))
                     // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
-                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"));
+                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+                    ;
     }
 }
 #+END_SRC
