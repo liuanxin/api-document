@@ -101,6 +101,8 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
 
 最终文档收集如下
 [[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+
+[[https://raw.githubusercontent.com/liuanxin/image/master/api2.png]]
 -----
 
 gl hf...
