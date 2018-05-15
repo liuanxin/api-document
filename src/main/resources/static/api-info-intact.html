@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.min.css">
     <style type="text/css">
         html {
             position: relative;
@@ -58,9 +57,6 @@
         pre .comment {
             color: #998;
             font-style: italic;
-        }
-        .response {
-            display: none;
         }
         figcaption {
             font-size: 16px;
@@ -183,7 +179,43 @@
 </pre>
                             <p> 接口地址 <code>{{! url.method}} {{! url.url}}</code></p>
 
-                            {{? url.commentJson && url.commentJson !== '' }}
+                            {{? url.paramList && url.paramList.length > 0}}
+                            <p>参数说明如下</p>
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="text-left">名称</th>
+                                    <th scope="col" class="text-left">数据类型</th>
+                                    <th scope="col" class="text-left">必须</th>
+                                    <th scope="col" class="text-left">说明</th>
+                                    {{? url.hasExample}} <th scope="col" class="text-left">示例</th> {{?}}
+                                    {{? url.hasHeader}} <th scope="col" class="text-left">参数类型</th> {{?}}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{~ url.paramList  :param:paramIndex}}
+                                <tr>
+                                    {{? param.must}}
+                                    <td class="text-left"><b>{{! param.name}}</b></td>
+                                    <td class="text-left"><b>{{! param.dataType}}</b></td>
+                                    <td class="text-left"><b>Yes</b></td>
+                                    <td class="text-left"><b>{{! param.desc}}</b></td>
+                                    {{? url.hasExample}}<td class="text-left"><b>{{! param.example}}</b></td>{{?}}
+                                    {{? url.hasHeader}}<td class="text-left"><b>{{! param.paramType}}</b></td>{{?}}
+                                    {{??}}
+                                    <td class="text-left">{{! param.name}}</td>
+                                    <td class="text-left">{{! param.dataType}}</td>
+                                    <td class="text-left">No</td>
+                                    <td class="text-left">{{! param.desc}}</td>
+                                    {{? url.hasExample}}<td class="text-left">{{! param.example}}</td>{{?}}
+                                    {{? url.hasHeader}}<td class="text-left">{{! param.paramType}}</td>{{?}}
+                                    {{?}}
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                            {{?}}
+
                             <p>返回示例及说明如下</p>
                             <div class="org-src-container">
                                 <pre class="src src-json">{{! url.commentJson}}</pre>
@@ -208,7 +240,6 @@
                                 </table>
                                 {{?}}
                             </div>
-                            {{?}}
 
                             {{? (it.responseList && it.responseList.length > 0) || (url.responseList && url.responseList.length > 0)}}
                             <p>返回码说明如下</p>
@@ -220,60 +251,16 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    {{~ (url.responseList || it.responseList)  :response}}
-                                    <tr>
-                                        <td class="text-left">{{! response.code}}</td>
-                                        <td class="text-left">{{! response.msg}}</td>
-                                    </tr>
-                                    {{~}}
+                                {{~ (url.responseList || it.responseList)  :response}}
+                                <tr>
+                                    <td class="text-left">{{! response.code}}</td>
+                                    <td class="text-left">{{! response.msg}}</td>
+                                </tr>
+                                {{~}}
                                 </tbody>
                             </table>
                             {{?}}
 
-                            <form method="{{! url.method}}" action="{{! url.url}}">
-                                {{? url.paramList && url.paramList.length > 0}}
-                                <p>参数说明如下</p>
-                                <table class="table table-striped table-bordered table-hover table-condensed">
-                                    <thead>
-                                    <tr>
-                                        <th scope="col" class="text-left">名称</th>
-                                        <th scope="col" class="text-left">示例</th>
-                                        <th scope="col" class="text-left">说明</th>
-                                        <th scope="col" class="text-left">必须</th>
-                                        <th scope="col" class="text-left">数据类型</th>
-                                        {{? url.hasHeader}} <th scope="col" class="text-left">参数类型</th> {{?}}
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {{~ url.paramList  :param:paramIndex}}
-                                    <tr>
-                                        {{? param.must}}
-                                        <td class="text-left"><b>{{! param.name}}</b></td>
-                                        <td class="text-left"><input name="{{! param.name}}" value="{{! param.example}}" class="validate[required] text-input"/></td>
-                                        <td class="text-left"><b>{{! param.desc}}</b></td>
-                                        <td class="text-left"><b>Yes</b></td>
-                                        <td class="text-left"><b>{{! param.dataType}}</b></td>
-                                        {{? url.hasHeader}}<td class="text-left"><b>{{! param.paramType}}</b></td>{{?}}
-                                        {{??}}
-                                        <td class="text-left">{{! param.name}}</td>
-                                        <td class="text-left"><input name="{{! param.name}}" value="{{! param.example}}"/></td>
-                                        <td class="text-left">{{! param.desc}}</td>
-                                        <td class="text-left">No</td>
-                                        <td class="text-left">{{! param.dataType}}</td>
-                                        {{? url.hasHeader}}<td class="text-left">{{! param.paramType}}</td>{{?}}
-                                        {{?}}
-                                    </tr>
-                                    {{~}}
-                                    </tbody>
-                                </table>
-                                {{?}}
-
-                                <p><input type="button" value="发起请求!" onclick="request(this);"/></p>
-                                <div class="response">
-                                    响应体
-                                    <pre class="src src-json"></pre>
-                                </div>
-                            </form>
                             <hr/>
                         </div>
                     </div>
@@ -317,15 +304,14 @@
     </script>
 </footer>
 
-<script>
+<script type="text/javascript">
 /* var projectDomain = "//api.example.net"; */
-var projectDomain = ""; // 如果自定义使用上面的
+var projectDomain = "";
 </script>
-
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-$(function() {
+$(function () {
     'use strict';
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
     $('.bs-docs-sidebar').affix();
@@ -334,6 +320,24 @@ $(function() {
 
 <script src="//cdn.bootcss.com/dot/1.1.2/doT.min.js"></script>
 <script type="text/javascript">
+function addLine(html) {
+    if (html !== null && html !== "") {
+        var lineNum = html.split(/\n/).length;
+        var lineHtml = '<span class="line-number">';
+        for (var i = 0; i < lineNum; i++) {
+            lineHtml += '<span>' + i + '</span>';
+        }
+        lineHtml += '</span>';
+        return lineHtml + html;
+    } else {
+        return "";
+    }
+}
+
+$.ajaxSetup({
+    crossDomain: true,
+    xhrFields: { withCredentials: true }
+});
 $.get(projectDomain + "/api/info", function (module) {
     if (module === null || module === "") {
         $(".col-md-9").html("<span style='color:red;'>无接口信息</span>");
@@ -350,14 +354,7 @@ $.get(projectDomain + "/api/info", function (module) {
             var html = $(this).html();
             if (html !== null && html !== "") {
                 html = html.replace(/(.*?)(\/\*.*?\*\/)/g, "$1<span class=\"comment\">$2</span>");
-
-                var lineNum = html.split(/\n/).length;
-                var lineHtml = '<span class="line-number">';
-                for (var i = 0; i < lineNum; i++) {
-                    lineHtml += '<span>' + (i) + '</span>';
-                }
-                lineHtml += '</span>';
-                $(this).html(lineHtml + html);
+                $(this).html(addLine(html));
             }
         });
 
@@ -389,41 +386,6 @@ $.get(projectDomain + "/api/version", function (urlCopyright) {
         copyrightRender.parent().html(template(urlCopyright));
     }
 });
-</script>
-
-<script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/languages/jquery.validationEngine-zh_CN.min.js"></script>
-<script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/jquery.validationEngine.min.js"></script>
-<script type="text/javascript">
-    function request(obj) {
-        var form = $(obj).parent().parent();
-        var response = form.find(".response");
-
-        form.validationEngine();
-
-        var url = form.attr('action');
-        if (!url.startsWith("/")) {
-            url = "/" + url;
-        }
-        $.ajax({
-            method: form.attr('method'),
-            url: projectDomain + url,
-            data: form.serialize()
-        }).done(function(msg) {
-            if (msg !== null && msg !== "") {
-                response.find("pre").text(JSON.stringify(msg, null, 2));
-                response.show();
-            }
-        }).fail(function(msg) {
-            var message = "Status Code: " + msg.status;
-            var json = msg.responseJSON;
-            if (json !== null && json !== "") {
-                message += "\n\n" + JSON.stringify(json, null, 2)
-            }
-
-            response.find("pre").text(message);
-            response.show();
-        });
-    }
 </script>
 </body>
 </html>

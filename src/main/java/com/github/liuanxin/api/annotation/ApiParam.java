@@ -20,4 +20,7 @@ public @interface ApiParam {
     String example() default "";
 
     boolean must() default false;
+
+    /** in html, true will be textarea, default was input. */
+    boolean textarea() default false;
 }

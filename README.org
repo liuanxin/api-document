@@ -12,7 +12,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.7</version>
 </dependency>
 #+END_SRC
 
@@ -80,6 +80,7 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
   dataType  数据类型. 可以不设置, 当需要自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用
   paramType 参数类型. 可以不设置, 主要是 Header 或 Query 两种, 默认是 Query
   must      参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
+  textarea  参数是否显示成 文本域, 可以不设置, 默认是 false
 
 @ApiParamIgnore 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
 
@@ -95,6 +96,7 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
 运行项目, 浏览 http://ip:port/static/api-info.html 查看文档(spring boot 则不需要 /static 二级目录).
+如果想要直接在文档上测试请求后台接口, 可以浏览 http://ip:port/static/api-info-example.html 页面
 
 -----
 

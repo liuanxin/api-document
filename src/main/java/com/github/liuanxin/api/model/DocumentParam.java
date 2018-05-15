@@ -23,4 +23,6 @@ public class DocumentParam {
     private String desc = Tools.EMPTY;
 
     private String example = Tools.EMPTY;
+
+    private boolean hasTextarea = false;
 }
