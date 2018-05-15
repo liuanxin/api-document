@@ -1,9 +1,9 @@
 
 ** 说明
 
-长时间维护过项目的人应该都能体会, 如果接口文档是单独编写的话, 随着项目周期的推进, 接口文档和真实代码之间的差距会越来越远.
+维护过项目的人应该都有体会, 如果接口文档是单独编写的(org-mode、markdown、rap 等), 随着项目周期的推进, 接口文档和真实代码之间的差距会越来越远.
 
-当前项目用来收集项目中的接口文档, 跟随项目. 代码运行起来文档也就有了, 修改代码的同时, 改标注在其上的说明即可.
+基于 swagger 的一些细节不那么让人如意(比如无法处理 map, swagger-ui 中查看响应说明需要切屏)而出现了此文档收集应用.
 
 ** 使用
 
@@ -24,7 +24,7 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("标题", "团队", "版本号", "版权")
-                    // 如果设置成 true 则接口会返回空(生产环境时开启), 默认是 false
+                    // 如果设置成 true 则接口会返回空(可以在生产环境中开启), 默认是 false
                     // .setOnline(true)
                     // 全局的响应说明, 如果在方法上使用 @ApiResponses 注解则以方法上的为准
                     // setGlobalResponse(Arrays.asList(
@@ -42,7 +42,7 @@ public class ApiInfoConfig {
 如果方法上的返回结果有 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理.
 
 PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无参构造 的类将无法处理(
-可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的处理
+可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的全局处理
 ). 另外, 当返回值中有 非基础数据类型的数组 时也无法实例, 请使用 List 替换
 
 相关注解如下
@@ -50,6 +50,19 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
 @ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
   value     所属分组. 必须设置, 示例(name-说明, 如: user-用户模块, 说明可以忽略)
   index     索引, 越小越靠前. 可以不设置
+
+
+@ApiResponses 标注在类或方法上. 用来标注接口的响应码或描述
+@ApiResponse  嵌套注解
+  code        响应编码, 如 400
+  msg         响应说明, 如 参数不正确
+
+示例如下:
+@ApiResponses({
+    @ApiResponse(code = 400, msg = "请求参数有误"),
+    @ApiResponse(code = 500, msg = "请求异常")
+})
+
 
 @ApiIgnore  标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
   value     值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
@@ -70,19 +83,6 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
 
 @ApiParamIgnore 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
 
-
-@ApiResponses 标注在类或方法上. 用来标注接口的响应码或描述
-@ApiResponse  嵌套注解
-  code        响应编码, 如 400
-  msg         响应说明, 如 参数不正确
-
-示例如下:
-@ApiResponses({
-    @ApiResponse(code = 400, msg = "请求参数有误"),
-    @ApiResponse(code = 500, msg = "请求异常")
-})
-
-
 @ApiReturn  标注在字段上. 用来说明返回结果
   value     返回说明, 必须设置
   type      返回类型, 当需要自定义时(比如字段类型是枚举, 但是显示在文档上时是 int 时)有用
@@ -95,12 +95,13 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
 运行项目, 浏览 http://ip:port/static/api-info.html 查看文档(spring boot 则不需要 /static 二级目录).
-见 [[https://github.com/liuanxin/api-document-example][example]]
 
 -----
 
 最终文档收集如下
-[[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+[[###][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+-
+[[###][https://raw.githubusercontent.com/liuanxin/image/master/api2.png]]
 -----
 
 gl hf...
