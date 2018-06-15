@@ -226,12 +226,21 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    {{~ (url.responseList || it.responseList)  :response}}
-                                    <tr>
-                                        <td class="text-left">{{! response.code}}</td>
-                                        <td class="text-left">{{! response.msg}}</td>
-                                    </tr>
-                                    {{~}}
+                                {{? (url.responseList && url.responseList.length > 0)}}
+                                {{~ url.responseList  :response}}
+                                <tr>
+                                    <td class="text-left">{{! response.code}}</td>
+                                    <td class="text-left">{{! response.msg}}</td>
+                                </tr>
+                                {{~}}
+                                {{?? it.responseList && it.responseList.length > 0}}
+                                {{~ it.responseList  :response}}
+                                <tr>
+                                    <td class="text-left">{{! response.code}}</td>
+                                    <td class="text-left">{{! response.msg}}</td>
+                                </tr>
+                                {{~}}
+                                {{?}}
                                 </tbody>
                             </table>
                             {{?}}

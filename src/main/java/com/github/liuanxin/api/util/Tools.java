@@ -84,9 +84,7 @@ public class Tools {
 
     // ========== json ==========
     private static final ObjectMapper RENDER = new ObjectMapper();
-    static {
-        RENDER.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-    }
+
     private static final ObjectWriter PRETTY_RENDER = RENDER.writerWithDefaultPrettyPrinter();
     public static String toJson(Object obj) {
         if (isBlank(obj)) {
