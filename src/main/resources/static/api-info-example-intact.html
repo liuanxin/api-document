@@ -207,7 +207,7 @@
                                     <tr>
                                         <td class="text-left">{{! rtn.name}}</td>
                                         <td class="text-left">{{! rtn.type}}</td>
-                                        <td class="text-left">{{! rtn.desc}}</td>
+                                        <td class="text-left"><pre>{{! rtn.desc}}</pre></td>
                                     </tr>
                                     {{~}}
                                     </tbody>
@@ -264,7 +264,7 @@
                                     <tr>
                                         {{? param.must}}
                                         <td class="text-left"><b>{{! param.name}}</b></td>
-                                        <td class="text-left"><b>{{! param.desc}}</b></td>
+                                        <td class="text-left"><b><pre>{{! param.desc}}</pre></b></td>
                                         <td class="text-left"><b>Yes</b></td>
                                         <td class="text-left"><b>{{! param.dataType}}</b></td>
                                         {{? url.hasHeader}}<td class="text-left"><b>{{! param.paramType}}</b></td>{{?}}
@@ -281,7 +281,7 @@
                                         </td>
                                         {{??}}
                                         <td class="text-left">{{! param.name}}</td>
-                                        <td class="text-left">{{! param.desc}}</td>
+                                        <td class="text-left"><pre>{{! param.desc}}</pre></td>
                                         <td class="text-left">No</td>
                                         <td class="text-left">{{! param.dataType}}</td>
                                         {{? url.hasHeader}}<td class="text-left">{{! param.paramType}}</td>{{?}}

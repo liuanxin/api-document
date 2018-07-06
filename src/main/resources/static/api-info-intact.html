@@ -199,15 +199,15 @@
                                     <td class="text-left"><b>{{! param.name}}</b></td>
                                     <td class="text-left"><b>{{! param.dataType}}</b></td>
                                     <td class="text-left"><b>Yes</b></td>
-                                    <td class="text-left"><b>{{! param.desc}}</b></td>
-                                    {{? url.hasExample}}<td class="text-left"><b>{{! param.example}}</b></td>{{?}}
+                                    <td class="text-left"><b><pre>{{! param.desc}}</pre></b></td>
+                                    {{? url.hasExample}}<td class="text-left"><b><pre>{{! param.example}}</pre></b></td>{{?}}
                                     {{? url.hasHeader}}<td class="text-left"><b>{{! param.paramType}}</b></td>{{?}}
                                     {{??}}
                                     <td class="text-left">{{! param.name}}</td>
                                     <td class="text-left">{{! param.dataType}}</td>
                                     <td class="text-left">No</td>
-                                    <td class="text-left">{{! param.desc}}</td>
-                                    {{? url.hasExample}}<td class="text-left">{{! param.example}}</td>{{?}}
+                                    <td class="text-left"><pre>{{! param.desc}}</pre></td>
+                                    {{? url.hasExample}}<td class="text-left"><pre>{{! param.example}}</pre></td>{{?}}
                                     {{? url.hasHeader}}<td class="text-left">{{! param.paramType}}</td>{{?}}
                                     {{?}}
                                 </tr>
