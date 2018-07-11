@@ -134,6 +134,8 @@ public final class ParamHandler {
             // if param has no @RequestParam(required = true) etc..., use custom value
             param.setMust(must || apiParam.must());
             param.setHasTextarea(apiParam.textarea());
+        } else {
+            param.setMust(must);
         }
         if (type.isEnum()) {
             // enum append (code:value)
