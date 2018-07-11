@@ -1,12 +1,12 @@
 package com.github.liuanxin.api.util;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -22,6 +22,8 @@ public class Tools {
     public static final String EMPTY = "";
     private static final String SPACE = " ";
     private static final String SPLIT = ",";
+
+    private static final String FILE_TYPE = "file";
 
     @SuppressWarnings("unchecked")
     private static final List<Class<?>> INT_TYPE = lists(
@@ -226,9 +228,16 @@ public class Tools {
     static boolean notBasicType(Class<?> clazz) {
         return !basicType(clazz);
     }
+    public static boolean hasFileInput(String fileType) {
+        return FILE_TYPE.equals(fileType);
+    }
     static String getInputType(Class<?> type) {
         if (type == null) {
             return EMPTY;
+        }
+
+        if (MultipartFile.class.isAssignableFrom(type)) {
+            return FILE_TYPE;
         }
         String paramType = type.getSimpleName();
         if (isBlank(paramType)) {

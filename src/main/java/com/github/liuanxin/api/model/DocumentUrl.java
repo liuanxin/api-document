@@ -124,6 +124,18 @@ public class DocumentUrl {
         return false;
     }
 
+    public boolean getHasFile() {
+        if (Tools.isEmpty(paramList)) {
+            return false;
+        }
+        for (DocumentParam param : paramList) {
+            if (Tools.isNotBlank(param) && param.getHasFile()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean getHasHeader() {
         if (Tools.isEmpty(paramList)) {
             return false;

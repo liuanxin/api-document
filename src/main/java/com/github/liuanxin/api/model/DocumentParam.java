@@ -18,11 +18,13 @@ public class DocumentParam {
 
     private String paramType = Tools.EMPTY;
 
-    private boolean must = false;
+    private Boolean must = false;
 
     private String desc = Tools.EMPTY;
 
     private String example = Tools.EMPTY;
 
-    private boolean hasTextarea = false;
+    private Boolean hasTextarea = false;
+
+    private Boolean hasFile = false;
 }

@@ -271,7 +271,9 @@
                                         <td class="text-left">
                                             <b>
                                                 <label>
-                                                {{? param.hasTextarea}}
+                                                {{? param.dataType == 'file' }}
+                                                <input name="{{= param.name}}" type="file" class="validate[required]"/>
+                                                {{?? param.hasTextarea}}
                                                 <textarea name="{{= param.name}}" class="validate[required{{? param.dataType == 'int'}},custom[integer]{{?? param.dataType == 'double'}},custom[number]{{?}}]">{{= param.example}}</textarea>
                                                 {{??}}
                                                 <input name="{{= param.name}}" class="validate[required{{? param.dataType == 'int'}},custom[integer]{{?? param.dataType == 'double'}},custom[number]{{?}}]" value="{{= param.example}}"/>
@@ -287,7 +289,9 @@
                                         {{? url.hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
                                         <td class="text-left">
                                             <label>
-                                            {{? param.hasTextarea}}
+                                            {{? param.dataType == 'file' }}
+                                            <input name="{{= param.name}}" type="file"/>
+                                            {{?? param.hasTextarea}}
                                             <textarea name="{{= param.name}}"{{? param.dataType == 'int'}} class="validate[custom[integer]]"{{?? param.dataType == 'double'}} class="validate[custom[number]]"{{?}}>{{= param.example}}</textarea>
                                             {{??}}
                                             <input name="{{= param.name}}"{{? param.dataType == 'int'}} class="validate[custom[integer]]"{{?? param.dataType == 'double'}} class="validate[custom[number]]"{{?}} value="{{= param.example}}"/>
@@ -461,6 +465,7 @@ function request(obj) {
         url = url.replace(/(\{.*?\})/, value);
     }
     var start = new Date().getTime();
+    // 构建异步的文件上传还有问题
     $.ajax({
         method: method,
         url: url,

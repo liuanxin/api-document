@@ -7,6 +7,7 @@ import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -23,20 +24,20 @@ public final class ParamHandler {
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];
-            // if param not basicType, into a layer of processing
-            Class<?> parameterType = parameter.getParameterType();
-            if (Tools.notBasicType(parameterType)) {
-                for (Field field : parameterType.getDeclaredFields()) {
-                    int mod= field.getModifiers();
-                    // field not static, not final, not annotation ignore
-                    if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                            && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
-                        ApiParam apiParam = field.getAnnotation(ApiParam.class);
-                        params.add(paramInfo(field.getName(), field.getType(), apiParam, false));
+            if (Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
+                // if param not basicType, into a layer of processing
+                Class<?> parameterType = parameter.getParameterType();
+                if (!parameterType.equals(MultipartFile.class) && Tools.notBasicType(parameterType)) {
+                    for (Field field : parameterType.getDeclaredFields()) {
+                        int mod = field.getModifiers();
+                        // field not static, not final, not annotation ignore
+                        if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
+                                && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
+                            ApiParam apiParam = field.getAnnotation(ApiParam.class);
+                            params.add(paramInfo(field.getName(), field.getType(), apiParam, false));
+                        }
                     }
-                }
-            } else {
-                if (Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
+                } else {
                     // The variable name is erased when compiled by jvm, parameter.parameterName() is null
                     // if use java 8 and open options in javac -parameters, parameter.parameterName() can be get
                     // String paramName = parameter.getParameterName();
@@ -104,7 +105,10 @@ public final class ParamHandler {
     private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam, boolean must) {
         DocumentParam param = new DocumentParam();
         param.setName(name);
-        param.setDataType(Tools.getInputType(type));
+
+        String inputType = Tools.getInputType(type);
+        param.setDataType(inputType);
+        param.setHasFile(Tools.hasFileInput(inputType));
 
         if (Tools.isNotBlank(apiParam)) {
             String desc = apiParam.value();
