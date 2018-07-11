@@ -245,7 +245,7 @@
                             </table>
                             {{?}}
 
-                            <form method="{{= url.method}}" action="{{= url.url}}">
+                            <form method="{{= url.method}}" action="{{= url.url}}"{{? url.hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? url.paramList && url.paramList.length > 0}}
                                 <p>参数说明如下</p>
                                 <table class="table table-striped table-bordered table-hover table-condensed">
