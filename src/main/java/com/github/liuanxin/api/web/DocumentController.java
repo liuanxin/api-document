@@ -33,7 +33,7 @@ public class DocumentController {
 
     private static final String CLASS_SUFFIX = "Controller";
 
-    // cache
+    // local cache
     private static String document_str = null;
     private static DocumentInfo document_info = null;
     private static Map<String, DocumentUrl> url_map = null;
@@ -48,7 +48,7 @@ public class DocumentController {
     private DocumentCopyright documentCopyright;
 
     @GetMapping(VERSION_URL)
-    public DocumentCopyright urlVersion() {
+    public String urlVersion() {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return null;
         } else {
@@ -68,7 +68,7 @@ public class DocumentController {
                     }
                 }
             }
-            return documentCopyright;
+            return Tools.toJson(documentCopyright);
         }
     }
 
