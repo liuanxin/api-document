@@ -452,9 +452,9 @@ function request(obj) {
     var responseData = response.find("pre");
 
     var map = objectifyForm(form);
-    var data = form.serialize();
     var method = form.attr('method');
     var url = form.attr('action');
+    var data = form.serialize();
     if (!url.startsWith("/")) {
         url = "/" + url;
     }
@@ -462,10 +462,12 @@ function request(obj) {
     while (/\{(.*?)\}/.test(url)) {
         var group = RegExp.$1;
         var value = map[group];
+        // 去掉占位的参数
+        data = data.replace(new RegExp(group + "=[^&]+[&]*"), "");
         url = url.replace(/(\{.*?\})/, value);
     }
     var start = new Date().getTime();
-    // 构建异步的文件上传还有问题
+    // 文件上传还无法处理
     $.ajax({
         method: method,
         url: url,
@@ -473,7 +475,7 @@ function request(obj) {
     }).done(function(msg) {
         var html = "use time: " + (new Date().getTime() - start) + "ms\n\n";
         if (msg !== null && msg !== "") {
-            html += addLine(JSON.stringify(msg, null, 2));
+            html += addLine(escapeHtml(JSON.stringify(msg, null, 2)));
         } else {
             html += "<span style='color:green;'>" + method + " 请求(" + url + ")成功, 但是返回为空</span>";
         }
@@ -486,7 +488,7 @@ function request(obj) {
             var json = msg.responseJSON;
             if (json !== null && json !== "") {
                 message += "\n\n";
-                message += JSON.stringify(json, null, 2);
+                message += escapeHtml(JSON.stringify(json, null, 2));
             }
             html += addLine(message);
         } else {
@@ -502,6 +504,14 @@ function objectifyForm(form) {
         map[x.name] = x.value;
     });
     return map;
+}
+function escapeHtml(html) {
+    if (html === null && html === "") {
+        return null;
+    }
+    return html.replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 </script>
 </body>

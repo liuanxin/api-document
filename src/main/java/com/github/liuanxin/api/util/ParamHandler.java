@@ -131,12 +131,11 @@ public final class ParamHandler {
             if (Tools.isNotBlank(example)) {
                 param.setExample(example);
             }
-            // if param has no @RequestParam(required = true) etc..., use custom value
-            param.setMust(must || apiParam.must());
             param.setHasTextarea(apiParam.textarea());
-        } else {
-            param.setMust(must);
         }
+        // if param has no @RequestParam(required = true) etc..., use custom value
+        param.setMust(must || (Tools.isNotBlank(apiParam) && apiParam.must()));
+
         if (type.isEnum()) {
             // enum append (code:value)
             String desc = param.getDesc();
