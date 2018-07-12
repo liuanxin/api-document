@@ -485,7 +485,8 @@ function request(obj) {
         url: url,
         data: data
     }).done(function(msg) {
-        var html = "use time: " + (new Date().getTime() - start) + "ms\n\n";
+        var end = new Date().getTime();
+        var html = "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
         if (msg !== null && msg !== "") {
             html += addLine(escapeHtml(JSON.stringify(msg, null, 2)));
         } else {
@@ -494,7 +495,8 @@ function request(obj) {
         responseData.html(html);
         response.show();
     }).fail(function(msg) {
-        var html = "use time: " + (new Date().getTime() - start) + "ms\n\n";
+        var end = new Date().getTime();
+        var html = "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
         if (msg !== null && msg !== "") {
             var message = "Status Code: " + msg.status;
             var json = msg.responseJSON;
@@ -524,6 +526,38 @@ function escapeHtml(html) {
     return html.replace(/&/g, "&amp;")
         .replace(/</g, "&lt;").replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+function formatDate(date) {
+    var d = new Date(date);
+
+    var y = d.getFullYear().toString();
+    var m = (d.getMonth() + 1).toString();
+    if (m.length === 1) {
+        m = '0' + m;
+    }
+    var dy = d.getDate().toString();
+    if (dy.length === 1) {
+        dy = '0' + dy;
+    }
+    var h = d.getHours().toString();
+    if (h.length === 1) {
+        h = '0' + h;
+    }
+    var mt = d.getMinutes().toString();
+    if (mt.length === 1) {
+        mt = '0' + mt;
+    }
+    var s = d.getSeconds().toString();
+    if (s.length === 1) {
+        s = '0' + s;
+    }
+    var S = d.getMilliseconds().toString();
+    if (S.length === 1) {
+        S = '00' + S;
+    } else if (S.length === 2) {
+        S = '0' + S;
+    }
+    return y + "-" + m + "-" + dy + " " + h + ":" + mt + ":" + s + " " + S;
 }
 </script>
 </body>
