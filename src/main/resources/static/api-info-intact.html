@@ -334,7 +334,7 @@ function addLine(html) {
         var lineNum = html.split(/\n/).length;
         var lineHtml = '<span class="line-number">';
         for (var i = 0; i < lineNum; i++) {
-            lineHtml += '<span>' + i + '</span>';
+            lineHtml += '<span>' + (i + 1) + '</span>';
         }
         lineHtml += '</span>';
         return lineHtml + html;
