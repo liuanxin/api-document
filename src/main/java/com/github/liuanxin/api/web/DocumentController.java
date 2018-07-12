@@ -47,7 +47,7 @@ public class DocumentController {
     @Autowired
     private DocumentCopyright documentCopyright;
 
-    @GetMapping(VERSION_URL)
+    @GetMapping(value = VERSION_URL, produces = PRODUCES)
     public String urlVersion() {
         if (Tools.isBlank(documentCopyright) || documentCopyright.isOnline()) {
             return null;
