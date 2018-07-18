@@ -68,6 +68,9 @@ public class Tools {
     }
 
     // ========== string ==========
+    public static boolean isBlankObj(Object obj) {
+        return obj == null;
+    }
     public static boolean isBlank(Object obj) {
         return obj == null || EMPTY.equals(obj.toString().trim());
     }

@@ -293,15 +293,13 @@ public final class ReturnHandler {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             // add one record in list
             Collection list;
-            if (List.class.isAssignableFrom(clazz)) {
-                list = new ArrayList();
-            } else if (Set.class.isAssignableFrom(clazz)) {
+            if (Set.class.isAssignableFrom(clazz)) {
                 list = new HashSet();
             } else {
-                return Collections.emptyList();
+                list = new ArrayList();
             }
             Object object = handlerReturnJsonObj(method, obj);
-            if (Tools.isNotBlank(object)) {
+            if (!Tools.isBlankObj(object)) {
                 list.add(object);
             }
             return list;
@@ -321,7 +319,7 @@ public final class ReturnHandler {
                 Object key = handlerReturnWithObj(method, keyValue[0].trim());
                 Object value = handlerReturnJsonObj(method, keyValue[1].trim());
                 // key may be empty String: ""
-                if (key != null && Tools.isNotBlank(value)) {
+                if (!Tools.isBlankObj(key) && !Tools.isBlankObj(value)) {
                     map.put(key, value);
                 }
                 return map;
@@ -433,30 +431,25 @@ public final class ReturnHandler {
         }
     }
 
-    /** if not, return true */
+    /** if not recursive class(level > 2 will error T_T ), return true */
     private static boolean notRecursiveGeneric(Class clazz, Field field) {
         try {
             Field signatureField = field.getClass().getDeclaredField("signature");
             signatureField.setAccessible(true);
             Object signature = signatureField.get(field);
-            if (Tools.isBlank(signature)) {
-                return true;
+            if (Tools.isNotBlank(signature)) {
+                String fieldInfo = signature.toString();
+                if (Tools.isNotBlank(fieldInfo)) {
+                    if (fieldInfo.contains("/") && fieldInfo.contains("<") && fieldInfo.contains(">")) {
+                        return !fieldInfo.replace("/", ".").contains(clazz.getName() + ";>;");
+                    }
+                }
             }
-
-            String fieldInfo = signature.toString();
-            if (Tools.isBlank(fieldInfo)) {
-                return true;
-            }
-
-            if (fieldInfo.contains("/") && fieldInfo.contains("<") && fieldInfo.contains(">")) {
-                return !fieldInfo.replace("/", ".").contains(clazz.getName() + ";>;");
-            }
-            return true;
         } catch (NoSuchFieldException | IllegalAccessException e) {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn(String.format("class(%s), field(%s)", clazz, field.getName()), e);
             }
-            return true;
         }
+        return true;
     }
 }
