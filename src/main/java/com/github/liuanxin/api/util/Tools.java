@@ -25,6 +25,24 @@ public class Tools {
 
     private static final String FILE_TYPE = "file";
 
+    private static final Map<String, Class<?>> BASIC_CLAZZ_MAP = maps(
+            byte.class.getName(), Byte.class,
+            char.class.getName(), Character.class,
+            short.class.getName(), Short.class,
+            int.class.getName(), Integer.class,
+            long.class.getName(), Long.class,
+            float.class.getName(), Float.class,
+            double.class.getName(), Double.class,
+
+            byte[].class.getName(), Byte[].class,
+            char[].class.getName(), Character[].class,
+            short[].class.getName(), Short[].class,
+            int[].class.getName(), Integer[].class,
+            long[].class.getName(), Long[].class,
+            float[].class.getName(), Float[].class,
+            double[].class.getName(), Double[].class
+    );
+
     @SuppressWarnings("unchecked")
     private static final List<Class<?>> INT_TYPE = lists(
             byte.class, Byte.class,
@@ -119,10 +137,10 @@ public class Tools {
     }
 
     // ========== array map ==========
-    private static <T> boolean isEmpty(T[] array) {
+    public static <T> boolean isEmpty(T[] array) {
         return array == null || array.length == 0;
     }
-    private static <T> boolean isNotEmpty(T[] array) {
+    public static <T> boolean isNotEmpty(T[] array) {
         return !isEmpty(array);
     }
     public static <T> boolean isEmpty(Collection<T> collection) {
@@ -155,17 +173,33 @@ public class Tools {
 
     // ========== list map ==========
     @SuppressWarnings("unchecked")
-    static List lists(Object... values) {
+    public static List lists(Object... values) {
         return new ArrayList(Arrays.asList(values));
     }
     public static <T> Set<T> sets() {
         return new HashSet<>();
     }
-    static <K, V> HashMap<K, V> newHashMap() {
+    public static <K, V> HashMap<K, V> newHashMap() {
         return new HashMap<>();
     }
     public static <K, V> HashMap<K, V> newLinkedHashMap() {
         return new LinkedHashMap<>();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMap<K, V> maps(Object... keysAndValues) {
+        return (HashMap<K, V>) maps(newHashMap(), keysAndValues);
+    }
+    @SuppressWarnings("unchecked")
+    private static <K, V> Map<K, V> maps(Map<K, V> result, Object... keysAndValues) {
+        if (isNotEmpty(keysAndValues)) {
+            for (int i = 0; i < keysAndValues.length; i += 2) {
+                if (keysAndValues.length > (i + 1)) {
+                    result.put((K) keysAndValues[i], (V) keysAndValues[i + 1]);
+                }
+            }
+        }
+        return result;
     }
 
     // ========== method ==========
@@ -187,7 +221,7 @@ public class Tools {
     }
 
     // ========== enum ==========
-    static String enumInfo(Class<?> clazz) {
+    public static String enumInfo(Class<?> clazz) {
         if (isNotBlank(clazz) && clazz.isEnum()) {
             Enum[] constants = (Enum[]) clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
@@ -219,7 +253,10 @@ public class Tools {
     }
 
     // ========== type ==========
-    static boolean basicType(Class<?> clazz) {
+    public static Class<?> getBasicType(String name) {
+        return BASIC_CLAZZ_MAP.get(name);
+    }
+    public static boolean basicType(Class<?> clazz) {
         for (Class<?> typeClass : BASIC_TYPE) {
             if (clazz == typeClass) {
                 return true;
@@ -228,13 +265,13 @@ public class Tools {
         // include enum
         return clazz.isEnum();
     }
-    static boolean notBasicType(Class<?> clazz) {
+    public static boolean notBasicType(Class<?> clazz) {
         return !basicType(clazz);
     }
     public static boolean hasFileInput(String fileType) {
         return FILE_TYPE.equals(fileType);
     }
-    static String getInputType(Class<?> type) {
+    public static String getInputType(Class<?> type) {
         if (type == null) {
             return EMPTY;
         }
@@ -276,7 +313,7 @@ public class Tools {
         }
         return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
     }
-    static Object getReturnType(Class<?> clazz) {
+    public static Object getReturnType(Class<?> clazz) {
         if (clazz == null) {
             return null;
         }

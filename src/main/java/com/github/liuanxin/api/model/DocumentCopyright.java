@@ -32,7 +32,7 @@ public class DocumentCopyright {
     @JsonIgnore
     private List<DocumentResponse> globalResponse;
 
-    /** return whether the sample contains a comment */
+    /** return whether the sample contains a comment(method not has @ApiMethod, use this) */
     @JsonIgnore
     private boolean commentInReturnExample = true;
 

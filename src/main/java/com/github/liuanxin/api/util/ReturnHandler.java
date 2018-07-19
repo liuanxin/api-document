@@ -39,11 +39,13 @@ public final class ReturnHandler {
         if (className.contains(" ")) {
             className = className.substring(className.indexOf(" ")).trim();
         }
-        Class<?> outClass = null;
-        try {
-            outClass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            // ignore
+        Class<?> outClass = Tools.getBasicType(className);
+        if (Tools.isBlank(outClass)) {
+            try {
+                outClass = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                // ignore
+            }
         }
         if (Tools.isBlank(outClass)) {
             return;
@@ -73,37 +75,39 @@ public final class ReturnHandler {
                     LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
                 }
             }
-        } else {
-            if (Tools.notBasicType(outClass)) {
-                Map<String, String> tmpFieldMap = Tools.newHashMap();
-                for (Field field : outClass.getDeclaredFields()) {
-                    int mod = field.getModifiers();
-                    // field not static, not final, and not annotation ignore
-                    if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                            && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
-                        String fieldName = field.getName();
-                        returnList.add(returnInfo(field, space + fieldName + parent));
+        } else if (Tools.notBasicType(outClass)) {
+            Map<String, String> tmpFieldMap = Tools.newHashMap();
+            for (Field field : outClass.getDeclaredFields()) {
+                int mod = field.getModifiers();
+                // field not static, not final, and not annotation ignore
+                if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
+                        && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
+                    String fieldName = field.getName();
+                    returnList.add(returnInfo(field, space + fieldName + parent));
 
-                        // if not basic type, recursive handle
-                        boolean notRecursive = notRecursiveGeneric(outClass, field);
-                        if (notRecursive) {
-                            String genericType = field.getGenericType().toString();
-                            if (Tools.notBasicType(field.getType())) {
-                                String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
-                                handlerReturn(space + TAB, innerParent, recordLevel, genericType, returnList);
-                            }
-                            tmpFieldMap.put(genericType, fieldName);
+                    // if not basic type, recursive handle
+                    boolean notRecursive = notRecursiveGeneric(outClass, field);
+                    if (notRecursive) {
+                        String genericType = field.getGenericType().toString();
+                        if (Tools.notBasicType(field.getType())) {
+                            String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
+                            handlerReturn(space + TAB, innerParent, recordLevel, genericType, returnList);
                         }
+                        tmpFieldMap.put(genericType, fieldName);
                     }
                 }
-                // handler generic
-                if (type.contains("<") && type.contains(">")) {
-                    String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                    String fieldName = handlerReturnFieldName(tmpFieldMap, innerType, recordLevel);
-                    String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
-                    handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
-                }
             }
+            // handler generic
+            if (type.contains("<") && type.contains(">")) {
+                String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
+                String fieldName = handlerReturnFieldName(tmpFieldMap, innerType, recordLevel);
+                String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
+                handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
+            }
+        } else {
+            // basic type
+            String name = outClass.getSimpleName();
+            returnList.add(new DocumentReturn(name, name, name));
         }
     }
 
@@ -173,11 +177,13 @@ public final class ReturnHandler {
         if (className.contains(" ")) {
             className = className.substring(className.indexOf(" ")).trim();
         }
-        Class<?> outClass = null;
-        try {
-            outClass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            // ignore
+        Class<?> outClass = Tools.getBasicType(className);
+        if (Tools.isBlank(outClass)) {
+            try {
+                outClass = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                // ignore
+            }
         }
         if (Tools.isBlank(outClass)) {
             return null;
