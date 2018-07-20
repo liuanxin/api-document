@@ -104,11 +104,14 @@ public final class ReturnHandler {
                 String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
                 handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
             }
-        } else {
-            // basic type
+        }
+        /*
+        // ignore basic type, if add, comment in example will error
+        else {
             String name = outClass.getSimpleName();
             returnList.add(new DocumentReturn(name, name, name));
         }
+        */
     }
 
     /** collect return info */
