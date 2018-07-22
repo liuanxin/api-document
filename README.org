@@ -1,13 +1,18 @@
 
-** 说明
+[[README-CN.ORG][中文说明]]
 
-维护过项目的人应该都有体会, 如果接口文档是单独编写的(org-mode、markdown、rap 甚至是 word 等), 随着项目周期的推进, 接口文档和真实代码之间的差距会越来越远.
+** comment
 
-基于 swagger 的一些细节不那么让人如意(比如无法处理 map, swagger-ui 中查看响应说明需要切屏)而出现了此文档收集应用.
+People who have maintained the project should have experience.
+If the interface documentation is written separately (org-mode, markdown, rap or even word),
+as the project cycle progresses, the gap between the interface document and the real code will come the farther away.
 
-** 使用
+This document collection application has appeared because some of the details based on swagger are not so good
+(such as unable to process map, swagger-ui view response instructions need to be cut).
 
-添加引用
+** useage
+
+add this maven config
 #+BEGIN_SRC xml
 <dependency>
     <groupId>com.github.liuanxin</groupId>
@@ -16,91 +21,90 @@
 </dependency>
 #+END_SRC
 
-添加如下配置
+add config for this
 #+BEGIN_SRC java
 @Configuration
 @EnableApiInfo
 public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
-        return new DocumentCopyright("标题", "团队", "版本号", "版权")
-                    // 如果设置成 true 则接口会返回空(可以在生产环境中开启), 默认是 false
+        return new DocumentCopyright("title", "team", "version", "copyright")
+                    // if true, api will return nil(when production use) default was false.
                     // .setOnline(true)
-                    // 全局的响应说明, 如果在方法上使用 @ApiResponses 注解则以方法上的为准
+                    // if method has @ApiResponses, use that
                     // setGlobalResponse(Arrays.asList(
-                    //         new DocumentResponse(400, "请求参数有误"),
-                    //         new DocumentResponse(500, "请求异常")
+                    //         new DocumentResponse(400, "param error"),
+                    //         new DocumentResponse(500, "request error")
                     // ))
-                    // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
+                    // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
                     ;
     }
 }
 #+END_SRC
 
-而后在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
-如果方法上的返回结果有 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理.
+Then mark the corresponding annotations in the corresponding controller layer (only collect the documents related to @RestController or @ResponseBody related classes and interfaces,
+If the result of the method is List, Set or Map will be processed by ArrayList, HashSet and HashMap.
 
-PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无参构造 的类将无法处理(
-可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的全局处理
-). 另外, 当返回值中有 非基础数据类型的数组 时也无法实例, 请使用 List 替换
+PS: The return type on the method is a ResponseEntity class. Classes that have no default no-argument construct will not be processed (
+You can refer to the global processing of [[https://github.com/liuanxin/api-document-example][example]]
+In addition, when there is an array of non-base data types in the return value, you cannot use the List instead.
 
-相关注解如下
+annotation for this
 #+BEGIN_EXAMPLE
-@ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
-  value     所属分组. 必须设置, 示例(name-说明, 如: user-用户模块, 说明可以忽略)
-  index     索引, 越小越靠前. 可以不设置
+@ApiGroup   --> in class or method. use the method if all of that
+  value     --> module info, must set
+  index     --> more forward when smaller
 
 
-@ApiResponses 标注在类或方法上. 用来标注接口的响应码或描述
-@ApiResponse  嵌套注解
-  code        响应编码, 如 400
-  msg         响应说明, 如 参数不正确
+@ApiResponses --> in class or method
+@ApiResponse
+  code
+  msg
 
-示例如下:
+for example:
 @ApiResponses({
-    @ApiResponse(code = 400, msg = "请求参数有误"),
-    @ApiResponse(code = 500, msg = "请求异常")
+    @ApiResponse(code = 400, msg = "param error"),
+    @ApiResponse(code = 500, msg = "request error")
 })
 
 
-@ApiIgnore  标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
-  value     值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
+@ApiIgnore  --> want to ignore some api, use it
+  value     --> false will ignore
 
-@ApiMethod  标注在方法上
-  title     接口标题, 必须设置
-  develop   开发者信息, 必须设置
-  desc      接口详细说明. 可以不设置
-  index     索引, 越小越靠前. 可以不设置
-  commentInReturnExample  返回字段说明是否写在返回示例中. 可以不设置, 默认是 true
+@ApiMethod  --> in method
+  title     --> must set
+  develop
+  desc
+  index     --> more forward when smaller
+  commentInReturnExample  --> if false, comment will show with display separately, default true
 
-@ApiParam   标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
-  value     参数说明, 必须设置
-  name      参数名, 可以不设置, 如果设置了将会无视参数名或字段名
-  dataType  数据类型. 可以不设置, 当需要自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用
-  paramType 参数类型. 可以不设置, 主要是 Header 或 Query 两种, 默认是 Query
-  must      参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
-  textarea  参数是否显示成 文本域, 可以不设置, 默认是 false
+@ApiParam   --> in param or field
+  value     --> must set
+  name      --> if set, will ignore param name or filed name
+  dataType  --> if type was custom can use(for example: enum, but param type was be int)
+  must      --> if param annotation @RequestParam(required = true) etc... will ignore this config
+  textarea  --> default false
 
-@ApiParamIgnore 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
+@ApiParamIgnore --> in param or field
 
-@ApiReturn  标注在字段上. 用来说明返回结果
-  value     返回说明, 必须设置
-  type      返回类型, 当需要自定义时(比如字段类型是枚举, 但是显示在文档上时是 int 时)有用
+@ApiReturn  --> in field
+  value     --> must set
+  type      --> if type was custom can use(for example: enum, but param type was be int)
 
-@ApiReturnIgnore 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
+@ApiReturnIgnore --> in field
 #+END_EXAMPLE
 
-如果是非 spring boot 项目, 添加如下配置
+if not spring boot project, add this config
 #+BEGIN_SRC xml
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
-运行项目, 浏览 http://ip:port/static/api-info.html 查看文档(spring boot 则不需要 /static 二级目录).
-如果想要直接在文档上测试请求后台接口, 可以浏览 http://ip:port/static/api-info-example.html 页面
+request --> http://ip:port/static/api-info-en.html(spring boot don't need /static second directory).
+if want to test url info, request --> http://ip:port/static/api-info-en-example.html
 
 -----
 
-最终文档收集如下
+Final document collect for this
 [[###][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
 -
 [[###][https://raw.githubusercontent.com/liuanxin/image/master/api2.png]]

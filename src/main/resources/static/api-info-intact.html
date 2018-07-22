@@ -172,12 +172,8 @@
                             <span class="section-number-3">{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
                         </h3>
                         <div class="outline-text-3">
-<pre class="example">
-{{? url.develop && url.develop !== ''}}开发: {{= url.develop}}{{??}}未标明开发者{{?}}<br>
-{{? url.desc}}说明: {{= url.desc}}<br>{{?}}<br>
-<a target="_blank" href="{{= url.exampleUrl}}">返回结果示例地址</a>
-</pre>
-                            <p> 接口地址 <code>{{= url.method}} {{= url.url}}</code></p>
+<pre class="example">{{? url.develop && url.develop !== ''}}开发: {{= url.develop}}<br>{{?}}{{? url.desc}}说明: {{= url.desc}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">返回结果示例地址</a></pre>
+                            <p>接口地址 <code>{{= url.method}} {{= url.url}}</code></p>
 
                             {{? url.paramList && url.paramList.length > 0}}
                             <p>参数说明如下</p>
@@ -313,7 +309,6 @@
 </footer>
 
 <script type="text/javascript">
-/* var projectDomain = "//api.example.net"; */
 var projectDomain = "";
 </script>
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>

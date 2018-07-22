@@ -9,7 +9,7 @@ public @interface ApiMethod {
 
     String title();
 
-    String develop();
+    String develop() default "";
 
     String desc() default "";
 
