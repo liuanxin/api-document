@@ -1,5 +1,5 @@
 
-[[README-CN.ORG][中文说明]]
+[[README-cn.org][中文说明]]
 
 ** comment
 
