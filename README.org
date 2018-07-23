@@ -102,11 +102,9 @@ if want to test url info, request --> http://ip:port/static/api-info-en-example.
 -----
 
 Final document collect for this
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-en.png]]
 -
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api2.png]]
--
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-example.gif]]
+[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-en2.png]]
 -----
 
 gl hf...
