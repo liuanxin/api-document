@@ -498,7 +498,7 @@ function request(obj) {
     }).fail(function(msg) {
         var end = new Date().getTime();
         var html = "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
-        if (isBlank(msg)) {
+        if (isBlank(msg) || msg.status === 0) {
             html += "<span style='color:red;'>" + method + " 请求(" + url + ")时失败</span>";
         } else {
             var message = "Status Code: " + msg.status;
