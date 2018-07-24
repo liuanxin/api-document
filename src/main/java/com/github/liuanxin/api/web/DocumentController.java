@@ -3,6 +3,7 @@ package com.github.liuanxin.api.web;
 import com.github.liuanxin.api.annotation.*;
 import com.github.liuanxin.api.model.*;
 import com.github.liuanxin.api.util.ParamHandler;
+import com.github.liuanxin.api.util.Requests;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -211,7 +212,7 @@ public class DocumentController {
 
     private static final Pattern ID_URL_PATTERN = Pattern.compile("\\{.*?\\}");
     private static String getExampleUrl(String param) {
-        String domain = Tools.getDomain();
+        String domain = Requests.getDomain();
         if (domain.endsWith("/")) {
             domain = domain.substring(0, domain.length() - 1);
         }

@@ -4,11 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
@@ -25,65 +22,121 @@ public class Tools {
 
     private static final String FILE_TYPE = "file";
 
+    /** just basic type: int long double array etc... */
     private static final Map<String, Class<?>> BASIC_CLAZZ_MAP = maps(
-            byte.class.getName(), Byte.class,
-            char.class.getName(), Character.class,
-            short.class.getName(), Short.class,
-            int.class.getName(), Integer.class,
-            long.class.getName(), Long.class,
-            float.class.getName(), Float.class,
-            double.class.getName(), Double.class,
+            boolean.class.getSimpleName(), boolean.class,
+            Boolean.class.getSimpleName(), boolean.class,
 
-            byte[].class.getName(), Byte[].class,
-            char[].class.getName(), Character[].class,
-            short[].class.getName(), Short[].class,
-            int[].class.getName(), Integer[].class,
-            long[].class.getName(), Long[].class,
-            float[].class.getName(), Float[].class,
-            double[].class.getName(), Double[].class
+            byte.class.getSimpleName(), byte.class,
+            Byte.class.getSimpleName(), byte.class,
+
+            char.class.getSimpleName(), char.class,
+            Character.class.getSimpleName(), char.class,
+
+            short.class.getSimpleName(), short.class,
+            Short.class.getSimpleName(), short.class,
+
+            int.class.getSimpleName(), int.class,
+            Integer.class.getSimpleName(), int.class,
+
+            long.class.getSimpleName(), long.class,
+            Long.class.getSimpleName(), long.class,
+
+            float.class.getSimpleName(), float.class,
+            Float.class.getSimpleName(), float.class,
+
+            double.class.getSimpleName(), double.class,
+            Double.class.getSimpleName(), double.class,
+
+            // up type, down array type
+
+            boolean[].class.getSimpleName(), boolean[].class,
+            Boolean[].class.getSimpleName(), boolean[].class,
+
+            byte[].class.getSimpleName(), byte[].class,
+            Byte[].class.getSimpleName(), byte[].class,
+
+            char[].class.getSimpleName(), char[].class,
+            Character[].class.getSimpleName(), char[].class,
+
+            short[].class.getSimpleName(), short[].class,
+            Short[].class.getSimpleName(), short[].class,
+
+            int[].class.getSimpleName(), int[].class,
+            Integer[].class.getSimpleName(), int[].class,
+
+            long[].class.getSimpleName(), long[].class,
+            Long[].class.getSimpleName(), long[].class,
+
+            float[].class.getSimpleName(), float[].class,
+            Float[].class.getSimpleName(), float[].class,
+
+            double[].class.getSimpleName(), double[].class,
+            Double[].class.getSimpleName(), double[].class
     );
 
-    @SuppressWarnings("unchecked")
-    private static final List<Class<?>> INT_TYPE = lists(
-            byte.class, Byte.class,
-            char.class, Character.class,
-            short.class, Short.class,
-            int.class, Integer.class,
-            long.class, Long.class
-    );
-    @SuppressWarnings("unchecked")
-    private static final List<Class<?>> DOUBLE_TYPE = lists(
-            float.class, Float.class,
-            double.class, Double.class,
-            BigInteger.class, BigDecimal.class
-    );
+    /** { basic-type : default-value } */
+    private static final Map<String, Object> BASIC_TYPE_VALUE_MAP = maps(
+            boolean.class.getSimpleName(), false,
+            Boolean.class.getSimpleName(), false,
 
-    @SuppressWarnings("unchecked")
-    private static final List<Class<?>> INT_ARRAY_TYPE = lists(
-            byte[].class, Byte[].class,
-            char[].class, Character[].class,
-            short[].class, Short[].class,
-            int[].class, Integer[].class,
-            long[].class, Long[].class
-    );
-    @SuppressWarnings("unchecked")
-    private static final List<Class<?>> DOUBLE_ARRAY_TYPE = lists(
-            float[].class, Float[].class,
-            double[].class, Double[].class,
-            BigInteger[].class, BigDecimal[].class
-    );
+            byte.class.getSimpleName(), (byte) 0,
+            Byte.class.getSimpleName(), (byte) 0,
 
-    @SuppressWarnings("unchecked")
-    private static final List<Class<?>> BASIC_TYPE = lists(
-            String.class, String[].class,
-            boolean.class, Boolean.class, boolean[].class, Boolean[].class
+            char.class.getSimpleName(), (char) 0,
+            Character.class.getSimpleName(), (char) 0,
+
+            short.class.getSimpleName(), (short) 0,
+            Short.class.getSimpleName(), (short) 0,
+
+            int.class.getSimpleName(), 0,
+            Integer.class.getSimpleName(), 0,
+
+            long.class.getSimpleName(), 0L,
+            Long.class.getSimpleName(), 0L,
+
+            BigInteger.class.getSimpleName(), BigInteger.ZERO,
+
+            float.class.getSimpleName(), 0F,
+            Float.class.getSimpleName(), 0F,
+
+            double.class.getSimpleName(), 0D,
+            Double.class.getSimpleName(), 0D,
+
+            BigDecimal.class.getSimpleName(), BigDecimal.ZERO,
+            String.class.getSimpleName(), EMPTY,
+
+            // up type, down array type
+
+            boolean[].class.getSimpleName(), new boolean[] { false },
+            Boolean[].class.getSimpleName(), new boolean[] { false },
+
+            byte[].class.getSimpleName(), new byte[] { (byte) 0 },
+            Byte[].class.getSimpleName(), new byte[] { (byte) 0 },
+
+            char[].class.getSimpleName(), new char[] { (char) 0 },
+            Character[].class.getSimpleName(), new char[] { (char) 0 },
+
+            short[].class.getSimpleName(), new short[] { (short) 0 },
+            Short[].class.getSimpleName(), new short[] { (short) 0 },
+
+            int[].class.getSimpleName(), new int[] { 0 },
+            Integer[].class.getSimpleName(), new int[] { 0 },
+
+            long[].class.getSimpleName(), new long[] { 0L },
+            Long[].class.getSimpleName(), new long[] { 0L },
+
+            BigInteger[].class.getSimpleName(), new BigInteger[] { BigInteger.ZERO },
+
+            float[].class.getSimpleName(), new float[] { 0F },
+            Float[].class.getSimpleName(), new float[] { 0F },
+
+            double[].class.getSimpleName(), new double[] { 0D },
+            Double[].class.getSimpleName(), new double[] { 0D },
+
+            BigDecimal[].class.getSimpleName(), new BigDecimal[] { BigDecimal.ZERO },
+            String[].class.getSimpleName(), new String[] { EMPTY }
     );
-    static {
-        BASIC_TYPE.addAll(INT_TYPE);
-        BASIC_TYPE.addAll(DOUBLE_TYPE);
-        BASIC_TYPE.addAll(INT_ARRAY_TYPE);
-        BASIC_TYPE.addAll(DOUBLE_ARRAY_TYPE);
-    }
 
     // ========== string ==========
     public static boolean isBlankObj(Object obj) {
@@ -256,11 +309,17 @@ public class Tools {
     public static Class<?> getBasicType(String name) {
         return BASIC_CLAZZ_MAP.get(name);
     }
+
+    private static Object getTypeDefaultValue(Class<?> clazz) {
+        return BASIC_TYPE_VALUE_MAP.get(clazz.getSimpleName());
+    }
     public static boolean basicType(Class<?> clazz) {
-        for (Class<?> typeClass : BASIC_TYPE) {
-            if (clazz == typeClass) {
-                return true;
-            }
+        if (isBlankObj(clazz)) {
+            return false;
+        }
+        Object defaultValue = getTypeDefaultValue(clazz);
+        if (!isBlankObj(defaultValue)) {
+            return true;
         }
         // include enum
         return clazz.isEnum();
@@ -268,152 +327,47 @@ public class Tools {
     public static boolean notBasicType(Class<?> clazz) {
         return !basicType(clazz);
     }
+
     public static boolean hasFileInput(String fileType) {
         return FILE_TYPE.equals(fileType);
     }
     public static String getInputType(Class<?> type) {
-        if (type == null) {
+        if (isBlankObj(type)) {
             return EMPTY;
         }
 
+        // upload file
         if (MultipartFile.class.isAssignableFrom(type)) {
             return FILE_TYPE;
         }
         String paramType = type.getSimpleName();
-        if (isBlank(paramType)) {
-            return EMPTY;
+        // basic type
+        Class<?> basicClass = getBasicType(paramType);
+        if (!isBlankObj(basicClass)) {
+            return basicClass.getSimpleName();
         }
-        if (type == String.class || type == String[].class) {
-            return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
-        }
+        // enum
         if (type.isEnum()) {
             return "Enum(" + paramType + ")";
         }
-
-        for (Class<?> typeClass : INT_TYPE) {
-            if (type == typeClass) {
-                return int.class.getSimpleName();
-            }
-        }
-        for (Class<?> typeClass : DOUBLE_TYPE) {
-            if (type == typeClass) {
-                return double.class.getSimpleName();
-            }
-        }
-
-        for (Class<?> typeClass : INT_ARRAY_TYPE) {
-            if (type == typeClass) {
-                return int[].class.getSimpleName();
-            }
-        }
-        for (Class<?> typeClass : DOUBLE_ARRAY_TYPE) {
-            if (type == typeClass) {
-                return double[].class.getSimpleName();
-            }
-        }
+        // string, string[], list, set, map... etc
         return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
     }
+
     public static Object getReturnType(Class<?> clazz) {
-        if (clazz == null) {
+        if (isBlankObj(clazz)) {
             return null;
         }
 
-        else if (clazz == boolean.class || clazz == Boolean.class) {
-            return false;
-        } else if (clazz == boolean[].class || clazz == Boolean[].class) {
-            return new boolean[] { false };
-        }
-
-        else if (clazz == byte.class || clazz == Byte.class) {
-            return (byte) 0;
-        } else if (clazz == byte[].class || clazz == Byte[].class) {
-            return new byte[] { (byte) 0 };
-        }
-
-        else if (clazz == char.class || clazz == Character.class) {
-            return (char) 0;
-        } else if (clazz == char[].class || clazz == Character[].class) {
-            return new char[] { (char) 0 };
-        }
-
-        else if (clazz == short.class || clazz == Short.class) {
-            return (short) 0;
-        } else if (clazz == short[].class || clazz == Short[].class) {
-            return new short[] { (short) 0 };
-        }
-
-        else if (clazz == int.class || clazz == Integer.class) {
-            return 0;
-        } else if (clazz == int[].class || clazz == Integer[].class) {
-            return new int[] { 0 };
-        }
-
-        else if (clazz == long.class || clazz == Long.class) {
-            return 0L;
-        } else if (clazz == long[].class || clazz == Long[].class) {
-            return new long[] { 0L };
-        }
-
-        else if (clazz == float.class || clazz == Float.class) {
-            return 0F;
-        } else if (clazz == float[].class || clazz == Float[].class) {
-            return new float[] { 0F };
-        }
-
-        else if (clazz == double.class || clazz == Double.class) {
-            return 0D;
-        } else if (clazz == double[].class || clazz == Double[].class) {
-            return new double[] { 0D };
-        }
-
-        else if (clazz == BigInteger.class) {
-            return new BigInteger("0");
-        } else if (clazz == BigInteger[].class) {
-            return new BigInteger[] { new BigInteger("0") };
-        }
-
-        else if (clazz == BigDecimal.class) {
-            return new BigDecimal(0D);
-        } else if (clazz == BigDecimal[].class) {
-            return new BigDecimal[] { new BigDecimal(0D) };
-        }
-
-        else if (clazz == String.class) {
-            return EMPTY;
-        } else if (clazz == String[].class) {
-            return new String[] { EMPTY };
-        }
-
-        else if (clazz.isEnum()) {
-            // 类型如果是枚举, 则拿第一个进行返回
+        Object defaultValue = getTypeDefaultValue(clazz);
+        if (!isBlankObj(defaultValue)) {
+            return defaultValue;
+        } else if (clazz.isEnum()) {
+            // Enum return first
             Object[] enumConstants = clazz.getEnumConstants();
             return (enumConstants.length > 0) ? enumConstants[0] : null;
-        }
-
-        else {
+        } else {
             return null;
         }
-    }
-
-    // ========== mvc ==========
-    public static String getDomain() {
-        HttpServletRequest request = getRequestAttributes().getRequest();
-        String scheme = request.getScheme();
-        int port = request.getServerPort();
-        if (port < 0) {
-            port = 80;
-        }
-
-        StringBuilder sbd = new StringBuilder();
-        sbd.append(scheme).append("://").append(request.getServerName());
-        boolean http = "http".equalsIgnoreCase(scheme) && (port != 80);
-        if (http || ("https".equalsIgnoreCase(scheme) && (port != 443))) {
-            sbd.append(':').append(port);
-        }
-        return sbd.toString();
-    }
-
-    private static ServletRequestAttributes getRequestAttributes() {
-        return ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
     }
 }
