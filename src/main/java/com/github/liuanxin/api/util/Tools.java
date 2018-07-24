@@ -95,14 +95,13 @@ public class Tools {
             long.class.getSimpleName(), 0L,
             Long.class.getSimpleName(), 0L,
 
-            BigInteger.class.getSimpleName(), BigInteger.ZERO,
-
             float.class.getSimpleName(), 0F,
             Float.class.getSimpleName(), 0F,
 
             double.class.getSimpleName(), 0D,
             Double.class.getSimpleName(), 0D,
 
+            BigInteger.class.getSimpleName(), BigInteger.ZERO,
             BigDecimal.class.getSimpleName(), BigDecimal.ZERO,
             String.class.getSimpleName(), EMPTY,
 
@@ -126,14 +125,13 @@ public class Tools {
             long[].class.getSimpleName(), new long[] { 0L },
             Long[].class.getSimpleName(), new long[] { 0L },
 
-            BigInteger[].class.getSimpleName(), new BigInteger[] { BigInteger.ZERO },
-
             float[].class.getSimpleName(), new float[] { 0F },
             Float[].class.getSimpleName(), new float[] { 0F },
 
             double[].class.getSimpleName(), new double[] { 0D },
             Double[].class.getSimpleName(), new double[] { 0D },
 
+            BigInteger[].class.getSimpleName(), new BigInteger[] { BigInteger.ZERO },
             BigDecimal[].class.getSimpleName(), new BigDecimal[] { BigDecimal.ZERO },
             String[].class.getSimpleName(), new String[] { EMPTY }
     );
