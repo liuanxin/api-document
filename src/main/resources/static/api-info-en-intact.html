@@ -326,19 +326,21 @@ $(function () {
 function isBlank(str) {
     return str === null || str === undefined || str === "";
 }
-
+function isNotBlank(str) {
+    return!isBlank(str);
+}
 function addLine(html) {
-    if (html !== null && html !== "") {
-        var lineNum = html.split(/\n/).length;
-        var lineHtml = '<span class="line-number">';
-        for (var i = 0; i < lineNum; i++) {
-            lineHtml += '<span>' + (i + 1) + '</span>';
-        }
-        lineHtml += '</span>';
-        return lineHtml + html;
-    } else {
+    if (isBlank(html)) {
         return "";
     }
+
+    var lineNum = html.split(/\n/).length;
+    var lineHtml = '<span class="line-number">';
+    for (var i = 0; i < lineNum; i++) {
+        lineHtml += '<span>' + (i + 1) + '</span>';
+    }
+    lineHtml += '</span>';
+    return lineHtml + html;
 }
 
 $.ajaxSetup({
@@ -359,7 +361,7 @@ $.get(projectDomain + "/api/info", function (module) {
 
         $("pre[class='src src-json']").each(function () {
             var html = $(this).html();
-            if (html !== null && html !== "") {
+            if (isNotBlank(html)) {
                 html = html.replace(/(.*?)(\/\*.*?\*\/)/g, "$1<span class=\"comment\">$2</span>");
                 $(this).html(addLine(html));
             }
@@ -384,8 +386,8 @@ $.get(projectDomain + "/api/info", function (module) {
 });
 
 $.get(projectDomain + "/api/version", function (urlCopyright) {
-    if (urlCopyright !== null && urlCopyright !== "") {
-        if (urlCopyright.title !== null && urlCopyright.title !== "") {
+    if (isNotBlank(urlCopyright)) {
+        if (isNotBlank(urlCopyright.title)) {
             $("title").html(urlCopyright.title);
         }
         var copyrightRender = $("#copyright");

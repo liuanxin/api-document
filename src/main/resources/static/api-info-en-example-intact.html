@@ -376,19 +376,21 @@ $(function() {
 function isBlank(str) {
     return str === null || str === undefined || str === "";
 }
-
+function isNotBlank(str) {
+    return!isBlank(str);
+}
 function addLine(html) {
-    if (html !== null && html !== "") {
-        var lineNum = html.split(/\n/).length;
-        var lineHtml = '<span class="line-number">';
-        for (var i = 0; i < lineNum; i++) {
-            lineHtml += '<span>' + (i + 1) + '</span>';
-        }
-        lineHtml += '</span>';
-        return lineHtml + html;
-    } else {
+    if (isBlank(html)) {
         return "";
     }
+
+    var lineNum = html.split(/\n/).length;
+    var lineHtml = '<span class="line-number">';
+    for (var i = 0; i < lineNum; i++) {
+        lineHtml += '<span>' + (i + 1) + '</span>';
+    }
+    lineHtml += '</span>';
+    return lineHtml + html;
 }
 
 $.ajaxSetup({
@@ -409,7 +411,7 @@ $.get(projectDomain + "/api/info", function (module) {
 
         $("pre[class='src src-json']").each(function () {
             var html = $(this).html();
-            if (html !== null && html !== "") {
+            if (isNotBlank(html)) {
                 html = html.replace(/(.*?)(\/\*.*?\*\/)/g, "$1<span class=\"comment\">$2</span>");
                 $(this).html(addLine(html));
             }
@@ -434,8 +436,8 @@ $.get(projectDomain + "/api/info", function (module) {
 });
 
 $.get(projectDomain + "/api/version", function (urlCopyright) {
-    if (urlCopyright !== null && urlCopyright !== "") {
-        if (urlCopyright.title !== null && urlCopyright.title !== "") {
+    if (isNotBlank(urlCopyright)) {
+        if (isNotBlank(urlCopyright.title)) {
             $("title").html(urlCopyright.title);
         }
         var copyrightRender = $("#copyright");
@@ -485,26 +487,26 @@ function request(obj) {
     }).done(function(msg) {
         var end = new Date().getTime();
         var html = "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
-        if (msg !== null && msg !== "") {
-            html += addLine(escapeHtml(JSON.stringify(msg, null, 2)));
-        } else {
+        if (isBlank(msg)) {
             html += "<span style='color:green;'>" + method + " (" + url + ") success, but response nil</span>";
+        } else {
+            html += addLine(escapeHtml(JSON.stringify(msg, null, 2)));
         }
         responseData.html(html);
         response.show();
     }).fail(function(msg) {
         var end = new Date().getTime();
         var html = "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
-        if (msg !== null && msg !== "") {
+        if (isBlank(msg)) {
+            html += "<span style='color:red;'>" + method + " (" + url + ") fail</span>";
+        } else {
             var message = "Status Code: " + msg.status;
             var json = msg.responseJSON;
-            if (json !== null && json !== "") {
+            if (isNotBlank(json)) {
                 message += "\n\n";
                 message += escapeHtml(JSON.stringify(json, null, 2));
             }
             html += addLine(message);
-        } else {
-            html += "<span style='color:red;'>" + method + " (" + url + ") fail</span>";
         }
         responseData.html(html);
         response.show();
