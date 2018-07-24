@@ -108,28 +108,28 @@ public class Tools {
             // up type, down array type
 
             boolean[].class.getSimpleName(), new boolean[] { false },
-            Boolean[].class.getSimpleName(), new boolean[] { false },
+            Boolean[].class.getSimpleName(), new Boolean[] { false },
 
             byte[].class.getSimpleName(), new byte[] { (byte) 0 },
-            Byte[].class.getSimpleName(), new byte[] { (byte) 0 },
+            Byte[].class.getSimpleName(), new Byte[] { (byte) 0 },
 
             char[].class.getSimpleName(), new char[] { (char) 0 },
-            Character[].class.getSimpleName(), new char[] { (char) 0 },
+            Character[].class.getSimpleName(), new Character[] { (char) 0 },
 
             short[].class.getSimpleName(), new short[] { (short) 0 },
-            Short[].class.getSimpleName(), new short[] { (short) 0 },
+            Short[].class.getSimpleName(), new Short[] { (short) 0 },
 
             int[].class.getSimpleName(), new int[] { 0 },
-            Integer[].class.getSimpleName(), new int[] { 0 },
+            Integer[].class.getSimpleName(), new Integer[] { 0 },
 
             long[].class.getSimpleName(), new long[] { 0L },
-            Long[].class.getSimpleName(), new long[] { 0L },
+            Long[].class.getSimpleName(), new Long[] { 0L },
 
             float[].class.getSimpleName(), new float[] { 0F },
-            Float[].class.getSimpleName(), new float[] { 0F },
+            Float[].class.getSimpleName(), new Float[] { 0F },
 
             double[].class.getSimpleName(), new double[] { 0D },
-            Double[].class.getSimpleName(), new double[] { 0D },
+            Double[].class.getSimpleName(), new Double[] { 0D },
 
             BigInteger[].class.getSimpleName(), new BigInteger[] { BigInteger.ZERO },
             BigDecimal[].class.getSimpleName(), new BigDecimal[] { BigDecimal.ZERO },
