@@ -373,6 +373,10 @@ $(function() {
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/dot/1.1.2/doT.min.js"></script>
 <script type="text/javascript">
+function isBlank(str) {
+    return str === null || str === undefined || str === "";
+}
+
 function addLine(html) {
     if (html !== null && html !== "") {
         var lineNum = html.split(/\n/).length;
@@ -392,7 +396,7 @@ $.ajaxSetup({
     xhrFields: { withCredentials: true }
 });
 $.get(projectDomain + "/api/info", function (module) {
-    if (module === null || module === "") {
+    if (isBlank(module)) {
         $(".col-md-9").html("<span style='color:red;'>no api info</span>");
     } else {
         var urlRender = $("#url-render");
@@ -514,7 +518,7 @@ function objectifyForm(form) {
     return map;
 }
 function escapeHtml(html) {
-    if (html === null && html === "") {
+    if (isBlank(html)) {
         return null;
     }
     return html.replace(/&/g, "&amp;")

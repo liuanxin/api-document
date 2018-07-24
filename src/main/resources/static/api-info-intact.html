@@ -323,6 +323,10 @@ $(function () {
 
 <script src="//cdn.bootcss.com/dot/1.1.2/doT.min.js"></script>
 <script type="text/javascript">
+function isBlank(str) {
+    return str === null || str === undefined || str === "";
+}
+
 function addLine(html) {
     if (html !== null && html !== "") {
         var lineNum = html.split(/\n/).length;
@@ -342,7 +346,7 @@ $.ajaxSetup({
     xhrFields: { withCredentials: true }
 });
 $.get(projectDomain + "/api/info", function (module) {
-    if (module === null || module === "") {
+    if (isBlank(module)) {
         $(".col-md-9").html("<span style='color:red;'>无接口信息</span>");
     } else {
         var urlRender = $("#url-render");
