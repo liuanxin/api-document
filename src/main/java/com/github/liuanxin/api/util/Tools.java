@@ -48,6 +48,10 @@ public class Tools {
             double.class.getSimpleName(), double.class,
             Double.class.getSimpleName(), double.class,
 
+            BigInteger.class.getSimpleName(), long.class,
+            BigDecimal.class.getSimpleName(), double.class,
+            String.class.getSimpleName(), String.class,
+
             // up type, down array type
 
             boolean[].class.getSimpleName(), boolean[].class,
@@ -72,7 +76,11 @@ public class Tools {
             Float[].class.getSimpleName(), float[].class,
 
             double[].class.getSimpleName(), double[].class,
-            Double[].class.getSimpleName(), double[].class
+            Double[].class.getSimpleName(), double[].class,
+
+            BigInteger[].class.getSimpleName(), long[].class,
+            BigDecimal[].class.getSimpleName(), double[].class,
+            String[].class.getSimpleName(), String[].class
     );
 
     /** { basic-type : default-value } */
