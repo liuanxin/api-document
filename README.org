@@ -45,7 +45,8 @@ public class ApiInfoConfig {
 
 Then mark the corresponding annotations in the corresponding controller layer(only collect the documents related to @RestController or @ResponseBody related classes and interfaces, If the result of the method is List, Set or Map will be processed by ArrayList, HashSet and HashMap)
 
-PS: The return type on the method is a ResponseEntity class. Classes that have no default no-argument construct will not be processed(You can refer to the global processing of [[https://github.com/liuanxin/api-document-example][example]]). In addition, when has array of non-base data types in the return field, please use List<Type> to replace
+PS: Classes that have no default no-argument construct (include ResponseEntity class) will not be processed(You can refer to the global processing of [[https://github.com/liuanxin/api-document-example][example]]). In addition, when has array of non-base data types in the return field, please use List<Type> to replace
+
 
 annotation for this
 #+BEGIN_EXAMPLE
