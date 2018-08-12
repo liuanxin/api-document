@@ -24,7 +24,6 @@ public class DocumentUrl {
     private static final String DOUBLE_QUOTE = "\"";
     private static final String COMMENT_START = "  /* ";
     private static final String COMMENT_END = " */";
-    private static final String STR = String.class.getSimpleName();
 
     @JsonIgnore
     private int index = Integer.MAX_VALUE;
@@ -90,11 +89,9 @@ public class DocumentUrl {
                 if (Tools.isNotBlank(documentReturn)) {
                     String returnName = documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY).trim();
                     if (trim.startsWith(DOUBLE_QUOTE + returnName + DOUBLE_QUOTE)) {
-                        if (!STR.equalsIgnoreCase(documentReturn.getType())) {
-                            String desc = documentReturn.getDesc();
-                            if (Tools.isNotBlank(desc)) {
-                                sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
-                            }
+                        String desc = documentReturn.getDesc();
+                        if (Tools.isNotBlank(desc) && !trim.contains(desc)) {
+                            sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
                         }
                         index++;
                     }
