@@ -72,15 +72,17 @@ public class DocumentUrl {
         if (Tools.isBlank(commentJson)) {
             return Tools.EMPTY;
         }
+
+        // for windows pretty... \r\n to \n
+        commentJson = commentJson.replace("\r", Tools.EMPTY);
         if (!commentInReturnExample) {
             return commentJson;
         }
 
         StringBuilder sbd = new StringBuilder();
-        String[] split = commentJson.split(WRAP);
         int index = 0;
         // add comment in json
-        for (String comment : split) {
+        for (String comment : commentJson.split(WRAP)) {
             sbd.append(comment);
 
             String trim = comment.trim();
