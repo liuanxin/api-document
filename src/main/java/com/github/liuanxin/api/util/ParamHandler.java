@@ -51,7 +51,6 @@ public final class ParamHandler {
         return params;
     }
 
-    /** 参数必须就返回 true */
     private static boolean paramHasMust(MethodParameter parameter) {
         RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
         if (requestParam != null && requestParam.required()) {
