@@ -17,7 +17,8 @@ public final class Requests {
         }
 
         StringBuilder sbd = new StringBuilder();
-        sbd.append(scheme).append("://").append(request.getServerName());
+        // sbd.append(scheme).append(":");
+        sbd.append("//").append(request.getServerName());
         boolean http = "http".equalsIgnoreCase(scheme) && (port != 80);
         if (http || ("https".equalsIgnoreCase(scheme) && (port != 443))) {
             sbd.append(':').append(port);
