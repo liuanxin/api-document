@@ -124,8 +124,9 @@ public class DocumentController {
                             url.setResponseList(handlerResponse(handlerMethod));
 
                             String method = handlerMethod.toString();
+                            url.setReturnRecordLevel(copyright.isReturnRecordLevel());
                             // return param
-                            url.setReturnList(ReturnHandler.handlerReturn(method, copyright.isReturnRecordLevel()));
+                            url.setReturnList(ReturnHandler.handlerReturn(method));
                             // return json
                             url.setReturnJson(ReturnHandler.handlerReturnJson(method));
 
