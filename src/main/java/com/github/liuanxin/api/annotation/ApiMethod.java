@@ -17,4 +17,6 @@ public @interface ApiMethod {
     int index() default Integer.MAX_VALUE;
 
     boolean commentInReturnExample() default true;
+
+    boolean returnRecordLevel() default false;
 }

@@ -124,7 +124,6 @@ public class DocumentController {
                             url.setResponseList(handlerResponse(handlerMethod));
 
                             String method = handlerMethod.toString();
-                            url.setReturnRecordLevel(copyright.isReturnRecordLevel());
                             // return param
                             url.setReturnList(ReturnHandler.handlerReturn(method));
                             // return json
@@ -138,8 +137,10 @@ public class DocumentController {
                                 url.setDevelop(apiMethod.develop());
                                 url.setIndex(apiMethod.index());
                                 url.setCommentInReturnExample(apiMethod.commentInReturnExample());
+                                url.setReturnRecordLevel(apiMethod.returnRecordLevel());
                             } else {
                                 url.setCommentInReturnExample(copyright.isCommentInReturnExample());
+                                url.setReturnRecordLevel(copyright.isReturnRecordLevel());
                             }
                             url.setExampleUrl(getExampleUrl(url.getId()));
 
