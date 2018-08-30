@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 @Setter
@@ -41,8 +39,6 @@ public class DocumentUrl {
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;
-    @JsonIgnore
-    private boolean returnRecordLevel;
 
     @JsonIgnore
     private boolean commentInReturnExample;
@@ -83,20 +79,25 @@ public class DocumentUrl {
             return commentJson;
         }
 
-        String[] split = commentJson.split(WRAP);
-
-        Map<Integer, String> indexMap = indexMap(split);
-        Map<String, String> commentMap = documentReturnMap();
-
-        // add comment in json
         StringBuilder sbd = new StringBuilder();
-        for (int i = 0; i < split.length; i++) {
-            String comment = split[i];
+        int index = 0;
+        // add comment in json
+        for (String comment : commentJson.split(WRAP)) {
             sbd.append(comment);
 
-            String desc = commentMap.get(indexMap.get(i));
-            if (Tools.isNotBlank(desc)) {
-                sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
+            String trim = comment.trim();
+            if (returnList.size() > index) {
+                DocumentReturn documentReturn = returnList.get(index);
+                if (Tools.isNotBlank(documentReturn)) {
+                    String returnName = documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY).trim();
+                    if (trim.startsWith(DOUBLE_QUOTE + returnName + DOUBLE_QUOTE)) {
+                        String desc = documentReturn.getDesc();
+                        if (Tools.isNotBlank(desc) && !trim.contains(desc)) {
+                            sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
+                        }
+                        index++;
+                    }
+                }
             }
             sbd.append(WRAP);
         }
@@ -106,65 +107,8 @@ public class DocumentUrl {
     public List<DocumentReturn> getReturnList() {
         if (commentInReturnExample) {
             return Collections.emptyList();
-        } else if (!returnRecordLevel) {
-            List<DocumentReturn> documentReturns = new ArrayList<>();
-            for (DocumentReturn documentReturn : returnList) {
-                String name = documentReturn.getName();
-                if (name.contains(" -> ")) {
-                    DocumentReturn documentReturn1 = new DocumentReturn();
-                    documentReturn1.setName(name.substring(0, name.indexOf(" -> ")).trim());
-                    documentReturn1.setType(documentReturn.getType());
-                    documentReturn1.setDesc(documentReturn.getDesc());
-                    documentReturns.add(documentReturn1);
-                } else {
-                    documentReturns.add(documentReturn);
-                }
-            }
-            return documentReturns;
-        } else {
-            return returnList;
         }
-    }
-
-    private Map<Integer, String> indexMap(String[] split) {
-        Map<Integer, String> indexMap = Tools.newHashMap();
-        String field = Tools.EMPTY;
-        for (int i = 0; i < split.length; i++) {
-            String comment = split[i].trim();
-            if (!comment.contains(DOUBLE_QUOTE)) {
-                indexMap.put(i, comment);
-            } else {
-                String tmp = comment.substring(1);
-                tmp = tmp.substring(0, tmp.indexOf(DOUBLE_QUOTE));
-
-                if (Tools.isBlank(tmp)) {
-                    field = tmp;
-                } else {
-                    field = tmp + field;
-                }
-
-                indexMap.put(i, field);
-                field = field.substring(tmp.length());
-
-                if (comment.contains("{")) {
-                    field = ReturnHandler.LEVEL_APPEND + tmp + field;
-                }
-            }
-            if (comment.contains("}") && field.contains(ReturnHandler.LEVEL_APPEND)) {
-                field = field.substring(ReturnHandler.LEVEL_APPEND.length());
-                if (field.contains(ReturnHandler.LEVEL_APPEND)) {
-                    field = field.substring(field.indexOf(ReturnHandler.LEVEL_APPEND));
-                }
-            }
-        }
-        return indexMap;
-    }
-    private Map<String, String> documentReturnMap() {
-        Map<String, String> returnMap = Tools.newHashMap();
-        for (DocumentReturn documentReturn : returnList) {
-            returnMap.put(documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY), documentReturn.getDesc());
-        }
-        return returnMap;
+        return returnList;
     }
 
     public boolean getHasExample() {
@@ -203,3 +147,4 @@ public class DocumentUrl {
         return false;
     }
 }
+

@@ -13,7 +13,6 @@ public final class ReturnHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReturnHandler.class);
     public static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
-    public static final String LEVEL_APPEND = " -> ";
     private static final String SPACE = " ";
     private static final Date TMP_DATE = new Date();
 
@@ -21,15 +20,17 @@ public final class ReturnHandler {
     private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T", "E", "A", "K", "V");
 
     @SuppressWarnings("unchecked")
-    public static List<DocumentReturn> handlerReturn(String method) {
+    public static List<DocumentReturn> handlerReturn(String method, boolean recordLevel) {
         String type = method.substring(method.indexOf(SPACE)).trim();
         type = type.substring(0, type.indexOf(SPACE)).trim();
         List<DocumentReturn> returnList = new ArrayList<>();
-        handlerReturn(Tools.EMPTY, Tools.EMPTY, type, returnList);
+        handlerReturn(Tools.EMPTY, Tools.EMPTY, recordLevel, type, returnList);
         return returnList;
     }
 
-    private static void handlerReturn(String space, String parent, String type, List<DocumentReturn> returnList) {
+    private static void handlerReturn(String space, String parent,
+                                      boolean recordLevel, String type,
+                                      List<DocumentReturn> returnList) {
         String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
         if ("void".equals(className)) {
             return;
@@ -53,7 +54,7 @@ public final class ReturnHandler {
             if (Collection.class.isAssignableFrom(outClass)) {
                 if (type.contains("<") && type.contains(">")) {
                     String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                    handlerReturn(space, parent, classType, returnList);
+                    handlerReturn(space, parent, recordLevel, classType, returnList);
                 }
             } else if (Map.class.isAssignableFrom(outClass)) {
                 if (type.contains("<") && type.contains(">")) {
@@ -62,7 +63,7 @@ public final class ReturnHandler {
                     if (keyValue.length == 2) {
                         // handlerReturn(space, parent, keyValue[0].trim(), returnList);
                         // just handler value, key don't handler
-                        handlerReturn(space, parent, keyValue[1].trim(), returnList);
+                        handlerReturn(space, parent, recordLevel, keyValue[1].trim(), returnList);
                     } else {
                         if (LOGGER.isWarnEnabled()) {
                             LOGGER.warn("method ({}) map returnType({}) has problem", type, keyAndValue);
@@ -89,8 +90,8 @@ public final class ReturnHandler {
                     if (notRecursive) {
                         String genericType = field.getGenericType().toString();
                         if (Tools.notBasicType(field.getType())) {
-                            String innerParent = (LEVEL_APPEND + fieldName + parent);
-                            handlerReturn(space + TAB, innerParent, genericType, returnList);
+                            String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
+                            handlerReturn(space + TAB, innerParent, recordLevel, genericType, returnList);
                         }
                         tmpFieldMap.put(genericType, fieldName);
                     }
@@ -99,9 +100,9 @@ public final class ReturnHandler {
             // handler generic
             if (type.contains("<") && type.contains(">")) {
                 String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                String fieldName = handlerReturnFieldName(tmpFieldMap, innerType);
-                String innerParent = (LEVEL_APPEND + fieldName + parent);
-                handlerReturn(space + TAB, innerParent, innerType, returnList);
+                String fieldName = handlerReturnFieldName(tmpFieldMap, innerType, recordLevel);
+                String innerParent = recordLevel ? (" -> " + fieldName + parent) : Tools.EMPTY;
+                handlerReturn(space + TAB, innerParent, recordLevel, innerType, returnList);
             }
         }
         /*
@@ -136,7 +137,10 @@ public final class ReturnHandler {
         return documentReturn;
     }
 
-    private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType) {
+    private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType, boolean recordLevel) {
+        if (!recordLevel) {
+            return Tools.EMPTY;
+        }
         for (Map.Entry<String, String> entry : fieldMap.entrySet()) {
             String key = entry.getKey();
             for (String className : GENERIC_CLASS_NAME) {
@@ -458,3 +462,4 @@ public final class ReturnHandler {
         return true;
     }
 }
+
