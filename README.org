@@ -17,7 +17,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.2.7</version>
+    <version>0.2.8</version>
 </dependency>
 #+END_SRC
 
@@ -43,9 +43,13 @@ public class ApiInfoConfig {
 }
 #+END_SRC
 
-Then mark the corresponding annotations in the corresponding controller layer(only collect the documents related to @RestController or @ResponseBody related classes and interfaces, If the result of the method is List, Set or Map will be processed by ArrayList, HashSet and HashMap)
+Then mark the corresponding annotations in the corresponding controller layer(only collect the documents related to
+@RestController or @ResponseBody related classes and interfaces, If the result of the method is List,
+Set or Map will be processed by ArrayList, HashSet and HashMap)
 
-PS: Classes that have no default no-argument construct (include ResponseEntity class) will not be processed(You can refer to the global processing of [[https://github.com/liuanxin/api-document-example][example]]). In addition, when has array of non-base data types in the return field, please use List<Type> to replace
+PS: Classes that have no default no-argument construct (include ResponseEntity class) will not be processed(You can
+refer to the global processing of [[https://github.com/liuanxin/api-document-example][example]]).
+In addition, when has array of non-base data types in the return field, please use List<Type> to replace
 
 
 annotation for this
@@ -78,10 +82,10 @@ for example:
   commentInReturnExample  --> if false, comment will show with display separately, default true
   commentInReturnExampleWithLevel use level to handle comment in field, default false
     if set to false, will use index corresponding to the field to process the comment,
-    but, if use @JsonPropertyOrder to change field sort, or the field is not a standard hump name will be a problem
+    but, if use @JsonPropertyOrder to change field sort, or the field is not a standard hump name, there will be problems
 
-    if set to true, the level in the field will be used to process the comment,
-    but, there will be problems when encountering a complex generic
+    if set to true, the hierarchical relationship corresponding to the field will be used to process the comment,
+    but, when encountering complex generic structures, or the field is not a standard hump name, there will be problems
 
 @ApiParam   --> in param or field
   value     --> must set
