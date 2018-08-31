@@ -83,10 +83,9 @@ for example:
   commentInReturnExampleWithLevel use level to handle comment in field, default true
     if set to true, the hierarchical relationship corresponding to the field will be used to process the comment,
     when encountering complex generic structures, there will be problems
-
     if set to false, will use index corresponding to the field to process the comment,
     when use @JsonPropertyOrder to change field sort, there will be problems
-    
+
     PS: if the field is not a standard hump name, there will be problems to
 
 @ApiParam   --> in param or field
