@@ -138,6 +138,7 @@ public class DocumentController {
                                 url.setIndex(apiMethod.index());
                                 url.setCommentInReturnExample(apiMethod.commentInReturnExample());
                                 url.setReturnRecordLevel(apiMethod.returnRecordLevel());
+                                url.setCommentInReturnExampleWithLevel(apiMethod.commentInReturnExampleWithLevel());
                             } else {
                                 url.setCommentInReturnExample(copyright.isCommentInReturnExample());
                                 url.setReturnRecordLevel(copyright.isReturnRecordLevel());

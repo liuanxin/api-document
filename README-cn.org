@@ -72,6 +72,9 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
   desc      接口详细说明. 可以不设置
   index     索引, 越小越靠前. 可以不设置
   commentInReturnExample  返回字段说明是否写在返回示例中. 可以不设置, 默认是 true
+  commentInReturnExampleWithLevel 使用层级关系来处理示例中的字段注释, 默认是 false
+    为 false 将使用字段的所在位置来处理说明, 但是当使用 @JsonPropertyOrder 更改字段顺序 或 字段不是标准的驼峰命名 将会有问题
+    为 true  将使用字段的层级关系来处理说明, 但是当遇到很复杂的泛型类型时将会有问题
 
 @ApiParam   标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
   value     参数说明, 必须设置

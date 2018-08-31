@@ -144,7 +144,7 @@ public final class ReturnHandler {
         for (Map.Entry<String, String> entry : fieldMap.entrySet()) {
             String key = entry.getKey();
             for (String className : GENERIC_CLASS_NAME) {
-                if (key.equals(className)) {
+                if (key.equals(className) || key.contains("<" + className  + ">")) {
                     return entry.getValue();
                 }
             }

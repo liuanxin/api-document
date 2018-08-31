@@ -19,4 +19,6 @@ public @interface ApiMethod {
     boolean commentInReturnExample() default true;
 
     boolean returnRecordLevel() default false;
+
+    boolean commentInReturnExampleWithLevel() default true;
 }

@@ -76,6 +76,12 @@ for example:
   desc
   index     --> more forward when smaller
   commentInReturnExample  --> if false, comment will show with display separately, default true
+  commentInReturnExampleWithLevel use level to handle comment in field, default false
+    if set to false, will use index corresponding to the field to process the comment,
+    but, if use @JsonPropertyOrder to change field sort, or the field is not a standard hump name will be a problem
+
+    if set to true, the level in the field will be used to process the comment,
+    but, there will be problems when encountering a complex generic
 
 @ApiParam   --> in param or field
   value     --> must set

@@ -45,7 +45,7 @@ public class DocumentUrl {
     @JsonIgnore
     private boolean returnRecordLevel;
     @JsonIgnore
-    private boolean commentInReturnExampleWithLevel = false;
+    private boolean commentInReturnExampleWithLevel;
     @JsonIgnore
     private boolean commentInReturnExample;
     @JsonIgnore
@@ -86,49 +86,51 @@ public class DocumentUrl {
         }
 
         String[] split = commentJson.split(WRAP);
-
         // add comment in json
         StringBuilder sbd = new StringBuilder();
-        Map<Integer, String> indexMap = indexMap(split);
-        Map<String, String> commentMap = documentReturnMap();
 
-        for (int i = 0; i < split.length; i++) {
-            String comment = split[i];
-            sbd.append(comment);
+        if (commentInReturnExampleWithLevel) {
+            Map<Integer, String> indexMap = indexMap(split);
+            Map<String, String> commentMap = documentReturnMap();
 
-            String desc = commentMap.get(indexMap.get(i));
-            if (Tools.isNotBlank(desc)) {
-                sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
+            for (int i = 0; i < split.length; i++) {
+                String comment = split[i];
+                sbd.append(comment);
+
+                String desc = commentMap.get(indexMap.get(i));
+                if (Tools.isNotBlank(desc) && !comment.contains(desc)) {
+                    sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
+                }
+                sbd.append(WRAP);
             }
-            sbd.append(WRAP);
+        } else {
+            int index = 0;
+            // add comment in json
+            for (String comment : split) {
+                sbd.append(comment);
+
+                comment = comment.trim();
+                if (returnList.size() > index) {
+                    DocumentReturn documentReturn = returnList.get(index);
+                    if (Tools.isNotBlank(documentReturn)) {
+                        String returnName = documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY).trim();
+                        if (returnName.contains(ReturnHandler.LEVEL_APPEND)) {
+                            returnName = returnName.substring(0, returnName.indexOf(ReturnHandler.LEVEL_APPEND)).trim();
+                        }
+                        if (comment.startsWith(DOUBLE_QUOTE + returnName + DOUBLE_QUOTE)) {
+                            String desc = documentReturn.getDesc();
+                            if (Tools.isNotBlank(desc) && !comment.contains(desc)) {
+                                sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
+                            }
+                            index++;
+                        }
+                    }
+                }
+                sbd.append(WRAP);
+            }
         }
         return sbd.delete(sbd.length() - 1, sbd.length()).toString();
     }
-
-    public List<DocumentReturn> getReturnList() {
-        if (commentInReturnExample || Tools.isEmpty(returnList)) {
-            return Collections.emptyList();
-        }
-        if (returnRecordLevel) {
-            return returnList;
-        }
-
-        List<DocumentReturn> documentReturns = new ArrayList<>();
-        for (DocumentReturn documentReturn : returnList) {
-            String name = documentReturn.getName();
-            if (name.contains(" -> ")) {
-                DocumentReturn documentReturn1 = new DocumentReturn();
-                documentReturn1.setName(name.substring(0, name.indexOf(" -> ")).trim());
-                documentReturn1.setType(documentReturn.getType());
-                documentReturn1.setDesc(documentReturn.getDesc());
-                documentReturns.add(documentReturn1);
-            } else {
-                documentReturns.add(documentReturn);
-            }
-        }
-        return documentReturns;
-    }
-
     /**
      * <pre>
      * 0  {
@@ -247,6 +249,30 @@ public class DocumentUrl {
             returnMap.put(documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY), documentReturn.getDesc());
         }
         return returnMap;
+    }
+
+    public List<DocumentReturn> getReturnList() {
+        if (commentInReturnExample || Tools.isEmpty(returnList)) {
+            return Collections.emptyList();
+        }
+        if (returnRecordLevel) {
+            return returnList;
+        }
+
+        List<DocumentReturn> documentReturns = new ArrayList<>();
+        for (DocumentReturn documentReturn : returnList) {
+            String name = documentReturn.getName();
+            if (name.contains(ReturnHandler.LEVEL_APPEND)) {
+                DocumentReturn documentReturn1 = new DocumentReturn();
+                documentReturn1.setName(name.substring(0, name.indexOf(ReturnHandler.LEVEL_APPEND)).trim());
+                documentReturn1.setType(documentReturn.getType());
+                documentReturn1.setDesc(documentReturn.getDesc());
+                documentReturns.add(documentReturn1);
+            } else {
+                documentReturns.add(documentReturn);
+            }
+        }
+        return documentReturns;
     }
 
     public boolean getHasExample() {
