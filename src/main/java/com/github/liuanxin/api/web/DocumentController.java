@@ -125,7 +125,7 @@ public class DocumentController {
 
                             String method = handlerMethod.toString();
                             // return param
-                            url.setReturnList(ReturnHandler.handlerReturn(method, copyright.isReturnRecordLevel()));
+                            url.setReturnList(ReturnHandler.handlerReturn(method));
                             // return json
                             url.setReturnJson(ReturnHandler.handlerReturnJson(method));
 
@@ -137,8 +137,10 @@ public class DocumentController {
                                 url.setDevelop(apiMethod.develop());
                                 url.setIndex(apiMethod.index());
                                 url.setCommentInReturnExample(apiMethod.commentInReturnExample());
+                                url.setReturnRecordLevel(apiMethod.returnRecordLevel());
                             } else {
                                 url.setCommentInReturnExample(copyright.isCommentInReturnExample());
+                                url.setReturnRecordLevel(copyright.isReturnRecordLevel());
                             }
                             url.setExampleUrl(getExampleUrl(url.getId()));
 
@@ -308,4 +310,3 @@ public class DocumentController {
         return annotation;
     }
 }
-
