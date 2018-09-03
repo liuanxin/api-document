@@ -49,7 +49,7 @@ Set or Map will be processed by ArrayList, HashSet and HashMap)
 
 PS: Classes that have no default no-argument construct (include ResponseEntity class) will not be processed(You can
 refer to the global processing of [[https://github.com/liuanxin/api-document-example][example]]).
-In addition, when has array of non-base data types in the return field, please use List<Type> to replace
+In addition, when has array of non-base data types in the return field, please use List<Object Type> to replace.
 
 
 annotation for this
@@ -82,11 +82,11 @@ for example:
   commentInReturnExample  --> if false, comment will show with display separately, default true
   commentInReturnExampleWithLevel use level to handle comment in field, default true
     if set to true, the hierarchical relationship corresponding to the field will be used to process the comment,
-    when encountering complex generic structures, there will be problems
+    when encountering complex generic structures, there will be problems.
     if set to false, will use index corresponding to the field to process the comment,
-    when use @JsonPropertyOrder to change field sort, there will be problems
+    when use @JsonPropertyOrder to change field sort, there will be problems.
 
-    PS: if the field is not a standard hump name, there will be problems to
+    PS: if the field is not a standard hump name, there will be problems too..
 
 @ApiParam   --> in param or field
   value     --> must set
