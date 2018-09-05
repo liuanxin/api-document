@@ -32,6 +32,7 @@ public class DocumentController {
     static final String PARENT_URL_PREFIX = "/api";
 
     private static final String VERSION_URL = "/version";
+    private static final String VERSION_CLEAR = "/clear";
     private static final String INFO_URL = "/info";
     private static final String EXAMPLE_URL = "/example/{id}.json";
     private static final String PRODUCES = "application/json; charset=UTF-8";
@@ -75,6 +76,23 @@ public class DocumentController {
             }
             return Tools.toJson(documentCopyright);
         }
+    }
+
+    @PostMapping(value = VERSION_CLEAR, produces = PRODUCES)
+    public String clear() {
+        if (document_str != null || document_info != null || url_map != null) {
+            LOCK.lock();
+            try {
+                if (document_str != null || document_info != null || url_map != null) {
+                    document_str = null;
+                    document_info = null;
+                    url_map = null;
+                }
+            } finally {
+                LOCK.unlock();
+            }
+        }
+        return "clear";
     }
 
     @GetMapping(value = INFO_URL, produces = PRODUCES)

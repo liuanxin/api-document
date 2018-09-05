@@ -202,7 +202,7 @@
                             <span class="section-number-3">{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
                         </h3>
                         <div class="outline-text-3">
-<pre class="example">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
+<pre class="example">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
                             <p>request <code>{{= url.method}} {{= url.url}}</code></p>
 
                             {{? url.commentJson && url.commentJson !== '' }}
