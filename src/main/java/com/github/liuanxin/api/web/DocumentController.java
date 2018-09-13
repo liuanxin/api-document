@@ -192,22 +192,10 @@ public class DocumentController {
             List<DocumentModule> moduleList = new ArrayList<>();
             if (Tools.isNotEmpty(modules)) {
                 for (DocumentModule module : modules) {
-                    // url sort
-                    Collections.sort(module.getUrlList(), new Comparator<DocumentUrl>() {
-                        @Override
-                        public int compare(DocumentUrl o1, DocumentUrl o2) {
-                            return o1.getIndex() - o2.getIndex();
-                        }
-                    });
+                    Collections.sort(module.getUrlList());
                     moduleList.add(module);
                 }
-                // module sort
-                Collections.sort(moduleList, new Comparator<DocumentModule>() {
-                    @Override
-                    public int compare(DocumentModule o1, DocumentModule o2) {
-                        return o1.getIndex() - o2.getIndex();
-                    }
-                });
+                Collections.sort(moduleList);
             }
             DocumentInfo documentInfo = new DocumentInfo(copyright.getGlobalResponse(), moduleList);
             document_str = Tools.toJson(documentInfo);

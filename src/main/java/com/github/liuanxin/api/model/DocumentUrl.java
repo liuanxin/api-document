@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 @Getter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class DocumentUrl {
+public class DocumentUrl implements Comparable<DocumentUrl> {
 
     private static final String WRAP = "\n";
     private static final String WRAP_REPLACE = " <> ";
@@ -309,5 +309,22 @@ public class DocumentUrl {
             }
         }
         return false;
+    }
+
+    @Override
+    public int compareTo(DocumentUrl obj) {
+        if (obj == null) {
+            return -1;
+        }
+        // sort: field index first, develop second, title third
+        int sort = index - obj.getIndex();
+        if (sort != 0) {
+            return sort;
+        }
+        sort = develop.compareTo(obj.getDevelop());
+        if (sort != 0) {
+            return sort;
+        }
+        return title.compareTo(obj.getTitle());
     }
 }

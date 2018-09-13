@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Accessors(chain = true)
-public class DocumentModule {
+public class DocumentModule implements Comparable<DocumentModule> {
 
     @JsonIgnore
     private int index = Integer.MAX_VALUE;
@@ -36,5 +36,23 @@ public class DocumentModule {
     }
     public void addUrl(DocumentUrl url) {
         urlList.add(url);
+    }
+
+
+    @Override
+    public int compareTo(DocumentModule obj) {
+        if (obj == null) {
+            return -1;
+        }
+        // sort: field index first, info second, name third
+        int sort = index - obj.getIndex();
+        if (sort != 0) {
+            return sort;
+        }
+        sort = info.compareTo(obj.getInfo());
+        if (sort != 0) {
+            return sort;
+        }
+        return name.compareTo(obj.getName());
     }
 }

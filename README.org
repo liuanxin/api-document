@@ -55,8 +55,8 @@ In addition, when has array of non-base data types in the return field, please u
 annotation for this
 #+BEGIN_EXAMPLE
 @ApiGroup   --> in class or method. use the method if all of that
-  value     --> module info, must set
-  index     --> more forward when smaller
+  value     --> module info, must set, for example(name-info : user-userModule, comment can be ignore)
+  index     --> more forward when smaller("index" first, "info" second, "name" third -> with sort)
 
 
 @ApiResponses --> in class or method
@@ -76,9 +76,9 @@ for example:
 
 @ApiMethod  --> in method
   title     --> must set
-  develop
-  desc
-  index     --> more forward when smaller
+  develop   --> can not be set
+  desc      --> description, can not be set
+  index     --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
   commentInReturnExample  --> if false, comment will show with display separately, default true
   commentInReturnExampleWithLevel use level to handle comment in field, default true
     if set to true, the hierarchical relationship corresponding to the field will be used to process the comment,

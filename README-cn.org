@@ -48,7 +48,7 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
 #+BEGIN_EXAMPLE
 @ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
   value     模块. 必须设置, 示例(name-说明, 如: user-用户模块, 说明可以忽略)
-  index     索引, 越小越靠前. 可以不设置
+  index     索引, 越小越靠前. 可以不设置(索引如果一致会使用 说明 排序, 说明如果也一致会使用 name 排序)
 
 
 @ApiResponses 标注在类或方法上. 用来标注接口的响应码或描述
@@ -70,7 +70,7 @@ PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无�
   title     接口标题, 必须设置
   develop   开发者信息, 可以不设置
   desc      接口详细说明. 可以不设置
-  index     索引, 越小越靠前. 可以不设置
+  index     索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序, 开发者信息 如果也一致会使用 接口标题 排序)
   commentInReturnExample  返回字段说明是否写在返回示例中. 可以不设置, 默认是 true
   commentInReturnExampleWithLevel 使用层级关系来处理示例中的字段注释, 默认是 true
     为 true  将使用字段的层级关系来处理说明, 当遇到复杂的泛型结构 将会有问题
