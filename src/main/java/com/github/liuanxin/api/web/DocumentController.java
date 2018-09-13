@@ -8,6 +8,8 @@ import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
@@ -20,8 +22,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
 
+@Configuration("document-collect-controller")
+@ConditionalOnBean({ DocumentCopyright.class })
 @ApiIgnore
-@RestController("document-collect-controller")
+@ResponseBody
 @RequestMapping(DocumentController.PARENT_URL_PREFIX)
 public class DocumentController {
 
