@@ -99,7 +99,7 @@ for example:
 
 @ApiReturn  --> in field
   value     --> must set
-  type      --> if type was custom can use(for example: enum, but param type was be int)
+  type      --> if type was custom can use(for example: enum, but return type was be int)
 
 @ApiReturnIgnore --> in field
 #+END_EXAMPLE
