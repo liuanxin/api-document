@@ -48,7 +48,7 @@ Then mark the corresponding annotations in the corresponding controller layer(on
 Set or Map will be processed by ArrayList, HashSet and HashMap)
 
 PS: Classes that have no default no-argument construct (include ResponseEntity class) will not be processed(You can
-refer to the global processing of [[https://github.com/liuanxin/api-document-example][example]]).
+refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example]]).
 In addition, when has array of non-base data types in the return field, please use List<Object Type> to replace.
 
 
