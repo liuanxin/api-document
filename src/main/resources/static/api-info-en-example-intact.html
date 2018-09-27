@@ -410,13 +410,19 @@ $.get(projectDomain + "/api/info", function (module) {
     if (isBlank(module)) {
         $(".col-md-9").html("<span style='color:red;'>no api info</span>");
     } else {
+        var info;
+        if (typeof module === "string") {
+            info = JSON.parse(module);
+        } else {
+            info = module;
+        }
         var urlRender = $("#url-render");
         var urlRenderTemplate = doT.template(urlRender.html());
-        urlRender.parent().html(urlRenderTemplate(module));
+        urlRender.parent().html(urlRenderTemplate(info));
 
         var navRender = $("#url-nav-render");
         var navRenderTemplate = doT.template(navRender.html());
-        navRender.parent().html(navRenderTemplate(module));
+        navRender.parent().html(navRenderTemplate(info));
 
         $("pre[class='src src-json']").each(function () {
             var html = $(this).html();
@@ -446,12 +452,18 @@ $.get(projectDomain + "/api/info", function (module) {
 
 $.get(projectDomain + "/api/version", function (urlCopyright) {
     if (isNotBlank(urlCopyright)) {
-        if (isNotBlank(urlCopyright.title)) {
-            $("title").html(urlCopyright.title);
+        var copyright;
+        if (typeof urlCopyright === "string") {
+            copyright = JSON.parse(urlCopyright);
+        } else {
+            copyright = urlCopyright;
+        }
+        if (isNotBlank(copyright.title)) {
+            $("title").html(copyright.title);
         }
         var copyrightRender = $("#copyright");
         var template = doT.template(copyrightRender.html());
-        copyrightRender.parent().html(template(urlCopyright));
+        copyrightRender.parent().html(template(copyright));
     }
 });
 </script>
