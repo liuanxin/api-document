@@ -49,6 +49,7 @@ Set or Map will be processed by ArrayList, HashSet and HashMap)
 
 PS: Classes that have no default no-argument construct (include ResponseEntity class) will not be processed(You can
 refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example]]).
+For generics, be sure to use certain types, such as <String> <User> etc. If use a type like <T> <Object> will not be able to parse.
 In addition, when has array of non-base data types in the return field, please use List<Object Type> to replace.
 
 
@@ -81,8 +82,7 @@ for example:
   index     --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
   commentInReturnExample  --> if false, comment will show with display separately, default true
   commentInReturnExampleWithLevel use level to handle comment in field, default true
-    if set to true, the hierarchical relationship corresponding to the field will be used to process the comment,
-    when encountering complex generic structures, there will be problems.
+    if set to true, the hierarchical relationship corresponding to the field will be used to process the comment, Generics be sure to use certain types.
     if set to false, will use index corresponding to the field to process the comment,
     when use @JsonPropertyOrder to change field sort, there will be problems.
 
