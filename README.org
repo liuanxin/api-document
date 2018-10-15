@@ -50,7 +50,7 @@ Set or Map will be processed by ArrayList, HashSet and HashMap)
 PS: Classes that have no default no-argument construct (include ResponseEntity class) will not be processed(You can
 refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example]]).
 For generics, be sure to use certain types, such as <String> <User> etc. If use a type like <T> <Object> will not be able to parse.
-In addition, when has array of non-base data types in the return field, please use List<Object Type> to replace.
+In addition, when has array of non-base data types in the return field(User[]), please use List<User> to replace.
 
 
 annotation for this
