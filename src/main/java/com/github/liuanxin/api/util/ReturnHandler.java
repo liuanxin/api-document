@@ -392,16 +392,27 @@ public final class ReturnHandler {
                 // if type is String, use the annotation comment with the value
                 if (type == String.class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                    String value = Tools.EMPTY;
+                    String value;
                     if (Tools.isNotBlank(apiReturn)) {
-                        value = apiReturn.value();
+                        value = apiReturn.example();
+                        if (Tools.isBlank(value)) {
+                            value = apiReturn.value();
+                        }
+                    } else {
+                        value = Tools.EMPTY;
                     }
                     setField(field, obj, value);
                 } else if (type == String[].class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                    String[] value = new String[] { Tools.EMPTY };
+                    String[] value;
                     if (Tools.isNotBlank(apiReturn)) {
-                        value = new String[] { apiReturn.value() };
+                        String example = apiReturn.example();
+                        if (Tools.isBlank(example)) {
+                            example = apiReturn.value();
+                        }
+                        value = new String[] { example };
+                    } else {
+                        value = new String[] { Tools.EMPTY };
                     }
                     setField(field, obj, value);
                 }

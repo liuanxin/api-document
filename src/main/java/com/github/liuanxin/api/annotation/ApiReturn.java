@@ -12,4 +12,7 @@ public @interface ApiReturn {
 
     /** when customize type comment, use this(example for Enum) */
     String type() default "";
+
+    /** return example. only used on types where the field is a String */
+    String example() default "";
 }
