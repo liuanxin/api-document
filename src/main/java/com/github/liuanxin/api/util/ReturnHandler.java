@@ -417,7 +417,14 @@ public final class ReturnHandler {
                     setField(field, obj, value);
                 }
                 else if (Tools.basicType(type)) {
-                    setField(field, obj, Tools.getReturnType(type));
+                    ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
+                    String example;
+                    if (Tools.isBlank(apiReturn)) {
+                        example = null;
+                    } else {
+                        example = apiReturn.example();
+                    }
+                    setField(field, obj, Tools.getReturnTypeExample(type, example));
                 }
                 else if (Date.class.isAssignableFrom(type)) {
                     setField(field, obj, TMP_DATE);

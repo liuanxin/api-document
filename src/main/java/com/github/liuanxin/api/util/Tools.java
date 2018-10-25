@@ -376,4 +376,203 @@ public class Tools {
             return null;
         }
     }
+
+    public static Object getReturnTypeExample(Class<?> clazz, String example) {
+        Object defaultObj = getReturnType(clazz);
+        if (isBlank(example)) {
+            return defaultObj;
+        }
+
+        if (clazz == boolean.class || clazz == Boolean.class) {
+            return Arrays.asList("true", "1").contains(example);
+        }
+        else if (clazz == byte.class || clazz == Byte.class) {
+            try {
+                return Byte.valueOf(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == char.class || clazz == Character.class) {
+            try {
+                return example.charAt(0);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == short.class || clazz == Short.class) {
+            try {
+                return Short.valueOf(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == int.class || clazz == Integer.class) {
+            try {
+                return Integer.valueOf(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == long.class || clazz == Long.class) {
+            try {
+                return Long.valueOf(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == float.class || clazz == Float.class) {
+            try {
+                return Float.valueOf(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == double.class || clazz == Double.class) {
+            try {
+                return Double.valueOf(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == BigInteger.class) {
+            try {
+                return new BigInteger(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == BigDecimal.class) {
+            try {
+                return new BigDecimal(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        // up type, down array type
+
+        else if (clazz == boolean[].class) {
+            return new boolean[] { Arrays.asList("true", "1").contains(example) };
+        } else if (clazz == Boolean[].class) {
+            return new Boolean[] { Arrays.asList("true", "1").contains(example) };
+        }
+
+        else if (clazz == byte[].class) {
+            try {
+                return new byte[] { Byte.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        } else if (clazz == Byte[].class) {
+            try {
+                return new Byte[] { Byte.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        else if (clazz == char[].class) {
+            try {
+                return new char[] { example.charAt(0) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        } else if (clazz == Character[].class) {
+            try {
+                return new Character[] { example.charAt(0) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        else if (clazz == short[].class) {
+            try {
+                return new short[] { Short.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        } else if (clazz == Short[].class) {
+            try {
+                return new Short[] { Short.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        else if (clazz == int[].class) {
+            try {
+                return new int[] { Integer.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        } else if (clazz == Integer[].class) {
+            try {
+                return new Integer[] { Integer.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        else if (clazz == long[].class) {
+            try {
+                return new long[] { Long.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        } else if (clazz == Long[].class) {
+            try {
+                return new Long[] { Long.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        else if (clazz == float[].class) {
+            try {
+                return new float[] { Float.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        } else if (clazz == Float[].class) {
+            try {
+                return new Float[] { Float.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        else if (clazz == double[].class) {
+            try {
+                return new double[] { Double.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        } else if (clazz == Double[].class) {
+            try {
+                return new Double[] { Double.valueOf(example) };
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        else if (clazz == BigInteger[].class) {
+            try {
+                return new BigInteger(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+        else if (clazz == BigDecimal[].class) {
+            try {
+                return new BigDecimal(example);
+            } catch (NumberFormatException e) {
+                return defaultObj;
+            }
+        }
+
+        else {
+            return defaultObj;
+        }
+    }
 }
