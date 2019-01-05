@@ -65,9 +65,6 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 })
 
 
-@ApiIgnore  标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
-  value     值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
-
 @ApiMethod  标注在方法上
   title     接口标题, 必须设置
   develop   开发者信息, 可以不设置
@@ -79,6 +76,10 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
     为 false 将使用字段顺序来处理说明, 当使用 @JsonPropertyOrder 更改字段顺序 将会有问题
     PS: 字段不是标准的驼峰命名也是会有问题的
 
+@ApiIgnore  标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
+  value     值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
+
+
 @ApiParam   标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
   value     参数说明, 必须设置
   name      参数名, 可以不设置, 如果设置了将会无视参数名或字段名
@@ -88,6 +89,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
   textarea  参数是否显示成 文本域, 可以不设置, 默认是 false
 
 @ApiParamIgnore 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
+
 
 @ApiReturn  标注在字段上. 用来说明返回结果
   value     返回说明, 必须设置

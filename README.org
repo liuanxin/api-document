@@ -72,9 +72,6 @@ for example:
 })
 
 
-@ApiIgnore  --> want to ignore some api, use it
-  value     --> false will ignore
-
 @ApiMethod  --> in method
   title     --> must set
   develop   --> can not be set
@@ -88,6 +85,10 @@ for example:
 
     PS: if the field is not a standard hump name, there will be problems too..
 
+@ApiIgnore  --> want to ignore some api, use it
+  value     --> false will ignore
+
+
 @ApiParam   --> in param or field
   value     --> must set
   name      --> if set, will ignore param name or filed name
@@ -96,6 +97,7 @@ for example:
   textarea  --> default false
 
 @ApiParamIgnore --> in param or field
+
 
 @ApiReturn  --> in field
   value     --> must set
