@@ -12,7 +12,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.3.1</version>
+    <version>0.3.2</version>
 </dependency>
 #+END_SRC
 
@@ -39,9 +39,10 @@ public class ApiInfoConfig {
 #+END_SRC
 
 而后在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
-如果方法上的返回结果有 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理)
+如果方法上的返回类型是 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理),
+ResponseEntity 会处理其定义的泛型类型(不设置将无法解析)
 
-PS: 方法上的返回类型如果是 ResponseEntity 这一类 没有默认无参构造 的类将无法处理(可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的全局处理).
+PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的全局处理.
 泛型请务必使用确切的类型, 如 <String> <User> 等, 如果使用 <T> <Object> 这样的类型将会无法解析.
 另外, 当返回值中有 非基础数据类型的数组(User[]) 时也无法实例, 请使用 List<User> 替换.
 

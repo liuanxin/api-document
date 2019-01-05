@@ -59,23 +59,23 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         String url = SPLIT_PATTERN.matcher(this.url).replaceAll("-");
         url = START_BIG_PATTERN.matcher(url).replaceAll(Tools.EMPTY);
         url = END_BIG_PATTERN.matcher(url).replaceAll(Tools.EMPTY);
-        if (Tools.isNotBlank(method)) {
+        if (Tools.isNotEmpty(method)) {
             return method.toLowerCase() + (url.startsWith("-") ? Tools.EMPTY : "-") + url;
         } else {
             return url.startsWith("-") ? url.substring(1) : url;
         }
     }
     public String getTitle() {
-        return Tools.isBlank(title) ? getId() : title;
+        return Tools.isEmpty(title) ? getId() : title;
     }
 
     public String getCommentJson() {
-        if (Tools.isBlank(returnJson)) {
+        if (Tools.isEmpty(returnJson)) {
             return Tools.EMPTY;
         }
 
         String commentJson = Tools.toPrettyJson(returnJson);
-        if (Tools.isBlank(commentJson)) {
+        if (Tools.isEmpty(commentJson)) {
             return Tools.EMPTY;
         }
 
@@ -98,7 +98,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
                 sbd.append(comment);
 
                 String desc = commentMap.get(indexMap.get(i));
-                if (Tools.isNotBlank(desc) && !comment.contains(desc)) {
+                if (Tools.isNotEmpty(desc) && !comment.contains(desc)) {
                     sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
                 }
                 sbd.append(WRAP);
@@ -112,14 +112,14 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
                 comment = comment.trim();
                 if (returnList.size() > index) {
                     DocumentReturn documentReturn = returnList.get(index);
-                    if (Tools.isNotBlank(documentReturn)) {
+                    if (Tools.isNotEmpty(documentReturn)) {
                         String returnName = documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY).trim();
                         if (returnName.contains(ReturnHandler.LEVEL_APPEND)) {
                             returnName = returnName.substring(0, returnName.indexOf(ReturnHandler.LEVEL_APPEND)).trim();
                         }
                         if (comment.startsWith(DOUBLE_QUOTE + returnName + DOUBLE_QUOTE)) {
                             String desc = documentReturn.getDesc();
-                            if (Tools.isNotBlank(desc) && !comment.contains(desc)) {
+                            if (Tools.isNotEmpty(desc) && !comment.contains(desc)) {
                                 sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
                             }
                             index++;
@@ -194,7 +194,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
      * 27 : }
      * </pre>
      */
-    private static Map<Integer, String> indexMap(String[] split) {
+    private Map<Integer, String> indexMap(String[] split) {
         Map<Integer, String> indexMap = Tools.newHashMap();
         StringBuilder field = new StringBuilder();
         for (int i = 0; i < split.length; i++) {
@@ -280,7 +280,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             return false;
         }
         for (DocumentParam param : paramList) {
-            if (Tools.isNotBlank(param) && Tools.isNotBlank(param.getExample())) {
+            if (Tools.isNotEmpty(param) && Tools.isNotEmpty(param.getExample())) {
                 return true;
             }
         }
@@ -292,7 +292,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             return false;
         }
         for (DocumentParam param : paramList) {
-            if (Tools.isNotBlank(param) && param.getHasFile()) {
+            if (Tools.isNotEmpty(param) && param.getHasFile()) {
                 return true;
             }
         }
@@ -304,7 +304,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             return false;
         }
         for (DocumentParam param : paramList) {
-            if (Tools.isNotBlank(param) && ParamType.hasHeader(param.getParamType())) {
+            if (Tools.isNotEmpty(param) && ParamType.hasHeader(param.getParamType())) {
                 return true;
             }
         }

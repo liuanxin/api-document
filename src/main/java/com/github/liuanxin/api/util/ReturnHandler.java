@@ -5,6 +5,7 @@ import com.github.liuanxin.api.annotation.ApiReturnIgnore;
 import com.github.liuanxin.api.model.DocumentReturn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -14,24 +15,34 @@ public final class ReturnHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(ReturnHandler.class);
     public static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
     public static final String LEVEL_APPEND = " -> ";
-    private static final String SPACE = " ";
     private static final Date TMP_DATE = new Date();
 
     @SuppressWarnings("unchecked")
     private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T", "E", "A", "K", "V");
 
     @SuppressWarnings("unchecked")
-    public static List<DocumentReturn> handlerReturn(String method) {
-        String type = method.substring(method.indexOf(SPACE)).trim();
-        type = type.substring(0, type.indexOf(SPACE)).trim();
+    public static List<DocumentReturn> handlerReturn(String method, String returnType) {
         List<DocumentReturn> returnList = new ArrayList<>();
-        handlerReturn(Tools.EMPTY, Tools.EMPTY, type, returnList);
+        handlerReturn(Tools.EMPTY, Tools.EMPTY, method, returnType, returnList);
         return returnList;
     }
 
-    private static void handlerReturn(String space, String parent, String type, List<DocumentReturn> returnList) {
+    private static void handlerReturn(String space, String parent, String method,
+                                      String type, List<DocumentReturn> returnList) {
+        if (Tools.isEmpty(type) || "void".equals(type)) {
+            return;
+        }
+        String responseEntity = ResponseEntity.class.getName();
+        if (type.equals(responseEntity) || type.startsWith(responseEntity + "<")) {
+            if (type.contains("<") && type.contains(">")) {
+                type = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
+            } else {
+                return;
+            }
+        }
+
         String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
-        if ("void".equals(className)) {
+        if (Tools.isEmpty(className) || "void".equals(className)) {
             return;
         }
         // 「class java.lang.Object」 etc ...
@@ -39,39 +50,66 @@ public final class ReturnHandler {
             className = className.substring(className.indexOf(" ")).trim();
         }
         Class<?> outClass = Tools.getBasicType(className);
-        if (Tools.isBlank(outClass)) {
+        if (Tools.isEmpty(outClass)) {
             try {
                 outClass = Class.forName(className);
             } catch (ClassNotFoundException e) {
                 // ignore
             }
         }
-        if (Tools.isBlank(outClass)) {
+        if (Tools.isEmpty(outClass)) {
             return;
         }
         if (outClass.isInterface()) {
             if (Collection.class.isAssignableFrom(outClass)) {
                 if (type.contains("<") && type.contains(">")) {
                     String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                    handlerReturn(space, parent, classType, returnList);
+                    handlerReturn(space, parent, method, classType, returnList);
                 }
             } else if (Map.class.isAssignableFrom(outClass)) {
                 if (type.contains("<") && type.contains(">")) {
                     String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                     String[] keyValue = keyAndValue.split(",");
                     if (keyValue.length == 2) {
-                        // handlerReturn(space, parent, keyValue[0].trim(), returnList);
-                        // just handler value, key don't handler
-                        handlerReturn(space, parent, keyValue[1].trim(), returnList);
+                        // key must has basic type or enum
+                        Class<?> keyClazz;
+                        try {
+                            keyClazz = Class.forName(keyValue[0].trim());
+                        } catch (ClassNotFoundException e) {
+                            if (LOGGER.isErrorEnabled()) {
+                                LOGGER.error("method ({}) ==> map key({}) has not found", method, keyAndValue);
+                            }
+                            return;
+                        }
+                        Object key = Tools.mapKeyDefault(keyClazz);
+                        if (Tools.isBlank(key)) {
+                            if (LOGGER.isErrorEnabled()) {
+                                LOGGER.error("method ({}) ==> map key({}) type has problem", method, keyAndValue);
+                            }
+                            return;
+                        }
+
+                        DocumentReturn mapKey = new DocumentReturn();
+                        mapKey.setName(space + key.toString() + parent).setType(Tools.getInputType(keyClazz));
+                        if (keyClazz.isEnum()) {
+                            // enum append (code:value)
+                            mapKey.setDesc("enum(" + Tools.enumInfo(keyClazz) + ")");
+                        }
+                        // add key
+                        returnList.add(mapKey);
+
+                        // handle value
+                        String innerParent = (LEVEL_APPEND + key.toString() + parent);
+                        handlerReturn(space + TAB, innerParent, method, keyValue[1].trim(), returnList);
                     } else {
                         if (LOGGER.isWarnEnabled()) {
-                            LOGGER.warn("method ({}) map returnType({}) has problem", type, keyAndValue);
+                            LOGGER.warn("method ({}) ==> map returnType({}) has problem", method, keyAndValue);
                         }
                     }
                 }
             } else {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
+                    LOGGER.warn("method ({}) ==> Unhandled interface class(just Collection or Map)", method);
                 }
             }
         } else if (Tools.notBasicType(outClass)) {
@@ -80,7 +118,7 @@ public final class ReturnHandler {
                 int mod = field.getModifiers();
                 // field not static, not final, and not annotation ignore
                 if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                        && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
+                        && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
                     String fieldName = field.getName();
                     returnList.add(returnInfo(field, space + fieldName + parent));
 
@@ -93,7 +131,7 @@ public final class ReturnHandler {
                             String genericType = field.getGenericType().toString();
                             if (Tools.notBasicType(fieldType)) {
                                 String innerParent = (LEVEL_APPEND + fieldName + parent);
-                                handlerReturn(space + TAB, innerParent, genericType, returnList);
+                                handlerReturn(space + TAB, innerParent, method, genericType, returnList);
                             }
                             tmpFieldMap.put(genericType, fieldName);
                         }
@@ -105,7 +143,7 @@ public final class ReturnHandler {
                 String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                 String fieldName = handlerReturnFieldName(tmpFieldMap, innerType);
                 String innerParent = (LEVEL_APPEND + fieldName + parent);
-                handlerReturn(space + TAB, innerParent, innerType, returnList);
+                handlerReturn(space + TAB, innerParent, method, innerType, returnList);
             }
         }
         /*
@@ -124,10 +162,10 @@ public final class ReturnHandler {
         documentReturn.setName(name).setType(Tools.getInputType(fieldType));
 
         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-        if (Tools.isNotBlank(apiReturn)) {
+        if (Tools.isNotEmpty(apiReturn)) {
             documentReturn.setDesc(apiReturn.value());
             String returnType = apiReturn.type();
-            if (Tools.isNotBlank(returnType)) {
+            if (Tools.isNotEmpty(returnType)) {
                 documentReturn.setType(returnType);
             }
         }
@@ -135,7 +173,7 @@ public final class ReturnHandler {
             // enum append (code:value)
             String desc = documentReturn.getDesc();
             String enumInfo = Tools.enumInfo(fieldType);
-            documentReturn.setDesc(Tools.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
+            documentReturn.setDesc(Tools.isEmpty(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
         }
         return documentReturn;
     }
@@ -156,24 +194,34 @@ public final class ReturnHandler {
         }
         String name = fieldMap.get(innerOutType);
 
-        if (Tools.isBlank(name)) {
+        if (Tools.isEmpty(name)) {
             name = fieldMap.get(Object.class.getName());
         }
-        return Tools.isBlank(name) ? Tools.EMPTY : name;
+        return Tools.isEmpty(name) ? Tools.EMPTY : name;
     }
 
     // ========== json ==========
 
-    public static String handlerReturnJson(String method) {
-        String type = method.substring(method.indexOf(SPACE)).trim();
-        type = type.substring(0, type.indexOf(SPACE)).trim();
-        Object obj = handlerReturnJsonObj(method, type);
-        return Tools.isNotBlank(obj) ? Tools.toJson(obj) : Tools.EMPTY;
+    public static String handlerReturnJson(String method, String returnType) {
+        Object obj = handlerReturnJsonObj(method, returnType);
+        return Tools.isNotEmpty(obj) ? Tools.toJson(obj) : Tools.EMPTY;
     }
 
     private static Object handlerReturnJsonObj(String method, String type) {
+        if (Tools.isEmpty(type) || "void".equals(type)) {
+            return null;
+        }
+        String responseEntity = ResponseEntity.class.getName();
+        if (type.equals(responseEntity) || type.startsWith(responseEntity + "<")) {
+            if (type.contains("<") && type.contains(">")) {
+                type = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
+            } else {
+                return null;
+            }
+        }
+
         String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
-        if ("void".equals(className)) {
+        if (Tools.isEmpty(className) || "void".equals(className)) {
             return null;
         }
         // 「class java.lang.Object」 etc ...
@@ -181,14 +229,14 @@ public final class ReturnHandler {
             className = className.substring(className.indexOf(" ")).trim();
         }
         Class<?> outClass = Tools.getBasicType(className);
-        if (Tools.isBlank(outClass)) {
+        if (Tools.isEmpty(outClass)) {
             try {
                 outClass = Class.forName(className);
             } catch (ClassNotFoundException e) {
                 // ignore
             }
         }
-        if (Tools.isBlank(outClass)) {
+        if (Tools.isEmpty(outClass)) {
             return null;
         }
         if (outClass.isInterface()) {
@@ -198,21 +246,21 @@ public final class ReturnHandler {
                 return handlerReturnJsonMap(method, type);
             } else {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
+                    LOGGER.warn("method ({}) ==> Unhandled interface class(just Collection or Map)", method);
                 }
             }
         } else {
             Object obj = handlerReturnWithObjClazz(method, outClass);
-            if (Tools.isNotBlank(obj) && type.contains("<") && type.contains(">")) {
+            if (Tools.isNotEmpty(obj) && type.contains("<") && type.contains(">")) {
                 String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                handlerReturnJsonWithObj(method, outClass, innerType, obj);
+                handlerReturnJsonWithObj(outClass, method, innerType, obj);
             }
             return obj;
         }
         return null;
     }
 
-    private static void handlerReturnJsonWithObj(String method, Class<?> outClass, String type, Object obj) {
+    private static void handlerReturnJsonWithObj(Class<?> outClass, String method, String type, Object obj) {
         String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
         if ("void".equals(className)) {
             return;
@@ -227,7 +275,7 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (Tools.isBlank(innerClass)) {
+        if (Tools.isEmpty(innerClass)) {
             return;
         }
         if (innerClass.isInterface()) {
@@ -237,16 +285,16 @@ public final class ReturnHandler {
                 setData(outClass, Map.class, obj, handlerReturnJsonMap(method, type));
             } else {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("Unhandled interface class(just Collection or Map): {}", type);
+                    LOGGER.warn("method ({}) ==> Unhandled interface class(just Collection or Map)", method);
                 }
             }
         } else {
             Object value = handlerReturnWithObjClazz(method, innerClass);
-            if (Tools.isNotBlank(value)) {
+            if (Tools.isNotEmpty(value)) {
                 setData(outClass, innerClass, obj, value);
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                    handlerReturnJsonWithObj(method, innerClass, innerType, value);
+                    handlerReturnJsonWithObj(innerClass, method, innerType, value);
                 }
             }
         }
@@ -308,7 +356,7 @@ public final class ReturnHandler {
                 list = new ArrayList();
             }
             Object object = handlerReturnJsonObj(method, obj);
-            if (!Tools.isBlankObj(object)) {
+            if (Tools.isNotBlank(object)) {
                 list.add(object);
             }
             return list;
@@ -324,17 +372,34 @@ public final class ReturnHandler {
             String[] keyValue = keyAndValue.split(",");
             if (keyValue.length == 2) {
                 Map map = Tools.newHashMap();
-                // key can't be List or Map
-                Object key = handlerReturnWithObj(method, keyValue[0].trim());
-                Object value = handlerReturnJsonObj(method, keyValue[1].trim());
-                // key may be empty String: ""
-                if (!Tools.isBlankObj(key) && !Tools.isBlankObj(value)) {
-                    map.put(key, value);
+
+                // key must has basic type or enum
+                Class<?> keyClazz;
+                try {
+                    keyClazz = Class.forName(keyValue[0].trim());
+                } catch (ClassNotFoundException e) {
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error("method ({}) ==> handle json, map key({}) has not found", method, keyAndValue);
+                    }
+                    return Collections.emptyMap();
                 }
-                return map;
+                Object key = Tools.mapKeyDefault(keyClazz);
+                if (Tools.isBlank(key)) {
+                    if (LOGGER.isErrorEnabled()) {
+                        LOGGER.error("method ({}) ==> handle json, map key({}) type has problem", method, keyAndValue);
+                    }
+                    return Collections.emptyMap();
+                } else {
+                    Object value = handlerReturnJsonObj(method, keyValue[1].trim());
+                    // key may be empty String: ""
+                    if (Tools.isNotBlank(value)) {
+                        map.put(key, value);
+                    }
+                    return map;
+                }
             } else {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("method ({}) map returnType({}) has problem", type, keyAndValue);
+                    LOGGER.warn("method ({}) ==> map returnType({}) has problem", method, keyAndValue);
                 }
             }
         }
@@ -352,21 +417,21 @@ public final class ReturnHandler {
         } catch (ClassNotFoundException e) {
             // ignore
         }
-        if (Tools.isBlank(clazz)) {
+        if (Tools.isEmpty(clazz)) {
             return null;
         }
         return handlerReturnWithObjClazz(method, clazz);
     }
 
     private static Object handlerReturnWithObjClazz(String method, Class<?> clazz) {
-        if (Tools.isBlank(clazz) || clazz == Object.class) {
+        if (Tools.isEmpty(clazz) || clazz == Object.class) {
             return null;
         }
         if (Tools.basicType(clazz)) {
             return Tools.getReturnType(clazz);
         } else if (clazz.isArray()) {
             if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("In the ({}) method, The entity({}) on return class is an array, unable to instantiate, " +
+                LOGGER.warn("method ({}) ==> The entity({}) on return class is an array, unable to instantiate, " +
                         "please use List to replace. here will be ignored return", method, clazz.getName());
             }
             return null;
@@ -379,23 +444,23 @@ public final class ReturnHandler {
                 | InvocationTargetException | NoSuchMethodException e) {
             // return type must have constructor with default
             if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("In the ({}) method, The entity({}) on return class can't constructor, " +
-                        "please ignore this url. here will be ignored return", method, clazz.getName());
+                LOGGER.warn("The entity({}) on return class can't constructor, " +
+                        "please ignore this url. here will be ignored return", clazz.getName());
             }
             return null;
         }
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
             if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                    && Tools.isBlank(field.getAnnotation(ApiReturnIgnore.class))) {
+                    && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
                 Class<?> type = field.getType();
                 // if type is String, use the annotation comment with the value
                 if (type == String.class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                     String value;
-                    if (Tools.isNotBlank(apiReturn)) {
+                    if (Tools.isNotEmpty(apiReturn)) {
                         value = apiReturn.example();
-                        if (Tools.isBlank(value)) {
+                        if (Tools.isEmpty(value)) {
                             value = apiReturn.value();
                         }
                     } else {
@@ -405,9 +470,9 @@ public final class ReturnHandler {
                 } else if (type == String[].class) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                     String[] value;
-                    if (Tools.isNotBlank(apiReturn)) {
+                    if (Tools.isNotEmpty(apiReturn)) {
                         String example = apiReturn.example();
-                        if (Tools.isBlank(example)) {
+                        if (Tools.isEmpty(example)) {
                             example = apiReturn.value();
                         }
                         value = new String[] { example };
@@ -419,7 +484,7 @@ public final class ReturnHandler {
                 else if (Tools.basicType(type)) {
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                     String example;
-                    if (Tools.isBlank(apiReturn)) {
+                    if (Tools.isEmpty(apiReturn)) {
                         example = null;
                     } else {
                         example = apiReturn.example();
@@ -464,9 +529,9 @@ public final class ReturnHandler {
             Field signatureField = field.getClass().getDeclaredField("signature");
             signatureField.setAccessible(true);
             Object signature = signatureField.get(field);
-            if (Tools.isNotBlank(signature)) {
+            if (Tools.isNotEmpty(signature)) {
                 String fieldInfo = signature.toString();
-                if (Tools.isNotBlank(fieldInfo)) {
+                if (Tools.isNotEmpty(fieldInfo)) {
                     if (fieldInfo.contains("/") && fieldInfo.contains("<") && fieldInfo.contains(">")) {
                         return !fieldInfo.replace("/", ".").contains(clazz.getName() + ";>;");
                     }

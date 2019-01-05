@@ -208,7 +208,7 @@
                             {{? url.commentJson && url.commentJson !== '' }}
                             <p>return example & comment</p>
                             <div class="org-src-container">
-                                <pre class="src src-json">{{= url.commentJson}}</pre>
+                                <pre class="src src-json">{{= url.commentJson || '<span style="color:red">Return null or Unclear return</span>'}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">

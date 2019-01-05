@@ -24,7 +24,7 @@ public class DocumentModule implements Comparable<DocumentModule> {
     private List<DocumentUrl> urlList = new ArrayList<>();
 
     public DocumentModule(String groupName) {
-        if (Tools.isNotBlank(groupName)) {
+        if (Tools.isNotEmpty(groupName)) {
             String[] split = groupName.split("-");
             if (split.length > 1) {
                 this.name = split[0];

@@ -223,7 +223,7 @@
 
                             <p>返回示例及说明如下</p>
                             <div class="org-src-container">
-                                <pre class="src src-json">{{= url.commentJson}}</pre>
+                                <pre class="src src-json">{{= url.commentJson || '<span style="color:red">返回为空 或 返回不明确</span>'}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">

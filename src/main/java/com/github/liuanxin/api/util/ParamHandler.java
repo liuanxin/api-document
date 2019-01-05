@@ -24,7 +24,7 @@ public final class ParamHandler {
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];
-            if (Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
+            if (Tools.isEmpty(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
                 // if param not basicType, into a layer of processing
                 Class<?> parameterType = parameter.getParameterType();
                 if (!parameterType.equals(MultipartFile.class) && Tools.notBasicType(parameterType)) {
@@ -32,7 +32,7 @@ public final class ParamHandler {
                         int mod = field.getModifiers();
                         // field not static, not final, not annotation ignore
                         if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                                && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
+                                && Tools.isEmpty(field.getAnnotation(ApiParamIgnore.class))) {
                             ApiParam apiParam = field.getAnnotation(ApiParam.class);
                             params.add(paramInfo(field.getName(), field.getType(), apiParam, false));
                         }
@@ -109,37 +109,37 @@ public final class ParamHandler {
         param.setDataType(inputType);
         param.setHasFile(Tools.hasFileInput(inputType));
 
-        if (Tools.isNotBlank(apiParam)) {
+        if (Tools.isNotEmpty(apiParam)) {
             String desc = apiParam.value();
-            if (Tools.isNotBlank(desc)) {
+            if (Tools.isNotEmpty(desc)) {
                 param.setDesc(desc);
             }
 
             String paramName = apiParam.name();
-            if (Tools.isNotBlank(paramName)) {
+            if (Tools.isNotEmpty(paramName)) {
                 param.setName(paramName);
             }
             String dataType = apiParam.dataType();
-            if (Tools.isNotBlank(dataType)) {
+            if (Tools.isNotEmpty(dataType)) {
                 param.setDataType(apiParam.dataType());
             }
 
             param.setParamType(apiParam.paramType().toString());
 
             String example = apiParam.example();
-            if (Tools.isNotBlank(example)) {
+            if (Tools.isNotEmpty(example)) {
                 param.setExample(example);
             }
             param.setHasTextarea(apiParam.textarea());
         }
         // if param has no @RequestParam(required = true) etc..., use custom value
-        param.setMust(must || (Tools.isNotBlank(apiParam) && apiParam.must()));
+        param.setMust(must || (Tools.isNotEmpty(apiParam) && apiParam.must()));
 
         if (type.isEnum()) {
             // enum append (code:value)
             String desc = param.getDesc();
             String enumInfo = Tools.enumInfo(type);
-            param.setDesc(Tools.isBlank(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
+            param.setDesc(Tools.isEmpty(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
         }
         return param;
     }

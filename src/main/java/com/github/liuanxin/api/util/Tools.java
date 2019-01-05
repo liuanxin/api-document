@@ -144,18 +144,36 @@ public class Tools {
             String[].class.getSimpleName(), new String[] { EMPTY }
     );
 
+    private static final Map<String, Object> DEFAULT_MAP_KEY = maps(
+            Boolean.class.getSimpleName(), false,
+            Byte.class.getSimpleName(), (byte) 0,
+            Character.class.getSimpleName(), (char) 0,
+            Short.class.getSimpleName(), (short) 0,
+            Integer.class.getSimpleName(), 0,
+            Long.class.getSimpleName(), 0L,
+            Float.class.getSimpleName(), 0F,
+            Double.class.getSimpleName(), 0D,
+            BigInteger.class.getSimpleName(), BigInteger.ZERO,
+            BigDecimal.class.getSimpleName(), BigDecimal.ZERO,
+            String.class.getSimpleName(), "?"
+    );
+
     // ========== string ==========
-    public static boolean isBlankObj(Object obj) {
+    public static boolean isBlank(Object obj) {
         return obj == null;
     }
-    public static boolean isBlank(Object obj) {
+    public static boolean isNotBlank(Object obj) {
+        return obj != null;
+    }
+    public static boolean isEmpty(Object obj) {
         return obj == null || EMPTY.equals(obj.toString().trim());
     }
-    public static boolean isNotBlank(Object obj) {
-        return !isBlank(obj);
+    public static boolean isNotEmpty(Object obj) {
+        return !isEmpty(obj);
     }
+
     public static String addPrefix(String src) {
-        if (isBlank(src)) {
+        if (isEmpty(src)) {
             return "/";
         }
         if (src.startsWith("/")) {
@@ -169,7 +187,7 @@ public class Tools {
 
     private static final ObjectWriter PRETTY_RENDER = RENDER.writerWithDefaultPrettyPrinter();
     public static String toJson(Object obj) {
-        if (isBlank(obj)) {
+        if (isEmpty(obj)) {
             return EMPTY;
         }
         try {
@@ -182,7 +200,7 @@ public class Tools {
         }
     }
     public static String toPrettyJson(String json) {
-        if (isBlank(json)) {
+        if (isEmpty(json)) {
             return EMPTY;
         }
         try {
@@ -263,7 +281,7 @@ public class Tools {
 
     // ========== method ==========
     private static Object getMethod(Object obj, String method, Object... param) {
-        if (isNotBlank(method)) {
+        if (isNotEmpty(method)) {
             try {
                 return obj.getClass().getDeclaredMethod(method).invoke(obj, param);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -281,20 +299,20 @@ public class Tools {
 
     // ========== enum ==========
     public static String enumInfo(Class<?> clazz) {
-        if (isNotBlank(clazz) && clazz.isEnum()) {
+        if (isNotEmpty(clazz) && clazz.isEnum()) {
             Enum[] constants = (Enum[]) clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
                 StringBuilder sbd = new StringBuilder();
                 String split = SPLIT + SPACE;
                 for (Enum em : constants) {
                     Object code = getMethod(em, "getCode");
-                    if (isNotBlank(code)) {
+                    if (isNotEmpty(code)) {
                         // has getCode
                         sbd.append(code).append(":");
                         Object value = getMethod(em, "getValue");
                         // has getValue return <code1: value1, code2: value2 ...>
                         // no getValue return <code1: name1, code2: name2 ...>
-                        sbd.append(isNotBlank(value) ? value : em.name());
+                        sbd.append(isNotEmpty(value) ? value : em.name());
                     } else {
                         // no getCode return <name1, name2>
                         // sbd.append(em.ordinal()).append(":");
@@ -320,11 +338,11 @@ public class Tools {
         return BASIC_TYPE_VALUE_MAP.get(clazz.getSimpleName());
     }
     public static boolean basicType(Class<?> clazz) {
-        if (isBlankObj(clazz)) {
+        if (isBlank(clazz)) {
             return false;
         }
         Object defaultValue = getTypeDefaultValue(clazz);
-        if (!isBlankObj(defaultValue)) {
+        if (!isBlank(defaultValue)) {
             return true;
         }
         // include enum
@@ -334,11 +352,23 @@ public class Tools {
         return !basicType(clazz);
     }
 
+    public static Object mapKeyDefault(Class<?> clazz) {
+        Object keyDefault = DEFAULT_MAP_KEY.get(clazz.getSimpleName());
+        if (isNotEmpty(keyDefault)) {
+            return keyDefault;
+        } else if (clazz.isEnum()) {
+            Object[] enumConstants = clazz.getEnumConstants();
+            return (enumConstants.length > 0) ? enumConstants[0] : null;
+        } else {
+            return null;
+        }
+    }
+
     public static boolean hasFileInput(String fileType) {
         return FILE_TYPE.equals(fileType);
     }
     public static String getInputType(Class<?> type) {
-        if (isBlankObj(type)) {
+        if (isBlank(type)) {
             return EMPTY;
         }
 
@@ -347,26 +377,24 @@ public class Tools {
             return FILE_TYPE;
         }
         String paramType = type.getSimpleName();
-        // basic type
         Class<?> basicClass = getBasicType(paramType);
-        if (!isBlankObj(basicClass)) {
+        if (isNotEmpty(basicClass)) {
             return basicClass.getSimpleName();
-        }
-        // enum
-        if (type.isEnum()) {
+        } else if (type.isEnum()) {
             return "Enum(" + paramType + ")";
+        } else {
+            // string, string[], list, set, map... etc
+            return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
         }
-        // string, string[], list, set, map... etc
-        return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
     }
 
     public static Object getReturnType(Class<?> clazz) {
-        if (isBlankObj(clazz)) {
+        if (isBlank(clazz)) {
             return null;
         }
 
         Object defaultValue = getTypeDefaultValue(clazz);
-        if (!isBlankObj(defaultValue)) {
+        if (!isBlank(defaultValue)) {
             return defaultValue;
         } else if (clazz.isEnum()) {
             // Enum return first
@@ -379,7 +407,7 @@ public class Tools {
 
     public static Object getReturnTypeExample(Class<?> clazz, String example) {
         Object defaultObj = getReturnType(clazz);
-        if (isBlank(example)) {
+        if (isEmpty(example)) {
             return defaultObj;
         }
 
