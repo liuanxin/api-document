@@ -103,8 +103,8 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 #+BEGIN_SRC xml
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
-运行项目, 浏览 http://ip:port/static/api-info.html 查看文档(spring boot 则不需要 /static 二级目录).
-如果想要直接在文档上测试请求后台接口, 可以浏览 http://ip:port/static/api-info-example.html 页面
+运行项目, 浏览 ~http://ip:port/static/api-info.html~ 查看文档(spring boot 则不需要 /static 二级目录).
+如果想要直接在文档上测试请求后台接口, 可以浏览 ~http://ip:port/static/api-info-example.html~ 页面
 
 -----
 
