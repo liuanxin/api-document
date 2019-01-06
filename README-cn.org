@@ -93,7 +93,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 
 @ApiReturn  标注在字段上. 用来说明返回结果
   value     返回说明, 必须设置
-  type      返回类型, 当需要自定义时(比如字段类型是枚举, 但是显示在文档上时是 int 时)有用
+  type      返回类型, 自定义(比如字段类型是枚举, 但是显示在文档上时是 int 时)用到
   example   返回示例, 只用在字段是 String 或基础数据类型上
 
 @ApiReturnIgnore 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
@@ -103,8 +103,8 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 #+BEGIN_SRC xml
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
-运行项目, 浏览 http://ip:port/static/api-info.html 查看文档(spring boot 则不需要 /static 二级目录).
-如果想要直接在文档上测试请求后台接口, 可以浏览 http://ip:port/static/api-info-example.html 页面
+运行项目, 浏览 ~http://ip:port/static/api-info.html~ 查看文档(spring boot 则不需要 /static 二级目录).
+如果想要直接在文档上测试请求后台接口, 可以浏览 ~http://ip:port/static/api-info-example.html~ 页面
 
 -----
 

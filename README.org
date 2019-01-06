@@ -111,8 +111,8 @@ if not spring boot project, add this config
 #+BEGIN_SRC xml
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
-request --> http://ip:port/static/api-info-en.html(spring boot don't need /static second directory).\\
-if want to test url info, request --> http://ip:port/static/api-info-en-example.html
+request --> ~http://ip:port/static/api-info-en.html~(spring boot don't need /static second directory).\\
+if want to test url info, request --> ~http://ip:port/static/api-info-en-example.html~
 
 -----
 
