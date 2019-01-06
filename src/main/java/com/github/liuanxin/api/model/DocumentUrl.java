@@ -316,15 +316,18 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         if (obj == null) {
             return -1;
         }
+
         // sort: field index first, develop second, title third
         int sort = index - obj.getIndex();
         if (sort != 0) {
             return sort;
+        } else {
+            sort = develop.compareTo(obj.getDevelop());
+            if (sort != 0) {
+                return sort;
+            } else {
+                return title.compareTo(obj.getTitle());
+            }
         }
-        sort = develop.compareTo(obj.getDevelop());
-        if (sort != 0) {
-            return sort;
-        }
-        return title.compareTo(obj.getTitle());
     }
 }

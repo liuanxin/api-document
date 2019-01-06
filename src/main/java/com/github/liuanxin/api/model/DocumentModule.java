@@ -40,19 +40,22 @@ public class DocumentModule implements Comparable<DocumentModule> {
 
 
     @Override
-    public int compareTo(DocumentModule obj) {
-        if (obj == null) {
+    public int compareTo(DocumentModule module) {
+        if (module == null) {
             return -1;
         }
+
         // sort: field index first, info second, name third
-        int sort = index - obj.getIndex();
-        if (sort != 0) {
-            return sort;
+        int index = this.index - module.getIndex();
+        if (index != 0) {
+            return index;
+        } else {
+            index = info.compareTo(module.getInfo());
+            if (index != 0) {
+                return index;
+            } else {
+                return name.compareTo(module.getName());
+            }
         }
-        sort = info.compareTo(obj.getInfo());
-        if (sort != 0) {
-            return sort;
-        }
-        return name.compareTo(obj.getName());
     }
 }

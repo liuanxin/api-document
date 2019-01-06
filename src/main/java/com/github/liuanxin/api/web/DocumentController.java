@@ -27,65 +27,40 @@ public class DocumentController {
 
     static final String PARENT_URL_PREFIX = "/api";
 
-    private static final String VERSION_URL = "/version";
+    private static final String PRODUCES = "application/json; charset=UTF-8";
+
     private static final String VERSION_CLEAR = "/clear";
     private static final String INFO_URL = "/info";
     private static final String EXAMPLE_URL = "/example/{id}.json";
-    private static final String PRODUCES = "application/json; charset=UTF-8";
-
-    private static final String CLASS_SUFFIX = "Controller";
-
-    // local cache
-    private static String document_str = null;
-    private static DocumentInfo document_info = null;
-    private static Map<String, DocumentUrl> url_map = null;
 
     private static final Lock LOCK = new ReentrantLock();
+    private static final String CLASS_SUFFIX = "Controller";
+    private static final Pattern ID_URL_PATTERN = Pattern.compile("\\{.*?\\}");
+
+    // local cache
+    private static String return_info = null;
+    private static Map<String, DocumentUrl> url_map = null;
+    // local cache
+
 
 
     private final RequestMappingHandlerMapping mapping;
-    private final DocumentCopyright documentCopyright;
+    private final DocumentCopyright copyright;
     @Autowired
     public DocumentController(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping mapping,
-                              DocumentCopyright documentCopyright) {
+                              DocumentCopyright copyright) {
         this.mapping = mapping;
-        this.documentCopyright = documentCopyright;
+        this.copyright = copyright;
     }
 
-
-    @GetMapping(value = VERSION_URL, produces = PRODUCES)
-    public String urlVersion() {
-        if (Tools.isEmpty(documentCopyright) || documentCopyright.isOnline()) {
-            return null;
-        } else {
-            if (Tools.isEmpty(document_str)) {
-                init(mapping, documentCopyright);
-
-                if (Tools.isNotEmpty(document_info)) {
-                    List<DocumentModule> moduleList = document_info.getModuleList();
-                    if (Tools.isNotEmpty(moduleList)) {
-                        int apiCount = 0;
-                        for (DocumentModule module : moduleList) {
-                            apiCount += module.getUrlList().size();
-                        }
-                        documentCopyright.setGroupCount(moduleList.size()).setApiCount(apiCount);
-                        // don't need this
-                        document_info = null;
-                    }
-                }
-            }
-            return Tools.toJson(documentCopyright);
-        }
-    }
 
     @PostMapping(value = VERSION_CLEAR, produces = PRODUCES)
     public String clear() {
-        if (document_str != null || document_info != null || url_map != null) {
+        if (Tools.isNotBlank(return_info) || Tools.isNotEmpty(url_map)) {
             LOCK.lock();
             try {
-                if (document_str != null || document_info != null || url_map != null) {
-                    document_str = null;
-                    document_info = null;
+                if (Tools.isNotBlank(return_info) || Tools.isNotEmpty(url_map)) {
+                    return_info = null;
                     url_map = null;
                 }
             } finally {
@@ -95,126 +70,145 @@ public class DocumentController {
         return "clear";
     }
 
-    @GetMapping(value = INFO_URL, produces = PRODUCES)
-    public String url() {
-        if (Tools.isEmpty(documentCopyright) || documentCopyright.isOnline()) {
-            return Tools.EMPTY;
-        }
-        if (Tools.isEmpty(document_str)) {
-            init(mapping, documentCopyright);
-        }
-        return document_str;
-    }
-
     @GetMapping(value = EXAMPLE_URL, produces = PRODUCES)
     public String urlExample(@PathVariable("id") String id) {
-        if (Tools.isEmpty(documentCopyright) || documentCopyright.isOnline()) {
+        if (Tools.isEmpty(copyright) || copyright.isOnline()) {
             return Tools.EMPTY;
+        } else {
+            collect(mapping, copyright);
+            return url_map.get(id).getReturnJson();
         }
-        if (Tools.isEmpty(url_map)) {
-            init(mapping, documentCopyright);
-        }
-        return url_map.get(id).getReturnJson();
     }
 
-    private static void init(RequestMappingHandlerMapping mapping, DocumentCopyright copyright) {
-        LOCK.lock();
-        try {
-            if (Tools.isNotEmpty(url_map) && Tools.isNotEmpty(document_str)) {
-                return;
+    @GetMapping(value = INFO_URL, produces = PRODUCES)
+    public String url() {
+        if (Tools.isEmpty(copyright) || copyright.isOnline()) {
+            return Tools.EMPTY;
+        } else {
+            collect(mapping, copyright);
+            return return_info;
+        }
+    }
+
+    private static void collect(RequestMappingHandlerMapping mapping, DocumentCopyright copyright) {
+        if (Tools.isBlank(return_info) && Tools.isEmpty(url_map)) {
+            LOCK.lock();
+            try {
+                if (Tools.isBlank(return_info) && Tools.isEmpty(url_map)) {
+                    DocumentInfoAndUrlMap documentInfoAndUrlMap = infoAndUrlMap(mapping, copyright);
+                    DocumentInfo document = documentInfoAndUrlMap.getDocumentInfo();
+                    DocumentCopyright documentCopyright = copyright(copyright, document.getModuleList());
+
+                    return_info = Tools.toJson(new ReturnInfo(document, documentCopyright));
+                    url_map = documentInfoAndUrlMap.getDocumentMap();
+                }
+            } finally {
+                LOCK.unlock();
             }
-            Map<String, DocumentModule> moduleMap = Tools.newLinkedHashMap();
-            Map<String, DocumentUrl> urlMap = Tools.newLinkedHashMap();
-            Map<RequestMappingInfo, HandlerMethod> handlerMethods = mapping.getHandlerMethods();
-            for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
-                RequestMappingInfo requestMapping = entry.getKey();
-                HandlerMethod handlerMethod = entry.getValue();
-                if (Tools.isNotEmpty(requestMapping) && Tools.isNotEmpty(handlerMethod) && wasJsonApi(handlerMethod)) {
-                    ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
-                    if (Tools.isEmpty(ignore) || !ignore.value()) {
-                        Set<String> urlArray = requestMapping.getPatternsCondition().getPatterns();
-                        Set<RequestMethod> methodArray = requestMapping.getMethodsCondition().getMethods();
-                        if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
-                            DocumentUrl url = new DocumentUrl();
-                            // url
-                            url.setUrl(Tools.toStr(urlArray));
-                            // method : get, post, put...
-                            url.setMethod(Tools.toStr(methodArray));
-                            // param
-                            url.setParamList(ParamHandler.handlerParam(handlerMethod));
-                            // response
-                            url.setResponseList(handlerResponse(handlerMethod));
+        }
+    }
+    
+    private static DocumentCopyright copyright(DocumentCopyright copyright, List<DocumentModule> moduleList) {
+        if (Tools.isNotEmpty(moduleList)) {
+            int apiCount = 0;
+            for (DocumentModule module : moduleList) {
+                apiCount += module.getUrlList().size();
+            }
+            copyright.setGroupCount(moduleList.size()).setApiCount(apiCount);
+        }
+        return copyright;
+    }
 
-                            String returnType = handlerMethod.getMethod().getGenericReturnType().toString();
-                            if (Tools.isNotEmpty(returnType)) {
-                                String prefix = "class ";
-                                if (returnType.startsWith(prefix)) {
-                                    returnType = returnType.substring(prefix.length()).trim();
-                                }
+    private static DocumentInfoAndUrlMap infoAndUrlMap(RequestMappingHandlerMapping mapping,
+                                                       DocumentCopyright copyright) {
+        Map<String, DocumentModule> moduleMap = Tools.newLinkedHashMap();
+        Map<String, DocumentUrl> documentMap = Tools.newLinkedHashMap();
 
-                                String method = handlerMethod.toString();
-                                // return param
-                                url.setReturnList(ReturnHandler.handlerReturn(method, returnType));
-                                // return json
-                                url.setReturnJson(ReturnHandler.handlerReturnJson(method, returnType));
+        Map<RequestMappingInfo, HandlerMethod> handlerMethods = mapping.getHandlerMethods();
+        for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
+            RequestMappingInfo requestMapping = entry.getKey();
+            HandlerMethod handlerMethod = entry.getValue();
+            if (Tools.isNotEmpty(requestMapping) && Tools.isNotEmpty(handlerMethod) && wasJsonApi(handlerMethod)) {
+                ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
+                if (Tools.isEmpty(ignore) || !ignore.value()) {
+                    Set<String> urlArray = requestMapping.getPatternsCondition().getPatterns();
+                    Set<RequestMethod> methodArray = requestMapping.getMethodsCondition().getMethods();
+                    if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
+                        DocumentUrl document = new DocumentUrl();
+                        // url
+                        document.setUrl(Tools.toStr(urlArray));
+                        // method : get, post, put...
+                        document.setMethod(Tools.toStr(methodArray));
+                        // param
+                        document.setParamList(ParamHandler.handlerParam(handlerMethod));
+                        // response
+                        document.setResponseList(handlerResponse(handlerMethod));
+
+                        String returnType = handlerMethod.getMethod().getGenericReturnType().toString();
+                        if (Tools.isNotEmpty(returnType)) {
+                            String prefix = "class ";
+                            if (returnType.startsWith(prefix)) {
+                                returnType = returnType.substring(prefix.length()).trim();
                             }
 
-                            // meta info
-                            ApiMethod apiMethod = getAnnotationByMethod(handlerMethod, ApiMethod.class);
-                            if (Tools.isNotEmpty(apiMethod)) {
-                                url.setTitle(apiMethod.title());
-                                url.setDesc(apiMethod.desc());
-                                url.setDevelop(apiMethod.develop());
-                                url.setIndex(apiMethod.index());
-                                url.setCommentInReturnExample(apiMethod.commentInReturnExample());
-                                url.setReturnRecordLevel(apiMethod.returnRecordLevel());
-                                url.setCommentInReturnExampleWithLevel(apiMethod.commentInReturnExampleWithLevel());
-                            } else {
-                                url.setCommentInReturnExample(copyright.isCommentInReturnExample());
-                                url.setReturnRecordLevel(copyright.isReturnRecordLevel());
-                            }
-                            url.setExampleUrl(getExampleUrl(url.getId()));
+                            String method = handlerMethod.toString();
+                            // return param
+                            document.setReturnList(ReturnHandler.handlerReturn(method, returnType));
+                            // return json
+                            document.setReturnJson(ReturnHandler.handlerReturnJson(method, returnType));
+                        }
 
-                            urlMap.put(url.getId(), url);
-                            // add DocumentUrl to DocumentModule
-                            ApiGroup apiGroup = getAnnotation(handlerMethod, ApiGroup.class);
-                            if (Tools.isEmpty(apiGroup)) {
-                                // if no annotation on class, use ClassName(if className include Controller then remove)
-                                String className = handlerMethod.getBeanType().getSimpleName();
-                                String info = className;
-                                if (className.contains(CLASS_SUFFIX)) {
-                                    info = className.substring(0, className.indexOf(CLASS_SUFFIX));
-                                }
-                                addGroup(moduleMap, 0, info + "-" + className, url);
-                            } else {
-                                int index = apiGroup.index();
-                                for (String group : apiGroup.value()) {
-                                    if (Tools.isNotEmpty(group)) {
-                                        addGroup(moduleMap, index, group, url);
-                                    }
+                        // meta info
+                        ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
+                        if (Tools.isNotEmpty(apiMethod)) {
+                            document.setTitle(apiMethod.title());
+                            document.setDesc(apiMethod.desc());
+                            document.setDevelop(apiMethod.develop());
+                            document.setIndex(apiMethod.index());
+                            document.setCommentInReturnExample(apiMethod.commentInReturnExample());
+                            document.setReturnRecordLevel(apiMethod.returnRecordLevel());
+                            document.setCommentInReturnExampleWithLevel(apiMethod.commentInReturnExampleWithLevel());
+                        } else {
+                            document.setCommentInReturnExample(copyright.isCommentInReturnExample());
+                            document.setReturnRecordLevel(copyright.isReturnRecordLevel());
+                        }
+                        document.setExampleUrl(getExampleUrl(document.getId()));
+
+                        documentMap.put(document.getId(), document);
+                        // add DocumentUrl to DocumentModule
+                        ApiGroup apiGroup = getAnnotation(handlerMethod, ApiGroup.class);
+                        if (Tools.isEmpty(apiGroup)) {
+                            // if no annotation on class, use ClassName(if className include Controller then remove)
+                            String className = handlerMethod.getBeanType().getSimpleName();
+                            String info = className;
+                            if (className.contains(CLASS_SUFFIX)) {
+                                info = className.substring(0, className.indexOf(CLASS_SUFFIX));
+                            }
+                            addGroup(moduleMap, 0, info + "-" + className, document);
+                        } else {
+                            int index = apiGroup.index();
+                            for (String group : apiGroup.value()) {
+                                if (Tools.isNotEmpty(group)) {
+                                    addGroup(moduleMap, index, group, document);
                                 }
                             }
                         }
                     }
                 }
             }
-            url_map = urlMap;
-
-            Collection<DocumentModule> modules = moduleMap.values();
-            List<DocumentModule> moduleList = new ArrayList<>();
-            if (Tools.isNotEmpty(modules)) {
-                for (DocumentModule module : modules) {
-                    Collections.sort(module.getUrlList());
-                    moduleList.add(module);
-                }
-                Collections.sort(moduleList);
-            }
-            DocumentInfo documentInfo = new DocumentInfo(copyright.getGlobalResponse(), moduleList);
-            document_str = Tools.toJson(documentInfo);
-            document_info = documentInfo;
-        } finally {
-            LOCK.unlock();
         }
+
+        Collection<DocumentModule> modules = moduleMap.values();
+        List<DocumentModule> moduleList = new ArrayList<>();
+        if (Tools.isNotEmpty(modules)) {
+            for (DocumentModule module : modules) {
+                Collections.sort(module.getUrlList());
+                moduleList.add(module);
+            }
+            Collections.sort(moduleList);
+        }
+        DocumentInfo documentInfo = new DocumentInfo(copyright.getGlobalResponse(), moduleList);
+        return new DocumentInfoAndUrlMap(documentInfo, documentMap);
     }
 
     private static List<DocumentResponse> handlerResponse(HandlerMethod handlerMethod) {
@@ -231,7 +225,6 @@ public class DocumentController {
         return responseList;
     }
 
-    private static final Pattern ID_URL_PATTERN = Pattern.compile("\\{.*?\\}");
     private static String getExampleUrl(String param) {
         String domain = Requests.getDomain();
         if (domain.endsWith("/")) {
@@ -315,12 +308,10 @@ public class DocumentController {
         return Tools.isNotEmpty(controller);
     }
 
-    private static <T extends Annotation> T getAnnotationByMethod(HandlerMethod handlerMethod, Class<T> clazz) {
-        return handlerMethod.getMethodAnnotation(clazz);
-    }
     private static <T extends Annotation> T getAnnotationByClass(HandlerMethod handlerMethod, Class<T> clazz) {
         return AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), clazz);
     }
+
     private static <T extends Annotation> T getAnnotation(HandlerMethod handlerMethod, Class<T> clazz) {
         T annotation = handlerMethod.getMethodAnnotation(clazz);
         if (Tools.isEmpty(annotation)) {
