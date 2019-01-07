@@ -214,10 +214,10 @@ public class Tools {
     }
 
     // ========== array map ==========
-    public static <T> boolean isEmpty(T[] array) {
+    private static <T> boolean isEmpty(T[] array) {
         return array == null || array.length == 0;
     }
-    public static <T> boolean isNotEmpty(T[] array) {
+    private static <T> boolean isNotEmpty(T[] array) {
         return !isEmpty(array);
     }
     public static <T> boolean isEmpty(Collection<T> collection) {
@@ -250,7 +250,7 @@ public class Tools {
 
     // ========== list map ==========
     @SuppressWarnings("unchecked")
-    public static List lists(Object... values) {
+    static List lists(Object... values) {
         return new ArrayList(Arrays.asList(values));
     }
     public static <T> Set<T> sets() {
@@ -263,8 +263,7 @@ public class Tools {
         return new LinkedHashMap<>();
     }
 
-    @SuppressWarnings("unchecked")
-    public static <K, V> HashMap<K, V> maps(Object... keysAndValues) {
+    private static <K, V> HashMap<K, V> maps(Object... keysAndValues) {
         return (HashMap<K, V>) maps(newHashMap(), keysAndValues);
     }
     @SuppressWarnings("unchecked")
@@ -280,16 +279,16 @@ public class Tools {
     }
 
     // ========== method ==========
-    private static Object getMethod(Object obj, String method, Object... param) {
+    private static Object getMethod(Object obj, String method) {
         if (isNotEmpty(method)) {
             try {
-                return obj.getClass().getDeclaredMethod(method).invoke(obj, param);
+                return obj.getClass().getDeclaredMethod(method).invoke(obj);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                 // ignore
             }
 
             try {
-                return obj.getClass().getMethod(method).invoke(obj, param);
+                return obj.getClass().getMethod(method).invoke(obj);
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
                 // ignore
             }
@@ -298,7 +297,20 @@ public class Tools {
     }
 
     // ========== enum ==========
-    public static String enumInfo(Class<?> clazz) {
+    static String enumInfo(Class<?> clazz, String desc) {
+        // enum append (code:value)
+        String enumInfo = collectEnumInfo(clazz);
+        if (isEmpty(desc)) {
+            return enumInfo;
+        } else {
+            if (isEmpty(enumInfo)) {
+                return desc;
+            } else {
+                return desc + String.format("(%s)", enumInfo);
+            }
+        }
+    }
+    private static String collectEnumInfo(Class<?> clazz) {
         if (isNotEmpty(clazz) && clazz.isEnum()) {
             Enum[] constants = (Enum[]) clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
@@ -330,14 +342,14 @@ public class Tools {
     }
 
     // ========== type ==========
-    public static Class<?> getBasicType(String name) {
+    static Class<?> getBasicType(String name) {
         return BASIC_CLAZZ_MAP.get(name);
     }
 
     private static Object getTypeDefaultValue(Class<?> clazz) {
         return BASIC_TYPE_VALUE_MAP.get(clazz.getSimpleName());
     }
-    public static boolean basicType(Class<?> clazz) {
+    static boolean basicType(Class<?> clazz) {
         if (isBlank(clazz)) {
             return false;
         }
@@ -348,11 +360,11 @@ public class Tools {
         // include enum
         return clazz.isEnum();
     }
-    public static boolean notBasicType(Class<?> clazz) {
+    static boolean notBasicType(Class<?> clazz) {
         return !basicType(clazz);
     }
 
-    public static Object mapKeyDefault(Class<?> clazz) {
+    static Object mapKeyDefault(Class<?> clazz) {
         Object keyDefault = DEFAULT_MAP_KEY.get(clazz.getSimpleName());
         if (isNotEmpty(keyDefault)) {
             return keyDefault;
@@ -364,10 +376,10 @@ public class Tools {
         }
     }
 
-    public static boolean hasFileInput(String fileType) {
+    static boolean hasFileInput(String fileType) {
         return FILE_TYPE.equals(fileType);
     }
-    public static String getInputType(Class<?> type) {
+    static String getInputType(Class<?> type) {
         if (isBlank(type)) {
             return EMPTY;
         }
@@ -388,7 +400,7 @@ public class Tools {
         }
     }
 
-    public static Object getReturnType(Class<?> clazz) {
+    static Object getReturnType(Class<?> clazz) {
         if (isBlank(clazz)) {
             return null;
         }
@@ -405,7 +417,7 @@ public class Tools {
         }
     }
 
-    public static Object getReturnTypeExample(Class<?> clazz, String example) {
+    static Object getReturnTypeExample(Class<?> clazz, String example) {
         Object defaultObj = getReturnType(clazz);
         if (isEmpty(example)) {
             return defaultObj;

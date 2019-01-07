@@ -27,8 +27,10 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private static final String COMMENT_START = "  /* ";
     private static final String COMMENT_END = " */";
 
-    @JsonIgnore
-    private int index = Integer.MAX_VALUE;
+    private static final Pattern SPLIT_PATTERN = Pattern.compile("/");
+    private static final Pattern START_BIG_PATTERN = Pattern.compile("\\{");
+    private static final Pattern END_BIG_PATTERN = Pattern.compile("}");
+
 
     private String title = Tools.EMPTY;
     private String desc = Tools.EMPTY;
@@ -41,7 +43,11 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;
+    // private String commentJson;
 
+
+    @JsonIgnore
+    private int index = Integer.MAX_VALUE;
     @JsonIgnore
     private boolean returnRecordLevel;
     @JsonIgnore
@@ -51,9 +57,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     @JsonIgnore
     private String returnJson;
 
-    private static final Pattern SPLIT_PATTERN = Pattern.compile("\\/");
-    private static final Pattern START_BIG_PATTERN = Pattern.compile("\\{");
-    private static final Pattern END_BIG_PATTERN = Pattern.compile("\\}");
 
     public String getId() {
         String url = SPLIT_PATTERN.matcher(this.url).replaceAll("-");
@@ -65,8 +68,69 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             return url.startsWith("-") ? url.substring(1) : url;
         }
     }
+
     public String getTitle() {
         return Tools.isEmpty(title) ? getId() : title;
+    }
+
+    public List<DocumentReturn> getReturnList() {
+        if (commentInReturnExample || Tools.isEmpty(returnList)) {
+            return Collections.emptyList();
+        }
+        if (returnRecordLevel) {
+            return returnList;
+        }
+
+        List<DocumentReturn> documentReturns = new ArrayList<>();
+        for (DocumentReturn documentReturn : returnList) {
+            String name = documentReturn.getName();
+            if (name.contains(ReturnHandler.LEVEL_APPEND)) {
+                DocumentReturn documentReturn1 = new DocumentReturn();
+                documentReturn1.setName(name.substring(0, name.indexOf(ReturnHandler.LEVEL_APPEND)).trim());
+                documentReturn1.setType(documentReturn.getType());
+                documentReturn1.setDesc(documentReturn.getDesc());
+                documentReturns.add(documentReturn1);
+            } else {
+                documentReturns.add(documentReturn);
+            }
+        }
+        return documentReturns;
+    }
+
+    public boolean getHasExample() {
+        if (Tools.isEmpty(paramList)) {
+            return false;
+        }
+        for (DocumentParam param : paramList) {
+            if (Tools.isNotEmpty(param) && Tools.isNotEmpty(param.getExample())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean getHasFile() {
+        if (Tools.isEmpty(paramList)) {
+            return false;
+        }
+        for (DocumentParam param : paramList) {
+            if (Tools.isNotEmpty(param) && param.getHasFile()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean getHasHeader() {
+        if (Tools.isEmpty(paramList)) {
+            return false;
+        }
+        for (DocumentParam param : paramList) {
+            if (Tools.isNotEmpty(param) && ParamType.hasHeader(param.getParamType())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getCommentJson() {
@@ -251,65 +315,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         return returnMap;
     }
 
-    public List<DocumentReturn> getReturnList() {
-        if (commentInReturnExample || Tools.isEmpty(returnList)) {
-            return Collections.emptyList();
-        }
-        if (returnRecordLevel) {
-            return returnList;
-        }
-
-        List<DocumentReturn> documentReturns = new ArrayList<>();
-        for (DocumentReturn documentReturn : returnList) {
-            String name = documentReturn.getName();
-            if (name.contains(ReturnHandler.LEVEL_APPEND)) {
-                DocumentReturn documentReturn1 = new DocumentReturn();
-                documentReturn1.setName(name.substring(0, name.indexOf(ReturnHandler.LEVEL_APPEND)).trim());
-                documentReturn1.setType(documentReturn.getType());
-                documentReturn1.setDesc(documentReturn.getDesc());
-                documentReturns.add(documentReturn1);
-            } else {
-                documentReturns.add(documentReturn);
-            }
-        }
-        return documentReturns;
-    }
-
-    public boolean getHasExample() {
-        if (Tools.isEmpty(paramList)) {
-            return false;
-        }
-        for (DocumentParam param : paramList) {
-            if (Tools.isNotEmpty(param) && Tools.isNotEmpty(param.getExample())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean getHasFile() {
-        if (Tools.isEmpty(paramList)) {
-            return false;
-        }
-        for (DocumentParam param : paramList) {
-            if (Tools.isNotEmpty(param) && param.getHasFile()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean getHasHeader() {
-        if (Tools.isEmpty(paramList)) {
-            return false;
-        }
-        for (DocumentParam param : paramList) {
-            if (Tools.isNotEmpty(param) && ParamType.hasHeader(param.getParamType())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     public int compareTo(DocumentUrl obj) {

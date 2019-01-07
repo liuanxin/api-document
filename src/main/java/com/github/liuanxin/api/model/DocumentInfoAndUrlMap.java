@@ -12,6 +12,7 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DocumentInfoAndUrlMap {
+
     private DocumentInfo documentInfo;
     private Map<String, DocumentUrl> documentMap;
 }

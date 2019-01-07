@@ -13,18 +13,11 @@ import lombok.experimental.Accessors;
 public class DocumentParam {
 
     private String name;
-
     private String dataType;
-
     private String paramType = Tools.EMPTY;
-
     private Boolean must = false;
-
     private String desc = Tools.EMPTY;
-
     private String example = Tools.EMPTY;
-
     private Boolean hasTextarea = false;
-
     private Boolean hasFile = false;
 }

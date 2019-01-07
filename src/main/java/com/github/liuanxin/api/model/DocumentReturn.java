@@ -15,8 +15,6 @@ import lombok.experimental.Accessors;
 public class DocumentReturn {
 
     private String name;
-
     private String type;
-
     private String desc = Tools.EMPTY;
 }

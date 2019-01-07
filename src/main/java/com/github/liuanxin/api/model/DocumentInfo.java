@@ -13,7 +13,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-//@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentInfo {
 
     private List<DocumentResponse> responseList;

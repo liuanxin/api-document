@@ -20,6 +20,10 @@ public class DocumentCopyright {
     private String version;
     private String copyright;
 
+    private int groupCount = 0;
+    private int apiCount = 0;
+
+
     /** url|method or url */
     @JsonIgnore
     private Set<String> ignoreUrlSet;
@@ -45,14 +49,11 @@ public class DocumentCopyright {
     @JsonIgnore
     private boolean returnRecordLevel = false;
 
+
     public DocumentCopyright(String title, String team, String version, String copyright) {
         this.title = title;
         this.team = team;
         this.version = version;
         this.copyright = copyright;
     }
-
-    // basic statistics
-    private int groupCount = 0;
-    private int apiCount = 0;
 }

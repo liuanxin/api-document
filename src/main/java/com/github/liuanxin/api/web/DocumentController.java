@@ -35,7 +35,7 @@ public class DocumentController {
 
     private static final Lock LOCK = new ReentrantLock();
     private static final String CLASS_SUFFIX = "Controller";
-    private static final Pattern ID_URL_PATTERN = Pattern.compile("\\{.*?\\}");
+    private static final Pattern ID_URL_PATTERN = Pattern.compile("\\{.*?}");
 
     // local cache
     private static String return_info = null;
@@ -55,7 +55,7 @@ public class DocumentController {
 
 
     @PostMapping(value = VERSION_CLEAR, produces = PRODUCES)
-    public String clear() {
+    public int clear() {
         if (Tools.isNotBlank(return_info) || Tools.isNotEmpty(url_map)) {
             LOCK.lock();
             try {
@@ -67,7 +67,7 @@ public class DocumentController {
                 LOCK.unlock();
             }
         }
-        return "clear";
+        return 1;
     }
 
     @GetMapping(value = EXAMPLE_URL, produces = PRODUCES)
@@ -76,7 +76,12 @@ public class DocumentController {
             return Tools.EMPTY;
         } else {
             collect(mapping, copyright);
-            return url_map.get(id).getReturnJson();
+            if (Tools.isEmpty(url_map)) {
+                return Tools.EMPTY;
+            } else {
+                DocumentUrl document = url_map.get(id);
+                return Tools.isBlank(document) ? Tools.EMPTY : document.getReturnJson();
+            }
         }
     }
 

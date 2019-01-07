@@ -93,11 +93,7 @@ public final class ParamHandler {
         }
 
         CookieValue cookieValue = parameter.getParameterAnnotation(CookieValue.class);
-        if (cookieValue != null && cookieValue.required()) {
-            return true;
-        }
-        // else
-        return false;
+        return cookieValue != null && cookieValue.required();
     }
 
     /** collect param info */
@@ -136,10 +132,7 @@ public final class ParamHandler {
         param.setMust(must || (Tools.isNotEmpty(apiParam) && apiParam.must()));
 
         if (type.isEnum()) {
-            // enum append (code:value)
-            String desc = param.getDesc();
-            String enumInfo = Tools.enumInfo(type);
-            param.setDesc(Tools.isEmpty(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
+            param.setDesc(Tools.enumInfo(type, param.getDesc()));
         }
         return param;
     }

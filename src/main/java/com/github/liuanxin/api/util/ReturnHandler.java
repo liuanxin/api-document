@@ -20,7 +20,6 @@ public final class ReturnHandler {
     @SuppressWarnings("unchecked")
     private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T", "E", "A", "K", "V");
 
-    @SuppressWarnings("unchecked")
     public static List<DocumentReturn> handlerReturn(String method, String returnType) {
         List<DocumentReturn> returnList = new ArrayList<>();
         handlerReturn(Tools.EMPTY, Tools.EMPTY, method, returnType, returnList);
@@ -46,17 +45,7 @@ public final class ReturnHandler {
             return;
         }
         // 「class java.lang.Object」 etc ...
-        if (className.contains(" ")) {
-            className = className.substring(className.indexOf(" ")).trim();
-        }
-        Class<?> outClass = Tools.getBasicType(className);
-        if (Tools.isEmpty(outClass)) {
-            try {
-                outClass = Class.forName(className);
-            } catch (ClassNotFoundException e) {
-                // ignore
-            }
-        }
+        Class<?> outClass = getClass(className);
         if (Tools.isEmpty(outClass)) {
             return;
         }
@@ -92,8 +81,7 @@ public final class ReturnHandler {
                         DocumentReturn mapKey = new DocumentReturn();
                         mapKey.setName(space + key.toString() + parent).setType(Tools.getInputType(keyClazz));
                         if (keyClazz.isEnum()) {
-                            // enum append (code:value)
-                            mapKey.setDesc("enum(" + Tools.enumInfo(keyClazz) + ")");
+                            mapKey.setDesc(Tools.enumInfo(keyClazz, "enum"));
                         }
                         // add key
                         returnList.add(mapKey);
@@ -170,10 +158,7 @@ public final class ReturnHandler {
             }
         }
         if (fieldType.isEnum()) {
-            // enum append (code:value)
-            String desc = documentReturn.getDesc();
-            String enumInfo = Tools.enumInfo(fieldType);
-            documentReturn.setDesc(Tools.isEmpty(desc) ? enumInfo : (desc + "(" + enumInfo + ")"));
+            documentReturn.setDesc(Tools.enumInfo(fieldType, documentReturn.getDesc()));
         }
         return documentReturn;
     }
@@ -225,17 +210,7 @@ public final class ReturnHandler {
             return null;
         }
         // 「class java.lang.Object」 etc ...
-        if (className.contains(" ")) {
-            className = className.substring(className.indexOf(" ")).trim();
-        }
-        Class<?> outClass = Tools.getBasicType(className);
-        if (Tools.isEmpty(outClass)) {
-            try {
-                outClass = Class.forName(className);
-            } catch (ClassNotFoundException e) {
-                // ignore
-            }
-        }
+        Class<?> outClass = getClass(className);
         if (Tools.isEmpty(outClass)) {
             return null;
         }
@@ -266,15 +241,7 @@ public final class ReturnHandler {
             return;
         }
         // 「class java.lang.Object」 etc ...
-        if (className.contains(" ")) {
-            className = className.substring(className.indexOf(" ")).trim();
-        }
-        Class<?> innerClass = null;
-        try {
-            innerClass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            // ignore
-        }
+        Class<?> innerClass = getClass(className);
         if (Tools.isEmpty(innerClass)) {
             return;
         }
@@ -298,6 +265,22 @@ public final class ReturnHandler {
                 }
             }
         }
+    }
+
+
+    private static Class<?> getClass(String className) {
+        if (className.contains(" ")) {
+            className = className.substring(className.indexOf(" ")).trim();
+        }
+        Class<?> clazz = Tools.getBasicType(className);
+        if (Tools.isEmpty(clazz)) {
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                // ignore
+            }
+        }
+        return clazz;
     }
 
     private static void setData(Class<?> clazz, Class<?> fieldClazz, Object obj, Object value) {
@@ -406,23 +389,6 @@ public final class ReturnHandler {
         return Collections.emptyMap();
     }
 
-    private static Object handlerReturnWithObj(String method, String className) {
-        // 「class java.lang.Object」 etc ...
-        if (className.contains(" ")) {
-            className = className.substring(className.indexOf(" ")).trim();
-        }
-        Class<?> clazz = null;
-        try {
-            clazz = Class.forName(className);
-        } catch (ClassNotFoundException e) {
-            // ignore
-        }
-        if (Tools.isEmpty(clazz)) {
-            return null;
-        }
-        return handlerReturnWithObjClazz(method, clazz);
-    }
-
     private static Object handlerReturnWithObjClazz(String method, Class<?> clazz) {
         if (Tools.isEmpty(clazz) || clazz == Object.class) {
             return null;
@@ -503,7 +469,7 @@ public final class ReturnHandler {
                         } else if (Map.class.isAssignableFrom(type)) {
                             setField(field, obj, handlerReturnJsonMap(method, genericInfo));
                         } else {
-                            setField(field, obj, handlerReturnWithObj(method, genericInfo));
+                            setField(field, obj, handlerReturnWithObjClazz(method, getClass(genericInfo)));
                         }
                     }
                 }
