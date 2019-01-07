@@ -193,7 +193,10 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
                 sbd.append(WRAP);
             }
         }
-        return sbd.delete(sbd.length() - 1, sbd.length()).toString();
+        if (sbd.toString().endsWith(WRAP)) {
+            sbd.delete(sbd.length() - 1, sbd.length());
+        }
+        return sbd.toString();
     }
     /**
      * <pre>
