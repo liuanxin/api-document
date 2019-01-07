@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 
+@SuppressWarnings("unchecked")
 public class Tools {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Tools.class);
