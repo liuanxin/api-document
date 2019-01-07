@@ -43,7 +43,6 @@ public class DocumentController {
     // local cache
 
 
-
     private final RequestMappingHandlerMapping mapping;
     private final DocumentCopyright copyright;
     @Autowired
