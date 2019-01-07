@@ -406,9 +406,7 @@ $.ajaxSetup({
 });
 var main = $(".col-md-9");
 $.get(projectDomain + "/api/info", function (data) {
-    if (isBlank(data)) {
-        main.html("<span style='color:red;'>no api info</span>");
-    } else {
+    if (isNotBlank(data)) {
         var documentInfo;
         if (typeof data === "string") {
             documentInfo = JSON.parse(data);
@@ -458,6 +456,8 @@ $.get(projectDomain + "/api/info", function (data) {
                 $('.bs-docs-sidebar li').first().addClass('active');
             }
         }
+    } else {
+        main.html("<span style='color:red;'>no api info</span>");
     }
 }).error(function () {
     main.html("<span style='color:red;'>request error</span>");
