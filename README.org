@@ -1,7 +1,7 @@
 
 [[README-cn.org][中文说明]]
 
-[[https://github.com/liuanxin/api-document-example][example project]]
+[[https://github.com/liuanxin/api-document-example-en][example project]]
 
 ** comment
 
