@@ -205,7 +205,6 @@
 <pre class="example">{{? url.develop && url.develop !== ''}}开发: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}说明: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">返回结果示例地址</a></pre>
                             <p> 接口地址 <code>{{= url.method}} {{= url.url}}</code></p>
 
-                            {{? url.commentJson && url.commentJson !== '' }}
                             <p>返回示例及说明如下</p>
                             <div class="org-src-container">
                                 <pre class="src src-json">{{= url.commentJson || '<span style="color:red">返回为空 或 返回不明确</span>'}}</pre>
@@ -259,7 +258,6 @@
                                 </table>
                                 {{?}}
                             </div>
-                            {{?}}
 
                             <form method="{{= url.method}}" action="{{= url.url}}"{{? url.hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? url.paramList && url.paramList.length > 0}}

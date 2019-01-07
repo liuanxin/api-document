@@ -205,7 +205,6 @@
 <pre class="example">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
                             <p>request <code>{{= url.method}} {{= url.url}}</code></p>
 
-                            {{? url.commentJson && url.commentJson !== '' }}
                             <p>return example & comment</p>
                             <div class="org-src-container">
                                 <pre class="src src-json">{{= url.commentJson || '<span style="color:red">Return null or Unclear return</span>'}}</pre>
@@ -259,7 +258,6 @@
                                 </table>
                                 {{?}}
                             </div>
-                            {{?}}
 
                             <form method="{{= url.method}}" action="{{= url.url}}"{{? url.hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? url.paramList && url.paramList.length > 0}}
