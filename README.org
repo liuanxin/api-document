@@ -1,6 +1,8 @@
 
 [[README-cn.org][中文说明]]
 
+[[https://github.com/liuanxin/api-document-example-en][example project]]
+
 ** comment
 
 People who have maintained the project should have experience.
@@ -17,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
 </dependency>
 #+END_SRC
 

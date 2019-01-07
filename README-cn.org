@@ -1,3 +1,4 @@
+[[https://github.com/liuanxin/api-document-example][示例项目地址]]
 
 ** 说明
 
@@ -12,7 +13,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
 </dependency>
 #+END_SRC
 
