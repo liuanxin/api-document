@@ -30,8 +30,8 @@ public class DocumentController {
     private static final String PRODUCES = "application/json; charset=UTF-8";
 
     private static final String VERSION_CLEAR = "/clear";
-    private static final String INFO_URL = "/info";
     private static final String EXAMPLE_URL = "/example/{id}.json";
+    private static final String INFO_URL = "/info";
 
     private static final Lock LOCK = new ReentrantLock();
     private static final String CLASS_SUFFIX = "Controller";
