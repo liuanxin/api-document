@@ -50,7 +50,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 相关注解如下
 #+BEGIN_EXAMPLE
 @ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
-  value     模块. 必须设置, 示例(name-说明, 如: user-用户模块, 说明可以忽略)
+  value     模块. 必须设置, 示例(名称-说明, 如: user-用户, 名称用来生成锚点, 说明用来显示, 以 英文中横线 - 隔开, 说明如果为空则显示成名称)
   index     索引, 越小越靠前. 可以不设置(索引如果一致会使用 说明 排序, 说明如果也一致会使用 name 排序)
 
 
