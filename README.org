@@ -58,7 +58,7 @@ In addition, when has array of non-base data types in the return field(User[]), 
 annotation for this
 #+BEGIN_EXAMPLE
 @ApiGroup   --> in class or method. use the method if all of that
-  value     --> module info, must set, for example(name-info : user-userModule, comment can be ignore)
+  value     --> module info, must set, for example(user, product etc...)
   index     --> more forward when smaller("index" first, "info" second, "name" third -> with sort)
 
 
