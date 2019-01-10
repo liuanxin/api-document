@@ -27,14 +27,14 @@ public class DocumentController {
 
     static final String PARENT_URL_PREFIX = "/api";
 
-    private static final String PRODUCES = "application/json; charset=UTF-8";
-
     private static final String VERSION_CLEAR = "/clear";
     private static final String EXAMPLE_URL = "/example/{id}.json";
     private static final String INFO_URL = "/info";
 
+    private static final String PRODUCES = "application/json; charset=UTF-8";
+
     private static final Lock LOCK = new ReentrantLock();
-    private static final String CLASS_SUFFIX = "Controller";
+
     private static final Pattern ID_URL_PATTERN = Pattern.compile("\\{.*?}");
 
     // local cache
@@ -185,8 +185,10 @@ public class DocumentController {
                             // if no annotation on class, use ClassName(if className include Controller then remove)
                             String className = handlerMethod.getBeanType().getSimpleName();
                             String info = className;
-                            if (className.contains(CLASS_SUFFIX)) {
-                                info = className.substring(0, className.indexOf(CLASS_SUFFIX));
+
+                            String classSuffix = "Controller";
+                            if (className.endsWith(classSuffix)) {
+                                info = className.substring(0, className.indexOf(classSuffix));
                             }
                             addGroup(moduleMap, 0, info + "-" + className, document);
                         } else {
@@ -304,12 +306,13 @@ public class DocumentController {
     }
 
     private static boolean wasJsonApi(HandlerMethod handlerMethod) {
-        ResponseBody annotation = getAnnotation(handlerMethod, ResponseBody.class);
-        if (Tools.isNotEmpty(annotation)) {
+        // @ResponseBody can be annotation on method and class
+        if (Tools.isNotEmpty(getAnnotation(handlerMethod, ResponseBody.class))) {
             return true;
+        } else {
+            // @RestController just annotation on class
+            return Tools.isNotEmpty(getAnnotationByClass(handlerMethod, RestController.class));
         }
-        RestController controller = getAnnotationByClass(handlerMethod, RestController.class);
-        return Tools.isNotEmpty(controller);
     }
 
     private static <T extends Annotation> T getAnnotationByClass(HandlerMethod handlerMethod, Class<T> clazz) {
