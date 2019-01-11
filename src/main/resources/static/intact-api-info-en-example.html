@@ -269,7 +269,7 @@
                                         <th scope="col" class="text-left">comment</th>
                                         <th scope="col" class="text-left">required</th>
                                         <th scope="col" class="text-left">data type</th>
-                                        {{? url.hasHeader}} <th scope="col" class="text-left">param type</th> {{?}}
+                                        {{? url.hasHeader}}<th scope="col" class="text-left">param type</th>{{?}}
                                         <th scope="col" class="text-left">example</th>
                                     </tr>
                                     </thead>
@@ -288,9 +288,9 @@
                                                 {{? param.dataType == 'file' }}
                                                 <input name="{{= param.name}}" type="file" class="validate[required]"/>
                                                 {{?? param.hasTextarea}}
-                                                <textarea name="{{= param.name}}" class="validate[required{{? param.dataType == 'int' || param.dataType == 'long'}},custom[integer]{{?? param.dataType == 'float' || param.dataType == 'double'}},custom[number]{{?}}]">{{= param.example}}</textarea>
+                                                <textarea name="{{= param.name}}" class="validate[required{{? param.dataType === 'int' || param.dataType === 'long'}},custom[integer]{{?? param.dataType === 'float' || param.dataType === 'double'}},custom[number]{{?}}]"{{? 'Header' === param.paramType}} header="true"{{?}}>{{= param.example}}</textarea>
                                                 {{??}}
-                                                <input name="{{= param.name}}" class="validate[required{{? param.dataType == 'int' || param.dataType == 'long'}},custom[integer]{{?? param.dataType == 'float' || param.dataType == 'double'}},custom[number]{{?}}]" value="{{= param.example}}"/>
+                                                <input name="{{= param.name}}" class="validate[required{{? param.dataType === 'int' || param.dataType === 'long'}},custom[integer]{{?? param.dataType === 'float' || param.dataType === 'double'}},custom[number]{{?}}]" value="{{= param.example}}"{{? 'Header' === param.paramType}} header="true"{{?}}/>
                                                 {{?}}
                                                 </label>
                                             </b>
@@ -306,9 +306,9 @@
                                             {{? param.dataType == 'file' }}
                                             <input name="{{= param.name}}" type="file"/>
                                             {{?? param.hasTextarea}}
-                                            <textarea name="{{= param.name}}"{{? param.dataType == 'int' || param.dataType == 'long'}} class="validate[custom[integer]]"{{?? param.dataType == 'float' || param.dataType == 'double'}} class="validate[custom[number]]"{{?}}>{{= param.example}}</textarea>
+                                            <textarea name="{{= param.name}}"{{? param.dataType === 'int' || param.dataType == 'long'}} class="validate[custom[integer]]"{{?? param.dataType === 'float' || param.dataType === 'double'}} class="validate[custom[number]]"{{?}}{{? 'Header' === param.paramType}} header="true"{{?}}>{{= param.example}}</textarea>
                                             {{??}}
-                                            <input name="{{= param.name}}"{{? param.dataType == 'int' || param.dataType == 'long'}} class="validate[custom[integer]]"{{?? param.dataType == 'float' || param.dataType == 'double'}} class="validate[custom[number]]"{{?}} value="{{= param.example}}"/>
+                                            <input name="{{= param.name}}"{{? param.dataType === 'int' || param.dataType == 'long'}} class="validate[custom[integer]]"{{?? param.dataType === 'float' || param.dataType === 'double'}} class="validate[custom[number]]"{{?}} value="{{= param.example}}"{{? 'Header' === param.paramType}} header="true"{{?}}/>
                                             {{?}}
                                             </label>
                                         </td>
@@ -469,7 +469,7 @@ $.get(projectDomain + "/api/info", function (data) {
 <script type="text/javascript">
 $.validationEngine.defaults.scroll = false;
 function request(obj) {
-    var form = $(obj).parent().parent();
+    var form = $(obj).parents("form");
     var response = form.find(".response");
     response.hide();
 
@@ -480,27 +480,49 @@ function request(obj) {
 
     var responseData = response.find("pre");
 
-    var map = objectifyForm(form);
     var method = form.attr('method');
     var url = form.attr('action');
-    var data = form.serialize();
+
+    var map = objectifyForm(form);
+    var params = map[0];
+    var headers = map[1];
+
+    var paramArr = [];
+    if (Object.getOwnPropertyNames(params).length > 0) {
+        $.each(params, function (key, value) {
+            paramArr.push(key + "=" + value);
+        });
+    }
+    // var data = form.serialize();
+    var data = paramArr.join("&");
+
     if (!url.startsWith("/")) {
         url = "/" + url;
     }
     url = projectDomain + url;
-    while (/\{(.*?)\}/.test(url)) {
+
+    var placeRegex = /{(.*?)}/;
+    while (placeRegex.test(url)) {
         var group = RegExp.$1;
-        var value = map[group];
-        // handle ==> /user/{id}
+        var value = params[group];
+        // url /user/{id} change to /user/123, remove params id=123
+        url = url.replace(placeRegex, value);
         data = data.replace(new RegExp(group + "=[^&]+[&]*"), "");
-        url = url.replace(/(\{.*?\})/, value);
     }
+
     var start = new Date().getTime();
     // no handle with upload file
     $.ajax({
         method: method,
         url: url,
-        data: data
+        data: data,
+        beforeSend: function(request) {
+            if (Object.getOwnPropertyNames(headers).length > 0) {
+                $.each(headers, function (key, value) {
+                    request.setRequestHeader(key, value);
+                });
+            }
+        }
     }).done(function(msg) {
         var end = new Date().getTime();
         var html = "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
@@ -530,11 +552,21 @@ function request(obj) {
     });
 }
 function objectifyForm(form) {
-    var map = {};
-    form.serializeArray().map(function(x) {
-        map[x.name] = x.value;
+    var headers = {};
+    var params = {};
+    $.each(form.serializeArray(), function(i, field) {
+        var name = field.name;
+        var value = field.value;
+
+        var input = form.find("input[name=" + name + "]");
+        var header = input.attr("header");
+        if (header && header === "true") {
+            headers[name] = value;
+        } else {
+            params[name] = value;
+        }
     });
-    return map;
+    return [params, headers];
 }
 function escapeHtml(html) {
     if (isBlank(html)) {

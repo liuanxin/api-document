@@ -44,11 +44,54 @@ public final class ParamHandler {
                     String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
                     ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
                     // if param was required, use it.
-                    params.add(paramInfo(paramName, parameterType, apiParam, paramHasMust(parameter)));
+                    params.add(paramInfo(getParamName(parameter, paramName), parameterType, apiParam, paramHasMust(parameter)));
                 }
             }
         }
         return params;
+    }
+
+    private static String getParamName(MethodParameter parameter, String paramName) {
+        RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
+        if (requestParam != null && Tools.isNotEmpty(requestParam.value())) {
+            return requestParam.value();
+        }
+
+        PathVariable pathVariable = parameter.getParameterAnnotation(PathVariable.class);
+        if (pathVariable != null && Tools.isNotEmpty(pathVariable.value())) {
+            return pathVariable.value();
+        }
+
+        RequestAttribute requestAttribute = parameter.getParameterAnnotation(RequestAttribute.class);
+        if (requestAttribute != null && Tools.isNotEmpty(requestAttribute.value())) {
+            return requestAttribute.value();
+        }
+
+        RequestHeader requestHeader = parameter.getParameterAnnotation(RequestHeader.class);
+        if (requestHeader != null && Tools.isNotEmpty(requestHeader.value())) {
+            return requestHeader.value();
+        }
+
+        RequestPart requestPart = parameter.getParameterAnnotation(RequestPart.class);
+        if (requestPart != null && Tools.isNotEmpty(requestPart.value())) {
+            return requestPart.value();
+        }
+
+        SessionAttribute sessionAttribute = parameter.getParameterAnnotation(SessionAttribute.class);
+        if (sessionAttribute != null && Tools.isNotEmpty(sessionAttribute.value())) {
+            return sessionAttribute.value();
+        }
+
+        MatrixVariable matrixVariable = parameter.getParameterAnnotation(MatrixVariable.class);
+        if (matrixVariable != null && Tools.isNotEmpty(matrixVariable.value())) {
+            return matrixVariable.value();
+        }
+
+        CookieValue cookieValue = parameter.getParameterAnnotation(CookieValue.class);
+        if (cookieValue != null && Tools.isNotEmpty(cookieValue.value())) {
+            return cookieValue.value();
+        }
+        return paramName;
     }
 
     private static boolean paramHasMust(MethodParameter parameter) {
