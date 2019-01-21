@@ -507,7 +507,7 @@ function request(obj) {
         var value = params[group];
         // url 由 /user/{id} 改成 /user/123, 参数由 name=xyz&id=123&gender=1 改成 name=xyz&gender=1
         url = url.replace(placeRegex, value);
-        data = data.replace(new RegExp(group + "=[^&]+[&]*"), "");
+        data = data.replace(new RegExp(group + "=[^&]*[&]*"), "");
     }
 
     var start = new Date().getTime();
