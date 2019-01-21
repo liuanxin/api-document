@@ -85,7 +85,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
   value     参数说明, 必须设置
   name      参数名, 可以不设置, 如果设置了将会无视参数名或字段名
   dataType  数据类型. 可以不设置, 当需要自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用
-  paramType 参数类型. 可以不设置, 主要是 Header 或 Query 两种, 默认是 Query
+  paramType 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query, 设置为 Header 表示当前值是放在 header 中传递的
   must      参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
   textarea  参数是否显示成 文本域, 可以不设置, 默认是 false
 

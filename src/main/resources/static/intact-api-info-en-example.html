@@ -505,7 +505,7 @@ function request(obj) {
     while (placeRegex.test(url)) {
         var group = RegExp.$1;
         var value = params[group];
-        // url /user/{id} change to /user/123, remove params id=123
+        // url </user/{id}> change to </user/123>, params <name=xyz&id=123&gender=1> change to <name=xyz&gender=1>
         url = url.replace(placeRegex, value);
         data = data.replace(new RegExp(group + "=[^&]+[&]*"), "");
     }
@@ -524,8 +524,7 @@ function request(obj) {
             }
         }
     }).done(function(msg) {
-        var end = new Date().getTime();
-        var html = "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
+        var html = timeLog(start);
         if (isBlank(msg)) {
             html += "<span style='color:green;'>" + method + " (" + url + ") success, but response nil</span>";
         } else {
@@ -534,22 +533,24 @@ function request(obj) {
         responseData.html(html);
         response.show();
     }).fail(function(msg) {
-        var end = new Date().getTime();
-        var html = "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
+        var html = timeLog(start);
         if (isBlank(msg) || msg.status === 0) {
             html += "<span style='color:red;'>" + method + " (" + url + ") fail</span>";
         } else {
             var message = "Status Code: " + msg.status;
             var json = msg.responseJSON;
             if (isNotBlank(json)) {
-                message += "\n\n";
-                message += escapeHtml(JSON.stringify(json, null, 2));
+                message += "\n\n" + escapeHtml(JSON.stringify(json, null, 2));
             }
             html += addLine(message);
         }
         responseData.html(html);
         response.show();
     });
+}
+function timeLog(start) {
+    var end = new Date().getTime();
+    return "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
 }
 function objectifyForm(form) {
     var headers = {};

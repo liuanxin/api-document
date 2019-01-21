@@ -95,6 +95,7 @@ for example:
   value     --> must set
   name      --> if set, will ignore param name or filed name
   dataType  --> if type was custom can use(for example: enum, but param type was be int)
+  paramType --> can not be set, Header or Query, default is Query, set to Header to indicate that the current value is passed in the header with request
   must      --> if param annotation @RequestParam(required = true) etc... will ignore this config
   textarea  --> default false
 
