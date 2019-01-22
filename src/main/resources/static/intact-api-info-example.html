@@ -508,7 +508,7 @@ function request(obj) {
         var value = params[group];
         // url 由 </user/{id}> 改成 </user/123>, 参数由 <name=xyz&id=123&gender=1> 改成 <name=xyz&gender=1>
         url = url.replace(placeRegex, value);
-        params.delete(group);
+        delete params[group];
     }
 
     {
@@ -519,7 +519,7 @@ function request(obj) {
         // curlHtml += " -H 'Accept: application/json'" + line;
         if (Object.getOwnPropertyNames(headers).length > 0) {
             $.each(headers, function (key, value) {
-                if (isNotBlank(value)) {
+                if (isNotBlank(key) && isNotBlank(value)) {
                     curlHtml += "  -H '" + (key + ": " + value) + "'" + line;
                 }
             });
@@ -530,21 +530,27 @@ function request(obj) {
             if (hasGet) {
                 var paramArr = [];
                 $.each(params, function (key, value) {
-                    if (isNotBlank(value)) {
+                    if (isNotBlank(key) && isNotBlank(value)) {
                         paramArr.push(key + "=" + value);
                     }
                 });
-                var append = url.includes("?") ? "&" : "?";
-                tmpUrl += append + paramArr.join("&");
+                var paramStr = paramArr.join("&");
+                if (paramStr.length > 0) {
+                    tmpUrl += (url.includes("?") ? "&" : "?") + paramStr;
+                }
             } else {
                 $.each(params, function (key, value) {
-                    if (isNotBlank(value)) {
+                    if (isNotBlank(key) && isNotBlank(value)) {
                         curlHtml += "  -d '" + (key + "=" + value) + "'" + line;
                     }
                 });
             }
         }
         curlHtml += "  --url '" + tmpUrl + "'";
+        if (curlHtml.length <= 120) {
+            curlHtml = curlHtml.replace(new RegExp(line.replace("\\", "\\\\"), "g"), "");
+            curlHtml = curlHtml.replace(/\s{2,}/g, " ");
+        }
         curl.find("pre").html(curlHtml);
         curl.show();
     }
@@ -560,7 +566,9 @@ function request(obj) {
             beforeSend: function (request) {
                 if (Object.getOwnPropertyNames(headers).length > 0) {
                     $.each(headers, function (key, value) {
-                        request.setRequestHeader(key, value);
+                        if (isNotBlank(key) && isNotBlank(value)) {
+                            request.setRequestHeader(key, value);
+                        }
                     });
                 }
             }
