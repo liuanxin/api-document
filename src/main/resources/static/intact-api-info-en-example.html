@@ -76,7 +76,7 @@
             color: #998;
             font-style: italic;
         }
-        .response {
+        .curl, .response {
             display: none;
         }
         figcaption {
@@ -319,6 +319,7 @@
                                 </table>
                                 {{?}}
                                 <p><input type="button" value="Try it now!" onclick="request(this);"/></p>
+                                <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
                             </form>
                             <hr/>
@@ -467,18 +468,25 @@ $.get(projectDomain + "/api/info", function (data) {
 <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/languages/jquery.validationEngine-en.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/jquery.validationEngine.min.js"></script>
 <script type="text/javascript">
+if (isBlank(projectDomain)) {
+    projectDomain = window.location.protocol + "//" + window.location.host;
+}
+if (projectDomain.endsWith("/")) {
+    projectDomain = projectDomain.substring(0, projectDomain.length - 1);
+}
+
 $.validationEngine.defaults.scroll = false;
 function request(obj) {
     var form = $(obj).parents("form");
+    var curl = form.find(".curl");
     var response = form.find(".response");
+    curl.hide();
     response.hide();
 
     var flag = form.validationEngine("validate");
     if (!flag) {
         return;
     }
-
-    var responseData = response.find("pre");
 
     var method = form.attr('method');
     var url = form.attr('action');
@@ -487,19 +495,12 @@ function request(obj) {
     var params = map[0];
     var headers = map[1];
 
-    var paramArr = [];
-    if (Object.getOwnPropertyNames(params).length > 0) {
-        $.each(params, function (key, value) {
-            paramArr.push(key + "=" + value);
-        });
+    if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
+        if (!url.startsWith("/")) {
+            url = "/" + url;
+        }
+        url = projectDomain + url;
     }
-    // var data = form.serialize();
-    var data = paramArr.join("&");
-
-    if (!url.startsWith("/")) {
-        url = "/" + url;
-    }
-    url = projectDomain + url;
 
     var placeRegex = /{(.*?)}/;
     while (placeRegex.test(url)) {
@@ -507,46 +508,87 @@ function request(obj) {
         var value = params[group];
         // url </user/{id}> change to </user/123>, params <name=xyz&id=&gender=1> change to <name=xyz&gender=1>
         url = url.replace(placeRegex, value);
-        data = data.replace(new RegExp(group + "=[^&]*[&]*"), "");
+        params.delete(group);
     }
 
-    var start = new Date().getTime();
-    // no handle with upload file
-    $.ajax({
-        method: method,
-        url: url,
-        data: data,
-        beforeSend: function(request) {
-            if (Object.getOwnPropertyNames(headers).length > 0) {
-                $.each(headers, function (key, value) {
-                    request.setRequestHeader(key, value);
+    {
+        var line = " \\\n";
+        var curlHtml = "curl";
+        curlHtml += " -X " + method + line;
+        // curlHtml += " -H 'Content-Type: application/json'" + line;
+        // curlHtml += " -H 'Accept: application/json'" + line;
+        if (Object.getOwnPropertyNames(headers).length > 0) {
+            $.each(headers, function (key, value) {
+                if (isNotBlank(value)) {
+                    curlHtml += "  -H '" + (key + ": " + value) + "'" + line;
+                }
+            });
+        }
+        var tmpUrl = url;
+        if (Object.getOwnPropertyNames(params).length > 0) {
+            var hasGet = ("GET" === method.toUpperCase());
+            if (hasGet) {
+                var paramArr = [];
+                $.each(params, function (key, value) {
+                    if (isNotBlank(value)) {
+                        paramArr.push(key + "=" + value);
+                    }
+                });
+                var append = url.includes("?") ? "&" : "?";
+                tmpUrl += append + paramArr.join("&");
+            } else {
+                $.each(params, function (key, value) {
+                    if (isNotBlank(value)) {
+                        curlHtml += "  -d '" + (key + "=" + value) + "'" + line;
+                    }
                 });
             }
         }
-    }).done(function(msg) {
-        var html = timeLog(start);
-        if (isBlank(msg)) {
-            html += "<span style='color:green;'>" + method + " (" + url + ") success, but response nil</span>";
-        } else {
-            html += addLine(escapeHtml(JSON.stringify(msg, null, 2)));
-        }
-        responseData.html(html);
-        response.show();
-    }).fail(function(msg) {
-        var html = timeLog(start);
-        if (isBlank(msg) || msg.status === 0) {
-            html += "<span style='color:red;'>" + method + " (" + url + ") fail</span>";
-        } else {
-            var message = "Status Code: " + msg.status;
-            var json = msg.responseJSON;
-            if (isNotBlank(json)) {
-                message += "\n\n" + escapeHtml(JSON.stringify(json, null, 2));
+        curlHtml += "  --url '" + tmpUrl + "'";
+        curl.find("pre").html(curlHtml);
+        curl.show();
+    }
+
+    {
+        var responseData = response.find("pre");
+        var start = new Date().getTime();
+        // no handle with upload file
+        $.ajax({
+            method: method,
+            url: url,
+            data: params,
+            beforeSend: function (request) {
+                if (Object.getOwnPropertyNames(headers).length > 0) {
+                    $.each(headers, function (key, value) {
+                        request.setRequestHeader(key, value);
+                    });
+                }
             }
-            html += addLine(message);
-        }
-        responseData.html(html);
-        response.show();
-    });
+        }).done(function (msg) {
+            var html = timeLog(start);
+            if (isBlank(msg)) {
+                html += "<span style='color:green;'>" + method + " (" + url + ") success, but response nil</span>";
+            } else {
+                html += addLine(escapeHtml(JSON.stringify(msg, null, 2)));
+            }
+            responseData.html(html);
+            response.show();
+        }).fail(function (msg) {
+            var html = timeLog(start);
+            if (isBlank(msg) || msg.status === 0) {
+                html += "<span style='color:red;'>" + method + " (" + url + ") fail</span>";
+            } else {
+                var message = "Status Code: " + msg.status;
+                var json = msg.responseJSON;
+                if (isNotBlank(json)) {
+                    message += "\n\n" + escapeHtml(JSON.stringify(json, null, 2));
+                }
+                html += addLine(message);
+            }
+            responseData.html(html);
+            response.show();
+        });
+    }
 }
 function timeLog(start) {
     var end = new Date().getTime();
