@@ -515,14 +515,16 @@ function request(obj) {
         var line = " \\\n";
         var curlHtml = "curl";
         curlHtml += " -X " + method + line;
-        // curlHtml += " -H 'Content-Type: application/json'" + line;
-        // curlHtml += " -H 'Accept: application/json'" + line;
         if (Object.getOwnPropertyNames(headers).length > 0) {
             $.each(headers, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
                     curlHtml += "  -H '" + (key + ": " + value) + "'" + line;
                 }
             });
+        }
+        if (!curlHtml.includes(" -H ")) {
+            curlHtml += " -H 'Content-Type: application/json'" + line;
+            curlHtml += " -H 'Accept: application/json'" + line;
         }
         var tmpUrl = url;
         if (Object.getOwnPropertyNames(params).length > 0) {
@@ -549,7 +551,9 @@ function request(obj) {
         curlHtml += "  --url '" + tmpUrl + "'";
         if (curlHtml.length <= 120) {
             curlHtml = curlHtml.replace(new RegExp(line.replace("\\", "\\\\"), "g"), "");
-            curlHtml = curlHtml.replace(/\s{2,}/g, " ");
+            if (!curlHtml.includes("\\")) {
+                curlHtml = curlHtml.replace(/\s{2,}/g, " ");
+            }
         }
         curl.find("pre").html(curlHtml);
         curl.show();
