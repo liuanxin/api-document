@@ -345,6 +345,7 @@ function addLine(html) {
     for (var i = 0; i < lineNum; i++) {
         lineHtml += (i + 1) + '\n';
     }
+    lineHtml = lineHtml.trim();
     lineHtml += '</span>';
     return lineHtml + html;
 }
