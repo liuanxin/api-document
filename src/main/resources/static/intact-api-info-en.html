@@ -49,9 +49,6 @@
             margin: 0 1em 0 -1em;
             border-right: 1px solid;
             text-align: right;
-        }
-        pre .line-number span {
-            display: block;
             padding: 0 .5em 0 1em;
         }
         pre .comment {
@@ -346,7 +343,7 @@ function addLine(html) {
     var lineNum = html.split(/\n/).length;
     var lineHtml = '<span class="line-number">';
     for (var i = 0; i < lineNum; i++) {
-        lineHtml += '<span>' + (i + 1) + '</span>';
+        lineHtml += (i + 1) + '\n';
     }
     lineHtml += '</span>';
     return lineHtml + html;
