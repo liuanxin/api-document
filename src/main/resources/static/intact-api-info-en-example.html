@@ -231,7 +231,7 @@
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
                                     <tr>
-                                        <th scope="col" class="text-left">response status</th>
+                                        <th scope="col" class="text-left">Response Status</th>
                                         <th scope="col" class="text-left">comment</th>
                                     </tr>
                                     </thead>
@@ -587,10 +587,15 @@ function request(obj) {
             if (isBlank(msg) || msg.status === 0) {
                 html += "<span style='color:red;'>" + method + " (" + url + ") fail</span>";
             } else {
-                var message = "Status Code: " + msg.status;
+                var message = "Response Status: " + msg.status;
                 var json = msg.responseJSON;
                 if (isNotBlank(json)) {
                     message += "\n\n" + escapeHtml(JSON.stringify(json, null, 2));
+                } else {
+                    var text = msg.responseText;
+                    if (isNotBlank(text)) {
+                        message += "\nResponse Text: " + text;
+                    }
                 }
                 html += addLine(message);
             }

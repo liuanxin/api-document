@@ -587,10 +587,15 @@ function request(obj) {
             if (isBlank(msg) || msg.status === 0) {
                 html += "<span style='color:red;'>" + method + " 请求(" + url + ")失败</span>";
             } else {
-                var message = "Status Code: " + msg.status;
+                var message = "Response Status: " + msg.status;
                 var json = msg.responseJSON;
                 if (isNotBlank(json)) {
                     message += "\n\n" + escapeHtml(JSON.stringify(json, null, 2));
+                } else {
+                    var text = msg.responseText;
+                    if (isNotBlank(text)) {
+                        message += "\nResponse Text: " + text;
+                    }
                 }
                 html += addLine(message);
             }
