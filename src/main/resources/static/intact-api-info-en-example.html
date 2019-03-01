@@ -304,6 +304,8 @@
                                             {{??}}
                                             <input name="{{= param.name}}"{{= header}}{{= validateData}} value="{{= param.example}}"/>
                                             {{?}}
+                                            <!-- When there is only one input on the form,
+                                            adding an invisible input can disable the carriage return event for that input. -->
                                             <input style="display:none;"/>
                                         </td>
                                     </tr>

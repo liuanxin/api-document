@@ -305,6 +305,7 @@
                                             {{??}}
                                             <input name="{{= param.name}}"{{= header}}{{= validateData}} value="{{= param.example}}"/>
                                             {{?}}
+                                            <!-- 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 -->
                                             <input style="display:none;"/>
                                         </td>
                                     </tr>
