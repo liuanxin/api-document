@@ -603,7 +603,7 @@ function request(obj) {
 }
 function timeLog(start) {
     var end = new Date().getTime();
-    return "use time: " + (end - start) + "ms(" + formatDate(start) + " -> " + formatDate(end) + ")\n\n";
+    return "use time: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
 }
 function objectifyForm(form) {
     var headers = {};
