@@ -63,9 +63,9 @@ annotation for this
 
 
 @ApiResponses --> in class or method
-@ApiResponse
-  code
-  msg
+@ApiResponse  --> nested annotation
+  code        --> Response Status Code, for example: 400
+  msg         --> response message, for example: param error
 
 for example:
 @ApiResponses({
