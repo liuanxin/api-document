@@ -504,17 +504,17 @@ function request(obj) {
 
     {
         var line = " \\\n";
-        var curlHtml = "curl -X " + method + line;
+        var curlHtml = "curl -i -X " + method + line;
         if (Object.getOwnPropertyNames(headers).length > 0) {
             $.each(headers, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
-                    curlHtml += "  -H '" + (key + ": " + value) + "'" + line;
+                    curlHtml += "&nbsp; -H '" + (key + ": " + value) + "'" + line;
                 }
             });
         }
-        // if (!curlHtml.includes("  -H '")) {
-        //     curlHtml += "  -H 'Content-Type: application/json'" + line;
-        //     curlHtml += "  -H 'Accept: application/json'" + line;
+        // if (!curlHtml.includes("&nbsp; -H '")) {
+        //     curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
+        //     curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
         // }
         var tmpUrl = url;
         if (Object.getOwnPropertyNames(params).length > 0) {
@@ -533,12 +533,12 @@ function request(obj) {
             } else {
                 $.each(params, function (key, value) {
                     if (isNotBlank(key) && isNotBlank(value)) {
-                        curlHtml += "  -d '" + (key + "=" + value) + "'" + line;
+                        curlHtml += "&nbsp; -d '" + (key + "=" + value) + "'" + line;
                     }
                 });
             }
         }
-        curlHtml += "  --url '" + tmpUrl + "'";
+        curlHtml += "&nbsp; --url '" + tmpUrl + "'";
         if (curlHtml.length <= 120) {
             curlHtml = curlHtml.replace(new RegExp(line.replace("\\", "\\\\"), "g"), "");
             if (!curlHtml.includes("\\")) {
