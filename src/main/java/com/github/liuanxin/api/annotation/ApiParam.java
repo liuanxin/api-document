@@ -12,7 +12,7 @@ public @interface ApiParam {
     /** param name, if set will ignore paramName */
     String name() default "";
 
-    /** when customize type comment, use this(example for Enum) */
+    /** if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、phone、email、url、ipv4 */
     String dataType() default "";
 
     ParamType paramType() default ParamType.Query;

@@ -277,24 +277,19 @@
                                         {{? url.hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
                                         <td class="text-left">
                                             {{
-                                            var paramMust = (param.must) ? 'required' : '';
+                                            var arr = [];
+                                            if (param.must) { arr.push('required'); }
 
-                                            var validateType;
-                                            console.log(param.name + ":" + param.dataType);
-                                            if (param.dataType === 'int' || param.dataType === 'long') { validateType = 'custom[integer]'; }
-                                            else if (param.dataType === 'float' || param.dataType === 'double') { validateType = 'custom[number]'; }
-                                            else { validateType = ''; }
+                                            if (param.dataType === 'int' || param.dataType === 'long') { arr.push('custom[integer]'); }
+                                            else if (param.dataType === 'float' || param.dataType === 'double') { arr.push('custom[number]'); }
+                                            else if (param.dataType === 'email') { arr.push('custom[email]'); }
+                                            else if (param.dataType === 'url') { arr.push('custom[url]'); }
+                                            else if (param.dataType === 'ipv4') { arr.push('custom[ipv4]'); }
 
+                                            var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
                                             var validateData;
-                                            if (paramMust != '' || validateType != '') {
-                                                validateData = ' class="validate[' + paramMust;
-                                                if (validateType != '' && paramMust != '') {
-                                                    validateData += ',';
-                                                }
-                                                validateData += validateType + ']"';
-                                            } else {
-                                                validateData = '';
-                                            }
+                                            if (arrJoin === undefined || arrJoin === null || arrJoin === "") { validateData = ''; }
+                                            else { validateData = ' class="validate[' + arrJoin + ']"'; }
 
                                             var header = ('Header' === param.paramType) ? ' header="true"' : '';
                                             }}
@@ -422,14 +417,14 @@ $.get(projectDomain + "/api/info", function (data) {
         }
 
         {
-            var document = documentInfo.document;
+            var doc = documentInfo.document;
             var urlRender = $("#url-render");
             var urlRenderTemplate = doT.template(urlRender.html());
-            urlRender.parent().html(urlRenderTemplate(document));
+            urlRender.parent().html(urlRenderTemplate(doc));
 
             var navRender = $("#url-nav-render");
             var navRenderTemplate = doT.template(navRender.html());
-            navRender.parent().html(navRenderTemplate(document));
+            navRender.parent().html(navRenderTemplate(doc));
 
             $("pre[class='src src-json']").each(function () {
                 var html = $(this).html();

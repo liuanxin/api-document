@@ -363,14 +363,14 @@ $.get(projectDomain + "/api/info", function (data) {
         }
 
         {
-            var document = documentInfo.document;
+            var doc = documentInfo.document;
             var urlRender = $("#url-render");
             var urlRenderTemplate = doT.template(urlRender.html());
-            urlRender.parent().html(urlRenderTemplate(document));
+            urlRender.parent().html(urlRenderTemplate(doc));
 
             var navRender = $("#url-nav-render");
             var navRenderTemplate = doT.template(navRender.html());
-            navRender.parent().html(navRenderTemplate(document));
+            navRender.parent().html(navRenderTemplate(doc));
 
             $("pre[class='src src-json']").each(function () {
                 var html = $(this).html();

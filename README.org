@@ -94,7 +94,7 @@ for example:
 @ApiParam   --> in param or field
   value     --> must set
   name      --> if set, will ignore param name or filed name
-  dataType  --> if type was custom can use(for example: enum, but param type was be int)
+  dataType  --> if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、email、url、ipv4
   paramType --> can not be set, Header or Query, default is Query, set to Header to indicate that the current value is passed in the header with request
   must      --> if param annotation @RequestParam(required = true) etc... will ignore this config
   textarea  --> default false
