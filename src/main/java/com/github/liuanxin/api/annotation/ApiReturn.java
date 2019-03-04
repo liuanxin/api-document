@@ -13,6 +13,6 @@ public @interface ApiReturn {
     /** when customize type comment, use this(example for Enum) */
     String type() default "";
 
-    /** return example. only used on types where the field is a String */
+    /** return example, only if the field is a string or underlying data type(including BigInteger and BigDecimal) */
     String example() default "";
 }

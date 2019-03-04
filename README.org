@@ -105,7 +105,7 @@ for example:
 @ApiReturn  --> in field
   value     --> must set
   type      --> if type was custom can use(for example: enum, but return type was be int)
-  example   --> return example, only if the field is a string or underlying data type
+  example   --> return example, only if the field is a string or underlying data type(including BigInteger and BigDecimal)
 
 @ApiReturnIgnore --> in field
 #+END_EXAMPLE
