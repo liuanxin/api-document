@@ -393,10 +393,13 @@ function addLine(html) {
     return lineHtml + html;
 }
 
-$.ajaxSetup({
-    crossDomain: true,
-    xhrFields: { withCredentials: true }
-});
+var locationDomain = window.location.protocol + "//" + window.location.host;
+if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + "/")) {
+    $.ajaxSetup({
+        crossDomain: true,
+        xhrFields: { withCredentials: true }
+    });
+}
 var main = $(".col-md-9");
 $.get(projectDomain + "/api/info", function (data) {
     if (isNotBlank(data)) {
