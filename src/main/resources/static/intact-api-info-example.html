@@ -287,10 +287,8 @@
                                             else if (param.dataType === 'ipv4') { arr.push('custom[ipv4]'); }
 
                                             var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
-                                            var validateData;
-                                            if (arrJoin === undefined || arrJoin === null || arrJoin === "") { validateData = ''; }
-                                            else { validateData = ' class="validate[' + arrJoin + ']"'; }
 
+                                            var validateData = (arrJoin !== undefined || arrJoin !== null || arrJoin !== "") ? ' class="validate[' + arrJoin + ']"' : ''; }
                                             var header = ('Header' === param.paramType) ? ' header="true"' : '';
                                             }}
                                             {{? param.dataType === 'file' }}
@@ -488,6 +486,13 @@ function request(obj) {
     var map = objectifyForm(form);
     var params = map[0];
     var headers = map[1];
+    var files = map[2];
+
+    var responseData = response.find("pre");
+    if (files.length > 0 && 'POST' !== method.toUpperCase()) {
+        responseData.html("<span style='color:red;'>上传文件必须用 POST, 请联系后端处理!</span>");
+        response.show();
+    }
 
     if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
         if (!url.startsWith("/")) {
@@ -506,8 +511,50 @@ function request(obj) {
     }
 
     {
+        var tmpUrl = url;
+        var curlHtml;
         var line = " \\\n";
-        var curlHtml = "curl -i -X " + method + line;
+        if (files.length > 0) {
+            curlHtml = "curl -i -X POST" + line;
+            if (Object.getOwnPropertyNames(params).length > 0) {
+                $.each(params, function (key, value) {
+                    if (isNotBlank(key) && isNotBlank(value)) {
+                        curlHtml += "&nbsp; -F '" + (key + "=" + value) + "'" + line;
+                    }
+                });
+            }
+            $.each(files, function(i, file) {
+                var fileName = file.name;
+                var filePath = file.value;
+                if (isNotBlank(fileName) && isNotBlank(filePath)) {
+                    filePath = filePath.replace("C:\\fakepath\\", "/tmp/"); // /???/
+                    curlHtml += "&nbsp; -F '" + (fileName + "=@" + filePath) + "'" + line;
+                }
+            });
+        } else {
+            curlHtml = "curl -i -X " + method + line;
+            if (Object.getOwnPropertyNames(params).length > 0) {
+                var hasGet = ("GET" === method.toUpperCase());
+                if (hasGet) {
+                    var paramArr = [];
+                    $.each(params, function (key, value) {
+                        if (isNotBlank(key) && isNotBlank(value)) {
+                            paramArr.push(key + "=" + value);
+                        }
+                    });
+                    var paramStr = paramArr.join("&");
+                    if (paramStr.length > 0) {
+                        tmpUrl += (url.includes("?") ? "&" : "?") + paramStr;
+                    }
+                } else {
+                    $.each(params, function (key, value) {
+                        if (isNotBlank(key) && isNotBlank(value)) {
+                            curlHtml += "&nbsp; -d '" + (key + "=" + value) + "'" + line;
+                        }
+                    });
+                }
+            }
+        }
         if (Object.getOwnPropertyNames(headers).length > 0) {
             $.each(headers, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
@@ -519,28 +566,6 @@ function request(obj) {
         //     curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
         //     curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
         // }
-        var tmpUrl = url;
-        if (Object.getOwnPropertyNames(params).length > 0) {
-            var hasGet = ("GET" === method.toUpperCase());
-            if (hasGet) {
-                var paramArr = [];
-                $.each(params, function (key, value) {
-                    if (isNotBlank(key) && isNotBlank(value)) {
-                        paramArr.push(key + "=" + value);
-                    }
-                });
-                var paramStr = paramArr.join("&");
-                if (paramStr.length > 0) {
-                    tmpUrl += (url.includes("?") ? "&" : "?") + paramStr;
-                }
-            } else {
-                $.each(params, function (key, value) {
-                    if (isNotBlank(key) && isNotBlank(value)) {
-                        curlHtml += "&nbsp; -d '" + (key + "=" + value) + "'" + line;
-                    }
-                });
-            }
-        }
         curlHtml += "&nbsp; --url '" + tmpUrl + "'";
         if (curlHtml.length <= 120) {
             curlHtml = curlHtml.replace(new RegExp(line.replace("\\", "\\\\"), "g"), "");
@@ -553,13 +578,8 @@ function request(obj) {
     }
 
     {
-        var responseData = response.find("pre");
-        var start = new Date().getTime();
-        // 文件上传还无法处理
-        $.ajax({
-            method: method,
+        var settings = {
             url: url,
-            data: params,
             beforeSend: function (request) {
                 if (Object.getOwnPropertyNames(headers).length > 0) {
                     $.each(headers, function (key, value) {
@@ -569,7 +589,30 @@ function request(obj) {
                     });
                 }
             }
-        }).done(function (result) {
+        };
+        if (files.length > 0) {
+            var formData = new FormData();
+            $.each(params, function (key, value) {
+                if (isNotBlank(key) && isNotBlank(value)) {
+                    formData.append(key, value);
+                }
+            });
+            $.each(files, function(i, f) {
+                formData.append(f.name, f.files[0]);
+            });
+
+            settings['method'] = 'POST';
+            settings['data'] = formData;
+            settings['cache'] = false;
+            settings['processData'] = false;
+            settings['contentType'] = false;
+        } else {
+            settings['method'] = method;
+            settings['data'] = params;
+        }
+
+        var start = new Date().getTime();
+        $.ajax(settings).done(function (result) {
             var html = timeLog(start);
             if (isBlank(result)) {
                 html += "<span style='color:green;'>" + method + " 请求(" + url + ")成功, 但是响应为空</span>";
@@ -620,7 +663,7 @@ function objectifyForm(form) {
             params[name] = value;
         }
     });
-    return [params, headers];
+    return [params, headers, form.find('input[type="file"]')];
 }
 function escapeHtml(html) {
     if (isBlank(html)) {
