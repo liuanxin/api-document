@@ -488,13 +488,6 @@ function request(obj) {
     var headers = map[1];
     var files = map[2];
 
-    // if (files.length > 0 && 'POST' !== method.toUpperCase()) {
-    //     // GET is also possible to upload files
-    //     response.find("pre").html("<span style='color:red;'>Upload files must use POST, please contact the backend processing!</span>");
-    //     response.show();
-    //     return;
-    // }
-
     if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
         if (!url.startsWith("/")) {
             url = "/" + url;
@@ -594,6 +587,12 @@ function request(obj) {
             }
         };
         if (files.length > 0) {
+            if (files.length > 0 && 'POST' !== method.toUpperCase()) {
+                response.find("pre").html("<span style='color:red;'>Upload files must use POST, please contact the backend processing!</span>");
+                response.show();
+                return;
+            }
+
             var formData = new FormData();
             $.each(params, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {

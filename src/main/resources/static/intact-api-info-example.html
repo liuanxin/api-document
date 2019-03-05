@@ -488,13 +488,6 @@ function request(obj) {
     var headers = map[1];
     var files = map[2];
 
-    // if (files.length > 0 && 'POST' !== method.toUpperCase()) {
-    //     // GET 也是可以上传文件的
-    //     response.find("pre").html("<span style='color:red;'>上传文件需要用 POST, 请联系后端处理!</span>");
-    //     response.show();
-    //     return;
-    // }
-
     if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
         if (!url.startsWith("/")) {
             url = "/" + url;
@@ -594,6 +587,12 @@ function request(obj) {
             }
         };
         if (files.length > 0) {
+            if ('POST' !== method.toUpperCase()) {
+                response.find("pre").html("<span style='color:red;'>上传文件需要用 POST, 请联系后端处理!</span>");
+                response.show();
+                return;
+            }
+
             var formData = new FormData();
             $.each(params, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
