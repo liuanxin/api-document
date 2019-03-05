@@ -488,11 +488,12 @@ function request(obj) {
     var headers = map[1];
     var files = map[2];
 
-    var responseData = response.find("pre");
-    if (files.length > 0 && 'POST' !== method.toUpperCase()) {
-        responseData.html("<span style='color:red;'>上传文件必须用 POST, 请联系后端处理!</span>");
-        response.show();
-    }
+    // if (files.length > 0 && 'POST' !== method.toUpperCase()) {
+    //     // GET 也是可以上传文件的
+    //     response.find("pre").html("<span style='color:red;'>上传文件需要用 POST, 请联系后端处理!</span>");
+    //     response.show();
+    //     return;
+    // }
 
     if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
         if (!url.startsWith("/")) {
@@ -567,6 +568,7 @@ function request(obj) {
         //     curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
         // }
         curlHtml += "&nbsp; --url '" + tmpUrl + "'";
+        curlHtml = curlHtml.replace(/&nbsp;/g, " ");
         if (curlHtml.length <= 120) {
             curlHtml = curlHtml.replace(new RegExp(line.replace("\\", "\\\\"), "g"), "");
             if (!curlHtml.includes("\\")) {
@@ -580,6 +582,7 @@ function request(obj) {
     {
         var settings = {
             url: url,
+            method: method,
             beforeSend: function (request) {
                 if (Object.getOwnPropertyNames(headers).length > 0) {
                     $.each(headers, function (key, value) {
@@ -601,16 +604,15 @@ function request(obj) {
                 formData.append(f.name, f.files[0]);
             });
 
-            settings['method'] = 'POST';
             settings['data'] = formData;
             settings['cache'] = false;
             settings['processData'] = false;
             settings['contentType'] = false;
         } else {
-            settings['method'] = method;
             settings['data'] = params;
         }
 
+        var responseData = response.find("pre");
         var start = new Date().getTime();
         $.ajax(settings).done(function (result) {
             var html = timeLog(start);
