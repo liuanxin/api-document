@@ -288,7 +288,7 @@
 
                                             var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
-                                            var validateData = (arrJoin !== undefined || arrJoin !== null || arrJoin !== "") ? ' class="validate[' + arrJoin + ']"' : ''; }
+                                            var validateData = (arrJoin !== undefined || arrJoin !== null || arrJoin !== "") ? (' class="validate[' + arrJoin + ']"') : '';
                                             var header = ('Header' === param.paramType) ? ' header="true"' : '';
                                             }}
                                             {{? param.dataType === 'file' }}
@@ -527,7 +527,7 @@ function request(obj) {
                 var fileName = file.name;
                 var filePath = file.value;
                 if (isNotBlank(fileName) && isNotBlank(filePath)) {
-                    filePath = filePath.replace("C:\\fakepath\\", "/tmp/"); // /???/
+                    filePath = filePath.replace("C:\\fakepath\\", "/$REPLACE_REAL_PATH$/");
                     curlHtml += "&nbsp; -F '" + (fileName + "=@" + filePath) + "'" + line;
                 }
             });
