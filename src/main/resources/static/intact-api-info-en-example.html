@@ -506,10 +506,9 @@ function request(obj) {
 
     {
         var tmpUrl = url;
-        var curlHtml;
+        var curlHtml = "curl -i -X " + method + line;
         var line = " \\\n";
         if (files.length > 0) {
-            curlHtml = "curl -i -X POST" + line;
             if (Object.getOwnPropertyNames(params).length > 0) {
                 $.each(params, function (key, value) {
                     if (isNotBlank(key) && isNotBlank(value)) {
@@ -526,7 +525,6 @@ function request(obj) {
                 }
             });
         } else {
-            curlHtml = "curl -i -X " + method + line;
             if (Object.getOwnPropertyNames(params).length > 0) {
                 var hasGet = ("GET" === method.toUpperCase());
                 if (hasGet) {
@@ -588,7 +586,7 @@ function request(obj) {
         };
         if (files.length > 0) {
             if (files.length > 0 && 'POST' !== method.toUpperCase()) {
-                response.find("pre").html("<span style='color:red;'>Upload files must use POST, please contact the backend processing!</span>");
+                response.find("pre").html("<span style='color:red;'>Upload files must use POST(It's possible to use the above cURL), please contact the backend to change!</span>");
                 response.show();
                 return;
             }
@@ -634,7 +632,7 @@ function request(obj) {
                 } else {
                     var text = error.responseText;
                     if (isNotBlank(text)) {
-                        html += "\n<span style='color:red;'>Response Text: " + text + "</span>";
+                        html += "\n<span style='color:red;'>Response Text: " + escapeHtml(text) + "</span>";
                     } else {
                         html += "\n<span style='color:red;'>The response is empty</span>";
                     }
