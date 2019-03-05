@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-AU">
+<html lang="en">
 <head>
     <title>api document</title>
     <meta charset="utf-8">
@@ -506,8 +506,8 @@ function request(obj) {
 
     {
         var tmpUrl = url;
-        var curlHtml = "curl -i -X " + method + line;
         var line = " \\\n";
+        var curlHtml = "curl -i -X " + method + line;
         if (files.length > 0) {
             if (Object.getOwnPropertyNames(params).length > 0) {
                 $.each(params, function (key, value) {
@@ -632,7 +632,7 @@ function request(obj) {
                 } else {
                     var text = error.responseText;
                     if (isNotBlank(text)) {
-                        html += "\n<span style='color:red;'>Response Text: " + escapeHtml(text) + "</span>";
+                        html += "\n<span style='color:red;white-space:pre-wrap;'>Response Text: " + escapeHtml(text) + "</span>";
                     } else {
                         html += "\n<span style='color:red;'>The response is empty</span>";
                     }

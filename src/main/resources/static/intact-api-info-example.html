@@ -632,7 +632,7 @@ function request(obj) {
                 } else {
                     var text = error.responseText;
                     if (isNotBlank(text)) {
-                        html += "\n<span style='color:red;'>响应文本: " + escapeHtml(text) + "</span>";
+                        html += "\n<span style='color:red;white-space:pre-wrap;'>响应文本: " + escapeHtml(text) + "</span>";
                     } else {
                         html += "\n<span style='color:red;'>响应为空</span>";
                     }
