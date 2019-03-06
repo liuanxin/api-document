@@ -526,8 +526,7 @@ function request(obj) {
             });
         } else {
             if (Object.getOwnPropertyNames(params).length > 0) {
-                var hasGet = ("GET" === method.toUpperCase());
-                if (hasGet) {
+                if ("GET" === method.toUpperCase()) {
                     var paramArr = [];
                     $.each(params, function (key, value) {
                         if (isNotBlank(key) && isNotBlank(value)) {
