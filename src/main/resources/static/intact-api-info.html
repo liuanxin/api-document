@@ -200,8 +200,8 @@
                                     <td class="text-left">{{= param.name}}</td>
                                     <td class="text-left">{{= param.dataType}}</td>
                                     <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
-                                    <td class="text-left" style="white-space:pre;">{{= param.desc}}</td>
-                                    {{? url.hasExample}}<td class="text-left" style="white-space:pre;">{{= param.example}}</td>{{?}}
+                                    <td class="text-left" style="white-space:pre-wrap;">{{= param.desc}}</td>
+                                    {{? url.hasExample}}<td class="text-left" style="white-space:pre-wrap;">{{= param.example}}</td>{{?}}
                                     {{? url.hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
                                 </tr>
                                 {{~}}
@@ -227,7 +227,7 @@
                                     <tr>
                                         <td class="text-left">{{= rtn.name}}</td>
                                         <td class="text-left">{{= rtn.type}}</td>
-                                        <td class="text-left" style="white-space:pre;">{{= rtn.desc}}</td>
+                                        <td class="text-left" style="white-space:pre-wrap;">{{= rtn.desc}}</td>
                                     </tr>
                                     {{~}}
                                     </tbody>

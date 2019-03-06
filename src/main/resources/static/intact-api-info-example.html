@@ -220,7 +220,7 @@
                                     <tr>
                                         <td class="text-left">{{= rtn.name}}</td>
                                         <td class="text-left">{{= rtn.type}}</td>
-                                        <td class="text-left" style="white-space:pre;">{{= rtn.desc}}</td>
+                                        <td class="text-left" style="white-space:pre-wrap;">{{= rtn.desc}}</td>
                                     </tr>
                                     {{~}}
                                     </tbody>
@@ -271,7 +271,7 @@
                                     {{~ url.paramList  :param:paramIndex}}
                                     <tr{{? param.must}} style="font-weight: bold;"{{?}}>
                                         <td class="text-left">{{= param.name}}</td>
-                                        <td class="text-left" style="white-space:pre;">{{= param.desc}}</td>
+                                        <td class="text-left" style="white-space:pre-wrap;">{{= param.desc}}</td>
                                         <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
                                         <td class="text-left">{{= param.dataType}}</td>
                                         {{? url.hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
