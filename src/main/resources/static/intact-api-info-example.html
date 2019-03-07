@@ -237,7 +237,7 @@
                                     </thead>
                                     <tbody>
                                     {{
-                                    let responseList;
+                                    var responseList;
                                     if (url.responseList && url.responseList.length > 0) { responseList = url.responseList; }
                                     else if (it.responseList && it.responseList.length > 0) { responseList = it.responseList; }
                                     else { responseList = []; }
@@ -277,7 +277,7 @@
                                         {{? url.hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
                                         <td class="text-left">
                                             {{
-                                            let arr = [];
+                                            var arr = [];
                                             if (param.must) { arr.push('required'); }
 
                                             if (param.dataType === 'int' || param.dataType === 'long') { arr.push('custom[integer]'); }
@@ -286,10 +286,10 @@
                                             else if (param.dataType === 'url') { arr.push('custom[url]'); }
                                             else if (param.dataType === 'ipv4') { arr.push('custom[ipv4]'); }
 
-                                            let arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
+                                            var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
-                                            let validateData = (arrJoin !== undefined || arrJoin !== null || arrJoin !== "") ? (' class="validate[' + arrJoin + ']"') : '';
-                                            let header = ('Header' === param.paramType) ? ' header="true"' : '';
+                                            var validateData = (arrJoin !== undefined || arrJoin !== null || arrJoin !== "") ? (' class="validate[' + arrJoin + ']"') : '';
+                                            var header = ('Header' === param.paramType) ? ' header="true"' : '';
                                             }}
                                             {{? param.dataType === 'file' }}
                                             <input name="{{= param.name}}" type="file"{{= validateData}}/>
@@ -354,7 +354,7 @@
 </footer>
 
 <script>
-let projectDomain = "";
+var projectDomain = "";
 </script>
 
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
@@ -380,9 +380,9 @@ function addLine(html) {
         return "";
     }
 
-    let lineNum = html.split(/\n/).length;
-    let lineHtml = '<span class="line-number">';
-    for (let i = 0; i < lineNum; i++) {
+    var lineNum = html.split(/\n/).length;
+    var lineHtml = '<span class="line-number">';
+    for (var i = 0; i < lineNum; i++) {
         lineHtml += (i + 1) + '\n';
     }
     lineHtml = lineHtml.trim();
@@ -390,17 +390,17 @@ function addLine(html) {
     return lineHtml + html;
 }
 
-let locationDomain = window.location.protocol + "//" + window.location.host;
+var locationDomain = window.location.protocol + "//" + window.location.host;
 if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + "/")) {
     $.ajaxSetup({
         crossDomain: true,
         xhrFields: { withCredentials: true }
     });
 }
-let main = $(".col-md-9");
+var main = $(".col-md-9");
 $.get(projectDomain + "/api/info", function (data) {
     if (isNotBlank(data)) {
-        let documentInfo;
+        var documentInfo;
         if (typeof data === "string") {
             documentInfo = JSON.parse(data);
         } else {
@@ -408,39 +408,39 @@ $.get(projectDomain + "/api/info", function (data) {
         }
 
         {
-            let copyright = documentInfo.copyright;
+            var copyright = documentInfo.copyright;
             if (isNotBlank(copyright.title)) {
                 $("title").html(copyright.title);
             }
-            let copyrightRender = $("#copyright");
-            let template = doT.template(copyrightRender.html());
+            var copyrightRender = $("#copyright");
+            var template = doT.template(copyrightRender.html());
             copyrightRender.parent().html(template(copyright));
         }
 
         {
-            let doc = documentInfo.document;
-            let urlRender = $("#url-render");
-            let urlRenderTemplate = doT.template(urlRender.html());
+            var doc = documentInfo.document;
+            var urlRender = $("#url-render");
+            var urlRenderTemplate = doT.template(urlRender.html());
             urlRender.parent().html(urlRenderTemplate(doc));
 
-            let navRender = $("#url-nav-render");
-            let navRenderTemplate = doT.template(navRender.html());
+            var navRender = $("#url-nav-render");
+            var navRenderTemplate = doT.template(navRender.html());
             navRender.parent().html(navRenderTemplate(doc));
 
             $("pre[class='src src-json']").each(function () {
-                let html = $(this).html();
+                var html = $(this).html();
                 if (isNotBlank(html)) {
                     html = html.replace(/(.*?)(\/\*.*?\*\/)/g, "$1<span class=\"comment\">$2</span>");
                     $(this).html(addLine(html));
                 }
             });
 
-            let href = window.location.href;
+            var href = window.location.href;
             if (href.includes("#")) {
                 href = href.substring(href.indexOf("#"), href.length);
-                let anchor = $(href);
+                var anchor = $(href);
                 if (anchor.length > 0) {
-                    let li = $("a[href='" + href + "']").parent();
+                    var li = $("a[href='" + href + "']").parent();
                     li.addClass("active");
                     li.parent().parent().addClass("active");
                     $("html,body").animate({scrollTop: anchor.offset().top}, 0);
@@ -469,24 +469,24 @@ if (projectDomain.endsWith("/")) {
 
 $.validationEngine.defaults.scroll = false;
 function request(obj) {
-    let form = $(obj).parents("form");
-    let curl = form.find(".curl");
-    let response = form.find(".response");
+    var form = $(obj).parents("form");
+    var curl = form.find(".curl");
+    var response = form.find(".response");
     curl.hide();
     response.hide();
 
-    let flag = form.validationEngine("validate");
+    var flag = form.validationEngine("validate");
     if (!flag) {
         return;
     }
 
-    let method = form.attr('method');
-    let url = form.attr('action');
+    var method = form.attr('method');
+    var url = form.attr('action');
 
-    let map = objectifyForm(form);
-    let params = map[0];
-    let headers = map[1];
-    let files = map[2];
+    var map = objectifyForm(form);
+    var params = map[0];
+    var headers = map[1];
+    var files = map[2];
 
     if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
         if (!url.startsWith("/")) {
@@ -495,19 +495,19 @@ function request(obj) {
         url = projectDomain + url;
     }
 
-    let placeRegex = /{(.*?)}/;
+    var placeRegex = /{(.*?)}/;
     while (placeRegex.test(url)) {
-        let group = RegExp.$1;
-        let value = params[group];
+        var group = RegExp.$1;
+        var value = params[group];
         // url 由 </user/{id}> 改成 </user/123>, 参数由 <name=xyz&id=123&gender=1> 改成 <name=xyz&gender=1>
         url = url.replace(placeRegex, value);
         delete params[group];
     }
 
     {
-        let tmpUrl = url;
-        let line = " \\\n";
-        let curlHtml = "curl -i -X " + method + line;
+        var tmpUrl = url;
+        var line = " \\\n";
+        var curlHtml = "curl -i -X " + method + line;
         if (files.length > 0) {
             if (Object.getOwnPropertyNames(params).length > 0) {
                 $.each(params, function (key, value) {
@@ -517,8 +517,8 @@ function request(obj) {
                 });
             }
             $.each(files, function(i, file) {
-                let fileName = file.name;
-                let filePath = file.value;
+                var fileName = file.name;
+                var filePath = file.value;
                 if (isNotBlank(fileName) && isNotBlank(filePath)) {
                     filePath = filePath.replace("C:\\fakepath\\", "/$替换真实路径$/");
                     curlHtml += "&nbsp; -F '" + (fileName + "=@" + filePath) + "'" + line;
@@ -527,13 +527,13 @@ function request(obj) {
         } else {
             if (Object.getOwnPropertyNames(params).length > 0) {
                 if ("GET" === method.toUpperCase()) {
-                    let paramArr = [];
+                    var paramArr = [];
                     $.each(params, function (key, value) {
                         if (isNotBlank(key) && isNotBlank(value)) {
                             paramArr.push(key + "=" + value);
                         }
                     });
-                    let paramStr = paramArr.join("&");
+                    var paramStr = paramArr.join("&");
                     if (paramStr.length > 0) {
                         tmpUrl += (url.includes("?") ? "&" : "?") + paramStr;
                     }
@@ -570,7 +570,7 @@ function request(obj) {
     }
 
     {
-        let settings = {
+        var settings = {
             url: url,
             method: method,
             beforeSend: function (request) {
@@ -590,7 +590,7 @@ function request(obj) {
                 return;
             }
 
-            let formData = new FormData();
+            var formData = new FormData();
             $.each(params, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
                     formData.append(key, value);
@@ -608,10 +608,10 @@ function request(obj) {
             settings['data'] = params;
         }
 
-        let responseData = response.find("pre");
-        let start = new Date().getTime();
+        var responseData = response.find("pre");
+        var start = new Date().getTime();
         $.ajax(settings).done(function (result) {
-            let html = timeLog(start);
+            var html = timeLog(start);
             if (isBlank(result)) {
                 html += "<span style='color:green;'>" + method + " 请求(" + url + ")成功, 但是响应为空</span>";
             } else {
@@ -620,16 +620,16 @@ function request(obj) {
             responseData.html(html);
             response.show();
         }).fail(function (error) {
-            let html = timeLog(start);
+            var html = timeLog(start);
             if (isBlank(error)) {
                 html += "<span style='color:red;'>" + method + " 请求(" + url + ")失败</span>";
             } else {
                 html += "<span style='color:red;'>响应状态码: " + error.status + "</span>";
-                let json = error.responseJSON;
+                var json = error.responseJSON;
                 if (isNotBlank(json)) {
                     html += "\n\n" + addLine(escapeHtml(JSON.stringify(json, null, 2)));
                 } else {
-                    let text = error.responseText;
+                    var text = error.responseText;
                     if (isNotBlank(text)) {
                         html += "\n<span style='color:red;white-space:pre-wrap;'>响应文本: " + escapeHtml(text) + "</span>";
                     } else {
@@ -643,18 +643,18 @@ function request(obj) {
     }
 }
 function timeLog(start) {
-    let end = new Date().getTime();
+    var end = new Date().getTime();
     return "请求时长: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
 }
 function objectifyForm(form) {
-    let headers = {};
-    let params = {};
+    var headers = {};
+    var params = {};
     $.each(form.serializeArray(), function(i, field) {
-        let name = field.name;
-        let value = field.value;
+        var name = field.name;
+        var value = field.value;
 
-        let input = form.find("input[name=" + name + "]");
-        let header = input.attr("header");
+        var input = form.find("input[name=" + name + "]");
+        var header = input.attr("header");
         if (header && header === "true") {
             headers[name] = value;
         } else {
@@ -672,30 +672,30 @@ function escapeHtml(html) {
         .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 function formatDate(date) {
-    let d = new Date(date);
+    var d = new Date(date);
 
-    let y = d.getFullYear().toString();
-    let m = (d.getMonth() + 1).toString();
+    var y = d.getFullYear().toString();
+    var m = (d.getMonth() + 1).toString();
     if (m.length === 1) {
         m = '0' + m;
     }
-    let dy = d.getDate().toString();
+    var dy = d.getDate().toString();
     if (dy.length === 1) {
         dy = '0' + dy;
     }
-    let h = d.getHours().toString();
+    var h = d.getHours().toString();
     if (h.length === 1) {
         h = '0' + h;
     }
-    let mt = d.getMinutes().toString();
+    var mt = d.getMinutes().toString();
     if (mt.length === 1) {
         mt = '0' + mt;
     }
-    let s = d.getSeconds().toString();
+    var s = d.getSeconds().toString();
     if (s.length === 1) {
         s = '0' + s;
     }
-    let S = d.getMilliseconds().toString();
+    var S = d.getMilliseconds().toString();
     if (S.length === 1) {
         S = '00' + S;
     } else if (S.length === 2) {

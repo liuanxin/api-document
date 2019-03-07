@@ -244,7 +244,7 @@
                                     </thead>
                                     <tbody>
                                     {{
-                                    let responseList;
+                                    var responseList;
                                     if (url.responseList && url.responseList.length > 0) { responseList = url.responseList; }
                                     else if (it.responseList && it.responseList.length > 0) { responseList = it.responseList; }
                                     else { responseList = []; }
@@ -303,7 +303,7 @@
 </footer>
 
 <script type="text/javascript">
-let projectDomain = "";
+var projectDomain = "";
 </script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -328,9 +328,9 @@ function addLine(html) {
         return "";
     }
 
-    let lineNum = html.split(/\n/).length;
-    let lineHtml = '<span class="line-number">';
-    for (let i = 0; i < lineNum; i++) {
+    var lineNum = html.split(/\n/).length;
+    var lineHtml = '<span class="line-number">';
+    for (var i = 0; i < lineNum; i++) {
         lineHtml += (i + 1) + '\n';
     }
     lineHtml = lineHtml.trim();
@@ -338,17 +338,17 @@ function addLine(html) {
     return lineHtml + html;
 }
 
-let locationDomain = window.location.protocol + "//" + window.location.host;
+var locationDomain = window.location.protocol + "//" + window.location.host;
 if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(current + "/")) {
     $.ajaxSetup({
         crossDomain: true,
         xhrFields: { withCredentials: true }
     });
 }
-let main = $(".col-md-9");
+var main = $(".col-md-9");
 $.get(projectDomain + "/api/info", function (data) {
     if (isNotBlank(data)) {
-        let documentInfo;
+        var documentInfo;
         if (typeof data === "string") {
             documentInfo = JSON.parse(data);
         } else {
@@ -356,39 +356,39 @@ $.get(projectDomain + "/api/info", function (data) {
         }
 
         {
-            let copyright = documentInfo.copyright;
+            var copyright = documentInfo.copyright;
             if (isNotBlank(copyright.title)) {
                 $("title").html(copyright.title);
             }
-            let copyrightRender = $("#copyright");
-            let template = doT.template(copyrightRender.html());
+            var copyrightRender = $("#copyright");
+            var template = doT.template(copyrightRender.html());
             copyrightRender.parent().html(template(copyright));
         }
 
         {
-            let doc = documentInfo.document;
-            let urlRender = $("#url-render");
-            let urlRenderTemplate = doT.template(urlRender.html());
+            var doc = documentInfo.document;
+            var urlRender = $("#url-render");
+            var urlRenderTemplate = doT.template(urlRender.html());
             urlRender.parent().html(urlRenderTemplate(doc));
 
-            let navRender = $("#url-nav-render");
-            let navRenderTemplate = doT.template(navRender.html());
+            var navRender = $("#url-nav-render");
+            var navRenderTemplate = doT.template(navRender.html());
             navRender.parent().html(navRenderTemplate(doc));
 
             $("pre[class='src src-json']").each(function () {
-                let html = $(this).html();
+                var html = $(this).html();
                 if (isNotBlank(html)) {
                     html = html.replace(/(.*?)(\/\*.*?\*\/)/g, "$1<span class=\"comment\">$2</span>");
                     $(this).html(addLine(html));
                 }
             });
 
-            let href = window.location.href;
+            var href = window.location.href;
             if (href.includes("#")) {
                 href = href.substring(href.indexOf("#"), href.length);
-                let anchor = $(href);
+                var anchor = $(href);
                 if (anchor.length > 0) {
-                    let li = $("a[href='" + href + "']").parent();
+                    var li = $("a[href='" + href + "']").parent();
                     li.addClass("active");
                     li.parent().parent().addClass("active");
                     $("html,body").animate({scrollTop: anchor.offset().top}, 0);
