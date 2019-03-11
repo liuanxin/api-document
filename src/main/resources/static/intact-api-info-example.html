@@ -288,7 +288,7 @@
 
                                             var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
-                                            var validateData = (arrJoin !== undefined || arrJoin !== null || arrJoin !== "") ? (' class="validate[' + arrJoin + ']"') : '';
+                                            var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== "") ? (' class="validate[' + arrJoin + ']"') : '';
                                             var header = ('Header' === param.paramType) ? ' header="true"' : '';
                                             }}
                                             {{? param.dataType === 'file' }}
