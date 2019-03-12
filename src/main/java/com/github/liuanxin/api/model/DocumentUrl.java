@@ -85,11 +85,11 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         for (DocumentReturn documentReturn : returnList) {
             String name = documentReturn.getName();
             if (name.contains(ReturnHandler.LEVEL_APPEND)) {
-                DocumentReturn documentReturn1 = new DocumentReturn();
-                documentReturn1.setName(name.substring(0, name.indexOf(ReturnHandler.LEVEL_APPEND)).trim());
-                documentReturn1.setType(documentReturn.getType());
-                documentReturn1.setDesc(documentReturn.getDesc());
-                documentReturns.add(documentReturn1);
+                DocumentReturn dr = new DocumentReturn();
+                dr.setName(name.substring(0, name.indexOf(ReturnHandler.LEVEL_APPEND)).trim());
+                dr.setType(documentReturn.getType());
+                dr.setDesc(documentReturn.getDesc());
+                documentReturns.add(dr);
             } else {
                 documentReturns.add(documentReturn);
             }
