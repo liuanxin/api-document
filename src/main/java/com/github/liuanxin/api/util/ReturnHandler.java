@@ -146,63 +146,21 @@ public final class ReturnHandler {
     /** collect return info */
     private static DocumentReturn returnInfo(Field field, String name) {
         Class<?> fieldType = field.getType();
+        DocumentReturn documentReturn = new DocumentReturn();
+        documentReturn.setName(name).setType(Tools.getInputType(fieldType));
 
         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-        String returnType = null;
-        StringBuilder returnDesc = new StringBuilder();
         if (Tools.isNotEmpty(apiReturn)) {
-            returnType = apiReturn.type();
-            returnDesc.append(apiReturn.value());
-        }
-        if (Tools.isNotEmpty(returnType)) {
-            returnType = Tools.getInputType(fieldType);
+            documentReturn.setDesc(apiReturn.value());
+            String returnType = apiReturn.type();
+            if (Tools.isNotEmpty(returnType)) {
+                documentReturn.setType(returnType);
+            }
         }
         if (fieldType.isEnum()) {
-            String enumInfo = Tools.collectEnumInfo(fieldType);
-            if (Tools.isNotEmpty(enumInfo)) {
-                returnDesc.append("(").append(enumInfo).append(")");
-            }
-        } else if (Collection.class.isAssignableFrom(fieldType)) {
-            String type = field.getGenericType().toString();
-            if (type.contains("<") && type.contains(">")) {
-                String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                Class<?> innerClass = getClass(innerType);
-                if (Tools.isNotEmpty(innerClass) && innerClass.isEnum()) {
-                    String enumInfo = Tools.collectEnumInfo(innerClass);
-                    if (Tools.isNotEmpty(enumInfo)) {
-                        returnDesc.append(" [").append(enumInfo).append("]");
-                    }
-                }
-            }
-        } else if (Map.class.isAssignableFrom(fieldType)) {
-            String type = field.getGenericType().toString();
-            if (type.contains("<") && type.contains(">")) {
-                String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
-                String[] keyValue = keyAndValue.split(",");
-                if (keyValue.length == 2) {
-                    StringBuilder sbd = new StringBuilder();
-                    try {
-                        Class<?> keyClazz = Class.forName(keyValue[0].trim());
-                        if (Tools.isNotEmpty(keyClazz) && keyClazz.isEnum()) {
-                            String enumInfo = Tools.collectEnumInfo(keyClazz);
-                            if (Tools.isNotEmpty(enumInfo)) {
-                                returnDesc.append(" key(").append(enumInfo).append(")");
-                            }
-                        }
-                        // just one level(Map<String, Enum>), if has Map<?, List<Enum>|Map<?,Enum>> can't be handle
-                        Class<?> valueClazz = Class.forName(keyValue[1].trim());
-                        if (Tools.isNotEmpty(valueClazz) && valueClazz.isEnum()) {
-                            String enumInfo = Tools.collectEnumInfo(valueClazz);
-                            if (Tools.isNotEmpty(enumInfo)) {
-                                returnDesc.append(" value(").append(enumInfo).append(")");
-                            }
-                        }
-                    } catch (ClassNotFoundException ignore) {
-                    }
-                }
-            }
+            documentReturn.setDesc(Tools.enumInfo(fieldType, documentReturn.getDesc()));
         }
-        return new DocumentReturn(name, returnType, returnDesc.toString());
+        return documentReturn;
     }
 
     private static String handlerReturnFieldName(Map<String, String> fieldMap, String innerType) {

@@ -311,7 +311,7 @@ public class Tools {
             }
         }
     }
-    static String collectEnumInfo(Class<?> clazz) {
+    private static String collectEnumInfo(Class<?> clazz) {
         if (isNotEmpty(clazz) && clazz.isEnum()) {
             Enum[] constants = (Enum[]) clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
