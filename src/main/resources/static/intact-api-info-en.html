@@ -318,7 +318,7 @@ $(function () {
 <script src="//cdnjs.cloudflare.com/ajax/libs/dot/1.1.2/doT.min.js"></script>
 <script type="text/javascript">
 function isBlank(str) {
-    return str === undefined || str === null || str === "";
+    return str === undefined || str === null || str === 'undefined' || str === 'null' || str === "";
 }
 function isNotBlank(str) {
     return !isBlank(str);
