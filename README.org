@@ -31,8 +31,6 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
-                    // if true, api will return nil(when production use) default was false.
-                    // .setOnline(true)
                     // if method has @ApiResponses, use that
                     // setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "param error"),
@@ -40,7 +38,8 @@ public class ApiInfoConfig {
                     // ))
                     // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
-                    ;
+                    // if true, api will return nil(when production use) default was false.
+                    .setOnline(true);
     }
 }
 #+END_SRC
