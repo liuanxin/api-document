@@ -58,7 +58,7 @@ annotation for this
 #+BEGIN_EXAMPLE
 @ApiGroup   --> in class or method. use the method if all of that
   value     --> module info, must set(name-description, name used to generate the anchor point, description used to display, separated by the horizontal line -, description is displayed as name if it is empty)
-  index     --> more forward when smaller("index" first, "info" second, "name" third -> with sort)
+  index     --> more forward when smaller("index" first, "description" second, "name" third -> with sort)
 
 
 @ApiResponses --> in class or method
@@ -79,12 +79,6 @@ for example:
   desc      --> description, can not be set
   index     --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
   commentInReturnExample  --> if false, comment will show with display separately, default true
-  commentInReturnExampleWithLevel use level to handle comment in field, default true
-    if set to true, the hierarchical relationship corresponding to the field will be used to process the comment, Generics be sure to use certain types.
-    if set to false, will use index corresponding to the field to process the comment,
-    when use @JsonPropertyOrder to change field sort, there will be problems.
-
-    PS: if the field is not a standard hump name, there will be problems too..
 
 @ApiIgnore  --> want to ignore some api, use it
   value     --> false will ignore
