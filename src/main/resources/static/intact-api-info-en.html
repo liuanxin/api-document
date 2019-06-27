@@ -399,8 +399,6 @@ $.get(projectDomain + '/api/info', function (data) {
                 li.parent().parent().addClass('active');
                 $('html,body').animate({scrollTop: anchor.offset().top}, 0);
             }
-        } else {
-            $('.bs-docs-sidebar li').first().addClass('active');
         }
     } else {
         main.html('<span style="color:red;">no api info</span>');
