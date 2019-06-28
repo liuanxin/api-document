@@ -15,10 +15,12 @@ public @interface ApiParam {
     /** if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、phone、email、url、ipv4 */
     String dataType() default "";
 
-    ParamType paramType() default ParamType.Query;
-
     String example() default "";
 
+    /** Header or Query */
+    ParamType paramType() default ParamType.Query;
+
+    /** if param has @RequestParam(required = true) etc..., this set will ignore */
     boolean must() default false;
 
     /** in html, true will be textarea, default was input. */

@@ -6,7 +6,6 @@ import com.github.liuanxin.api.util.ParamHandler;
 import com.github.liuanxin.api.util.Requests;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +44,7 @@ public class DocumentController {
 
     private final RequestMappingHandlerMapping mapping;
     private final DocumentCopyright copyright;
-    @Autowired
+
     public DocumentController(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping mapping,
                               DocumentCopyright copyright) {
         this.mapping = mapping;
