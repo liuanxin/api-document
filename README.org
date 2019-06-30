@@ -31,7 +31,7 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
-                    // // if method has @ApiResponses, use that
+                    // // if class or method has @ApiResponses, use that
                     // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "param error"),
                     //         new DocumentResponse(500, "request error")
