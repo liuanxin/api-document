@@ -28,7 +28,7 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("标题", "团队", "版本号", "版权")
-                    // // 全局的响应说明, 如果在方法上使用 @ApiResponses 注解则以方法上的为准
+                    // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
                     // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "请求参数有误"),
                     //         new DocumentResponse(500, "请求异常")
