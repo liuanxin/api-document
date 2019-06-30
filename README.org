@@ -31,12 +31,12 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
-                    // if method has @ApiResponses, use that
-                    // setGlobalResponse(Arrays.asList(
+                    // // if method has @ApiResponses, use that
+                    // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "param error"),
                     //         new DocumentResponse(500, "request error")
                     // ))
-                    // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
+                    // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
                     // if true, api will return nil(when production use) default was false.
                     .setOnline(true);
