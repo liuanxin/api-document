@@ -38,8 +38,9 @@ public class ApiInfoConfig {
                     // ))
                     // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
-                    // if true, api will return nil(when production use) default was false.
-                    .setOnline(true);
+                    // // if true, api will return nil(when production use) default was false.
+                    // .setOnline(true)
+                    ;
     }
 }
 #+END_SRC
