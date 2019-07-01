@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css">
     <style type="text/css">
+        html {
+            position: relative;
+            min-height: 100%;
+        }
         body {
             font-size: 16px;
         }
@@ -41,13 +45,10 @@
             color: #998;
             font-style: italic;
         }
-
-        .col-md-3 {
-            top: 0;
-            bottom: 0;
-            position: sticky;
-            position: -webkit-sticky;
+        .curl, .response {
+            display: none;
         }
+
         .table-hover tbody tr:hover {
             background-color: rgba(0,0,0,.075);
         }
@@ -63,6 +64,7 @@
         }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
+            max-height: calc(100vh - 30px); /* 100vh - top - bottom */
         }
         .bs-docs-sidebar .nav > li > a {
             display: block;
@@ -171,7 +173,7 @@
                             <span class="module-api-index">{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
                         </h3>
                         <div class="module-api-info">
-<pre class="example">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
+                            <pre class="example">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
                             <p>request <code>{{= url.method}} {{= url.url}}</code></p>
 
                             {{? url.paramList && url.paramList.length > 0}}
@@ -305,7 +307,32 @@ $(function () {
     'use strict';
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
     $('.bs-docs-sidebar').affix();
+
+    const topBottomHeight = 30;
+    const heightProperty = 'max-height';
+
+    const html = document.getElementsByTagName('html')[0];
+    const footer = document.getElementsByTagName('footer')[0];
+
+    const $win = $(window);
+    const $bs = $(".bs-docs-sidebar > .nav");
+    $win.scroll(function() {
+        if (footerInViewport(footer, $win)) {
+            const footViewHeight = $win.scrollTop() + $win.height() - footer.offsetTop;
+            $bs.css(heightProperty, 'calc(100vh - ' + (topBottomHeight + footViewHeight) + 'px)');
+        } else {
+            const htmlViewHeight = (html.clientHeight - topBottomHeight) + "px";
+            if ($bs.css(heightProperty) !== htmlViewHeight) {
+                $bs.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
+            }
+        }
+    });
 });
+function footerInViewport(footer, win) {
+    const footerTop = footer.offsetTop;
+    const windowTop = win.scrollTop();
+    return footerTop >= windowTop && footerTop < (windowTop + win.height());
+}
 </script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/dot/1.1.2/doT.min.js"></script>

@@ -13,37 +13,15 @@
         }
         body {
             font-size: 16px;
-            margin-bottom: 105px;
         }
         footer {
             position: absolute;
-            bottom: 0;
+            height: 133px;
             width: 100%;
-            height: 127px;
             background-color: #f5f5f5;
         }
         footer > div {
             padding: 10px;
-        }
-        footer p {
-            margin: 0 0 5px;
-            text-align: center;
-            font-size: 16px;
-        }
-        .container {
-            width: auto;
-        }
-        /* data: 75 -> 80 */
-        .col-md-9 {
-            width: 80%;
-        }
-        /* nav: 25 -> 20 */
-        .col-md-3 {
-            width: 20%;
-        }
-        #table-of-contents {
-            margin-top: 20px;
-            margin-bottom: 20px;
         }
         input {
             width: 180px;
@@ -51,8 +29,9 @@
         textarea {
             width: 180px;
         }
-        blockquote p {
-            font-size: 18px;
+        footer p {
+            margin: 5px 0;
+            text-align: center;
         }
         pre {
             font-size: 14px;
@@ -73,15 +52,14 @@
             color: #998;
             font-style: italic;
         }
+
+        .container {
+            width: auto;
+        }
         .curl, .response {
             display: none;
         }
-        figcaption {
-            font-size: 16px;
-            color: #666;
-            font-style: italic;
-            padding-bottom: 15px;
-        }
+
         .table-hover tbody tr:hover {
             background-color: rgba(0,0,0,.075);
         }
@@ -91,17 +69,13 @@
         .table-bordered td, .table-bordered th {
             border: 1px solid #dee2e6;
         }
-        .bs-docs-sidebar.affix {
-            position: static;
-        }
-        @media (min-width: 768px) {
-            .bs-docs-sidebar {
-                padding-left: 20px;
-            }
+        .nav-bar {
+            margin-top: 15px;
+            margin-bottom: 15px;
         }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
-            max-height: 76vh;
+            max-height: calc(100vh - 30px); /* 100vh - top - bottom */
         }
         .bs-docs-sidebar .nav > li > a {
             display: block;
@@ -110,14 +84,17 @@
             font-weight: 500;
             color: #999;
         }
-        .bs-docs-sidebar .nav > li > a:hover, .bs-docs-sidebar .nav > li > a:focus {
+        .bs-docs-sidebar .nav > li > a:hover,
+        .bs-docs-sidebar .nav > li > a:focus {
             padding-left: 19px;
             color: #A1283B;
             text-decoration: none;
             background-color: transparent;
             border-left: 1px solid #A1283B;
         }
-        .bs-docs-sidebar .nav > .active > a, .bs-docs-sidebar .nav > .active:hover > a, .bs-docs-sidebar .nav > .active:focus > a {
+        .bs-docs-sidebar .nav > .active > a,
+        .bs-docs-sidebar .nav > .active:hover > a,
+        .bs-docs-sidebar .nav > .active:focus > a {
             padding-left: 18px;
             font-weight: bold;
             color: #A1283B;
@@ -135,10 +112,13 @@
             font-size: 12px;
             font-weight: normal;
         }
-        .bs-docs-sidebar .nav .nav > li > a:hover, .bs-docs-sidebar .nav .nav > li > a:focus {
+        .bs-docs-sidebar .nav .nav > li > a:hover,
+        .bs-docs-sidebar .nav .nav > li > a:focus {
             padding-left: 29px;
         }
-        .bs-docs-sidebar .nav .nav > .active > a, .bs-docs-sidebar .nav .nav > .active:hover > a, .bs-docs-sidebar .nav .nav > .active:focus > a {
+        .bs-docs-sidebar .nav .nav > .active > a,
+        .bs-docs-sidebar .nav .nav > .active:hover > a,
+        .bs-docs-sidebar .nav .nav > .active:focus > a {
             padding-left: 28px;
             font-weight: 500;
         }
@@ -152,34 +132,39 @@
             font-size: 12px;
             font-weight: normal;
         }
-        .bs-docs-sidebar .nav .nav .nav > li > a:hover, .bs-docs-sidebar .nav .nav .nav > li > a:focus {
+        .bs-docs-sidebar .nav .nav .nav > li > a:hover,
+        .bs-docs-sidebar .nav .nav .nav > li > a:focus {
             padding-left: 39px;
         }
-        .bs-docs-sidebar .nav .nav .nav > .active > a, .bs-docs-sidebar .nav .nav .nav > .active:hover > a, .bs-docs-sidebar .nav .nav .nav > .active:focus > a {
+        .bs-docs-sidebar .nav .nav .nav > .active > a,
+        .bs-docs-sidebar .nav .nav .nav > .active:hover > a,
+        .bs-docs-sidebar .nav .nav .nav > .active:focus > a {
             padding-left: 38px;
             font-weight: 500;
+        }
+        @media (max-width: 992px) {
+            .col-md-9 {
+                width: 100%;
+            }
+            .col-md-3 {
+                display: none;
+            }
+        }
+        @media (min-width: 768px) {
+            .bs-docs-sidebar {
+                padding-left: 20px;
+            }
         }
         @media (min-width: 992px) {
             .bs-docs-sidebar .nav > .active > ul {
                 display: block;
             }
-            .bs-docs-sidebar.affix, .bs-docs-sidebar.affix-bottom {
-                width: 213px;
-            }
             .bs-docs-sidebar.affix {
-                position: fixed;
-                top: 20px;
-            }
-            .bs-docs-sidebar.affix-bottom {
-                position: absolute;
-            }
-            .bs-docs-sidebar.affix .bs-docs-sidenav, .bs-docs-sidebar.affix-bottom .bs-docs-sidenav {
-                margin-top: 0;
-                margin-bottom: 0
+                width: 213px;
             }
         }
         @media (min-width: 1200px) {
-            .bs-docs-sidebar.affix-bottom, .bs-docs-sidebar.affix {
+            .bs-docs-sidebar {
                 width: 263px;
             }
         }
@@ -199,7 +184,7 @@
                             <span class="section-number-3">{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
                         </h3>
                         <div class="outline-text-3">
-<pre class="example">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
+                            <pre class="example">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
                             <p>request <code>{{= url.method}} {{= url.url}}</code></p>
 
                             <p>return example & comment</p>
@@ -319,7 +304,7 @@
             </script>
         </div>
         <div class="col-md-3">
-            <nav id="table-of-contents">
+            <nav class="nav-bar">
                 <div class="bs-docs-sidebar">
                     <ul class="nav">
                         <script id="url-nav-render" type="text/x-dot-template">
@@ -345,9 +330,9 @@
 <footer class="postamble">
     <script id="copyright" type="text/x-dot-template">
         <div>
-            <p class="statistics">{{= it.groupCount}} module, {{= it.apiCount}} api</p>
             <p class="version">Version: {{= it.version}}</p>
-            <p class="team">Team: {{= it.team}}</p>
+            <p class="statistics">{{= it.groupCount}} module, {{= it.apiCount}} api</p>
+            <p class="team">{{= it.team}}</p>
             <p class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright}}, Inc.</p>
         </div>
     </script>
@@ -360,11 +345,36 @@ var projectDomain = "";
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-$(function() {
+$(function () {
     'use strict';
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
     $('.bs-docs-sidebar').affix();
+
+    const topBottomHeight = 30;
+    const heightProperty = 'max-height';
+
+    const html = document.getElementsByTagName('html')[0];
+    const footer = document.getElementsByTagName('footer')[0];
+
+    const $win = $(window);
+    const $bs = $(".bs-docs-sidebar > .nav");
+    $win.scroll(function() {
+        if (footerInViewport(footer, $win)) {
+            const footViewHeight = $win.scrollTop() + $win.height() - footer.offsetTop;
+            $bs.css(heightProperty, 'calc(100vh - ' + (topBottomHeight + footViewHeight) + 'px)');
+        } else {
+            const htmlViewHeight = (html.clientHeight - topBottomHeight) + "px";
+            if ($bs.css(heightProperty) !== htmlViewHeight) {
+                $bs.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
+            }
+        }
+    });
 });
+function footerInViewport(footer, win) {
+    const footerTop = footer.offsetTop;
+    const windowTop = win.scrollTop();
+    return footerTop >= windowTop && footerTop < (windowTop + win.height());
+}
 </script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/dot/1.1.2/doT.min.js"></script>
