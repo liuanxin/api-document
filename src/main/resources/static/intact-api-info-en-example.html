@@ -56,6 +56,21 @@
         .container {
             width: auto;
         }
+        .module {}
+        .module-name {
+            border-bottom: 5px solid #eee;
+            margin-bottom: -5px;
+        }
+        .module-api {
+            border-bottom: 1px solid #eee;
+            margin: 10px 0;
+        }
+        .module-api-index {}
+        .module-api-info {}
+        .module-api-info-basic {}
+        .module-api-info-desc {}
+        .module-api-info-param {}
+        .module-api-info-return {}
         .curl, .response {
             display: none;
         }
@@ -176,19 +191,19 @@
         <div class="col-md-9">
             <script id="url-render" type="text/x-dot-template">
                 {{~ it.moduleList  :value:index}}
-                <div class="outline-2">
-                    <h2 id="{{= value.name}}"><span class="section-number-2">{{= index + 1}}</span> {{= value.info}}</h2>
+                <div class="module">
+                    <h2 id="{{= value.name}}" class="module-name"><span>{{= index + 1}}</span> {{= value.info}}</h2>
                     {{~ value.urlList  :url:urlIndex}}
-                    <div class="outline-3">
-                        <h3 id="{{= value.name}}-{{= url.id}}">
-                            <span class="section-number-3">{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
+                    <div class="module-api">
+                        <h3 id="{{= value.name}}-{{= url.id}}" class="module-api-index">
+                            <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
                         </h3>
-                        <div class="outline-text-3">
-                            <pre class="example">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
-                            <p>request <code>{{= url.method}} {{= url.url}}</code></p>
+                        <div class="module-api-info">
+                            <p class="module-api-info-basic">request <code>{{= url.method}} {{= url.url}}</code></p>
+                            <pre class="module-api-info-desc">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
 
-                            <p>return example & comment</p>
-                            <div class="org-src-container">
+                            <div class="module-api-info-return">
+                                <p>return example & comment</p>
                                 <pre class="src src-json">{{= url.commentJson || '<span style="color:red">Return null or Unclear return</span>'}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
@@ -216,7 +231,7 @@
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
                                     <tr>
-                                        <th scope="col" class="text-left">Response Status Code</th>
+                                        <th scope="col" class="text-left">Response Code</th>
                                         <th scope="col" class="text-left">comment</th>
                                     </tr>
                                     </thead>
@@ -238,7 +253,7 @@
                                 {{?}}
                             </div>
 
-                            <form method="{{= url.method}}" action="{{= url.url}}"{{? url.hasFile}} enctype="multipart/form-data"{{?}}>
+                            <form class="module-api-info-param" method="{{= url.method}}" action="{{= url.url}}"{{? url.hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? url.paramList && url.paramList.length > 0}}
                                 <p>params</p>
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -295,7 +310,6 @@
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
                             </form>
-                            <hr/>
                         </div>
                     </div>
                     {{~}}
@@ -639,7 +653,7 @@ function request(obj) {
             if (isBlank(error)) {
                 html += "<span style='color:red;'>" + method + " (" + url + ") fail</span>";
             } else {
-                html += "<span style='color:red;'>Response Status Code: " + error.status + "</span>";
+                html += "<span style='color:red;'>Response Code: " + error.status + "</span>";
                 var json = error.responseJSON;
                 if (isNotBlank(json)) {
                     html += "\n\n" + addLine(escapeHtml(JSON.stringify(json, null, 2)));

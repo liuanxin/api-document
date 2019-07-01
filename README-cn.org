@@ -59,7 +59,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 
 @ApiResponses 标注在类或方法上. 用来标注接口的响应码或描述
 @ApiResponse  嵌套注解
-  code        响应编码, 如 400
+  code        响应码, 如 400
   msg         响应说明, 如 参数不正确
 
 示例如下:
