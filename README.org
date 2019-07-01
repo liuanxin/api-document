@@ -59,7 +59,7 @@ annotation for this
 #+BEGIN_EXAMPLE
 @ApiGroup   --> in class or method. use the method if all of that
   value     --> module info, must set(name-description, name used to generate the anchor point, description used to display, separated by the horizontal line -, description is displayed as name if it is empty)
-  index     --> more forward when smaller("index" first, "description" second, "name" third -> with sort)
+  index     --> more forward when smaller("index" first, "description" second, "name" third -> with sort), if set multi module and different index, use the smaller
 
 
 @ApiResponses --> in class or method
