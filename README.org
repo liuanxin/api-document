@@ -31,15 +31,16 @@ public class ApiInfoConfig {
     @Bean
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
-                    // if method has @ApiResponses, use that
-                    // setGlobalResponse(Arrays.asList(
+                    // // if class or method has @ApiResponses, use that
+                    // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "param error"),
                     //         new DocumentResponse(500, "request error")
                     // ))
-                    // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
+                    // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
-                    // if true, api will return nil(when production use) default was false.
-                    .setOnline(true);
+                    // // if true, api will return nil(when production use) default was false.
+                    // .setOnline(true)
+                    ;
     }
 }
 #+END_SRC
@@ -80,7 +81,7 @@ for example:
   index     --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
   commentInReturnExample  --> if false, comment will show with display separately, default true
 
-@ApiIgnore  --> want to ignore some api, use it
+@ApiIgnore  --> in class or method. want to ignore some api, use it
   value     --> false will ignore
 
 
