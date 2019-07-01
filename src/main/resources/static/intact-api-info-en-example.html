@@ -357,15 +357,21 @@ $(function () {
     const footer = document.getElementsByTagName('footer')[0];
 
     const $win = $(window);
-    const $bs = $(".bs-docs-sidebar > .nav");
+    const $nav = $(".col-md-3");
+    const $bar = $(".bs-docs-sidebar > .nav");
     $win.scroll(function() {
-        if (footerInViewport(footer, $win)) {
-            const footViewHeight = $win.scrollTop() + $win.height() - footer.offsetTop;
-            $bs.css(heightProperty, 'calc(100vh - ' + (topBottomHeight + footViewHeight) + 'px)');
-        } else {
-            const htmlViewHeight = (html.clientHeight - topBottomHeight) + "px";
-            if ($bs.css(heightProperty) !== htmlViewHeight) {
-                $bs.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
+        if ($nav.css('display') !== 'none') {
+            const footerTop = footer.offsetTop;
+            const scrollTop = $win.scrollTop();
+            const pageHeight = scrollTop + $win.height();
+            if (footerTop >= scrollTop && footerTop < (pageHeight)) {
+                const footViewHeight = pageHeight - footerTop;
+                $bar.css(heightProperty, 'calc(100vh - ' + (topBottomHeight + footViewHeight) + 'px)');
+            } else {
+                const htmlViewHeight = (html.clientHeight - topBottomHeight) + "px";
+                if ($bar.css(heightProperty) !== htmlViewHeight) {
+                    $bar.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
+                }
             }
         }
     });
