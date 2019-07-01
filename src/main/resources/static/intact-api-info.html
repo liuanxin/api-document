@@ -346,11 +346,6 @@ $(function () {
         }
     });
 });
-function footerInViewport(footer, win) {
-    const footerTop = footer.offsetTop;
-    const windowTop = win.scrollTop();
-    return footerTop >= windowTop && footerTop < (windowTop + win.height());
-}
 </script>
 
 <script src="//cdn.bootcss.com/dot/1.1.2/doT.min.js"></script>
