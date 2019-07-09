@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 </dependency>
 #+END_SRC
 
@@ -35,8 +35,11 @@ public class ApiInfoConfig {
                     // ))
                     // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
-                    // // 全局 token, 会生成在每个接口的 param 上, 见下面的 ApiToken 注解说明
-                    // .setGlobalToken(DocumentParam.buildToken("x-token", "用户认证数据", "参数示例", ParamType.Header))
+                    // // 全局 token, 会生成在每个接口的 param 上, 见下面的 @ApiTokens 注解说明
+                    // .setGlobalTokens(Arrays.asList(
+                    //         DocumentParam.buildToken("x-token", "认证数据", "abc-xyz", ParamType.Header).setHasTextarea(true),
+                    //         DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust(true)
+                    // ))
                     // // 如果设置成 true 则接口会返回空(可以在生产环境中开启), 默认是 false
                     // .setOnline(true)
                     ;
@@ -60,9 +63,11 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 
 
 @ApiResponses --> 标注在类或方法上. 用来标注接口的响应码或描述
-@ApiResponse    --> 嵌套注解
-  code            --> 响应码, 如 400
-  msg             --> 响应说明, 如 参数不正确
+  value         --> @ApiResponse[]
+
+  @ApiResponse --> 嵌套注解
+    code         --> 响应码, 如 400
+    msg          --> 响应说明, 如 参数不正确
 
 示例如下:
 @ApiResponses({
@@ -102,14 +107,25 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 @ApiReturnIgnore --> 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
 
 
-@ApiToken --> 标注在类或方法上. 用来说明当前接口的 token 参数
-  value     --> 值如果是 false 则表示当前方法或类对应的接口不需要传递 token 信息, 当全局有设置而某些接口不需要时, 使用 @ApiToken(false) 即可
-  name      --> 参数名. 可以不设置
-  desc      --> 参数说明. 可以不设置
-  example   --> 参数示例. 用在接口示例时有用, 可以不设置
-  paramType --> 参数类型. 可以不设置. Header 或 Query 两种, 默认是 Header, 表示当前值是放在 header 中传递的
-  must      --> 参数是否必须. 可以不设置, 默认是 false
-  textarea  --> 参数是否显示成文本域, 用在接口示例时有用, 可以不设置, 默认是 false
+@ApiTokens --> 标注在类或方法上
+  value      --> 值如果是 false 则表示当前方法或类对应的接口不需要传递 token 信息, 当全局有设置而某些接口不需要时, 使用 @ApiTokens(false) 即可
+  token      --> @ApiToken[]
+
+  @ApiToken --> 嵌套注解
+    name      --> 参数名. 可以不设置
+    desc      --> 参数说明. 可以不设置
+    example   --> 参数示例. 用在接口示例时有用, 可以不设置
+    paramType --> 参数类型. 可以不设置. Header 或 Query 两种, 默认是 Header, 表示当前值是放在 header 中传递的
+    must      --> 参数是否必须. 可以不设置, 默认是 false
+    textarea  --> 参数是否显示成文本域, 用在接口示例时有用, 可以不设置, 默认是 false
+
+示例如下:
+@ApiTokens(false)
+
+@ApiTokens(token = {
+    @ApiToken(name = "x-token", desc = "认证数据", example = "abc-xyz"),
+    @ApiToken(name = "x-version", desc = "接口版本", example = "1.0.0")
+})
 #+END_EXAMPLE
 
 如果是非 spring boot 项目, 添加如下配置

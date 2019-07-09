@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.4.1</version>
+    <version>0.4.2</version>
 </dependency>
 #+END_SRC
 
@@ -38,8 +38,11 @@ public class ApiInfoConfig {
                     // ))
                     // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
-                    // // generated on each api's param, see the ApiToken annotation below
-                    // .setGlobalToken(DocumentParam.buildToken("name", "desc", "example", ParamType.Header))
+                    // // generated on each api's param, see the @ApiTokens annotation below
+                    // .setGlobalTokens(Arrays.asList(
+                    //         DocumentParam.buildToken("x-token", "oauth info", "abc-xyz", ParamType.Header).setHasTextarea(true),
+                    //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust(true)
+                    // ))
                     // // if true, api will return nil(when production use) default was false.
                     // .setOnline(true)
                     ;
@@ -65,9 +68,9 @@ annotation for this
 
 
 @ApiResponses --> in class or method
-@ApiResponse    --> nested annotation
-  code            --> Response Code, for example: 400
-  msg             --> response message, for example: param error
+  @ApiResponse  --> nested annotation
+    code          --> Response Code, for example: 400
+    msg           --> response message, for example: param error
 
 for example:
 @ApiResponses({
@@ -107,14 +110,25 @@ for example:
 @ApiReturnIgnore --> in field
 
 
-@ApiToken --> in class or method
-  value     --> if set false, the api of the current method or class does not need to pass token information. When the global setting and some api are not needed, use @ApiToken(false)
-  name      --> can not set
-  desc      --> can not set
-  example   --> can not set
-  paramType --> can not be set, Header or Query, default is Header
-  must      --> default false
-  textarea  --> default false
+@ApiTokens --> in class or method
+  value      --> if set false, the api of the current method or class does not need to pass token information. When the global setting and some api are not needed, use @ApiTokens(false)
+  token      --> @ApiToken[]
+
+  @ApiToken  --> nested annotation
+    name       --> can not set
+    desc       --> can not set
+    example    --> can not set
+    paramType  --> can not be set, Header or Query, default is Header
+    must       --> default false
+    textarea   --> default false
+
+for example:
+@ApiTokens(false)
+
+@ApiTokens(token = {
+    @ApiToken(name = "x-token", desc = "oauth info", example = "abc-xyz"),
+    @ApiToken(name = "x-version", desc = "api version", example = "1.0.9")
+})
 #+END_EXAMPLE
 
 if not spring boot project, add this config
