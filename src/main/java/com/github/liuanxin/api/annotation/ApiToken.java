@@ -7,8 +7,8 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiToken {
 
-    /** param name, if set will ignore paramName */
-    String name() default "";
+    /** param name */
+    String name();
 
     /** param desc */
     String desc() default "";

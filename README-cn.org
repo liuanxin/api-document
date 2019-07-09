@@ -112,7 +112,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
   token      --> @ApiToken[]
 
   @ApiToken --> 嵌套注解
-    name      --> 参数名. 可以不设置
+    name      --> 参数名. 必须设置
     desc      --> 参数说明. 可以不设置
     example   --> 参数示例. 用在接口示例时有用, 可以不设置
     paramType --> 参数类型. 可以不设置. Header 或 Query 两种, 默认是 Header, 表示当前值是放在 header 中传递的

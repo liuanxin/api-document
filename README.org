@@ -115,7 +115,7 @@ for example:
   token      --> @ApiToken[]
 
   @ApiToken  --> nested annotation
-    name       --> can not set
+    name       --> must set
     desc       --> can not set
     example    --> can not set
     paramType  --> can not be set, Header or Query, default is Header
