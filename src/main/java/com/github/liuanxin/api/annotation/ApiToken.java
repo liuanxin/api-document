@@ -2,25 +2,25 @@ package com.github.liuanxin.api.annotation;
 
 import java.lang.annotation.*;
 
-@Target({ElementType.PARAMETER, ElementType.FIELD})
+@Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ApiParam {
+public @interface ApiToken {
 
-    /** param desc */
-    String value();
+    /** if false, ignore token */
+    boolean value() default true;
 
     /** param name, if set will ignore paramName */
     String name() default "";
 
-    /** if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、phone、email、url、ipv4 */
-    String dataType() default "";
+    /** param desc */
+    String desc() default "";
 
     /** param example */
     String example() default "";
 
     /** Header or Query */
-    ParamType paramType() default ParamType.Query;
+    ParamType paramType() default ParamType.Header;
 
     /** if param has @RequestParam(required = true) etc..., this set will ignore */
     boolean must() default false;

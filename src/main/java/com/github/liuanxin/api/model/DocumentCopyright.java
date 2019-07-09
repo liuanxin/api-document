@@ -49,6 +49,10 @@ public class DocumentCopyright {
     @JsonIgnore
     private boolean returnRecordLevel = false;
 
+    /** global token, generate in every api's param */
+    @JsonIgnore
+    private DocumentParam globalToken;
+
 
     public DocumentCopyright(String title, String team, String version, String copyright) {
         this.title = title;

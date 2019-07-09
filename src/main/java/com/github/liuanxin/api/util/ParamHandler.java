@@ -2,6 +2,7 @@ package com.github.liuanxin.api.util;
 
 import com.github.liuanxin.api.annotation.ApiParam;
 import com.github.liuanxin.api.annotation.ApiParamIgnore;
+import com.github.liuanxin.api.annotation.ApiToken;
 import com.github.liuanxin.api.model.DocumentParam;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
@@ -19,12 +20,22 @@ public final class ParamHandler {
     private static final LocalVariableTableParameterNameDiscoverer VARIABLE
             = new LocalVariableTableParameterNameDiscoverer();
 
-    public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
+    public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod, ApiToken token, DocumentParam globalParam) {
         List<DocumentParam> params = new ArrayList<>();
+        if (Tools.isBlank(token)) {
+            if (Tools.isNotBlank(globalParam)) {
+                params.add(globalParam);
+            }
+        } else {
+            if (token.value()) {
+                DocumentParam param = DocumentParam.buildToken(token.name(), token.desc(), token.example(), token.paramType());
+                params.add(param.setMust(token.must()).setHasTextarea(token.textarea()));
+            }
+        }
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];
-            if (Tools.isEmpty(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
+            if (Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
                 // if param not basicType, into a layer of processing
                 Class<?> parameterType = parameter.getParameterType();
                 if (!parameterType.equals(MultipartFile.class) && Tools.notBasicType(parameterType)) {
@@ -32,7 +43,7 @@ public final class ParamHandler {
                         int mod = field.getModifiers();
                         // field not static, not final, not annotation ignore
                         if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                                && Tools.isEmpty(field.getAnnotation(ApiParamIgnore.class))) {
+                                && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
                             ApiParam apiParam = field.getAnnotation(ApiParam.class);
                             params.add(paramInfo(field.getName(), field.getType(), apiParam, false));
                         }

@@ -70,11 +70,11 @@ public class DocumentController {
 
     @GetMapping(value = EXAMPLE_URL, produces = PRODUCES)
     public String urlExample(@PathVariable("id") String id) {
-        if (Tools.isEmpty(copyright) || copyright.isOnline()) {
+        if (Tools.isBlank(copyright) || copyright.isOnline()) {
             return Tools.EMPTY;
         } else {
             collect(mapping, copyright);
-            if (Tools.isEmpty(url_map)) {
+            if (Tools.isBlank(url_map)) {
                 return Tools.EMPTY;
             } else {
                 DocumentUrl document = url_map.get(id);
@@ -85,7 +85,7 @@ public class DocumentController {
 
     @GetMapping(value = INFO_URL, produces = PRODUCES)
     public String url() {
-        if (Tools.isEmpty(copyright) || copyright.isOnline()) {
+        if (Tools.isBlank(copyright) || copyright.isOnline()) {
             return Tools.EMPTY;
         } else {
             collect(mapping, copyright);
@@ -94,10 +94,10 @@ public class DocumentController {
     }
 
     private static void collect(RequestMappingHandlerMapping mapping, DocumentCopyright copyright) {
-        if (Tools.isBlank(return_info) && Tools.isEmpty(url_map)) {
+        if (Tools.isBlank(return_info) && Tools.isBlank(url_map)) {
             LOCK.lock();
             try {
-                if (Tools.isBlank(return_info) && Tools.isEmpty(url_map)) {
+                if (Tools.isBlank(return_info) && Tools.isBlank(url_map)) {
                     DocumentInfoAndUrlMap documentInfoAndUrlMap = infoAndUrlMap(mapping, copyright);
                     DocumentInfo document = documentInfoAndUrlMap.getDocumentInfo();
                     DocumentCopyright documentCopyright = copyright(copyright, document.getModuleList());
@@ -110,7 +110,7 @@ public class DocumentController {
             }
         }
     }
-    
+
     private static DocumentCopyright copyright(DocumentCopyright copyright, List<DocumentModule> moduleList) {
         if (Tools.isNotEmpty(moduleList)) {
             int apiCount = 0;
@@ -133,7 +133,7 @@ public class DocumentController {
             HandlerMethod handlerMethod = entry.getValue();
             if (Tools.isNotEmpty(requestMapping) && Tools.isNotEmpty(handlerMethod) && wasJsonApi(handlerMethod)) {
                 ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
-                if (Tools.isEmpty(ignore) || !ignore.value()) {
+                if (Tools.isBlank(ignore) || !ignore.value()) {
                     Set<String> urlArray = requestMapping.getPatternsCondition().getPatterns();
                     Set<RequestMethod> methodArray = requestMapping.getMethodsCondition().getMethods();
                     if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
@@ -142,8 +142,12 @@ public class DocumentController {
                         document.setUrl(Tools.toStr(urlArray));
                         // method : get, post, put...
                         document.setMethod(Tools.toStr(methodArray));
+
                         // param
-                        document.setParamList(ParamHandler.handlerParam(handlerMethod));
+                        ApiToken apiToken = getAnnotation(handlerMethod, ApiToken.class);
+                        DocumentParam globalParam = copyright.getGlobalToken();
+                        document.setParamList(ParamHandler.handlerParam(handlerMethod, apiToken, globalParam));
+
                         // response
                         document.setResponseList(handlerResponse(handlerMethod));
 
@@ -180,7 +184,7 @@ public class DocumentController {
                         documentMap.put(document.getId(), document);
                         // add DocumentUrl to DocumentModule
                         ApiGroup apiGroup = getAnnotation(handlerMethod, ApiGroup.class);
-                        if (Tools.isEmpty(apiGroup)) {
+                        if (Tools.isBlank(apiGroup)) {
                             // if no annotation on class, use ClassName(if className include Controller then remove)
                             String className = handlerMethod.getBeanType().getSimpleName();
                             String info = className;
@@ -242,7 +246,7 @@ public class DocumentController {
 
     private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {
         DocumentModule module = moduleMap.get(group);
-        if (Tools.isEmpty(module)) {
+        if (Tools.isBlank(module)) {
             module = new DocumentModule(group);
             if (index > 0) {
                 module.setIndex(index);
@@ -256,7 +260,7 @@ public class DocumentController {
     }
 
     private static boolean ignoreUrl(Set<String> urlSet, Set<RequestMethod> methodSet, Set<String> ignoreUrlSet) {
-        if (Tools.isEmpty(ignoreUrlSet)) {
+        if (Tools.isBlank(ignoreUrlSet)) {
             ignoreUrlSet = Tools.sets();
         }
 
@@ -320,7 +324,7 @@ public class DocumentController {
 
     private static <T extends Annotation> T getAnnotation(HandlerMethod handlerMethod, Class<T> clazz) {
         T annotation = handlerMethod.getMethodAnnotation(clazz);
-        if (Tools.isEmpty(annotation)) {
+        if (Tools.isBlank(annotation)) {
             annotation = getAnnotationByClass(handlerMethod, clazz);
         }
         return annotation;

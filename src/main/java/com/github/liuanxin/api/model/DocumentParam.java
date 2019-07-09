@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import com.github.liuanxin.api.annotation.ParamType;
 import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,4 +21,12 @@ public class DocumentParam {
     private String example = Tools.EMPTY;
     private Boolean hasTextarea = false;
     private Boolean hasFile = false;
+
+    public static DocumentParam buildToken(String name, String desc, String example, ParamType paramType) {
+        DocumentParam param = new DocumentParam().setDataType("String").setName(name).setDesc(desc).setExample(example);
+        if (paramType != null) {
+            param.setParamType(paramType.name());
+        }
+        return param;
+    }
 }
