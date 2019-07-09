@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.3.9</version>
+    <version>0.4.1</version>
 </dependency>
 #+END_SRC
 
@@ -38,6 +38,8 @@ public class ApiInfoConfig {
                     // ))
                     // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+                    // // generated on each api's param, see the ApiToken annotation below
+                    // .setGlobalToken(DocumentParam.buildToken("name", "desc", "example", ParamType.Header))
                     // // if true, api will return nil(when production use) default was false.
                     // .setOnline(true)
                     ;
@@ -57,15 +59,15 @@ In addition, when has array of non-base data types in the return field(User[]), 
 
 annotation for this
 #+BEGIN_EXAMPLE
-@ApiGroup   --> in class or method. use the method if all of that
+@ApiGroup --> in class or method. use the method if all of that
   value     --> module info, must set(name-description, name used to generate the anchor point, description used to display, separated by the horizontal line -, description is displayed as name if it is empty)
   index     --> more forward when smaller("index" first, "description" second, "name" third -> with sort), if set multi module and different index, use the smaller
 
 
 @ApiResponses --> in class or method
-@ApiResponse  --> nested annotation
-  code        --> Response Code, for example: 400
-  msg         --> response message, for example: param error
+@ApiResponse    --> nested annotation
+  code            --> Response Code, for example: 400
+  msg             --> response message, for example: param error
 
 for example:
 @ApiResponses({
@@ -74,21 +76,22 @@ for example:
 })
 
 
-@ApiMethod  --> in method
-  title     --> must set
-  develop   --> can not be set
-  desc      --> description, can not be set
-  index     --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
+@ApiMethod --> in method
+  title      --> must set
+  develop    --> can not be set
+  desc       --> description, can not be set
+  index      --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
   commentInReturnExample  --> if false, comment will show with display separately, default true
 
-@ApiIgnore  --> in class or method. want to ignore some api, use it
-  value     --> false will ignore
+@ApiIgnore --> in class or method. want to ignore some api, use it
+  value      --> false will ignore
 
 
-@ApiParam   --> in param or field
+@ApiParam --> in param or field
   value     --> must set
   name      --> if set, will ignore param name or field name
   dataType  --> if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、email、url、ipv4
+  example   --> used in api examples, can not set
   paramType --> can not be set, Header or Query, default is Query, set to Header to indicate that the current value is passed in the header with request
   must      --> if param annotation @RequestParam(required = true) etc... will ignore this config
   textarea  --> default false
@@ -96,12 +99,22 @@ for example:
 @ApiParamIgnore --> in param or field
 
 
-@ApiReturn  --> in field
-  value     --> must set
-  type      --> if type was custom can use(for example: enum, but return type was be int)
-  example   --> return example, only if the field is a string or underlying data type(including BigInteger and BigDecimal)
+@ApiReturn --> in field
+  value      --> must set
+  type       --> if type was custom can use(for example: enum, but return type was be int)
+  example    --> return example, only if the field is a string or underlying data type(including BigInteger and BigDecimal)
 
 @ApiReturnIgnore --> in field
+
+
+@ApiToken --> in class or method
+  value     --> if set false, the api of the current method or class does not need to pass token information. When the global setting and some api are not needed, use @ApiToken(false)
+  name      --> can not set
+  desc      --> can not set
+  example   --> can not set
+  paramType --> can not be set, Header or Query, default is Header
+  must      --> default false
+  textarea  --> default false
 #+END_EXAMPLE
 
 if not spring boot project, add this config

@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.3.9</version>
+    <version>0.4.1</version>
 </dependency>
 #+END_SRC
 
@@ -35,6 +35,8 @@ public class ApiInfoConfig {
                     // ))
                     // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+                    // // 全局 token, 会生成在每个接口的 param 上, 见下面的 ApiToken 注解说明
+                    // .setGlobalToken(DocumentParam.buildToken("x-token", "用户认证数据", "参数示例", ParamType.Header))
                     // // 如果设置成 true 则接口会返回空(可以在生产环境中开启), 默认是 false
                     // .setOnline(true)
                     ;
@@ -52,15 +54,15 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 
 相关注解如下
 #+BEGIN_EXAMPLE
-@ApiGroup   标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
-  value     模块说明. 必须设置, 示例(名称-说明, 如: user-用户, 名称用来生成锚点, 说明用来显示, 以 英文中横线 - 隔开, 说明如果为空则显示成名称)
-  index     索引, 越小越靠前. 可以不设置(索引如果一致会使用 说明 排序, 说明如果也一致会使用 名称 排序), 同一模块在不同的地方标注且索引不同时, 以小的索引为主
+@ApiGroup --> 标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
+  value     --> 模块说明. 必须设置, 示例(名称-说明, 如: user-用户, 名称用来生成锚点, 说明用来显示, 以 英文中横线 - 隔开, 说明如果为空则显示成名称)
+  index     --> 索引, 越小越靠前. 可以不设置(索引如果一致会使用 说明 排序, 说明如果也一致会使用 名称 排序), 同一模块在不同的地方标注且索引不同时, 以小的索引为主
 
 
-@ApiResponses 标注在类或方法上. 用来标注接口的响应码或描述
-@ApiResponse  嵌套注解
-  code        响应码, 如 400
-  msg         响应说明, 如 参数不正确
+@ApiResponses --> 标注在类或方法上. 用来标注接口的响应码或描述
+@ApiResponse    --> 嵌套注解
+  code            --> 响应码, 如 400
+  msg             --> 响应说明, 如 参数不正确
 
 示例如下:
 @ApiResponses({
@@ -69,34 +71,45 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 })
 
 
-@ApiMethod  标注在方法上
-  title     接口标题, 必须设置
-  develop   开发者信息, 可以不设置
-  desc      接口详细说明. 可以不设置
-  index     索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序, 开发者信息 如果也一致会使用 接口标题 排序)
+@ApiMethod --> 标注在方法上
+  title      --> 接口标题, 必须设置
+  develop    --> 开发者信息, 可以不设置
+  desc       --> 接口详细说明. 可以不设置
+  index      --> 索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序, 开发者信息 如果也一致会使用 接口标题 排序)
   commentInReturnExample  返回字段说明是否写在返回示例中, 如果设置为 false 所有的字段说明将会在返回示例的下面单独罗列. 可以不设置, 默认是 true
 
-@ApiIgnore  标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
-  value     值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
+@ApiIgnore --> 标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
+  value      --> 值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
 
 
-@ApiParam   标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
-  value     参数说明, 必须设置
-  name      参数名, 可以不设置, 如果设置了将会无视参数名或字段名
-  dataType  数据类型. 可以不设置, 自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用: int、long、float、double、email、url、ipv4
-  paramType 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query, 设置为 Header 表示当前值是放在 header 中传递的
-  must      参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
-  textarea  参数是否显示成 文本域, 可以不设置, 默认是 false
+@ApiParam --> 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
+  value     --> 参数说明, 必须设置
+  name      --> 参数名, 可以不设置, 如果设置了将会无视参数名或字段名
+  dataType  --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用: int、long、float、double、email、url、ipv4
+  example   --> 参数示例. 用在接口示例时有用, 可以不设置
+  paramType --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query, 设置为 Header 表示当前值是放在 header 中传递的
+  must      --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
+  textarea  --> 参数是否显示成 文本域, 可以不设置, 默认是 false
 
-@ApiParamIgnore 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
+@ApiParamIgnore --> 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
 
 
-@ApiReturn  标注在字段上. 用来说明返回结果
-  value     返回说明, 必须设置
-  type      返回类型, 自定义(比如字段类型是枚举, 但是显示在文档上时是 int 时)用到
-  example   返回示例, 只用在字段是 String 或基础数据类型(包括 BigInteger 和 BigDecimal)上
+@ApiReturn --> 标注在字段上. 用来说明返回结果
+  value      --> 返回说明, 必须设置
+  type       --> 返回类型, 自定义(比如字段类型是枚举, 但是显示在文档上时是 int 时)用到
+  example    --> 返回示例, 只用在字段是 String 或基础数据类型(包括 BigInteger 和 BigDecimal)上
 
-@ApiReturnIgnore 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
+@ApiReturnIgnore --> 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
+
+
+@ApiToken --> 标注在类或方法上. 用来说明当前接口的 token 参数
+  value     --> 值如果是 false 则表示当前方法或类对应的接口不需要传递 token 信息, 当全局有设置而某些接口不需要时, 使用 @ApiToken(false) 即可
+  name      --> 参数名. 可以不设置
+  desc      --> 参数说明. 可以不设置
+  example   --> 参数示例. 用在接口示例时有用, 可以不设置
+  paramType --> 参数类型. 可以不设置. Header 或 Query 两种, 默认是 Header, 表示当前值是放在 header 中传递的
+  must      --> 参数是否必须. 可以不设置, 默认是 false
+  textarea  --> 参数是否显示成文本域, 用在接口示例时有用, 可以不设置, 默认是 false
 #+END_EXAMPLE
 
 如果是非 spring boot 项目, 添加如下配置
