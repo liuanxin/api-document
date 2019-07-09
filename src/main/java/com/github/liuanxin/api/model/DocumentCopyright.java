@@ -24,17 +24,21 @@ public class DocumentCopyright {
     private int apiCount = 0;
 
 
-    /** url|method or url */
-    @JsonIgnore
-    private Set<String> ignoreUrlSet;
-
     /** when true will not return data */
     @JsonIgnore
     private boolean online = false;
 
+    /** url|method or url */
+    @JsonIgnore
+    private Set<String> ignoreUrlSet;
+
     /** if method set, ignore global */
     @JsonIgnore
     private List<DocumentResponse> globalResponse;
+
+    /** global token, generate in every api's param */
+    @JsonIgnore
+    private List<DocumentParam> globalTokens;
 
     /** return whether the sample contains a comment(method not has @ApiMethod, use this) */
     @JsonIgnore
@@ -48,10 +52,6 @@ public class DocumentCopyright {
      */
     @JsonIgnore
     private boolean returnRecordLevel = false;
-
-    /** global token, generate in every api's param */
-    @JsonIgnore
-    private DocumentParam globalToken;
 
 
     public DocumentCopyright(String title, String team, String version, String copyright) {

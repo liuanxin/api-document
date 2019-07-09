@@ -7,9 +7,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiToken {
 
-    /** if false, ignore token */
-    boolean value() default true;
-
     /** param name, if set will ignore paramName */
     String name() default "";
 

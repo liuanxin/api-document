@@ -5,9 +5,9 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ApiResponse {
+public @interface ApiTokens {
 
-    int code();
+    boolean value() default true;
 
-    String msg();
+    ApiToken[] token() default {};
 }

@@ -131,7 +131,7 @@ public class DocumentController {
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
             RequestMappingInfo requestMapping = entry.getKey();
             HandlerMethod handlerMethod = entry.getValue();
-            if (Tools.isNotEmpty(requestMapping) && Tools.isNotEmpty(handlerMethod) && wasJsonApi(handlerMethod)) {
+            if (Tools.isNotBlank(requestMapping) && Tools.isNotBlank(handlerMethod) && wasJsonApi(handlerMethod)) {
                 ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
                 if (Tools.isBlank(ignore) || !ignore.value()) {
                     Set<String> urlArray = requestMapping.getPatternsCondition().getPatterns();
@@ -142,17 +142,14 @@ public class DocumentController {
                         document.setUrl(Tools.toStr(urlArray));
                         // method : get, post, put...
                         document.setMethod(Tools.toStr(methodArray));
-
                         // param
-                        ApiToken apiToken = getAnnotation(handlerMethod, ApiToken.class);
-                        DocumentParam globalParam = copyright.getGlobalToken();
-                        document.setParamList(ParamHandler.handlerParam(handlerMethod, apiToken, globalParam));
-
+                        List<DocumentParam> extraParams = extraParam(handlerMethod, copyright.getGlobalTokens());
+                        document.setParamList(ParamHandler.handlerParam(handlerMethod, extraParams));
                         // response
-                        document.setResponseList(handlerResponse(handlerMethod));
+                        document.setResponseList(handleResponse(handlerMethod));
 
                         String returnType = handlerMethod.getMethod().getGenericReturnType().toString();
-                        if (Tools.isNotEmpty(returnType)) {
+                        if (Tools.isNotBlank(returnType)) {
                             String prefix = "class ";
                             if (returnType.startsWith(prefix)) {
                                 returnType = returnType.substring(prefix.length()).trim();
@@ -167,7 +164,7 @@ public class DocumentController {
 
                         // meta info
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
-                        if (Tools.isNotEmpty(apiMethod)) {
+                        if (Tools.isNotBlank(apiMethod)) {
                             document.setTitle(apiMethod.title());
                             document.setDesc(apiMethod.desc());
                             document.setDevelop(apiMethod.develop());
@@ -197,7 +194,7 @@ public class DocumentController {
                         } else {
                             int index = apiGroup.index();
                             for (String group : apiGroup.value()) {
-                                if (Tools.isNotEmpty(group)) {
+                                if (Tools.isNotBlank(group)) {
                                     addGroup(moduleMap, index, group, document);
                                 }
                             }
@@ -220,15 +217,28 @@ public class DocumentController {
         return new DocumentInfoAndUrlMap(documentInfo, documentMap);
     }
 
-    private static List<DocumentResponse> handlerResponse(HandlerMethod handlerMethod) {
+    private static List<DocumentParam> extraParam(HandlerMethod handlerMethod, List<DocumentParam> globalParams) {
+        ApiTokens apiTokens = getAnnotation(handlerMethod, ApiTokens.class);
+        if (Tools.isBlank(apiTokens)) {
+            return globalParams;
+        } else if (apiTokens.value()) {
+            List<DocumentParam> paramList = new ArrayList<>();
+            for (ApiToken token : apiTokens.token()) {
+                DocumentParam param = DocumentParam.buildToken(token.name(), token.desc(), token.example(), token.paramType());
+                paramList.add(param.setMust(token.must()).setHasTextarea(token.textarea()));
+            }
+            return paramList;
+        } else {
+            return null;
+        }
+    }
+
+    private static List<DocumentResponse> handleResponse(HandlerMethod handlerMethod) {
         List<DocumentResponse> responseList = new ArrayList<>();
         ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
-        if (Tools.isNotEmpty(responses)) {
-            ApiResponse[] responseArr = responses.value();
-            if (responseArr.length > 0) {
-                for (ApiResponse response : responseArr) {
-                    responseList.add(new DocumentResponse(response.code(), response.msg()));
-                }
+        if (Tools.isNotBlank(responses)) {
+            for (ApiResponse response : responses.value()) {
+                responseList.add(new DocumentResponse(response.code(), response.msg()));
             }
         }
         return responseList;
@@ -310,11 +320,11 @@ public class DocumentController {
 
     private static boolean wasJsonApi(HandlerMethod handlerMethod) {
         // @ResponseBody can be annotation on method and class
-        if (Tools.isNotEmpty(getAnnotation(handlerMethod, ResponseBody.class))) {
+        if (Tools.isNotBlank(getAnnotation(handlerMethod, ResponseBody.class))) {
             return true;
         } else {
             // @RestController just annotation on class
-            return Tools.isNotEmpty(getAnnotationByClass(handlerMethod, RestController.class));
+            return Tools.isNotBlank(getAnnotationByClass(handlerMethod, RestController.class));
         }
     }
 

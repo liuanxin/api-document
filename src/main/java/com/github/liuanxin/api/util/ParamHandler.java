@@ -2,7 +2,6 @@ package com.github.liuanxin.api.util;
 
 import com.github.liuanxin.api.annotation.ApiParam;
 import com.github.liuanxin.api.annotation.ApiParamIgnore;
-import com.github.liuanxin.api.annotation.ApiToken;
 import com.github.liuanxin.api.model.DocumentParam;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
@@ -20,17 +19,10 @@ public final class ParamHandler {
     private static final LocalVariableTableParameterNameDiscoverer VARIABLE
             = new LocalVariableTableParameterNameDiscoverer();
 
-    public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod, ApiToken token, DocumentParam globalParam) {
+    public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod, List<DocumentParam> extraParams) {
         List<DocumentParam> params = new ArrayList<>();
-        if (Tools.isBlank(token)) {
-            if (Tools.isNotBlank(globalParam)) {
-                params.add(globalParam);
-            }
-        } else {
-            if (token.value()) {
-                DocumentParam param = DocumentParam.buildToken(token.name(), token.desc(), token.example(), token.paramType());
-                params.add(param.setMust(token.must()).setHasTextarea(token.textarea()));
-            }
+        if (Tools.isNotEmpty(extraParams)) {
+            params.addAll(extraParams);
         }
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
