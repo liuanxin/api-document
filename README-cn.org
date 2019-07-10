@@ -123,8 +123,8 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 @ApiTokens(false)
 
 @ApiTokens(token = {
-    @ApiToken(name = "x-token", desc = "认证数据", example = "abc-xyz"),
-    @ApiToken(name = "x-version", desc = "接口版本", example = "1.0.0")
+    @ApiToken(name = "x-token", desc = "认证数据", example = "abc-xyz", textarea = true),
+    @ApiToken(name = "x-version", desc = "接口版本", example = "1.0", paramType = ParamType.Query, must = true)
 })
 #+END_EXAMPLE
 

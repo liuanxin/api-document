@@ -126,8 +126,8 @@ for example:
 @ApiTokens(false)
 
 @ApiTokens(token = {
-    @ApiToken(name = "x-token", desc = "oauth info", example = "abc-xyz"),
-    @ApiToken(name = "x-version", desc = "api version", example = "1.0.9")
+    @ApiToken(name = "x-token", desc = "oauth info", example = "abc-xyz", textarea = true),
+    @ApiToken(name = "x-version", desc = "api version", example = "1.0", paramType = ParamType.Query, must = true)
 })
 #+END_EXAMPLE
 
