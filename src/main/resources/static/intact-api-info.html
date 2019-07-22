@@ -60,6 +60,16 @@
         .module-api-info-param {}
         .module-api-info-return {}
 
+        .bold {
+            font-weight: bold;
+        }
+        .wrap {
+            white-space: pre-wrap;
+        }
+        .red {
+            color: red;
+        }
+
         .table-hover tbody tr:hover {
             background-color: rgba(0,0,0,.075);
         }
@@ -187,7 +197,19 @@
                             <p class="module-api-info-basic">接口地址 <code>{{= url.method}} {{= url.url}}</code></p>
                             <pre class="module-api-info-desc">{{? url.develop && url.develop !== ''}}开发: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}说明: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">响应结果示例地址</a></pre>
 
-                            {{? url.paramList && url.paramList.length > 0}}
+                            {{
+                            var globalParamList = it.tokenList || [];
+                            var urlParamList = url.paramList || [];
+                            var paramList = (url.useGlobalParam === true) ? globalParamList.concat(urlParamList) : urlParamList;
+
+                            var hasExample = false, hasHeader = false;
+                            for (var i = 0; i < paramList.length; i++) {
+                            var urlExample = paramList[i].example;
+                            if (urlExample !== undefined && urlExample !== null && urlExample !== '') { hasExample = true; }
+                            if (paramList[i].paramType === 'Header') { hasHeader = true; }
+                            }
+                            }}
+                            {{? paramList && paramList.length > 0}}
                             <div class="module-api-info-param">
                                 <p>参数说明如下</p>
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -197,19 +219,19 @@
                                             <th scope="col" class="text-left">数据类型</th>
                                             <th scope="col" class="text-left">必须</th>
                                             <th scope="col" class="text-left">说明</th>
-                                            {{? url.hasExample}}<th scope="col" class="text-left">示例</th>{{?}}
-                                            {{? url.hasHeader}}<th scope="col" class="text-left">参数类型</th>{{?}}
+                                            {{? hasExample}}<th scope="col" class="text-left">示例</th>{{?}}
+                                            {{? hasHeader}}<th scope="col" class="text-left">参数类型</th>{{?}}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{~ url.paramList  :param:paramIndex}}
-                                        <tr{{? param.must}} style="font-weight: bold;"{{?}}>
+                                        {{~ paramList  :param:paramIndex}}
+                                        <tr{{? param.must}} class="bold"{{?}}>
                                             <td class="text-left">{{= param.name}}</td>
                                             <td class="text-left">{{= param.dataType}}</td>
                                             <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
-                                            <td class="text-left" style="white-space:pre-wrap;">{{= param.desc}}</td>
-                                            {{? url.hasExample}}<td class="text-left" style="white-space:pre-wrap;">{{= param.example}}</td>{{?}}
-                                            {{? url.hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
+                                            <td class="text-left wrap">{{= param.desc}}</td>
+                                            {{? hasExample}}<td class="text-left wrap">{{= param.example}}</td>{{?}}
+                                            {{? hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
                                         </tr>
                                         {{~}}
                                     </tbody>
@@ -219,7 +241,7 @@
 
                             <div class="module-api-info-return">
                                 <p>响应示例及说明如下</p>
-                                <pre class="src src-json">{{= url.commentJson || '<span style="color:red">响应为空 或 响应不明确</span>'}}</pre>
+                                <pre class="src src-json">{{= url.commentJson || '<span class="red">响应为空 或 响应不明确</span>'}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -235,7 +257,7 @@
                                         <tr>
                                             <td class="text-left">{{= rtn.name}}</td>
                                             <td class="text-left">{{= rtn.type}}</td>
-                                            <td class="text-left" style="white-space:pre-wrap;">{{= rtn.desc}}</td>
+                                            <td class="text-left wrap">{{= rtn.desc}}</td>
                                         </tr>
                                         {{~}}
                                     </tbody>
@@ -428,10 +450,10 @@ $.get(projectDomain + '/api/info', function (data) {
             }
         }
     } else {
-        main.html('<span style="color:red;">无接口信息</span>');
+        main.html('<span class="red">无接口信息</span>');
     }
 }).error(function () {
-    main.html('<span style="color:red;">接口请求错误</span>');
+    main.html('<span class="red">接口请求错误</span>');
 });
 </script>
 </body>

@@ -1,7 +1,7 @@
 package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.github.liuanxin.api.annotation.ParamType;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 @Getter
 @NoArgsConstructor
 @Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentUrl implements Comparable<DocumentUrl> {
 
     private static final String WRAP = "\n";
@@ -40,6 +41,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private String method;
     private String url;
 
+    private Boolean useGlobalParam;
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;
@@ -81,7 +83,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             return returnList;
         }
 
-        List<DocumentReturn> documentReturns = new ArrayList<>();
+        List<DocumentReturn> documentReturns = new LinkedList<>();
         for (DocumentReturn documentReturn : returnList) {
             String name = documentReturn.getName();
             if (name.contains(ReturnHandler.LEVEL_APPEND)) {
@@ -95,42 +97,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             }
         }
         return documentReturns;
-    }
-
-    public boolean getHasExample() {
-        if (Tools.isEmpty(paramList)) {
-            return false;
-        }
-        for (DocumentParam param : paramList) {
-            if (Tools.isNotEmpty(param) && Tools.isNotEmpty(param.getExample())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean getHasFile() {
-        if (Tools.isEmpty(paramList)) {
-            return false;
-        }
-        for (DocumentParam param : paramList) {
-            if (Tools.isNotEmpty(param) && param.getHasFile()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean getHasHeader() {
-        if (Tools.isEmpty(paramList)) {
-            return false;
-        }
-        for (DocumentParam param : paramList) {
-            if (Tools.isNotEmpty(param) && ParamType.hasHeader(param.getParamType())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public String getCommentJson() {

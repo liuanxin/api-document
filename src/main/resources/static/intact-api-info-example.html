@@ -74,6 +74,18 @@
         .curl, .response {
             display: none;
         }
+        .bold {
+            font-weight: bold;
+        }
+        .wrap {
+            white-space: pre-wrap;
+        }
+        .green {
+            color: green;
+        }
+        .red {
+            color: red;
+        }
 
         .table-hover tbody tr:hover {
             background-color: rgba(0,0,0,.075);
@@ -204,7 +216,7 @@
 
                             <div class="module-api-info-return">
                                 <p>响应示例及说明如下</p>
-                                <pre class="src src-json">{{= url.commentJson || '<span style="color:red">响应为空 或 响应不明确</span>'}}</pre>
+                                <pre class="src src-json">{{= url.commentJson || '<span class="red">响应为空 或 响应不明确</span>'}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -220,7 +232,7 @@
                                     <tr>
                                         <td class="text-left">{{= rtn.name}}</td>
                                         <td class="text-left">{{= rtn.type}}</td>
-                                        <td class="text-left" style="white-space:pre-wrap;">{{= rtn.desc}}</td>
+                                        <td class="text-left wrap">{{= rtn.desc}}</td>
                                     </tr>
                                     {{~}}
                                     </tbody>
@@ -253,8 +265,19 @@
                                 {{?}}
                             </div>
 
-                            <form class="module-api-info-param" method="{{= url.method}}" action="{{= url.url}}"{{? url.hasFile}} enctype="multipart/form-data"{{?}}>
-                                {{? url.paramList && url.paramList.length > 0}}
+                            {{
+                            var globalParamList = it.tokenList || [];
+                            var urlParamList = url.paramList || [];
+                            var paramList = (url.useGlobalParam === true) ? globalParamList.concat(urlParamList) : urlParamList;
+
+                            var hasFile = false, hasHeader = false;
+                            for (var i = 0; i < paramList.length; i++) {
+                            if (paramList[i].hasFile === true) { hasFile = true; }
+                            if (paramList[i].paramType === 'Header') { hasHeader = true; }
+                            }
+                            }}
+                            <form class="module-api-info-param" method="{{= url.method}}" action="{{= url.url}}"{{? hasFile}} enctype="multipart/form-data"{{?}}>
+                                {{? paramList && paramList.length > 0}}
                                 <p>参数说明如下</p>
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
@@ -263,18 +286,18 @@
                                         <th scope="col" class="text-left">说明</th>
                                         <th scope="col" class="text-left">必须</th>
                                         <th scope="col" class="text-left">数据类型</th>
-                                        {{? url.hasHeader}}<th scope="col" class="text-left">参数类型</th>{{?}}
+                                        {{? hasHeader}}<th scope="col" class="text-left">参数类型</th>{{?}}
                                         <th scope="col" class="text-left">示例</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {{~ url.paramList  :param:paramIndex}}
-                                    <tr{{? param.must}} style="font-weight: bold;"{{?}}>
+                                    {{~ paramList  :param:paramIndex}}
+                                    <tr{{? param.must}} class="bold"{{?}}>
                                         <td class="text-left">{{= param.name}}</td>
-                                        <td class="text-left" style="white-space:pre-wrap;">{{= param.desc}}</td>
+                                        <td class="text-left wrap">{{= param.desc}}</td>
                                         <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
                                         <td class="text-left">{{= param.dataType}}</td>
-                                        {{? url.hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
+                                        {{? hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
                                         <td class="text-left">
                                             {{
                                             var arr = [];
@@ -474,10 +497,10 @@ $.get(projectDomain + "/api/info", function (data) {
             }
         }
     } else {
-        main.html("<span style='color:red;'>无接口信息</span>");
+        main.html("<span class='red'>无接口信息</span>");
     }
 }).error(function () {
-    main.html("<span style='color:red;'>接口请求错误</span>");
+    main.html("<span class='red'>接口请求错误</span>");
 });
 </script>
 
@@ -609,7 +632,7 @@ function request(obj) {
         };
         if (files.length > 0) {
             if ('POST' !== method.toUpperCase()) {
-                response.find("pre").html("<span style='color:red;'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
+                response.find("pre").html("<span class='red'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
                 response.show();
                 return;
             }
@@ -637,7 +660,7 @@ function request(obj) {
         $.ajax(settings).done(function (result) {
             var html = timeLog(start);
             if (isBlank(result)) {
-                html += "<span style='color:green;'>" + method + " 请求(" + url + ")成功, 但是响应为空</span>";
+                html += "<span class='green'>" + method + " 请求(" + url + ")成功, 但是响应为空</span>";
             } else {
                 html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
             }
@@ -646,18 +669,18 @@ function request(obj) {
         }).fail(function (error) {
             var html = timeLog(start);
             if (isBlank(error)) {
-                html += "<span style='color:red;'>" + method + " 请求(" + url + ")失败</span>";
+                html += "<span class='red'>" + method + " 请求(" + url + ")失败</span>";
             } else {
-                html += "<span style='color:red;'>响应码: " + error.status + "</span>";
+                html += "<span class='red'>响应码: " + error.status + "</span>";
                 var json = error.responseJSON;
                 if (isNotBlank(json)) {
                     html += "\n\n" + addLine(escapeHtml(JSON.stringify(json, null, 2)));
                 } else {
                     var text = error.responseText;
                     if (isNotBlank(text)) {
-                        html += "\n<span style='color:red;white-space:pre-wrap;'>响应文本: " + escapeHtml(text) + "</span>";
+                        html += "\n<span class='red wrap'>响应文本: " + escapeHtml(text) + "</span>";
                     } else {
-                        html += "\n<span style='color:red;'>响应为空</span>";
+                        html += "\n<span class='red'>响应为空</span>";
                     }
                 }
             }

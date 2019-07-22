@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 @Setter
@@ -21,7 +21,7 @@ public class DocumentModule implements Comparable<DocumentModule> {
 
     private String name;
     private String info = Tools.EMPTY;
-    private List<DocumentUrl> urlList = new ArrayList<>();
+    private List<DocumentUrl> urlList = new LinkedList<>();
 
     public DocumentModule(String groupName) {
         if (Tools.isNotEmpty(groupName)) {

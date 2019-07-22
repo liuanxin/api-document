@@ -15,6 +15,7 @@ import java.util.List;
 @Accessors(chain = true)
 public class DocumentInfo {
 
+    private List<DocumentParam> tokenList;
     private List<DocumentResponse> responseList;
     private List<DocumentModule> moduleList;
 }

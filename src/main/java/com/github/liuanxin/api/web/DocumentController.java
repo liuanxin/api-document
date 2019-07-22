@@ -143,8 +143,24 @@ public class DocumentController {
                         // method : get, post, put...
                         document.setMethod(Tools.toStr(methodArray));
                         // param
-                        List<DocumentParam> extraParams = extraParam(handlerMethod, copyright.getGlobalTokens());
-                        document.setParamList(ParamHandler.handlerParam(handlerMethod, extraParams));
+                        List<DocumentParam> paramList = ParamHandler.handlerParam(handlerMethod);
+                        // no annotation: use global, annotation is false: not use, annotation is true: use self
+                        ApiTokens apiTokens = getAnnotation(handlerMethod, ApiTokens.class);
+                        if (Tools.isBlank(apiTokens)) {
+                            document.setUseGlobalParam(true);
+                        } else {
+                            document.setUseGlobalParam(false);
+                            if (apiTokens.value()) {
+                                List<DocumentParam> extraParams = new LinkedList<>();
+                                for (ApiToken token : apiTokens.token()) {
+                                    extraParams.add(DocumentParam.buildToken(token));
+                                }
+                                if (extraParams.size() > 0) {
+                                    paramList.addAll(0, extraParams);
+                                }
+                            }
+                        }
+                        document.setParamList(paramList);
                         // response
                         document.setResponseList(handleResponse(handlerMethod));
 
@@ -205,7 +221,7 @@ public class DocumentController {
         }
 
         Collection<DocumentModule> modules = moduleMap.values();
-        List<DocumentModule> moduleList = new ArrayList<>();
+        List<DocumentModule> moduleList = new LinkedList<>();
         if (Tools.isNotEmpty(modules)) {
             for (DocumentModule module : modules) {
                 Collections.sort(module.getUrlList());
@@ -213,28 +229,12 @@ public class DocumentController {
             }
             Collections.sort(moduleList);
         }
-        DocumentInfo documentInfo = new DocumentInfo(copyright.getGlobalResponse(), moduleList);
+        DocumentInfo documentInfo = new DocumentInfo(copyright.getGlobalTokens(), copyright.getGlobalResponse(), moduleList);
         return new DocumentInfoAndUrlMap(documentInfo, documentMap);
     }
 
-    private static List<DocumentParam> extraParam(HandlerMethod handlerMethod, List<DocumentParam> globalParams) {
-        ApiTokens apiTokens = getAnnotation(handlerMethod, ApiTokens.class);
-        if (Tools.isBlank(apiTokens)) {
-            return globalParams;
-        } else if (apiTokens.value()) {
-            List<DocumentParam> paramList = new ArrayList<>();
-            for (ApiToken token : apiTokens.token()) {
-                DocumentParam param = DocumentParam.buildToken(token.name(), token.desc(), token.example(), token.paramType());
-                paramList.add(param.setMust(token.must()).setHasTextarea(token.textarea()));
-            }
-            return paramList;
-        } else {
-            return null;
-        }
-    }
-
     private static List<DocumentResponse> handleResponse(HandlerMethod handlerMethod) {
-        List<DocumentResponse> responseList = new ArrayList<>();
+        List<DocumentResponse> responseList = new LinkedList<>();
         ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
         if (Tools.isNotBlank(responses)) {
             for (ApiResponse response : responses.value()) {
@@ -274,7 +274,7 @@ public class DocumentController {
             ignoreUrlSet = Tools.sets();
         }
 
-        List<String> methodList = new ArrayList<>();
+        List<String> methodList = new LinkedList<>();
         for (RequestMethod method : methodSet) {
             methodList.add(method.name());
         }

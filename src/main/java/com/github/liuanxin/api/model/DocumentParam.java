@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import com.github.liuanxin.api.annotation.ApiToken;
 import com.github.liuanxin.api.annotation.ParamType;
 import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
@@ -27,6 +28,18 @@ public class DocumentParam {
         if (paramType != null) {
             param.setParamType(paramType.name());
         }
+        return param;
+    }
+
+    public static DocumentParam buildToken(ApiToken token) {
+        DocumentParam param = new DocumentParam();
+        param.setDataType("String");
+        param.setName(token.name());
+        param.setDesc(token.desc());
+        param.setExample(token.example());
+        param.setParamType(token.paramType().name());
+        param.setMust(token.must());
+        param.setHasTextarea(token.textarea());
         return param;
     }
 }

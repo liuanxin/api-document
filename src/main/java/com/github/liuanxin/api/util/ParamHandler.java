@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public final class ParamHandler {
@@ -19,11 +19,8 @@ public final class ParamHandler {
     private static final LocalVariableTableParameterNameDiscoverer VARIABLE
             = new LocalVariableTableParameterNameDiscoverer();
 
-    public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod, List<DocumentParam> extraParams) {
-        List<DocumentParam> params = new ArrayList<>();
-        if (Tools.isNotEmpty(extraParams)) {
-            params.addAll(extraParams);
-        }
+    public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
+        List<DocumentParam> params = new LinkedList<>();
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];

@@ -21,7 +21,7 @@ public final class ReturnHandler {
     private static final List<String> GENERIC_CLASS_NAME = Tools.lists("T", "E", "A", "K", "V");
 
     public static List<DocumentReturn> handlerReturn(String method, String returnType) {
-        List<DocumentReturn> returnList = new ArrayList<>();
+        List<DocumentReturn> returnList = new LinkedList<>();
         handlerReturn(Tools.EMPTY, Tools.EMPTY, method, returnType, returnList);
         return returnList;
     }
