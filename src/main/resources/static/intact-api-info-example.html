@@ -311,7 +311,7 @@
 
                                             var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
-                                            var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== "") ? (' class="validate[' + arrJoin + ']"') : '';
+                                            var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' class="validate[' + arrJoin + ']"') : '';
                                             var header = ('Header' === param.paramType) ? ' header="true"' : '';
                                             }}
                                             {{? param.dataType === 'file' }}
@@ -394,8 +394,8 @@ $(function () {
     const footer = document.getElementsByTagName('footer')[0];
 
     const $win = $(window);
-    const $nav = $(".col-md-3");
-    const $bar = $(".bs-docs-sidebar > .nav");
+    const $nav = $('.col-md-3');
+    const $bar = $('.bs-docs-sidebar > .nav');
     $win.scroll(function() {
         if ($nav.css('display') !== 'none') {
             const footerTop = footer.offsetTop;
@@ -405,7 +405,7 @@ $(function () {
                 const footViewHeight = pageHeight - footerTop;
                 $bar.css(heightProperty, 'calc(100vh - ' + (topBottomHeight + footViewHeight) + 'px)');
             } else {
-                const htmlViewHeight = (html.clientHeight - topBottomHeight) + "px";
+                const htmlViewHeight = (html.clientHeight - topBottomHeight) + 'px';
                 if ($bar.css(heightProperty) !== htmlViewHeight) {
                     $bar.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
                 }
@@ -418,14 +418,14 @@ $(function () {
 <script src="//cdn.bootcss.com/dot/1.1.2/doT.min.js"></script>
 <script type="text/javascript">
 function isBlank(str) {
-    return str === undefined || str === null || str === 'undefined' || str === 'null' || str === "";
+    return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
 }
 function isNotBlank(str) {
     return !isBlank(str);
 }
 function addLine(html) {
     if (isBlank(html)) {
-        return "";
+        return '';
     }
 
     var lineNum = html.split(/\n/).length;
@@ -439,18 +439,18 @@ function addLine(html) {
     return lineHtml + html;
 }
 
-var locationDomain = window.location.protocol + "//" + window.location.host;
-if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + "/")) {
+var locationDomain = window.location.protocol + '//' + window.location.host;
+if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
     $.ajaxSetup({
         crossDomain: true,
         xhrFields: { withCredentials: true }
     });
 }
-var $main = $(".col-md-9");
-$.get(projectDomain + "/api/info", function (data) {
+var $main = $('.col-md-9');
+$.get(projectDomain + '/api/info', function (data) {
     if (isNotBlank(data)) {
         var documentInfo;
-        if (typeof data === "string") {
+        if (typeof data === 'string') {
             documentInfo = JSON.parse(data);
         } else {
             documentInfo = data;
@@ -459,48 +459,48 @@ $.get(projectDomain + "/api/info", function (data) {
         {
             var copyright = documentInfo.copyright;
             if (isNotBlank(copyright.title)) {
-                $("title").html(copyright.title);
+                $('title').html(copyright.title);
             }
-            var $copyrightRender = $("#copyright");
+            var $copyrightRender = $(#copyright');
             var template = doT.template($copyrightRender.html());
             $copyrightRender.parent().html(template(copyright));
         }
 
         {
             var doc = documentInfo.document;
-            var $urlRender = $("#url-render");
+            var $urlRender = $('#url-render');
             var urlRenderTemplate = doT.template($urlRender.html());
             $urlRender.parent().html(urlRenderTemplate(doc));
 
-            var $navRender = $("#url-nav-render");
+            var $navRender = $('#url-nav-render');
             var navRenderTemplate = doT.template($navRender.html());
             $navRender.parent().html(navRenderTemplate(doc));
 
-            $("pre[class='src src-json']").each(function () {
+            $('pre[class="src src-json"]').each(function () {
                 var $html = $(this).html();
                 if (isNotBlank($html)) {
-                    $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, "$1<span class=\"comment\">$2</span>");
+                    $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     $(this).html(addLine($html));
                 }
             });
 
             var href = window.location.href;
-            if (href.includes("#")) {
-                href = href.substring(href.indexOf("#"), href.length);
+            if (href.includes('#')) {
+                href = href.substring(href.indexOf('#'), href.length);
                 var $anchor = $(href);
                 if ($anchor.length > 0) {
-                    var $li = $("a[href='" + href + "']").parent();
-                    $li.addClass("active");
-                    $li.parent().parent().addClass("active");
-                    $("html,body").animate({scrollTop: $anchor.offset().top}, 0);
+                    var $li = $('a[href="' + href + '"]').parent();
+                    $li.addClass('active');
+                    $li.parent().parent().addClass('active');
+                    $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
                 }
             }
         }
     } else {
-        $main.html("<span class='red'>无接口信息</span>");
+        $main.html('<span class="red">无接口信息</span>');
     }
 }).error(function () {
-    $main.html("<span class='red'>接口请求错误</span>");
+    $main.html('<span class="red">接口请求错误</span>');
 });
 </script>
 
@@ -508,21 +508,21 @@ $.get(projectDomain + "/api/info", function (data) {
 <script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/jquery.validationEngine.min.js"></script>
 <script type="text/javascript">
 if (isBlank(projectDomain)) {
-    projectDomain = window.location.protocol + "//" + window.location.host;
+    projectDomain = window.location.protocol + '//' + window.location.host;
 }
-if (projectDomain.endsWith("/")) {
+if (projectDomain.endsWith('/')) {
     projectDomain = projectDomain.substring(0, projectDomain.length - 1);
 }
 
 $.validationEngine.defaults.scroll = false;
 function request(obj) {
-    var $form = $(obj).parents("form");
-    var curl = $form.find(".curl");
-    var response = $form.find(".response");
+    var $form = $(obj).parents('form');
+    var curl = $form.find('.curl');
+    var response = $form.find('.response');
     curl.hide();
     response.hide();
 
-    var flag = $form.validationEngine("validate");
+    var flag = $form.validationEngine('validate');
     if (!flag) {
         return;
     }
@@ -535,9 +535,9 @@ function request(obj) {
     var headers = map[1];
     var files = map[2];
 
-    if (!url.toLowerCase().startsWith("http://") && !url.toLowerCase().startsWith("https://")) {
-        if (!url.startsWith("/")) {
-            url = "/" + url;
+    if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
+        if (!url.startsWith('/')) {
+            url = '/' + url;
         }
         url = projectDomain + url;
     }
@@ -553,13 +553,13 @@ function request(obj) {
 
     {
         var tmpUrl = url;
-        var line = " \\\n";
-        var curlHtml = "curl -i -X " + method + line;
+        var line = ' \\\n';
+        var curlHtml = 'curl -i -X ' + method + line;
         if (files.length > 0) {
             if (Object.getOwnPropertyNames(params).length > 0) {
                 $.each(params, function (key, value) {
                     if (isNotBlank(key) && isNotBlank(value)) {
-                        curlHtml += "&nbsp; -F '" + (key + "=" + value) + "'" + line;
+                        curlHtml += "&nbsp; -F '" + (key + '=' + value) + "'" + line;
                     }
                 });
             }
@@ -567,27 +567,27 @@ function request(obj) {
                 var fileName = file.name;
                 var filePath = file.value;
                 if (isNotBlank(fileName) && isNotBlank(filePath)) {
-                    filePath = filePath.replace("C:\\fakepath\\", "/$替换真实路径$/");
-                    curlHtml += "&nbsp; -F '" + (fileName + "=@" + filePath) + "'" + line;
+                    filePath = filePath.replace('C:\\fakepath\\', '/$替换真实路径$/');
+                    curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
                 }
             });
         } else {
             if (Object.getOwnPropertyNames(params).length > 0) {
-                if ("GET" === method.toUpperCase()) {
+                if ('GET' === method.toUpperCase()) {
                     var paramArr = [];
                     $.each(params, function (key, value) {
                         if (isNotBlank(key) && isNotBlank(value)) {
-                            paramArr.push(key + "=" + value);
+                            paramArr.push(key + '=' + value);
                         }
                     });
-                    var paramStr = paramArr.join("&");
+                    var paramStr = paramArr.join('&');
                     if (paramStr.length > 0) {
-                        tmpUrl += (url.includes("?") ? "&" : "?") + paramStr;
+                        tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
                     }
                 } else {
                     $.each(params, function (key, value) {
                         if (isNotBlank(key) && isNotBlank(value)) {
-                            curlHtml += "&nbsp; -d '" + (key + "=" + value) + "'" + line;
+                            curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
                         }
                     });
                 }
@@ -596,7 +596,7 @@ function request(obj) {
         if (Object.getOwnPropertyNames(headers).length > 0) {
             $.each(headers, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
-                    curlHtml += "&nbsp; -H '" + (key + ": " + value) + "'" + line;
+                    curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
                 }
             });
         }
@@ -605,14 +605,14 @@ function request(obj) {
         //     curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
         // }
         curlHtml += "&nbsp; --url '" + tmpUrl + "'";
-        curlHtml = curlHtml.replace(/&nbsp;/g, " ");
+        curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
         if (curlHtml.length <= 120) {
-            curlHtml = curlHtml.replace(new RegExp(line.replace("\\", "\\\\"), "g"), "");
-            if (!curlHtml.includes("\\")) {
-                curlHtml = curlHtml.replace(/\s{2,}/g, " ");
+            curlHtml = curlHtml.replace(new RegExp(line.replace('\\', '\\\\'), 'g'), '');
+            if (!curlHtml.includes('\\')) {
+                curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
             }
         }
-        curl.find("pre").html(curlHtml);
+        curl.find('pre').html(curlHtml);
         curl.show();
     }
 
@@ -632,7 +632,7 @@ function request(obj) {
         };
         if (files.length > 0) {
             if ('POST' !== method.toUpperCase()) {
-                response.find("pre").html("<span class='red'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
+                response.find('pre').html('<span class="red">上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>');
                 response.show();
                 return;
             }
@@ -655,12 +655,12 @@ function request(obj) {
             settings['data'] = params;
         }
 
-        var responseData = response.find("pre");
+        var responseData = response.find('pre');
         var start = new Date().getTime();
         $.ajax(settings).done(function (result) {
             var html = timeLog(start);
             if (isBlank(result)) {
-                html += "<span class='green'>" + method + " 请求(" + url + ")成功, 但是响应为空</span>";
+                html += '<span class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</span>';
             } else {
                 html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
             }
@@ -669,18 +669,18 @@ function request(obj) {
         }).fail(function (error) {
             var html = timeLog(start);
             if (isBlank(error)) {
-                html += "<span class='red'>" + method + " 请求(" + url + ")失败</span>";
+                html += '<span class="red">' + method + ' 请求(' + url + ')失败</span>';
             } else {
-                html += "<span class='red'>响应码: " + error.status + "</span>";
+                html += '<span class="red">响应码: ' + error.status + '</span>';
                 var json = error.responseJSON;
                 if (isNotBlank(json)) {
-                    html += "\n\n" + addLine(escapeHtml(JSON.stringify(json, null, 2)));
+                    html += '\n\n' + addLine(escapeHtml(JSON.stringify(json, null, 2)));
                 } else {
                     var text = error.responseText;
                     if (isNotBlank(text)) {
-                        html += "\n<span class='red wrap'>响应文本: " + escapeHtml(text) + "</span>";
+                        html += '\n<span class="red wrap">响应文本: ' + escapeHtml(text) + '</span>';
                     } else {
-                        html += "\n<span class='red'>响应为空</span>";
+                        html += '\n<span class="red">响应为空</span>';
                     }
                 }
             }
@@ -691,7 +691,7 @@ function request(obj) {
 }
 function timeLog(start) {
     var end = new Date().getTime();
-    return "请求时长: " + (end - start) + "ms\n" + formatDate(start) + " -> " + formatDate(end) + "\n\n";
+    return '请求时长: ' + (end - start) + 'ms\n' + formatDate(start) + ' -> ' + formatDate(end) + '\n\n';
 }
 function objectifyForm(form) {
     var headers = {};
@@ -700,9 +700,9 @@ function objectifyForm(form) {
         var name = field.name;
         var value = field.value;
 
-        var input = form.find("input[name=" + name + "]");
-        var header = input.attr("header");
-        if (header && header === "true") {
+        var input = form.find('input[name="' + name + '"]');
+        var header = input.attr('header');
+        if (header && header === 'true') {
             headers[name] = value;
         } else {
             params[name] = value;
@@ -714,9 +714,9 @@ function escapeHtml(html) {
     if (isBlank(html)) {
         return null;
     }
-    return html.replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;").replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    return html.replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 function formatDate(date) {
     var d = new Date(date);
@@ -748,7 +748,7 @@ function formatDate(date) {
     } else if (S.length === 2) {
         S = '0' + S;
     }
-    return y + "-" + m + "-" + dy + " " + h + ":" + mt + ":" + s + " " + S;
+    return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + ' ' + S;
 }
 </script>
 </body>

@@ -332,7 +332,7 @@
 </footer>
 
 <script type="text/javascript">
-var projectDomain = "";
+var projectDomain = '';
 </script>
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
@@ -349,8 +349,8 @@ $(function () {
     const footer = document.getElementsByTagName('footer')[0];
 
     const $win = $(window);
-    const $nav = $(".col-md-3");
-    const $bar = $(".bs-docs-sidebar > .nav");
+    const $nav = $('.col-md-3');
+    const $bar = $('.bs-docs-sidebar > .nav');
     $win.scroll(function() {
         if ($nav.css('display') !== 'none') {
             const footerTop = footer.offsetTop;
@@ -360,7 +360,7 @@ $(function () {
                 const footViewHeight = pageHeight - footerTop;
                 $bar.css(heightProperty, 'calc(100vh - ' + (topBottomHeight + footViewHeight) + 'px)');
             } else {
-                const htmlViewHeight = (html.clientHeight - topBottomHeight) + "px";
+                const htmlViewHeight = (html.clientHeight - topBottomHeight) + 'px';
                 if ($bar.css(heightProperty) !== htmlViewHeight) {
                     $bar.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
                 }
@@ -380,7 +380,7 @@ function isNotBlank(str) {
 }
 function addLine(html) {
     if (isBlank(html)) {
-        return "";
+        return '';
     }
 
     var lineNum = html.split(/\n/).length;
@@ -416,21 +416,21 @@ $.get(projectDomain + '/api/info', function (data) {
         if (isNotBlank(copyright.title)) {
             $('title').html(copyright.title);
         }
-        var $copyrightRender = $("#copyright");
+        var $copyrightRender = $('#copyright');
         var template = doT.template($copyrightRender.html());
         $copyrightRender.parent().html(template(copyright));
 
 
         var doc = documentInfo.document;
-        var $urlRender = $("#url-render");
+        var $urlRender = $('#url-render');
         var urlRenderTemplate = doT.template($urlRender.html());
         $urlRender.parent().html(urlRenderTemplate(doc));
 
-        var $navRender = $("#url-nav-render");
+        var $navRender = $('#url-nav-render\');
         var navRenderTemplate = doT.template($navRender.html());
         $navRender.parent().html(navRenderTemplate(doc));
 
-        $("pre[class='src src-json']").each(function () {
+        $('pre[class="src src-json"]').each(function () {
             var $html = $(this).html();
             if (isNotBlank($html)) {
                 $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
