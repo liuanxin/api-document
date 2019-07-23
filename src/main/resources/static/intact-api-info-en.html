@@ -401,7 +401,7 @@ if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDom
         xhrFields: { withCredentials: true }
     });
 }
-var main = $('.col-md-9');
+var $main = $('.col-md-9');
 $.get(projectDomain + '/api/info', function (data) {
     if (isNotBlank(data)) {
         var documentInfo;
@@ -416,44 +416,44 @@ $.get(projectDomain + '/api/info', function (data) {
         if (isNotBlank(copyright.title)) {
             $('title').html(copyright.title);
         }
-        var copyrightRender = $('#copyright');
-        var template = doT.template(copyrightRender.html());
-        copyrightRender.parent().html(template(copyright));
+        var $copyrightRender = $('#copyright');
+        var template = doT.template($copyrightRender.html());
+        $copyrightRender.parent().html(template(copyright));
 
 
         var doc = documentInfo.document;
         var urlRender = $('#url-render');
-        var urlRenderTemplate = doT.template(urlRender.html());
-        urlRender.parent().html(urlRenderTemplate(doc));
+        var urlRenderTemplate = doT.template($urlRender.html());
+        $urlRender.parent().html(urlRenderTemplate(doc));
 
         var navRender = $('#url-nav-render');
-        var navRenderTemplate = doT.template(navRender.html());
-        navRender.parent().html(navRenderTemplate(doc));
+        var navRenderTemplate = doT.template($navRender.html());
+        $navRender.parent().html(navRenderTemplate(doc));
 
         $('pre[class="src src-json"]').each(function () {
-            var html = $(this).html();
-            if (isNotBlank(html)) {
-                html = html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
-                $(this).html(addLine(html));
+            var $html = $(this).html();
+            if (isNotBlank($html)) {
+                $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+                $(this).html(addLine($html));
             }
         });
 
         var href = window.location.href;
         if (href.includes('#')) {
             href = href.substring(href.indexOf('#'), href.length);
-            var anchor = $(href);
-            if (anchor.length > 0) {
-                var li = $('a[href="' + href + '"]').parent();
-                li.addClass('active');
-                li.parent().parent().addClass('active');
-                $('html,body').animate({scrollTop: anchor.offset().top}, 0);
+            var $anchor = $(href);
+            if ($anchor.length > 0) {
+                var $li = $('a[href="' + href + '"]').parent();
+                $li.addClass('active');
+                $li.parent().parent().addClass('active');
+                $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
             }
         }
     } else {
-        main.html('<span class="red">no api info</span>');
+        $main.html('<span class="red">no api info</span>');
     }
 }).error(function () {
-    main.html('<span class="red">request error</span>');
+    $main.html('<span class="red">request error</span>');
 });
 </script>
 </body>
