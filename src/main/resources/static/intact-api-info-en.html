@@ -426,7 +426,7 @@ $.get(projectDomain + '/api/info', function (data) {
         var urlRenderTemplate = doT.template($urlRender.html());
         $urlRender.parent().html(urlRenderTemplate(doc));
 
-        var navRender = $('#url-nav-render');
+        var $navRender = $('#url-nav-render');
         var navRenderTemplate = doT.template($navRender.html());
         $navRender.parent().html(navRenderTemplate(doc));
 
