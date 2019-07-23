@@ -422,7 +422,7 @@ $.get(projectDomain + '/api/info', function (data) {
 
 
         var doc = documentInfo.document;
-        var urlRender = $('#url-render');
+        var $urlRender = $('#url-render');
         var urlRenderTemplate = doT.template($urlRender.html());
         $urlRender.parent().html(urlRenderTemplate(doc));
 
