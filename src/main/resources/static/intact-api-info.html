@@ -446,7 +446,7 @@ $.get(projectDomain + '/api/info', function (data) {
                 var $li = $('a[href="' + href + '"]').parent();
                 $li.addClass('active');
                 $li.parent().parent().addClass('active');
-                $('html,body').animate({scrollTop: $$anchor.offset().top}, 0);
+                $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
             }
         }
     } else {
