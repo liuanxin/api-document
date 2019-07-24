@@ -313,13 +313,14 @@
 
                                             var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' class="validate[' + arrJoin + ']"') : '';
                                             var header = ('Header' === param.paramType) ? ' header="true"' : '';
+                                            var example = localStorage.getItem(param.name) || param.example;
                                             }}
                                             {{? param.dataType === 'file' }}
                                             <input name="{{= param.name}}" type="file"{{= validateData}}/>
                                             {{?? param.hasTextarea}}
-                                            <textarea name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= localStorage.getItem(param.name) || param.example}}</textarea>
+                                            <textarea name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
                                             {{??}}
-                                            <input name="{{= param.name}}"{{= header}}{{= validateData}} value="{{= localStorage.getItem(param.name) || param.example}}"{{? param.hasToken}} onchange="tokenChange(this);"{{?}}/>
+                                            <input name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                             {{?}}
                                             <!-- 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 -->
                                             <input style="display:none;"/>
