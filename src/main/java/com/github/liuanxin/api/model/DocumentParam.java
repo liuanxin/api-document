@@ -22,9 +22,11 @@ public class DocumentParam {
     private String example = Tools.EMPTY;
     private Boolean hasTextarea = false;
     private Boolean hasFile = false;
+    private Boolean hasToken = false;
 
     public static DocumentParam buildToken(String name, String desc, String example, ParamType paramType) {
-        DocumentParam param = new DocumentParam().setDataType("String").setName(name).setDesc(desc).setExample(example);
+        DocumentParam param = new DocumentParam().setDataType("String")
+                .setName(name).setDesc(desc).setExample(example).setHasToken(true);
         if (paramType != null) {
             param.setParamType(paramType.name());
         }
@@ -40,6 +42,7 @@ public class DocumentParam {
         param.setParamType(token.paramType().name());
         param.setMust(token.must());
         param.setHasTextarea(token.textarea());
+        param.setHasToken(true);
         return param;
     }
 }

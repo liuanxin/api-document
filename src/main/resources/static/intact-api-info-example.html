@@ -317,9 +317,9 @@
                                             {{? param.dataType === 'file' }}
                                             <input name="{{= param.name}}" type="file"{{= validateData}}/>
                                             {{?? param.hasTextarea}}
-                                            <textarea name="{{= param.name}}"{{= header}}{{= validateData}}>{{= param.example}}</textarea>
+                                            <textarea name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= localStorage.getItem(param.name) || param.example}}</textarea>
                                             {{??}}
-                                            <input name="{{= param.name}}"{{= header}}{{= validateData}} value="{{= param.example}}"/>
+                                            <input name="{{= param.name}}"{{= header}}{{= validateData}} value="{{= localStorage.getItem(param.name) || param.example}}"{{? param.hasToken}} onchange="tokenChange(this);"{{?}}/>
                                             {{?}}
                                             <!-- 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 -->
                                             <input style="display:none;"/>
@@ -507,6 +507,13 @@ $.get(projectDomain + '/api/info', function (data) {
 <script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/languages/jquery.validationEngine-zh_CN.min.js"></script>
 <script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/jquery.validationEngine.min.js"></script>
 <script type="text/javascript">
+function tokenChange(obj) {
+    var name = $(obj).attr('name');
+    var value = $(obj).val();
+    localStorage.setItem(name, value);
+    $('[name="' + name + '"]').val(value);
+}
+
 if (isBlank(projectDomain)) {
     projectDomain = window.location.protocol + '//' + window.location.host;
 }
@@ -700,8 +707,7 @@ function objectifyForm(form) {
         var name = field.name;
         var value = field.value;
 
-        var input = form.find('input[name="' + name + '"]');
-        var header = input.attr('header');
+        var header = form.find('[name="' + name + '"]').attr('header');
         if (header && header === 'true') {
             headers[name] = value;
         } else {
