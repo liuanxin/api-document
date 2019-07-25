@@ -24,13 +24,10 @@ public class DocumentParam {
     private Boolean hasFile = false;
     private Boolean hasToken = false;
 
-    public static DocumentParam buildToken(String name, String desc, String example, ParamType paramType) {
-        DocumentParam param = new DocumentParam().setDataType("String")
-                .setName(name).setDesc(desc).setExample(example).setHasToken(true);
-        if (paramType != null) {
-            param.setParamType(paramType.name());
-        }
-        return param;
+    public static DocumentParam buildToken(String name, String desc, String example, boolean textarea) {
+        return new DocumentParam().setDataType("String")
+                .setHasToken(true).setParamType(ParamType.Header.name())
+                .setName(name).setDesc(desc).setExample(example).setHasTextarea(textarea);
     }
 
     public static DocumentParam buildToken(ApiToken token) {
