@@ -402,7 +402,7 @@
 </footer>
 
 <script>
-var projectDomain = "";
+var projectDomain = '';
 </script>
 
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
@@ -665,7 +665,7 @@ function request(obj) {
         };
         if (files.length > 0) {
             if ('POST' !== method.toUpperCase()) {
-                response.find('pre').html('<span class="red">上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>');
+                response.find('pre').html("<span class='red'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
                 response.show();
                 return;
             }

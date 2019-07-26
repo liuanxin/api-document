@@ -288,7 +288,7 @@
                             }
                             }}
                             <form class="module-api-info-param" method="{{= url.method}}" action="{{= url.url}}"{{? hasFile}} enctype="multipart/form-data"{{?}}>
-                                {{? paramList && url.paramList.length > 0}}
+                                {{? paramList && paramList.length > 0}}
                                 <p>params</p>
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
@@ -664,7 +664,7 @@ function request(obj) {
             }
         };
         if (files.length > 0) {
-            if (files.length > 0 && 'POST' !== method.toUpperCase()) {
+            if ('POST' !== method.toUpperCase()) {
                 response.find('pre').html("<span class='red'>Upload files must use POST(It's possible to use the above cURL), please contact the backend to change!</span>");
                 response.show();
                 return;
