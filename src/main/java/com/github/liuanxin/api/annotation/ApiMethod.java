@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiMethod {
 
-    String title();
+    String value();
 
     String develop() default "";
 

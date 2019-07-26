@@ -180,7 +180,7 @@ public class DocumentController {
                         // meta info
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
                         if (Tools.isNotBlank(apiMethod)) {
-                            document.setTitle(apiMethod.title());
+                            document.setTitle(apiMethod.value());
                             document.setDesc(apiMethod.desc());
                             document.setDevelop(apiMethod.develop());
                             document.setIndex(apiMethod.index());
