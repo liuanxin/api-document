@@ -320,6 +320,7 @@ public class Tools {
             if (isNotEmpty(constants)) {
                 StringBuilder sbd = new StringBuilder();
                 String split = SPLIT + SPACE;
+                // enum info, maybe Map or maybe List
                 Map<String, Object> map = newHashMap();
                 List<String> list = lists();
                 for (Enum em : constants) {
