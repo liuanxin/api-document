@@ -23,6 +23,9 @@ public class Tools {
 
     private static final String FILE_TYPE = "file";
 
+    /** enum info */
+    private static final Map<String, Object> ENUM_MAP = maps();
+
     /** just basic type: int long double array etc... */
     private static final Map<String, Class<?>> BASIC_CLAZZ_MAP = maps(
             boolean.class.getSimpleName(), boolean.class,
@@ -227,7 +230,7 @@ public class Tools {
     public static <T> boolean isNotEmpty(Collection<T> collection) {
         return !isEmpty(collection);
     }
-    public static boolean isEmpty(Map map) {
+    private static boolean isEmpty(Map map) {
         return map == null || map.isEmpty();
     }
     public static boolean isNotEmpty(Map map) {
@@ -252,7 +255,7 @@ public class Tools {
     // ========== list map ==========
     @SuppressWarnings("unchecked")
     static List lists(Object... values) {
-        return new ArrayList(Arrays.asList(values));
+        return isEmpty(values) ? new ArrayList() : new ArrayList(Arrays.asList(values));
     }
     public static <T> Set<T> sets() {
         return new HashSet<>();
@@ -317,22 +320,30 @@ public class Tools {
             if (isNotEmpty(constants)) {
                 StringBuilder sbd = new StringBuilder();
                 String split = SPLIT + SPACE;
+                Map<String, Object> map = newHashMap();
+                List<String> list = lists();
                 for (Enum em : constants) {
+                    // has getCode
                     Object code = getMethod(em, "getCode");
+                    String name = em.name();
                     if (isNotEmpty(code)) {
-                        // has getCode
-                        sbd.append(code).append(":");
                         Object value = getMethod(em, "getValue");
                         // has getValue return <code1: value1, code2: value2 ...>
                         // no getValue return <code1: name1, code2: name2 ...>
-                        sbd.append(isNotEmpty(value) ? value : em.name());
+                        Object obj = isNotEmpty(value) ? value : name;
+                        sbd.append(code).append(":").append(obj);
+                        map.put(code.toString(), obj);
                     } else {
                         // no getCode return <name1, name2>
                         // sbd.append(em.ordinal()).append(":");
-                        sbd.append(em.name());
+                        sbd.append(name);
+                        list.add(name);
                     }
                     sbd.append(split);
                 }
+                // just one rule, mix rule will use <code1: (value1|name1), code2: (value2|name2)>
+                ENUM_MAP.put(clazz.getSimpleName(), (isEmpty(map) ? list : map));
+
                 int len = split.length();
                 if (sbd.length() > len) {
                     return sbd.delete(sbd.length() - len, sbd.length()).toString();
@@ -340,6 +351,9 @@ public class Tools {
             }
         }
         return EMPTY;
+    }
+    public static Map<String, Object> allEnumInfo() {
+        return ENUM_MAP;
     }
 
     // ========== type ==========
@@ -394,7 +408,7 @@ public class Tools {
         if (isNotEmpty(basicClass)) {
             return basicClass.getSimpleName();
         } else if (type.isEnum()) {
-            return "Enum(" + paramType + ")";
+            return "enum(" + paramType + ")";
         } else {
             // string, string[], list, set, map... etc
             return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
@@ -501,7 +515,7 @@ public class Tools {
 
         else if (clazz == byte[].class) {
             try {
-                return new byte[] { Byte.valueOf(example) };
+                return new byte[] { Byte.parseByte(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -529,7 +543,7 @@ public class Tools {
 
         else if (clazz == short[].class) {
             try {
-                return new short[] { Short.valueOf(example) };
+                return new short[] { Short.parseShort(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -543,7 +557,7 @@ public class Tools {
 
         else if (clazz == int[].class) {
             try {
-                return new int[] { Integer.valueOf(example) };
+                return new int[] { Integer.parseInt(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -557,7 +571,7 @@ public class Tools {
 
         else if (clazz == long[].class) {
             try {
-                return new long[] { Long.valueOf(example) };
+                return new long[] { Long.parseLong(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -571,7 +585,7 @@ public class Tools {
 
         else if (clazz == float[].class) {
             try {
-                return new float[] { Float.valueOf(example) };
+                return new float[] { Float.parseFloat(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -585,7 +599,7 @@ public class Tools {
 
         else if (clazz == double[].class) {
             try {
-                return new double[] { Double.valueOf(example) };
+                return new double[] { Double.parseDouble(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }

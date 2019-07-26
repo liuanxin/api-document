@@ -3,7 +3,6 @@ package com.github.liuanxin.api.web;
 import com.github.liuanxin.api.annotation.*;
 import com.github.liuanxin.api.model.*;
 import com.github.liuanxin.api.util.ParamHandler;
-import com.github.liuanxin.api.util.Requests;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -229,7 +228,11 @@ public class DocumentController {
             }
             Collections.sort(moduleList);
         }
-        DocumentInfo documentInfo = new DocumentInfo(copyright.getGlobalTokens(), copyright.getGlobalResponse(), moduleList);
+        DocumentInfo documentInfo = new DocumentInfo()
+                .setTokenList(copyright.getGlobalTokens())
+                .setResponseList(copyright.getGlobalResponse())
+                .setEnumInfo(Tools.allEnumInfo())
+                .setModuleList(moduleList);
         return new DocumentInfoAndUrlMap(documentInfo, documentMap);
     }
 
@@ -245,13 +248,8 @@ public class DocumentController {
     }
 
     private static String getExampleUrl(String param) {
-        String domain = Requests.getDomain();
-        if (domain.endsWith("/")) {
-            domain = domain.substring(0, domain.length() - 1);
-        }
-        String exampleUrl = domain + Tools.addPrefix(PARENT_URL_PREFIX) + Tools.addPrefix(EXAMPLE_URL);
         // return exampleUrl.replaceFirst("\\{.*?\\}", param);
-        return ID_URL_PATTERN.matcher(exampleUrl).replaceFirst(param);
+        return ID_URL_PATTERN.matcher(PARENT_URL_PREFIX + EXAMPLE_URL).replaceFirst(param);
     }
 
     private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {

@@ -11,7 +11,7 @@
 
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.4.4</version>
+    <version>0.4.5</version>
     <description>Collect api document, support to spring mvc</description>
 
     <developers>
@@ -47,14 +47,12 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>

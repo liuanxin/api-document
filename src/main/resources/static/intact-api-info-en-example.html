@@ -27,13 +27,19 @@
             margin: 5px 0;
             text-align: center;
         }
-        input {
-            width: 180px;
+        input, select {
+            min-width: 180px;
+            width: 100%;
+            height: 28px;
         }
         textarea {
-            width: 100%;
             min-height: 120px;
             min-width: 180px;
+            width: 100%;
+        }
+        input[type=button] {
+            width: 180px;
+            height: 28px;
         }
         pre {
             font-size: 14px;
@@ -73,6 +79,9 @@
         .module-api-info-desc {}
         .module-api-info-param {}
         .module-api-info-return {}
+        .example {
+            min-width: 350px;
+        }
         .curl, .response {
             display: none;
         }
@@ -289,7 +298,7 @@
                                         <th scope="col" class="text-left">required</th>
                                         <th scope="col" class="text-left">data type</th>
                                         {{? hasHeader}}<th scope="col" class="text-left">param type</th>{{?}}
-                                        <th scope="col" class="text-left">example</th>
+                                        <th scope="col" class="text-left example">example</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -316,11 +325,25 @@
                                             var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' class="validate[' + arrJoin + ']"') : '';
                                             var header = ('Header' === param.paramType) ? ' header="true"' : '';
                                             var example = localStorage.getItem(param.name) || param.example;
+
+                                            var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
+                                            var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                             }}
                                             {{? param.dataType === 'file' }}
                                             <input name="{{= param.name}}" type="file"{{= validateData}}/>
                                             {{?? param.hasTextarea}}
                                             <textarea name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
+                                            {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
+                                            <select name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
+                                                <option></option>
+                                                {{? Array.isArray(enumInfo) }}
+                                                {{~ enumInfo  :em}}<option{{? example === em}} selected{{?}}>{{= em}}</option>{{~}}
+                                                {{??}}
+                                                {{ for(var code in enumInfo) { var value = enumInfo[code]; }}
+                                                <option value="{{= code}}"{{? example === code || example === value}} selected{{?}}>{{= value}}</option>
+                                                {{ } }}
+                                                {{?}}
+                                            </select>
                                             {{??}}
                                             <input name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                             {{?}}
