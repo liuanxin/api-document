@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.4.4</version>
+    <version>0.4.5</version>
 </dependency>
 #+END_SRC
 
@@ -80,7 +80,7 @@ for example:
 
 
 @ApiMethod --> in method
-  title      --> must set
+  value      --> method title, must set
   develop    --> can not be set
   desc       --> description, can not be set
   index      --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)

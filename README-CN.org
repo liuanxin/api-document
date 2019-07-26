@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.4.4</version>
+    <version>0.4.5</version>
 </dependency>
 #+END_SRC
 
@@ -77,7 +77,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] �
 
 
 @ApiMethod --> 标注在方法上
-  title      --> 接口标题, 必须设置
+  value      --> 接口标题, 必须设置
   develop    --> 开发者信息, 可以不设置
   desc       --> 接口详细说明. 可以不设置
   index      --> 索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序, 开发者信息 如果也一致会使用 接口标题 排序)

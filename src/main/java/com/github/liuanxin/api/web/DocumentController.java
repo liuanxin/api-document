@@ -256,10 +256,8 @@ public class DocumentController {
         DocumentModule module = moduleMap.get(group);
         if (Tools.isBlank(module)) {
             module = new DocumentModule(group);
-            if (index > 0) {
-                module.setIndex(index);
-            }
-        } else if (index != 0 && module.getIndex() > index) {
+            module.setIndex(index);
+        } else if (module.getIndex() > index) {
             // if set multi module and different index, use the smaller
             module.setIndex(index);
         }
