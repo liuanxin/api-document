@@ -146,6 +146,9 @@
         .bs-docs-sidebar .nav .nav .nav > li > a:focus {
             padding-left: 39px;
         }
+        .bs-docs-sidebar .nav > .active > ul {
+            display: block;
+        }
         .bs-docs-sidebar .nav .nav .nav > .active > a,
         .bs-docs-sidebar .nav .nav .nav > .active:hover > a,
         .bs-docs-sidebar .nav .nav .nav > .active:focus > a {
@@ -160,22 +163,20 @@
                 display: none;
             }
         }
-        @media (min-width: 768px) {
+        @media (min-width: 992px) and (max-width: 1200px) {
             .bs-docs-sidebar {
-                padding-left: 20px;
-            }
-        }
-        @media (min-width: 992px) {
-            .bs-docs-sidebar .nav > .active > ul {
-                display: block;
+                padding-left: 10px;
             }
             .bs-docs-sidebar.affix {
-                width: 213px;
+                width: 223px;
             }
         }
         @media (min-width: 1200px) {
             .bs-docs-sidebar {
-                width: 263px;
+                padding-left: 20px;
+            }
+            .bs-docs-sidebar.affix {
+                width: 278px;
             }
         }
     </style>
