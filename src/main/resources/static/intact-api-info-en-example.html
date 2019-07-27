@@ -109,7 +109,7 @@
         }
         .nav-bar {
             margin-top: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 15px; /* top & bottom */
         }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
@@ -117,7 +117,7 @@
         }
         .bs-docs-sidebar .nav > li > a {
             display: block;
-            padding: 4px 20px;
+            padding: 4px 0 4px 20px;
             font-size: 14px;
             font-weight: 500;
             color: #999;
@@ -191,20 +191,22 @@
                 display: none;
             }
         }
-        @media (min-width: 992px) and (max-width: 1200px) {
+        @media (min-width: 993px) and (max-width: 1200px) {
             .bs-docs-sidebar {
                 padding-left: 10px;
             }
             .bs-docs-sidebar.affix {
-                width: 223px;
+                min-width: 223px;
+                width: 23%;
             }
         }
-        @media (min-width: 1200px) {
+        @media (min-width: 1201px) {
             .bs-docs-sidebar {
                 padding-left: 20px;
             }
             .bs-docs-sidebar.affix {
-                width: 278px;
+                min-width: 278px;
+                width: 23.5%;
             }
         }
     </style>
