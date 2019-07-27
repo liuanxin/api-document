@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.4.5</version>
+    <version>0.4.6</version>
 </dependency>
 #+END_SRC
 
