@@ -7,24 +7,24 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiParam {
 
-    /** param desc */
+    /** @return  param desc */
     String value();
 
-    /** param name, if set will ignore paramName */
+    /** @return param name, if set will ignore paramName */
     String name() default "";
 
-    /** if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、phone、email、url、ipv4 */
+    /** @return if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、phone、email、url、ipv4 */
     String dataType() default "";
 
-    /** param example */
+    /** @return param example */
     String example() default "";
 
-    /** Header or Query */
+    /** @return Header or Query */
     ParamType paramType() default ParamType.Query;
 
-    /** if param has @RequestParam(required = true) etc..., this set will ignore */
+    /** @return if param has @RequestParam(required = true) etc..., this set will ignore */
     boolean must() default false;
 
-    /** in html, true will be textarea, default was input. */
+    /** @return in html, true will be textarea, default was input. */
     boolean textarea() default false;
 }

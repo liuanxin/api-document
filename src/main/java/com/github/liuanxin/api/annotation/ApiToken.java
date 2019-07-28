@@ -7,21 +7,21 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiToken {
 
-    /** param name */
+    /** @return param name */
     String name();
 
-    /** param desc */
+    /** @return param desc */
     String desc() default "";
 
-    /** param example */
+    /** @return param example */
     String example() default "";
 
-    /** Header or Query */
+    /** @return Header or Query */
     ParamType paramType() default ParamType.Header;
 
-    /** if param has @RequestParam(required = true) etc..., this set will ignore */
+    /** @return if param has @RequestParam(required = true) etc..., this set will ignore */
     boolean must() default false;
 
-    /** in html, true will be textarea, default was input. */
+    /** @return in html, true will be textarea, default was input. */
     boolean textarea() default false;
 }

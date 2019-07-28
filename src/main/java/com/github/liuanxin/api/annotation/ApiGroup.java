@@ -7,9 +7,9 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiGroup {
 
-    /** module name. for example: name-comment */
+    /** @return module name. for example: name-comment */
     String[] value();
 
-    /** more forward when smaller */
+    /** @return more forward when smaller */
     int index() default Integer.MAX_VALUE;
 }
