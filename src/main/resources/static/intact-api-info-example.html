@@ -212,7 +212,7 @@
     </style>
 </head>
 <body>
-<div class="container">
+<main id="top" class="container">
     <div class="row">
         <div class="col-md-9">
             <script id="url-render" type="text/x-dot-template">
@@ -392,8 +392,8 @@
             </nav>
         </div>
     </div>
-</div>
-<footer class="postamble">
+</main>
+<footer id="foot" class="postamble">
     <script id="copyright" type="text/x-dot-template">
         <div>
             <p class="version">版本: {{= it.version}}</p>
@@ -642,7 +642,7 @@ function request(obj) {
         // }
         curlHtml += "&nbsp; --url '" + tmpUrl + "'";
         curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
-        if (curlHtml.length <= 120) {
+        if (curlHtml.length <= 100) {
             curlHtml = curlHtml.replace(new RegExp(line.replace('\\', '\\\\'), 'g'), '');
             if (!curlHtml.includes('\\')) {
                 curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
