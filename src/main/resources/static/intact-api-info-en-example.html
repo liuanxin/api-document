@@ -597,6 +597,9 @@ function request(obj) {
         var line = ' \\\n';
         var curlHtml = 'curl -i -X ' + method + line;
         curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
+        if (isNotBlank(document.cookie)) {
+            curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
+        }
         if (Object.getOwnPropertyNames(headers).length > 0) {
             $.each(headers, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
