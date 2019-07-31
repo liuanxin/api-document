@@ -188,12 +188,12 @@
     <div class="row">
         <div class="col-md-9">
             <script id="url-render" type="text/x-dot-template">
-                {{~ it.moduleList  :value:index}}
+                {{~ it.moduleList  :module:index}}
                 <div class="module">
-                    <h2 id="{{= value.name}}" class="module-name"><span>{{= index + 1}}</span> {{= value.info}}</h2>
-                    {{~ value.urlList  :url:urlIndex}}
+                    <h2 id="{{= module.name}}" class="module-name"><span>{{= index + 1}}</span> {{= module.info}}</h2>
+                    {{~ module.urlList  :url:urlIndex}}
                     <div class="module-api">
-                        <h3 id="{{= value.name}}-{{= url.id}}" class="module-api-index">
+                        <h3 id="{{= module.name}}-{{= url.id}}" class="module-api-index">
                             <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
                         </h3>
                         <div class="module-api-info">
@@ -304,13 +304,13 @@
                 <div class="bs-docs-sidebar">
                     <ul class="nav">
                         <script id="url-nav-render" type="text/x-dot-template">
-                            {{~ it.moduleList  :value:index}}
+                            {{~ it.moduleList  :module:index}}
                             <li>
-                                <a href="#{{= value.name}}">{{= index + 1}} {{= value.info}}</a>
+                                <a href="#{{= module.name}}">{{= index + 1}} {{= module.info}}</a>
                                 <ul class="nav">
-                                    {{~ value.urlList  :url:urlIndex}}
+                                    {{~ module.urlList  :url:urlIndex}}
                                     <li>
-                                        <a href="#{{= value.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title}}</a>
+                                        <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title}}</a>
                                     </li>
                                     {{~}}
                                 </ul>

@@ -216,12 +216,12 @@
     <div class="row">
         <div class="col-md-9">
             <script id="url-render" type="text/x-dot-template">
-                {{~ it.moduleList  :value:index}}
+                {{~ it.moduleList  :module:index}}
                 <div class="module">
-                    <h2 id="{{= value.name}}" class="module-name"><span>{{= index + 1}}</span> {{= value.info}}</h2>
-                    {{~ value.urlList  :url:urlIndex}}
+                    <h2 id="{{= module.name}}" class="module-name"><span>{{= index + 1}}</span> {{= module.info}}</h2>
+                    {{~ module.urlList  :url:urlIndex}}
                     <div class="module-api">
-                        <h3 id="{{= value.name}}-{{= url.id}}" class="module-api-index">
+                        <h3 id="{{= module.name}}-{{= url.id}}" class="module-api-index">
                             <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
                         </h3>
                         <div class="module-api-info">
@@ -340,10 +340,10 @@
                                             <select name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
                                                 <option></option>
                                                 {{? Array.isArray(enumInfo) }}
-                                                {{~ enumInfo  :em}}<option{{? example === em}} selected{{?}}>{{= em}}</option>{{~}}
+                                                {{~ enumInfo  :e}}<option{{? example === e}} selected{{?}}>{{= e}}</option>{{~}}
                                                 {{??}}
-                                                {{ for(var code in enumInfo) { var value = enumInfo[code]; }}
-                                                <option value="{{= code}}"{{? example === code || example === value}} selected{{?}}>{{= value}}</option>
+                                                {{ var k; for(k in enumInfo) { }}
+                                                <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected{{?}}>{{= enumInfo[k]}}</option>
                                                 {{ } }}
                                                 {{?}}
                                             </select>
@@ -377,13 +377,13 @@
                 <div class="bs-docs-sidebar">
                     <ul class="nav">
                         <script id="url-nav-render" type="text/x-dot-template">
-                            {{~ it.moduleList  :value:index}}
+                            {{~ it.moduleList  :module:index}}
                             <li>
-                                <a href="#{{= value.name}}">{{= index + 1}} {{= value.info}}</a>
+                                <a href="#{{= module.name}}">{{= index + 1}} {{= module.info}}</a>
                                 <ul class="nav">
-                                    {{~ value.urlList  :url:urlIndex}}
+                                    {{~ module.urlList  :url:urlIndex}}
                                     <li>
-                                        <a href="#{{= value.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title}}</a>
+                                        <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title}}</a>
                                     </li>
                                     {{~}}
                                 </ul>
@@ -596,6 +596,7 @@ function request(obj) {
         var tmpUrl = url;
         var line = ' \\\n';
         var curlHtml = 'curl -i -X ' + method + line;
+        curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
         if (Object.getOwnPropertyNames(headers).length > 0) {
             $.each(headers, function (key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
