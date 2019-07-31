@@ -235,20 +235,20 @@
                                 {{? url.returnList && url.returnList.length > 0}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
-                                    <tr>
-                                        <th scope="col" class="text-left">名称</th>
-                                        <th scope="col" class="text-left">类型</th>
-                                        <th scope="col" class="text-left">说明</th>
-                                    </tr>
+                                        <tr>
+                                            <th scope="col" class="text-left">名称</th>
+                                            <th scope="col" class="text-left">类型</th>
+                                            <th scope="col" class="text-left">说明</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    {{~ url.returnList  :rtn}}
-                                    <tr>
-                                        <td class="text-left">{{= rtn.name}}</td>
-                                        <td class="text-left">{{= rtn.type}}</td>
-                                        <td class="text-left wrap">{{= rtn.desc}}</td>
-                                    </tr>
-                                    {{~}}
+                                        {{~ url.returnList  :rtn}}
+                                        <tr>
+                                            <td class="text-left">{{= rtn.name}}</td>
+                                            <td class="text-left">{{= rtn.type}}</td>
+                                            <td class="text-left wrap">{{= rtn.desc}}</td>
+                                        </tr>
+                                        {{~}}
                                     </tbody>
                                 </table>
                                 {{?}}
@@ -256,24 +256,24 @@
                                 {{? (it.responseList && it.responseList.length > 0) || (url.responseList && url.responseList.length > 0)}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
-                                    <tr>
-                                        <th scope="col" class="text-left">响应码</th>
-                                        <th scope="col" class="text-left">说明</th>
-                                    </tr>
+                                        <tr>
+                                            <th scope="col" class="text-left">响应码</th>
+                                            <th scope="col" class="text-left">说明</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    {{
-                                    var responseList;
-                                    if (url.responseList && url.responseList.length > 0) { responseList = url.responseList; }
-                                    else if (it.responseList && it.responseList.length > 0) { responseList = it.responseList; }
-                                    else { responseList = []; }
-                                    }}
-                                    {{~ responseList  :response}}
-                                    <tr>
-                                        <td class="text-left">{{= response.code}}</td>
-                                        <td class="text-left">{{= response.msg}}</td>
-                                    </tr>
-                                    {{~}}
+                                        {{
+                                        var responseList;
+                                        if (url.responseList && url.responseList.length > 0) { responseList = url.responseList; }
+                                        else if (it.responseList && it.responseList.length > 0) { responseList = it.responseList; }
+                                        else { responseList = []; }
+                                        }}
+                                        {{~ responseList  :response}}
+                                        <tr>
+                                            <td class="text-left">{{= response.code}}</td>
+                                            <td class="text-left">{{= response.msg}}</td>
+                                        </tr>
+                                        {{~}}
                                     </tbody>
                                 </table>
                                 {{?}}
@@ -295,66 +295,66 @@
                                 <p>参数说明如下</p>
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
-                                    <tr>
-                                        <th scope="col" class="text-left">名称</th>
-                                        <th scope="col" class="text-left">说明</th>
-                                        <th scope="col" class="text-left">必须</th>
-                                        <th scope="col" class="text-left">数据类型</th>
-                                        {{? hasHeader}}<th scope="col" class="text-left">参数类型</th>{{?}}
-                                        <th scope="col" class="text-left example">示例</th>
-                                    </tr>
+                                        <tr>
+                                            <th scope="col" class="text-left">名称</th>
+                                            <th scope="col" class="text-left">说明</th>
+                                            <th scope="col" class="text-left">必须</th>
+                                            <th scope="col" class="text-left">数据类型</th>
+                                            {{? hasHeader}}<th scope="col" class="text-left">参数类型</th>{{?}}
+                                            <th scope="col" class="text-left example">示例</th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    {{~ paramList  :param:paramIndex}}
-                                    <tr{{? param.must}} class="bold"{{?}}>
-                                        <td class="text-left">{{= param.name}}</td>
-                                        <td class="text-left wrap">{{= param.desc}}</td>
-                                        <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
-                                        <td class="text-left">{{= param.dataType}}</td>
-                                        {{? hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
-                                        <td class="text-left">
-                                            {{
-                                            var arr = [];
-                                            if (param.must) { arr.push('required'); }
+                                        {{~ paramList  :param:paramIndex}}
+                                        <tr{{? param.must}} class="bold"{{?}}>
+                                            <td class="text-left">{{= param.name}}</td>
+                                            <td class="text-left wrap">{{= param.desc}}</td>
+                                            <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
+                                            <td class="text-left">{{= param.dataType}}</td>
+                                            {{? hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
+                                            <td class="text-left">
+                                                {{
+                                                var arr = [];
+                                                if (param.must) { arr.push('required'); }
 
-                                            if (param.dataType === 'int' || param.dataType === 'long') { arr.push('custom[integer]'); }
-                                            else if (param.dataType === 'float' || param.dataType === 'double') { arr.push('custom[number]'); }
-                                            else if (param.dataType === 'email') { arr.push('custom[email]'); }
-                                            else if (param.dataType === 'url') { arr.push('custom[url]'); }
-                                            else if (param.dataType === 'ipv4') { arr.push('custom[ipv4]'); }
+                                                if (param.dataType === 'int' || param.dataType === 'long') { arr.push('custom[integer]'); }
+                                                else if (param.dataType === 'float' || param.dataType === 'double') { arr.push('custom[number]'); }
+                                                else if (param.dataType === 'email') { arr.push('custom[email]'); }
+                                                else if (param.dataType === 'url') { arr.push('custom[url]'); }
+                                                else if (param.dataType === 'ipv4') { arr.push('custom[ipv4]'); }
 
-                                            var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
+                                                var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
-                                            var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' class="validate[' + arrJoin + ']"') : '';
-                                            var header = ('Header' === param.paramType) ? ' header="true"' : '';
-                                            var example = localStorage.getItem(param.name) || param.example;
+                                                var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' class="validate[' + arrJoin + ']"') : '';
+                                                var header = ('Header' === param.paramType) ? ' header="true"' : '';
+                                                var example = localStorage.getItem(param.name) || param.example;
 
-                                            var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
-                                            var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
-                                            }}
-                                            {{? param.dataType === 'file' }}
-                                            <input name="{{= param.name}}" type="file"{{= validateData}}/>
-                                            {{?? param.hasTextarea}}
-                                            <textarea name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
-                                            {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
-                                            <select name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
-                                                <option></option>
-                                                {{? Array.isArray(enumInfo) }}
-                                                {{~ enumInfo  :e}}<option{{? example === e}} selected{{?}}>{{= e}}</option>{{~}}
+                                                var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
+                                                var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
+                                                }}
+                                                {{? param.dataType === 'file' }}
+                                                <input name="{{= param.name}}" type="file"{{= validateData}}/>
+                                                {{?? param.hasTextarea}}
+                                                <textarea name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
+                                                {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
+                                                <select name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
+                                                    <option></option>
+                                                    {{? Array.isArray(enumInfo) }}
+                                                    {{~ enumInfo  :e}}<option{{? example === e}} selected{{?}}>{{= e}}</option>{{~}}
+                                                    {{??}}
+                                                    {{ var k; for(k in enumInfo) { }}
+                                                    <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected{{?}}>{{= enumInfo[k]}}</option>
+                                                    {{ } }}
+                                                    {{?}}
+                                                </select>
                                                 {{??}}
-                                                {{ var k; for(k in enumInfo) { }}
-                                                <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected{{?}}>{{= enumInfo[k]}}</option>
-                                                {{ } }}
+                                                <input name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                 {{?}}
-                                            </select>
-                                            {{??}}
-                                            <input name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
-                                            {{?}}
-                                            <!-- 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 -->
-                                            <input style="display:none;"/>
-                                        </td>
-                                    </tr>
-                                    {{~}}
+                                                <!-- 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 -->
+                                                <input style="display:none;"/>
+                                            </td>
+                                        </tr>
+                                        {{~}}
                                     </tbody>
                                 </table>
                                 {{?}}
