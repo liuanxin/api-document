@@ -697,9 +697,14 @@ function request(obj) {
             settings['contentType'] = false;
         } else {
             if (hasJson) {
+                if ('GET' === method.toUpperCase()) {
+                    response.find('pre').html("<span class='red'>GET can't request RequestBody(It's possible to use the above cURL), please contact the backend change to POST!</span>");
+                    response.show();
+                    return;
+                }
                 settings['contentType'] = 'application/json';
                 settings['dataType'] = 'json';
-                settings['data'] = ('GET' === method.toUpperCase() ? params : JSON.stringify(params));
+                settings['data'] = JSON.stringify(params);
             } else {
                 settings['data'] = params;
             }

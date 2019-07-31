@@ -697,9 +697,14 @@ function request(obj) {
             settings['contentType'] = false;
         } else {
             if (hasJson) {
+                if ('GET' === method.toUpperCase()) {
+                    response.find('pre').html("<span class='red'>GET 请求不能发送 RequestBody 参数(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
+                    response.show();
+                    return;
+                }
                 settings['contentType'] = 'application/json';
                 settings['dataType'] = 'json';
-                settings['data'] = ('GET' === method.toUpperCase() ? params : JSON.stringify(params));
+                settings['data'] = JSON.stringify(params);
             } else {
                 settings['data'] = params;
             }
