@@ -358,7 +358,10 @@
                                     </tbody>
                                 </table>
                                 {{?}}
-                                <p><input type="button" value="请求此接口" onclick="request(this);"/></p>
+                                <p>
+                                    <span style="display:none;" name="requestBody" requestBody="{{= url.requestBody}}"></span>
+                                    <input type="button" value="请求此接口" onclick="request(this);"/>
+                                </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
                             </form>
@@ -565,6 +568,8 @@ function request(obj) {
 
     var method = $form.attr('method');
     var url = $form.attr('action');
+    var requestBody = $form.find('[name="requestBody"]').attr('requestBody');
+    var hasJson = requestBody === true || requestBody === 'true';
 
     var map = objectifyForm($form);
     var params = map[0];
@@ -591,6 +596,13 @@ function request(obj) {
         var tmpUrl = url;
         var line = ' \\\n';
         var curlHtml = 'curl -i -X ' + method + line;
+        if (Object.getOwnPropertyNames(headers).length > 0) {
+            $.each(headers, function (key, value) {
+                if (isNotBlank(key) && isNotBlank(value)) {
+                    curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
+                }
+            });
+        }
         if (files.length > 0) {
             if (Object.getOwnPropertyNames(params).length > 0) {
                 $.each(params, function (key, value) {
@@ -609,37 +621,32 @@ function request(obj) {
             });
         } else {
             if (Object.getOwnPropertyNames(params).length > 0) {
-                if ('GET' === method.toUpperCase()) {
-                    var paramArr = [];
-                    $.each(params, function (key, value) {
-                        if (isNotBlank(key) && isNotBlank(value)) {
-                            paramArr.push(key + '=' + value);
-                        }
-                    });
-                    var paramStr = paramArr.join('&');
-                    if (paramStr.length > 0) {
-                        tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
-                    }
+                if (hasJson) {
+                    curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
+                    curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
+                    curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
                 } else {
-                    $.each(params, function (key, value) {
-                        if (isNotBlank(key) && isNotBlank(value)) {
-                            curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
+                    if ('GET' === method.toUpperCase()) {
+                        var paramArr = [];
+                        $.each(params, function (key, value) {
+                            if (isNotBlank(key) && isNotBlank(value)) {
+                                paramArr.push(key + '=' + value);
+                            }
+                        });
+                        var paramStr = paramArr.join('&');
+                        if (paramStr.length > 0) {
+                            tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
                         }
-                    });
+                    } else {
+                        $.each(params, function (key, value) {
+                            if (isNotBlank(key) && isNotBlank(value)) {
+                                curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
+                            }
+                        });
+                    }
                 }
             }
         }
-        if (Object.getOwnPropertyNames(headers).length > 0) {
-            $.each(headers, function (key, value) {
-                if (isNotBlank(key) && isNotBlank(value)) {
-                    curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
-                }
-            });
-        }
-        // if (!curlHtml.includes("&nbsp; -H '")) {
-        //     curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
-        //     curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
-        // }
         curlHtml += "&nbsp; --url '" + tmpUrl + "'";
         curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
         if (curlHtml.length <= 100) {
@@ -688,7 +695,13 @@ function request(obj) {
             settings['processData'] = false;
             settings['contentType'] = false;
         } else {
-            settings['data'] = params;
+            if (hasJson) {
+                settings['contentType'] = 'application/json';
+                settings['dataType'] = 'json';
+                settings['data'] = JSON.stringify(params);
+            } else {
+                settings['data'] = params;
+            }
         }
 
         var responseData = response.find('pre');

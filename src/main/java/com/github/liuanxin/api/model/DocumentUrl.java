@@ -42,6 +42,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private String url;
 
     private Boolean useGlobalParam;
+    private Boolean requestBody;
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;

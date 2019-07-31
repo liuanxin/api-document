@@ -6,6 +6,7 @@ import com.github.liuanxin.api.util.ParamHandler;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
@@ -159,6 +160,7 @@ public class DocumentController {
                                 }
                             }
                         }
+                        document.setRequestBody(hasRequestBody(handlerMethod));
                         document.setParamList(paramList);
                         // response
                         document.setResponseList(handleResponse(handlerMethod));
@@ -234,6 +236,16 @@ public class DocumentController {
                 .setEnumInfo(Tools.allEnumInfo())
                 .setModuleList(moduleList);
         return new DocumentInfoAndUrlMap(documentInfo, documentMap);
+    }
+
+    private static boolean hasRequestBody(HandlerMethod handlerMethod) {
+        for (MethodParameter parameter : handlerMethod.getMethodParameters()) {
+            RequestBody body = parameter.getParameterAnnotation(RequestBody.class);
+            if (Tools.isNotBlank(body)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static List<DocumentResponse> handleResponse(HandlerMethod handlerMethod) {
