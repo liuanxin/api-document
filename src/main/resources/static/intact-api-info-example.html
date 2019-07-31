@@ -699,7 +699,7 @@ function request(obj) {
             if (hasJson) {
                 settings['contentType'] = 'application/json';
                 settings['dataType'] = 'json';
-                settings['data'] = JSON.stringify(params);
+                settings['data'] = ('GET' === method.toUpperCase() ? params : JSON.stringify(params));
             } else {
                 settings['data'] = params;
             }
