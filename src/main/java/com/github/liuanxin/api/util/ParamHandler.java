@@ -148,11 +148,9 @@ public final class ParamHandler {
         param.setDataType(inputType);
         param.setHasFile(Tools.hasFileInput(inputType));
 
+        String desc;
         if (Tools.isNotEmpty(apiParam)) {
-            String desc = apiParam.value();
-            if (Tools.isNotEmpty(desc)) {
-                param.setDesc(desc);
-            }
+            desc = apiParam.value();
 
             String paramName = apiParam.name();
             if (Tools.isNotEmpty(paramName)) {
@@ -170,13 +168,12 @@ public final class ParamHandler {
                 param.setExample(example);
             }
             param.setHasTextarea(apiParam.textarea());
+        } else {
+            desc = Tools.EMPTY;
         }
         // if param has no @RequestParam(required = true) etc..., use custom value
         param.setMust(must || (Tools.isNotEmpty(apiParam) && apiParam.must()));
-
-        if (type.isEnum()) {
-            param.setDesc(Tools.enumInfo(type, param.getDesc()));
-        }
+        param.setDesc(Tools.descInfo(type, desc));
         return param;
     }
 }

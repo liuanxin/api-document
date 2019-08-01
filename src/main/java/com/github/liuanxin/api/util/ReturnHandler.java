@@ -81,7 +81,7 @@ public final class ReturnHandler {
                         DocumentReturn mapKey = new DocumentReturn();
                         mapKey.setName(space + key.toString() + parent).setType(Tools.getInputType(keyClazz));
                         if (keyClazz.isEnum()) {
-                            mapKey.setDesc(Tools.enumInfo(keyClazz, "enum"));
+                            mapKey.setDesc(Tools.descInfo(keyClazz, "enum"));
                         }
                         // add key
                         returnList.add(mapKey);
@@ -158,7 +158,7 @@ public final class ReturnHandler {
             }
         }
         if (fieldType.isEnum()) {
-            documentReturn.setDesc(Tools.enumInfo(fieldType, documentReturn.getDesc()));
+            documentReturn.setDesc(Tools.descInfo(fieldType, documentReturn.getDesc()));
         }
         return documentReturn;
     }

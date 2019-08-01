@@ -301,7 +301,10 @@ public class Tools {
     }
 
     // ========== enum ==========
-    static String enumInfo(Class<?> clazz, String desc) {
+    static String descInfo(Class<?> clazz, String desc) {
+        if (clazz.isArray()) {
+            clazz = clazz.getComponentType();
+        }
         // enum append (code:value)
         String enumInfo = collectEnumInfo(clazz);
         if (isEmpty(desc)) {
