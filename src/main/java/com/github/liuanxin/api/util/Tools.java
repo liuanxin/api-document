@@ -399,7 +399,13 @@ public class Tools {
         if (isBlank(type)) {
             return EMPTY;
         }
-
+        if (type.isArray()) {
+            return getType(type.getComponentType()) + "[]";
+        } else {
+            return getType(type);
+        }
+    }
+    private static String getType(Class<?> type) {
         // upload file
         if (MultipartFile.class.isAssignableFrom(type)) {
             return FILE_TYPE;
