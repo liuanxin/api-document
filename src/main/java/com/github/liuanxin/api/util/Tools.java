@@ -313,7 +313,7 @@ public class Tools {
             if (isEmpty(enumInfo)) {
                 return desc;
             } else {
-                return desc + String.format("(%s)", enumInfo);
+                return desc + String.format("(enum => %s)", enumInfo);
             }
         }
     }

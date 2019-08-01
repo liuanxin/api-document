@@ -57,7 +57,7 @@ ResponseEntity will handle the generic type it defines (it will not be resolved 
 
 PS: You can refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example]].
 For generics, be sure to use certain types, such as <String> <User> etc. If use a type like <T> <Object> will not be able to parse.
-In addition, when has array of non-base data types in the return field(User[]), please use List<User> to replace.
+In addition, when has array of non-base data types in the return field(User[] or Gender[], Gender is an enum), please use List<User> List<Gender> to replace.
 
 
 annotation for this

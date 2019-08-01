@@ -146,20 +146,29 @@ public final class ReturnHandler {
     /** collect return info */
     private static DocumentReturn returnInfo(Field field, String name) {
         Class<?> fieldType = field.getType();
+        if (Collection.class.isAssignableFrom(fieldType)) {
+            String type = field.getGenericType().toString();
+            String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
+            try {
+                fieldType = Class.forName(classType);
+            } catch (ClassNotFoundException ignore) {
+            }
+        }
         DocumentReturn documentReturn = new DocumentReturn();
         documentReturn.setName(name).setType(Tools.getInputType(fieldType));
 
         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
+        String desc;
         if (Tools.isNotEmpty(apiReturn)) {
-            documentReturn.setDesc(apiReturn.value());
+            desc = apiReturn.value();
             String returnType = apiReturn.type();
             if (Tools.isNotEmpty(returnType)) {
                 documentReturn.setType(returnType);
             }
+        } else {
+            desc = Tools.EMPTY;
         }
-        if (fieldType.isEnum()) {
-            documentReturn.setDesc(Tools.descInfo(fieldType, documentReturn.getDesc()));
-        }
+        documentReturn.setDesc(Tools.descInfo(fieldType, desc));
         return documentReturn;
     }
 
@@ -276,8 +285,7 @@ public final class ReturnHandler {
         if (Tools.isEmpty(clazz)) {
             try {
                 clazz = Class.forName(className);
-            } catch (ClassNotFoundException e) {
-                // ignore
+            } catch (ClassNotFoundException ignore) {
             }
         }
         return clazz;
