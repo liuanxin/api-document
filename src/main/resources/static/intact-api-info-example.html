@@ -508,7 +508,7 @@ $.get(projectDomain + '/api/info', function(data) {
             $navRender.parent().html(navRenderTemplate(doc));
 
             $('pre[class="src src-json"]').each(function() {
-                var $html = escapeViewHtml($(this).html());
+                var $html = escapeHtml($(this).html());
                 if (isNotBlank($html)) {
                     $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     $(this).html(addLine($html));
@@ -534,7 +534,7 @@ $.get(projectDomain + '/api/info', function(data) {
     $main.html('<span class="red">接口请求错误</span>');
 });
 
-function escapeViewHtml(html) {
+function escapeHtml(html) {
   return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 </script>
@@ -771,14 +771,6 @@ function objectifyForm(form) {
         }
     });
     return [params, headers, form.find('input[type="file"]')];
-}
-function escapeHtml(html) {
-    if (isBlank(html)) {
-        return null;
-    }
-    return html.replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 }
 function formatDate(date) {
     var d = new Date(date);

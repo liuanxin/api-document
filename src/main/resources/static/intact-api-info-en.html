@@ -434,7 +434,7 @@ $.get(projectDomain + '/api/info', function(data) {
         $navRender.parent().html(navRenderTemplate(doc));
 
         $('pre[class="src src-json"]').each(function() {
-            var $html = escapeViewHtml($(this).html());
+            var $html = escapeHtml($(this).html());
             if (isNotBlank($html)) {
                 $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                 $(this).html(addLine($html));
@@ -459,7 +459,7 @@ $.get(projectDomain + '/api/info', function(data) {
     $main.html('<span class="red">request error</span>');
 });
 
-function escapeViewHtml(html) {
+function escapeHtml(html) {
   return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 </script>
