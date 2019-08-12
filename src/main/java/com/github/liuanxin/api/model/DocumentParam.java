@@ -42,6 +42,7 @@ public class DocumentParam {
         param.setParamType(token.paramType().name());
         param.setMust(token.must());
         param.setHasTextarea(token.textarea());
+        param.setStyle(token.style());
         param.setHasToken(true);
         return param;
     }
