@@ -228,7 +228,7 @@
                                     </thead>
                                     <tbody>
                                         {{~ paramList  :param:paramIndex}}
-                                        <tr{{? param.must}} class="bold"{{?}}>
+                                        <tr{{? param.must}} class="bold"{{?}}{{? param.style}} style="{{= param.style}}"{{?}}>
                                             <td class="text-left">{{= param.name}}</td>
                                             <td class="text-left">{{= param.dataType}}</td>
                                             <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
@@ -340,7 +340,7 @@ var projectDomain = '';
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-$(function () {
+$(function() {
     'use strict';
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
     $('.bs-docs-sidebar').affix();
@@ -405,7 +405,7 @@ if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDom
     });
 }
 var $main = $('.col-md-9');
-$.get(projectDomain + '/api/info', function (data) {
+$.get(projectDomain + '/api/info', function(data) {
     if (isNotBlank(data)) {
         var documentInfo;
         if (typeof data === 'string') {
@@ -433,8 +433,8 @@ $.get(projectDomain + '/api/info', function (data) {
         var navRenderTemplate = doT.template($navRender.html());
         $navRender.parent().html(navRenderTemplate(doc));
 
-        $('pre[class="src src-json"]').each(function () {
-            var $html = $(this).html();
+        $('pre[class="src src-json"]').each(function() {
+            var $html = escapeViewHtml($(this).html());
             if (isNotBlank($html)) {
                 $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                 $(this).html(addLine($html));
@@ -455,9 +455,13 @@ $.get(projectDomain + '/api/info', function (data) {
     } else {
         $main.html('<span class="red">无接口信息</span>');
     }
-}).error(function () {
+}).error(function() {
     $main.html('<span class="red">接口请求错误</span>');
 });
+
+function escapeViewHtml(html) {
+  return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 </script>
 </body>
 </html>

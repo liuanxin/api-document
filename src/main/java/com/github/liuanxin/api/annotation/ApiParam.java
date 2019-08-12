@@ -27,4 +27,7 @@ public @interface ApiParam {
 
     /** @return in html, true will be textarea, default was input. */
     boolean textarea() default false;
+
+    /** @return show html style in page */
+    String style() default "";
 }

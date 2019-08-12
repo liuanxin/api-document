@@ -168,6 +168,7 @@ public final class ParamHandler {
                 param.setExample(example);
             }
             param.setHasTextarea(apiParam.textarea());
+            param.setStyle(apiParam.style());
         } else {
             desc = Tools.EMPTY;
         }

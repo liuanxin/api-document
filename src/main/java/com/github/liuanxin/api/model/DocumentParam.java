@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ApiToken;
 import com.github.liuanxin.api.annotation.ParamType;
 import com.github.liuanxin.api.util.Tools;
@@ -12,6 +13,7 @@ import lombok.experimental.Accessors;
 @Getter
 @NoArgsConstructor
 @Accessors(chain = true)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentParam {
 
     private String name;
@@ -23,6 +25,7 @@ public class DocumentParam {
     private Boolean hasTextarea = false;
     private Boolean hasFile = false;
     private Boolean hasToken = false;
+    private String style;
 
     public static DocumentParam buildToken(String name, String desc, String example, boolean textarea) {
         return new DocumentParam().setDataType("String")

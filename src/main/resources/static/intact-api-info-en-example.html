@@ -305,7 +305,7 @@
                                     </thead>
                                     <tbody>
                                         {{~ paramList  :param:paramIndex}}
-                                        <tr{{? param.must}} class="bold"{{?}}>
+                                        <tr{{? param.must}} class="bold"{{?}}{{? param.style}} style="{{= param.style}}"{{?}}>
                                             <td class="text-left">{{= param.name}}</td>
                                             <td class="text-left wrap">{{= param.desc}}</td>
                                             <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
@@ -326,7 +326,7 @@
 
                                                 var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' class="validate[' + arrJoin + ']"') : '';
                                                 var header = ('Header' === param.paramType) ? ' header="true"' : '';
-                                                var example = localStorage.getItem(param.name) || param.example;
+                                                var example = localStorage.getItem(param.name) || param.example || '';
 
                                                 var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
                                                 var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
@@ -413,7 +413,7 @@ var projectDomain = '';
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-$(function () {
+$(function() {
     'use strict';
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
     $('.bs-docs-sidebar').affix();
@@ -478,7 +478,7 @@ if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDom
     });
 }
 var $main = $('.col-md-9');
-$.get(projectDomain + '/api/info', function (data) {
+$.get(projectDomain + '/api/info', function(data) {
     if (isNotBlank(data)) {
         var documentInfo;
         if (typeof data === 'string') {
@@ -507,8 +507,8 @@ $.get(projectDomain + '/api/info', function (data) {
             var navRenderTemplate = doT.template($navRender.html());
             $navRender.parent().html(navRenderTemplate(doc));
 
-            $('pre[class="src src-json"]').each(function () {
-                var $html = $(this).html();
+            $('pre[class="src src-json"]').each(function() {
+                var $html = escapeViewHtml($(this).html());
                 if (isNotBlank($html)) {
                     $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     $(this).html(addLine($html));
@@ -530,9 +530,13 @@ $.get(projectDomain + '/api/info', function (data) {
     } else {
         $main.html('<span class="red">no api info</span>');
     }
-}).error(function () {
+}).error(function() {
     $main.html('<span class="red">request error</span>');
 });
+
+function escapeViewHtml(html) {
+  return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
 </script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/languages/jquery.validationEngine-en.min.js"></script>
@@ -600,15 +604,19 @@ function request(obj) {
             curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
         }
         if (Object.getOwnPropertyNames(headers).length > 0) {
-            $.each(headers, function (key, value) {
+            $.each(headers, function(key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
                     curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
                 }
             });
         }
+        if (hasJson) {
+            curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
+            curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
+        }
         if (files.length > 0) {
             if (Object.getOwnPropertyNames(params).length > 0) {
-                $.each(params, function (key, value) {
+                $.each(params, function(key, value) {
                     if (isNotBlank(key) && isNotBlank(value)) {
                         curlHtml += "&nbsp; -F '" + (key + '=' + value) + "'" + line;
                     }
@@ -625,13 +633,11 @@ function request(obj) {
         } else {
             if (Object.getOwnPropertyNames(params).length > 0) {
                 if (hasJson) {
-                    curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
-                    curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
                     curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
                 } else {
                     if ('GET' === method.toUpperCase()) {
                         var paramArr = [];
-                        $.each(params, function (key, value) {
+                        $.each(params, function(key, value) {
                             if (isNotBlank(key) && isNotBlank(value)) {
                                 paramArr.push(key + '=' + value);
                             }
@@ -641,7 +647,7 @@ function request(obj) {
                             tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
                         }
                     } else {
-                        $.each(params, function (key, value) {
+                        $.each(params, function(key, value) {
                             if (isNotBlank(key) && isNotBlank(value)) {
                                 curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
                             }
@@ -666,9 +672,9 @@ function request(obj) {
         var settings = {
             url: url,
             method: method,
-            beforeSend: function (request) {
+            beforeSend: function(request) {
                 if (Object.getOwnPropertyNames(headers).length > 0) {
-                    $.each(headers, function (key, value) {
+                    $.each(headers, function(key, value) {
                         if (isNotBlank(key) && isNotBlank(value)) {
                             request.setRequestHeader(key, value);
                         }
@@ -684,7 +690,7 @@ function request(obj) {
             }
 
             var formData = new FormData();
-            $.each(params, function (key, value) {
+            $.each(params, function(key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
                     formData.append(key, value);
                 }
@@ -714,7 +720,7 @@ function request(obj) {
 
         var responseData = response.find('pre');
         var start = new Date().getTime();
-        $.ajax(settings).done(function (result) {
+        $.ajax(settings).done(function(result) {
             var html = timeLog(start);
             if (isBlank(result)) {
                 html += '<span class="green">' + method + ' (' + url + ') success, but response nil</span>';
@@ -723,7 +729,7 @@ function request(obj) {
             }
             responseData.html(html);
             response.show();
-        }).fail(function (error) {
+        }).fail(function(error) {
             var html = timeLog(start);
             if (isBlank(error)) {
                 html += '<span class="red">' + method + ' (' + url + ') fail</span>';
