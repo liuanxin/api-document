@@ -1,7 +1,7 @@
 
 [[README.org][English Readme]] | 中文说明
 
-[[https://github.com/liuanxin/api-document-example][示例项目地址(spring boot 2)]]
+[[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]]
 
 ** 说明
 
@@ -63,7 +63,7 @@ public class ApiInfoConfig {
 如果方法上的返回类型是 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理),
 ResponseEntity 会处理其定义的泛型类型(不设置将无法解析)
 
-PS: 可以参考 [[https://github.com/liuanxin/api-document-example][example]] 的全局处理.
+PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]] 的全局处理.
 泛型请务必使用确切的类型, 如 <String> <User> 等, 如果使用 <T> <Object> 这样的类型将会无法解析.
 另外, 当返回值中有 非基础数据类型的数组(User[]) 时也无法实例(包括枚举数组 Gender[]), 请使用 List<User> 替换(List<Gender>).
 
