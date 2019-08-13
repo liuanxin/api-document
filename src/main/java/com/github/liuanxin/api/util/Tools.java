@@ -205,39 +205,6 @@ public class Tools {
         return null;
     }
 
-    // ========== enum ==========
-    private static Object toEnum(Class<?> clazz, Object obj) {
-        if (isNotBlank(clazz) && clazz.isEnum()) {
-            Object[] constants = clazz.getEnumConstants();
-            if (isNotEmpty(constants)) {
-                if (isBlank(obj)) {
-                    return constants[0];
-                } else {
-                    String source = obj.toString().trim();
-                    for (Object em : constants) {
-                        if (source.equalsIgnoreCase(((Enum) em).name())) {
-                            return em;
-                        }
-                        Object code = getMethod(em, "getCode");
-                        if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
-                            return em;
-                        }
-                        code = getMethod(em, "getValue");
-                        if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
-                            return em;
-                        }
-                        /*
-                        if (source.equalsIgnoreCase(String.valueOf(((Enum) em).ordinal()))) {
-                            return em;
-                        }
-                        */
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     // ========== json ==========
     private static final ObjectMapper RENDER = new ObjectMapper();
 
@@ -353,6 +320,37 @@ public class Tools {
     }
 
     // ========== enum ==========
+    private static Object toEnum(Class<?> clazz, Object obj) {
+        if (isNotBlank(clazz) && clazz.isEnum()) {
+            Object[] constants = clazz.getEnumConstants();
+            if (isNotEmpty(constants)) {
+                if (isBlank(obj)) {
+                    return constants[0];
+                } else {
+                    String source = obj.toString().trim();
+                    for (Object em : constants) {
+                        if (source.equalsIgnoreCase(((Enum) em).name())) {
+                            return em;
+                        }
+                        Object code = getMethod(em, "getCode");
+                        if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
+                            return em;
+                        }
+                        code = getMethod(em, "getValue");
+                        if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
+                            return em;
+                        }
+                        /*
+                        if (source.equalsIgnoreCase(String.valueOf(((Enum) em).ordinal()))) {
+                            return em;
+                        }
+                        */
+                    }
+                }
+            }
+        }
+        return null;
+    }
     static String descInfo(Class<?> clazz, String desc) {
         if (clazz.isArray()) {
             clazz = clazz.getComponentType();
