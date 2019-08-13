@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
@@ -176,14 +178,61 @@ public class Tools {
         return !isEmpty(obj);
     }
 
-    public static String addPrefix(String src) {
-        if (isEmpty(src)) {
-            return "/";
+    // ========== date ==========
+    private static final Date TMP_DATE = new Date();
+    public static Date parse(String source) {
+        if (isNotBlank(source)) {
+            for (DateFormatType type : DateFormatType.values()) {
+                Date date = parse(source, type);
+                if (isNotBlank(date)) {
+                    return date;
+                }
+            }
         }
-        if (src.startsWith("/")) {
-            return src;
+        return TMP_DATE;
+    }
+    private static Date parse(String source, DateFormatType type) {
+        if (isNotBlank(source)) {
+            source = source.trim();
+            try {
+                Date date = new SimpleDateFormat(type.getValue()).parse(source);
+                if (date != null) {
+                    return date;
+                }
+            } catch (ParseException | IllegalArgumentException ignore) {
+            }
         }
-        return "/" + src;
+        return null;
+    }
+
+    // ========== enum ==========
+    private static Object toEnum(Class<?> clazz, Object obj) {
+        if (isNotBlank(obj) && clazz.isEnum()) {
+            Object[] constants = clazz.getEnumConstants();
+            if (constants != null && constants.length > 0) {
+                String source = obj.toString().trim();
+                for (Object em : constants) {
+                    if (source.equalsIgnoreCase(((Enum) em).name())) {
+                        return em;
+                    }
+                    Object code = getMethod(em, "getCode");
+                    if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
+                        return em;
+                    }
+                    code = getMethod(em, "getValue");
+                    if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
+                        return em;
+                    }
+                    /*
+                    if (source.equalsIgnoreCase(String.valueOf(((Enum) em).ordinal()))) {
+                        return em;
+                    }
+                    */
+                }
+                return constants[0];
+            }
+        }
+        return null;
     }
 
     // ========== json ==========
@@ -267,7 +316,7 @@ public class Tools {
         return new LinkedHashMap<>();
     }
 
-    private static <K, V> HashMap<K, V> maps(Object... keysAndValues) {
+    static <K, V> HashMap<K, V> maps(Object... keysAndValues) {
         return (HashMap<K, V>) maps(newHashMap(), keysAndValues);
     }
     @SuppressWarnings("unchecked")
@@ -431,7 +480,7 @@ public class Tools {
         }
 
         Object defaultValue = getTypeDefaultValue(clazz);
-        if (!isBlank(defaultValue)) {
+        if (isNotBlank(defaultValue)) {
             return defaultValue;
         } else if (clazz.isEnum()) {
             // Enum return first
@@ -442,14 +491,25 @@ public class Tools {
         }
     }
 
+    private static final List<String> TRUE_LIST = Arrays.asList("true", "on", "yes", "1");
     static Object getReturnTypeExample(Class<?> clazz, String example) {
-        Object defaultObj = getReturnType(clazz);
-        if (isEmpty(example)) {
+        if (isBlank(clazz)) {
+            return null;
+        }
+
+        if (clazz.isEnum()) {
+            return toEnum(clazz, example);
+        }
+        Object defaultObj = getTypeDefaultValue(clazz);
+        if (isBlank(example)) {
             return defaultObj;
         }
 
-        if (clazz == boolean.class || clazz == Boolean.class) {
-            return Arrays.asList("true", "1").contains(example);
+        if (clazz == String.class) {
+            return isEmpty(example) ? defaultObj.toString() : example;
+        }
+        else if (clazz == boolean.class || clazz == Boolean.class) {
+            return TRUE_LIST.contains(example.toUpperCase());
         }
         else if (clazz == byte.class || clazz == Byte.class) {
             try {
@@ -517,10 +577,15 @@ public class Tools {
 
         // up type, down array type
 
+        else if (clazz == String[].class) {
+            String str = isEmpty(example) ? defaultObj.toString() : example;
+            return new String[] { str };
+        }
+
         else if (clazz == boolean[].class) {
-            return new boolean[] { Arrays.asList("true", "1").contains(example) };
+            return new boolean[] { TRUE_LIST.contains(example) };
         } else if (clazz == Boolean[].class) {
-            return new Boolean[] { Arrays.asList("true", "1").contains(example) };
+            return new Boolean[] { TRUE_LIST.contains(example) };
         }
 
         else if (clazz == byte[].class) {
