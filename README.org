@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.4.8</version>
+    <version>0.4.9</version>
 </dependency>
 #+END_SRC
 
@@ -28,23 +28,37 @@ add config for this
 @Configuration
 @EnableApiInfo
 public class ApiInfoConfig {
+
+    // can be set in different profile, such as:
+    // application.yml      => online: false
+    // application-test.yml => online: false
+    // application-prod.yml => online: true
+    @Value("${online:false}")
+    private boolean online;
+
     @Bean
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
+
                     // // if class or method has @ApiResponses, use that
                     // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "param error"),
                     //         new DocumentResponse(500, "request error")
                     // ))
+
                     // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
                     // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
-                    // // generated on each api's param, see the @ApiTokens annotation below
+
+                    // // current config will be generated in the parameters of each api,
+                    // // if only want to use on a specific api, or set this global config but want to ignore on a specific api,
+                    // // use @ApiTokens annotation
                     // .setGlobalTokens(Arrays.asList(
                     //         DocumentParam.buildToken("x-token", "oauth info", "abc-xyz", ParamType.Header).setHasTextarea(true),
                     //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust(true)
                     // ))
-                    // // if true, api will return nil(when production use) default was false.
-                    // .setOnline(true)
+
+                    // // if true, api will return nil(when production use), if not set default was false.
+                    // .setOnline(online)
                     ;
     }
 }
@@ -95,9 +109,10 @@ for example:
   name      --> if set, will ignore param name or field name
   dataType  --> if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、email、url、ipv4
   example   --> used in api examples, can not set
-  paramType --> can not be set, Header or Query, default is Query, set to Header to indicate that the current value is passed in the header with request
+  paramType --> can not be set, Header or Query, default is Query
   must      --> if param annotation @RequestParam(required = true) etc... will ignore this config
-  textarea  --> default false
+  textarea  --> default false, in example page, this field will show to <textarea ...></textarea>
+  style     --> html style with param on page, for example: color:green;height:35px;
 
 @ApiParamIgnore --> in param or field
 
@@ -121,6 +136,7 @@ for example:
     paramType  --> can not be set, Header or Query, default is Header
     must       --> default false
     textarea   --> default false
+    style      --> html style with param on page
 
 for example:
 @ApiTokens(false)
