@@ -217,19 +217,19 @@
             <script id="url-render" type="text/x-dot-template">
                 {{~ it.moduleList  :module:index}}
                 <div class="module">
-                    <h2 id="{{= module.name}}" class="module-name"><span>{{= index + 1}}</span> {{= module.info}}</h2>
+                    <h2 id="{{= module.name}}" class="module-name"><span>{{= index + 1}}</span> {{= module.info || ''}}</h2>
                     {{~ module.urlList  :url:urlIndex}}
                     <div class="module-api">
                         <h3 id="{{= module.name}}-{{= url.id}}" class="module-api-index">
-                            <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
+                            <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                         </h3>
                         <div class="module-api-info">
-                            <p class="module-api-info-basic">request <code>{{= url.method}} {{= url.url}}</code></p>
-                            <pre class="module-api-info-desc">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">Result example url</a></pre>
+                            <p class="module-api-info-basic">request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
+                            <pre class="module-api-info-desc">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl || ''}}">Result example url</a></pre>
 
                             <div class="module-api-info-return">
                                 <p>return example & comment</p>
-                                <pre class="src src-json">{{= url.commentJson || '<span class="red">Return null or Unclear return</span>'}}</pre>
+                                <pre class="src src-json">{{= url.commentJson || ''}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -243,9 +243,9 @@
                                     <tbody>
                                         {{~ url.returnList  :rtn}}
                                         <tr>
-                                            <td class="text-left">{{= rtn.name}}</td>
-                                            <td class="text-left">{{= rtn.type}}</td>
-                                            <td class="text-left wrap">{{= rtn.desc}}</td>
+                                            <td class="text-left">{{= rtn.name || ''}}</td>
+                                            <td class="text-left">{{= rtn.type || ''}}</td>
+                                            <td class="text-left wrap">{{= rtn.desc || ''}}</td>
                                         </tr>
                                         {{~}}
                                     </tbody>
@@ -269,8 +269,8 @@
                                         }}
                                         {{~ responseList  :response}}
                                         <tr>
-                                            <td class="text-left">{{= response.code}}</td>
-                                            <td class="text-left">{{= response.msg}}</td>
+                                            <td class="text-left">{{= response.code || ''}}</td>
+                                            <td class="text-left">{{= response.msg || ''}}</td>
                                         </tr>
                                         {{~}}
                                     </tbody>
@@ -289,7 +289,7 @@
                             if (paramList[i].paramType === 'Header') { hasHeader = true; }
                             }
                             }}
-                            <form class="module-api-info-param" method="{{= url.method}}" action="{{= url.url}}"{{? hasFile}} enctype="multipart/form-data"{{?}}>
+                            <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}{{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? paramList && paramList.length > 0}}
                                 <p>params</p>
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -305,12 +305,12 @@
                                     </thead>
                                     <tbody>
                                         {{~ paramList  :param:paramIndex}}
-                                        <tr{{? param.must}} class="bold"{{?}}{{? param.style}} style="{{= param.style}}"{{?}}>
-                                            <td class="text-left">{{= param.name}}</td>
-                                            <td class="text-left wrap">{{= param.desc}}</td>
+                                        <tr{{? param.must}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
+                                            <td class="text-left">{{= param.name || ''}}</td>
+                                            <td class="text-left wrap">{{= param.desc || ''}}</td>
                                             <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
-                                            <td class="text-left">{{= param.dataType}}</td>
-                                            {{? hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
+                                            <td class="text-left">{{= param.dataType || ''}}</td>
+                                            {{? hasHeader}}<td class="text-left">{{= param.paramType || ''}}</td>{{?}}
                                             <td class="text-left">
                                                 {{
                                                 var arr = [];
@@ -332,11 +332,11 @@
                                                 var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                                 }}
                                                 {{? param.dataType === 'file' }}
-                                                <input name="{{= param.name}}" type="file"{{= validateData}}/>
+                                                <input name="{{= param.name || ''}}" type="file"{{= validateData}}/>
                                                 {{?? param.hasTextarea}}
-                                                <textarea name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
+                                                <textarea name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
                                                 {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
-                                                <select name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
+                                                <select name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
                                                     <option></option>
                                                     {{? Array.isArray(enumInfo) }}
                                                     {{~ enumInfo  :em}}<option{{? example === em}} selected{{?}}>{{= em}}</option>{{~}}
@@ -347,7 +347,7 @@
                                                     {{?}}
                                                 </select>
                                                 {{??}}
-                                                <input name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
+                                                <input name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                 {{?}}
                                                 <!-- When there is only one input on the form, adding an invisible input can disable the carriage return event for that input. -->
                                                 <input style="display:none;"/>
@@ -378,11 +378,11 @@
                         <script id="url-nav-render" type="text/x-dot-template">
                             {{~ it.moduleList  :module:index}}
                             <li>
-                                <a href="#{{= module.name}}">{{= index + 1}} {{= module.info}}</a>
+                                <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
                                 <ul class="nav">
                                     {{~ module.urlList  :url:urlIndex}}
                                     <li>
-                                        <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title}}</a>
+                                        <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
                                     </li>
                                     {{~}}
                                 </ul>
@@ -398,10 +398,10 @@
 <footer id="foot" class="postamble">
     <script id="copyright" type="text/x-dot-template">
         <div>
-            <p class="version">Version: {{= it.version}}</p>
-            <p class="statistics">{{= it.groupCount}} module, {{= it.apiCount}} api</p>
-            <p class="team">{{= it.team}}</p>
-            <p class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright}}</p>
+            <p class="version">Version: {{= it.version || ''}}</p>
+            <p class="statistics">{{= it.groupCount || ''}} module, {{= it.apiCount || ''}} api</p>
+            <p class="team">{{= it.team || ''}}</p>
+            <p class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright || ''}}</p>
         </div>
     </script>
 </footer>
@@ -509,10 +509,13 @@ $.get(projectDomain + '/api/info', function(data) {
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
+                var html;
                 if (isNotBlank($html)) {
-                    $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
-                    $(this).html(addLine($html));
+                    html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+                } else {
+                    html = '<span class="red">Return null or Can not analyze return type</span>';
                 }
+                $(this).html(addLine(html));
             });
 
             var href = window.location.href;
@@ -705,8 +708,8 @@ function request(obj) {
             settings['contentType'] = false;
         } else {
             if (hasJson) {
-                if ('GET' === method.toUpperCase()) {
-                    response.find('pre').html("<span class='red'>Method GET can't send RequestBody(It's possible to use the above cURL), please contact the backend change to POST!</span>");
+                if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
+                    response.find('pre').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request(It's possible to use the above cURL), please contact the backend change to POST!</span>");
                     response.show();
                     return;
                 }

@@ -217,19 +217,19 @@
             <script id="url-render" type="text/x-dot-template">
                 {{~ it.moduleList  :module:index}}
                 <div class="module">
-                    <h2 id="{{= module.name}}" class="module-name"><span>{{= index + 1}}</span> {{= module.info}}</h2>
+                    <h2 id="{{= module.name}}" class="module-name"><span>{{= index + 1}}</span> {{= module.info || ''}}</h2>
                     {{~ module.urlList  :url:urlIndex}}
                     <div class="module-api">
                         <h3 id="{{= module.name}}-{{= url.id}}" class="module-api-index">
-                            <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title}}
+                            <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                         </h3>
                         <div class="module-api-info">
-                            <p class="module-api-info-basic"> 接口地址 <code>{{= url.method}} {{= url.url}}</code></p>
+                            <p class="module-api-info-basic"> 接口地址 <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             <pre class="module-api-info-desc">{{? url.develop && url.develop !== ''}}开发: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}说明: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl}}">响应结果示例地址</a></pre>
 
                             <div class="module-api-info-return">
                                 <p>响应示例及说明如下</p>
-                                <pre class="src src-json">{{= url.commentJson || '<span class="red">响应为空 或 响应不明确</span>'}}</pre>
+                                <pre class="src src-json">{{= url.commentJson || ''}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -243,9 +243,9 @@
                                     <tbody>
                                         {{~ url.returnList  :rtn}}
                                         <tr>
-                                            <td class="text-left">{{= rtn.name}}</td>
-                                            <td class="text-left">{{= rtn.type}}</td>
-                                            <td class="text-left wrap">{{= rtn.desc}}</td>
+                                            <td class="text-left">{{= rtn.name || ''}}</td>
+                                            <td class="text-left">{{= rtn.type || ''}}</td>
+                                            <td class="text-left wrap">{{= rtn.desc || ''}}</td>
                                         </tr>
                                         {{~}}
                                     </tbody>
@@ -269,8 +269,8 @@
                                         }}
                                         {{~ responseList  :response}}
                                         <tr>
-                                            <td class="text-left">{{= response.code}}</td>
-                                            <td class="text-left">{{= response.msg}}</td>
+                                            <td class="text-left">{{= response.code || ''}}</td>
+                                            <td class="text-left">{{= response.msg || ''}}</td>
                                         </tr>
                                         {{~}}
                                     </tbody>
@@ -289,7 +289,7 @@
                             if (paramList[i].paramType === 'Header') { hasHeader = true; }
                             }
                             }}
-                            <form class="module-api-info-param" method="{{= url.method}}" action="{{= url.url}}"{{? hasFile}} enctype="multipart/form-data"{{?}}>
+                            <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}{{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? paramList && paramList.length > 0}}
                                 <p>参数说明如下</p>
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -305,12 +305,12 @@
                                     </thead>
                                     <tbody>
                                         {{~ paramList  :param:paramIndex}}
-                                        <tr{{? param.must}} class="bold"{{?}}{{? param.style}} style="{{= param.style}}"{{?}}>
-                                            <td class="text-left">{{= param.name}}</td>
-                                            <td class="text-left wrap">{{= param.desc}}</td>
+                                        <tr{{? param.must}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
+                                            <td class="text-left">{{= param.name || ''}}</td>
+                                            <td class="text-left wrap">{{= param.desc || ''}}</td>
                                             <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
-                                            <td class="text-left">{{= param.dataType}}</td>
-                                            {{? hasHeader}}<td class="text-left">{{= param.paramType}}</td>{{?}}
+                                            <td class="text-left">{{= param.dataType || ''}}</td>
+                                            {{? hasHeader}}<td class="text-left">{{= param.paramType || ''}}</td>{{?}}
                                             <td class="text-left">
                                                 {{
                                                 var arr = [];
@@ -332,11 +332,11 @@
                                                 var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                                 }}
                                                 {{? param.dataType === 'file' }}
-                                                <input name="{{= param.name}}" type="file"{{= validateData}}/>
+                                                <input name="{{= param.name || ''}}" type="file"{{= validateData}}/>
                                                 {{?? param.hasTextarea}}
-                                                <textarea name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
+                                                <textarea name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
                                                 {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
-                                                <select name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
+                                                <select name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
                                                     <option></option>
                                                     {{? Array.isArray(enumInfo) }}
                                                     {{~ enumInfo  :e}}<option{{? example === e}} selected{{?}}>{{= e}}</option>{{~}}
@@ -347,7 +347,7 @@
                                                     {{?}}
                                                 </select>
                                                 {{??}}
-                                                <input name="{{= param.name}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
+                                                <input name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                 {{?}}
                                                 <!-- 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 -->
                                                 <input style="display:none;"/>
@@ -378,11 +378,11 @@
                         <script id="url-nav-render" type="text/x-dot-template">
                             {{~ it.moduleList  :module:index}}
                             <li>
-                                <a href="#{{= module.name}}">{{= index + 1}} {{= module.info}}</a>
+                                <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
                                 <ul class="nav">
                                     {{~ module.urlList  :url:urlIndex}}
                                     <li>
-                                        <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title}}</a>
+                                        <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
                                     </li>
                                     {{~}}
                                 </ul>
@@ -398,10 +398,10 @@
 <footer id="foot" class="postamble">
     <script id="copyright" type="text/x-dot-template">
         <div>
-            <p class="version">版本: {{= it.version}}</p>
-            <p class="statistics">共 {{= it.groupCount}} 个模块, {{= it.apiCount}} 个接口</p>
-            <p class="team">{{= it.team}}</p>
-            <p class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright}}</p>
+            <p class="version">版本: {{= it.version || ''}}</p>
+            <p class="statistics">共 {{= it.groupCount || ''}} 个模块, {{= it.apiCount || ''}} 个接口</p>
+            <p class="team">{{= it.team || ''}}</p>
+            <p class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright || ''}}</p>
         </div>
     </script>
 </footer>
@@ -509,10 +509,13 @@ $.get(projectDomain + '/api/info', function(data) {
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
+                var html;
                 if (isNotBlank($html)) {
-                    $html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
-                    $(this).html(addLine($html));
+                    html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+                } else {
+                    html = '<span class="red">响应为空 或 无法解析返回类型</span>';
                 }
+                $(this).html(addLine(html));
             });
 
             var href = window.location.href;
@@ -705,8 +708,8 @@ function request(obj) {
             settings['contentType'] = false;
         } else {
             if (hasJson) {
-                if ('GET' === method.toUpperCase()) {
-                    response.find('pre').html("<span class='red'>GET 请求不能发送 RequestBody 参数(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
+                if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
+                    response.find('pre').html("<span class='red'>浏览器不能通过 GET 请求发送 RequestBody 参数(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
                     response.show();
                     return;
                 }
