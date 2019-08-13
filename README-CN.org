@@ -1,7 +1,7 @@
 
 [[README.org][English Readme]] | 中文说明
 
-[[https://github.com/liuanxin/api-document-example][示例项目地址]]
+[[https://github.com/liuanxin/api-document-example][示例项目地址(spring boot 2)]]
 
 ** 说明
 
