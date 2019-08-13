@@ -207,29 +207,32 @@ public class Tools {
 
     // ========== enum ==========
     private static Object toEnum(Class<?> clazz, Object obj) {
-        if (isNotBlank(obj) && clazz.isEnum()) {
+        if (isNotBlank(clazz) && clazz.isEnum()) {
             Object[] constants = clazz.getEnumConstants();
-            if (constants != null && constants.length > 0) {
-                String source = obj.toString().trim();
-                for (Object em : constants) {
-                    if (source.equalsIgnoreCase(((Enum) em).name())) {
-                        return em;
+            if (isNotEmpty(constants)) {
+                if (isBlank(obj)) {
+                    return constants[0];
+                } else {
+                    String source = obj.toString().trim();
+                    for (Object em : constants) {
+                        if (source.equalsIgnoreCase(((Enum) em).name())) {
+                            return em;
+                        }
+                        Object code = getMethod(em, "getCode");
+                        if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
+                            return em;
+                        }
+                        code = getMethod(em, "getValue");
+                        if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
+                            return em;
+                        }
+                        /*
+                        if (source.equalsIgnoreCase(String.valueOf(((Enum) em).ordinal()))) {
+                            return em;
+                        }
+                        */
                     }
-                    Object code = getMethod(em, "getCode");
-                    if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
-                        return em;
-                    }
-                    code = getMethod(em, "getValue");
-                    if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
-                        return em;
-                    }
-                    /*
-                    if (source.equalsIgnoreCase(String.valueOf(((Enum) em).ordinal()))) {
-                        return em;
-                    }
-                    */
                 }
-                return constants[0];
             }
         }
         return null;
