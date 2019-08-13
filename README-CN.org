@@ -65,7 +65,6 @@ ResponseEntity 会处理其定义的泛型类型(不设置将无法解析)
 
 PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]] 的全局处理.
 泛型请务必使用确切的类型, 如 <String> <User> 等, 如果使用 <T> <Object> 这样的类型将会无法解析.
-另外, 当返回值中有 非基础数据类型的数组(User[]) 时也无法实例(包括枚举数组 Gender[]), 请使用 List<User> 替换(List<Gender>).
 
 相关注解如下
 #+BEGIN_EXAMPLE
