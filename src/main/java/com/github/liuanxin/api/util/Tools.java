@@ -324,7 +324,7 @@ public class Tools {
         if (isNotBlank(clazz) && clazz.isEnum()) {
             Object[] constants = clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
-                if (isBlank(obj)) {
+                if (isEmpty(obj)) {
                     return constants[0];
                 } else {
                     String source = obj.toString().trim();
