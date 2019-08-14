@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.4.9</version>
+    <version>0.5.0</version>
 </dependency>
 #+END_SRC
 
@@ -161,5 +161,11 @@ Final document collect for this
 -
 [[###][https://raw.githubusercontent.com/liuanxin/image/master/api-en2.png]]
 -
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-example-en.gif]]
+[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-en.gif]]
+
 -----
+
+Request Backend's example
+[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-example-en.png]]
+-
+[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-example-en2.png]]
