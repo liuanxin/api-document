@@ -182,27 +182,18 @@ public class Tools {
     private static final Date TMP_DATE = new Date();
     public static Date parse(String source) {
         if (isNotBlank(source)) {
-            for (DateFormatType type : DateFormatType.values()) {
-                Date date = parse(source, type);
-                if (isNotBlank(date)) {
-                    return date;
+            source = source.trim();
+            for (DateType type : DateType.values()) {
+                try {
+                    Date date = new SimpleDateFormat(type.getValue()).parse(source);
+                    if (date != null) {
+                        return date;
+                    }
+                } catch (ParseException | IllegalArgumentException ignore) {
                 }
             }
         }
         return TMP_DATE;
-    }
-    private static Date parse(String source, DateFormatType type) {
-        if (isNotBlank(source)) {
-            source = source.trim();
-            try {
-                Date date = new SimpleDateFormat(type.getValue()).parse(source);
-                if (date != null) {
-                    return date;
-                }
-            } catch (ParseException | IllegalArgumentException ignore) {
-            }
-        }
-        return null;
     }
 
     // ========== json ==========
