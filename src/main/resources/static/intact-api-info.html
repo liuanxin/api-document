@@ -155,7 +155,12 @@
             padding-left: 38px;
             font-weight: 500;
         }
-        @media (max-width: 992px) {
+        @media print {
+            .link-example {
+                display: none;
+            }
+        }
+        @media (max-width: 992px), print {
             .col-md-9 {
                 width: 100%;
             }
@@ -184,7 +189,7 @@
     </style>
 </head>
 <body>
-<main id="top" class="container">
+<main class="container">
     <div class="row">
         <div class="col-md-9">
             <script id="url-render" type="text/x-dot-template">
@@ -197,8 +202,20 @@
                             <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                         </h3>
                         <div class="module-api-info">
-                            <p class="module-api-info-basic">接口地址 <code>{{= url.method}} {{= url.url || ''}}</code></p>
-                            <pre class="module-api-info-desc">{{? url.develop && url.develop !== ''}}开发: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}说明: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl || ''}}">响应结果示例地址</a></pre>
+                            <p class="module-api-info-basic">接口地址 <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
+                            {{
+                            var moduleDesc = '';
+                            if (url.develop && url.develop !== '') { moduleDesc += '开发: ' + url.develop; }
+                            if (url.desc && url.desc !== '') { if (moduleDesc !== '') { moduleDesc += '<br>'; } moduleDesc += '说明: ' + url.desc; }
+
+                            if (url.exampleUrl) {
+                            var moduleBlank = (moduleDesc !== '');
+                            moduleDesc += '<span class="link-example">';
+                            if (moduleBlank) { moduleDesc += '<br><br>'; }
+                            moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a></span>';
+                            }
+                            }}
+                            <pre class="module-api-info-desc">{{= moduleDesc}}</pre>
 
                             {{
                             var globalParamList = it.tokenList || [];
@@ -323,11 +340,11 @@
         </div>
     </div>
 </main>
-<footer id="foot" class="postamble">
+<footer>
     <script id="copyright" type="text/x-dot-template">
         <div>
-            <p class="version">版本: {{= it.version || ''}}</p>
-            <p class="statistics">共 {{= it.groupCount || ''}} 个模块, {{= it.apiCount || ''}} 个接口</p>
+            <p class="version">版本: <span>{{= it.version || ''}}</span></p>
+            <p class="statistics" onclick="exportWord()">共 {{= it.groupCount || ''}} 个模块, {{= it.apiCount || ''}} 个接口</p>
             <p class="team">{{= it.team || ''}}</p>
             <p class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright || ''}}</p>
         </div>
@@ -463,7 +480,7 @@ $.get(projectDomain + '/api/info', function(data) {
 });
 
 function escapeHtml(html) {
-  return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 </script>
 </body>

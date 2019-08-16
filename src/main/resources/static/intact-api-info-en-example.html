@@ -212,7 +212,7 @@
     </style>
 </head>
 <body>
-<main id="top" class="container">
+<main class="container">
     <div class="row">
         <div class="col-md-9">
             <script id="url-render" type="text/x-dot-template">
@@ -226,7 +226,19 @@
                         </h3>
                         <div class="module-api-info">
                             <p class="module-api-info-basic">request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
-                            <pre class="module-api-info-desc">{{? url.develop && url.develop !== ''}}develop: {{= url.develop}}<br>{{?}}{{? url.desc && url.desc !== ''}}comment: {{= url.desc}}<br>{{?}}{{? (url.develop && url.develop !== '') || (url.desc && url.desc !== '')}}<br>{{?}}<a target="_blank" href="{{= url.exampleUrl || ''}}">Result example url</a></pre>
+                            {{
+                            var moduleDesc = '';
+                            if (url.develop && url.develop !== '') { moduleDesc += 'develop: ' + url.develop; }
+                            if (url.desc && url.desc !== '') { if (moduleDesc !== '') { moduleDesc += '<br>'; } moduleDesc += 'comment: ' + url.desc; }
+
+                            if (url.exampleUrl) {
+                            var moduleBlank = (moduleDesc !== '');
+                            moduleDesc += '<span class="link-example">';
+                            if (moduleBlank) { moduleDesc += '<br><br>'; }
+                            moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">Result example url</a></span>';
+                            }
+                            }}
+                            <pre class="module-api-info-desc">{{= moduleDesc}}</pre>
 
                             <div class="module-api-info-return">
                                 <p>return example & comment</p>
@@ -396,7 +408,7 @@
         </div>
     </div>
 </main>
-<footer id="foot" class="postamble">
+<footer>
     <script id="copyright" type="text/x-dot-template">
         <div>
             <p class="version">Version: {{= it.version || ''}}</p>
