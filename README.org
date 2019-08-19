@@ -151,8 +151,9 @@ if not spring boot project, add this config
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
 
-Run and request ~http://ip:port/static/api-info-en.html~ (spring boot don't need /static second directory).\\
-if want to save with pdf, press ~ctrl + p~. test backend url, request ~http://ip:port/static/api-info-en-example.html~
+Run and request ~http://ip:port/static/api-info-en.html~ (spring boot don't need /static second directory), if want to save with pdf, press ~ctrl + p~.
+
+test backend url, request ~http://ip:port/static/api-info-en-example.html~
 
 -----
 
