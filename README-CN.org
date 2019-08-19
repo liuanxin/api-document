@@ -145,7 +145,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
 #+BEGIN_SRC xml
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
-运行项目, 访问页面 ~http://ip:port/static/api-info.html~(spring boot 则不需要 /static 二级目录).
+运行项目, 访问页面 ~http://ip:port/static/api-info.html~ (spring boot 则不需要 /static 二级目录).\\
 如果要保存成 pdf 文件, 按 ~ctrl + p~ 即可. 想要直接在文档上请求后台接口使用页面 ~http://ip:port/static/api-info-example.html~
 
 -----
