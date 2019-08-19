@@ -586,7 +586,8 @@ if (projectDomain.endsWith('/')) {
 
 $.validationEngine.defaults.scroll = false;
 function request(obj) {
-    var $form = $(obj).parents('form');
+    var $btn = $(obj);
+    var $form = $btn.parents('form');
     var curl = $form.find('.curl');
     var response = $form.find('.response');
     curl.hide();
@@ -748,6 +749,7 @@ function request(obj) {
 
         var responseData = response.find('pre');
         var start = new Date().getTime();
+        $btn.attr('disabled', 'disabled');
         $.ajax(settings).done(function(result) {
             var html = timeLog(start);
             if (isBlank(result)) {
@@ -757,6 +759,7 @@ function request(obj) {
             }
             responseData.html(html);
             response.show();
+            $btn.removeAttr('disabled');
         }).fail(function(error) {
             var html = timeLog(start);
             if (isBlank(error)) {
@@ -777,6 +780,7 @@ function request(obj) {
             }
             responseData.html(html);
             response.show();
+            $btn.removeAttr('disabled');
         });
     }
 }
