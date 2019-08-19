@@ -483,7 +483,7 @@ public class Tools {
         }
     }
 
-    private static final List<String> TRUE_LIST = Arrays.asList("true", "on", "yes", "1");
+    private static final List<String> TRUE_LIST = Arrays.asList("true", "on", "yes", "1", "✓", "✔", "☑");
     static Object getReturnTypeExample(Class<?> clazz, String example) {
         if (isBlank(clazz)) {
             return null;
