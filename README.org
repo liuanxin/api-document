@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.0</version>
+    <version>0.5.1</version>
 </dependency>
 #+END_SRC
 
@@ -151,8 +151,8 @@ if not spring boot project, add this config
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
 
-request --> ~http://ip:port/static/api-info-en.html~ (spring boot don't need /static second directory).\\
-if want to save with pdf, press ~ctrl + p~. if want to test url info, request --> ~http://ip:port/static/api-info-en-example.html~
+Run and request ~http://ip:port/static/api-info-en.html~ (spring boot don't need /static second directory).\\
+if want to save with pdf, press ~ctrl + p~. test backend url, request ~http://ip:port/static/api-info-en-example.html~
 
 -----
 
