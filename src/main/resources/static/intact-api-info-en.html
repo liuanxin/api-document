@@ -205,9 +205,9 @@
                             <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                         </h3>
                         <div class="module-api-info">
-                            <p class="module-api-info-basic"><code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
+                            <p class="module-api-info-basic">request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             {{
-                            var moduleDesc = '', printExample = '';
+                            var moduleDesc = '', printNil = '';
                             if (url.develop && url.develop !== '') {
                                 moduleDesc += 'develop: ' + url.develop;
                             }
@@ -221,12 +221,12 @@
                                 if (moduleDesc !== '') {
                                     moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
                                 } else {
-                                    printExample = ' print-nil';
+                                    printNil = ' print-nil';
                                     moduleDesc += example;
                                 }
                             }
                             }}
-                            <pre class="module-api-info-desc{{= printExample}}">{{= moduleDesc}}</pre>
+                            <pre class="module-api-info-desc{{= printNil}}">{{= moduleDesc}}</pre>
 
                             {{
                             var globalParamList = it.tokenList || [];

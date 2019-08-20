@@ -238,7 +238,7 @@
                         <div class="module-api-info">
                             <p class="module-api-info-basic">request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             {{
-                            var moduleDesc = '', printExample = '';
+                            var moduleDesc = '', printNil = '';
                             if (url.develop && url.develop !== '') {
                                 moduleDesc += 'develop: ' + url.develop;
                             }
@@ -248,11 +248,16 @@
                             }
 
                             if (url.exampleUrl) {
-                                if (moduleDesc !== '') { moduleDesc += '<br><br>'; }
-                                moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">Result example url</a>';
+                                var example = '<a target="_blank" href="' + url.exampleUrl + '">Result example url</a>';
+                                if (moduleDesc !== '') {
+                                    moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
+                                } else {
+                                    printNil = ' print-nil';
+                                    moduleDesc += example;
+                                }
                             }
                             }}
-                            <pre class="module-api-info-desc">{{= moduleDesc}}</pre>
+                            <pre class="module-api-info-desc{{= printNil}}">{{= moduleDesc}}</pre>
 
                             <div class="module-api-info-return">
                                 <p>return example & comment</p>

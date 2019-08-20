@@ -236,9 +236,9 @@
                             <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                         </h3>
                         <div class="module-api-info">
-                            <p class="module-api-info-basic"> 接口地址 <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
+                            <p class="module-api-info-basic">接口地址 <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             {{
-                            var moduleDesc = '', printExample = '';
+                            var moduleDesc = '', printNil = '';
                             if (url.develop && url.develop !== '') {
                                 moduleDesc += '开发: ' + url.develop;
                             }
@@ -248,11 +248,16 @@
                             }
 
                             if (url.exampleUrl) {
-                                if (moduleDesc !== '') { moduleDesc += '<br><br>'; }
-                                moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a>';
+                                var example = '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a>';
+                                if (moduleDesc !== '') {
+                                    moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
+                                } else {
+                                    printNil = ' print-nil';
+                                    moduleDesc += example;
+                                }
                             }
                             }}
-                            <pre class="module-api-info-desc">{{= moduleDesc}}</pre>
+                            <pre class="module-api-info-desc{{= printNil}}">{{= moduleDesc}}</pre>
 
                             <div class="module-api-info-return">
                                 <p>响应示例及说明如下</p>
