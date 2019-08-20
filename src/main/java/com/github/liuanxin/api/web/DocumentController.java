@@ -180,18 +180,25 @@ public class DocumentController {
                         }
 
                         // meta info
+                        boolean globalCommentInReturnExample = copyright.isCommentInReturnExample();
+                        boolean globalReturnRecordLevel = copyright.isReturnRecordLevel();
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
                         if (Tools.isNotBlank(apiMethod)) {
                             document.setTitle(apiMethod.value());
                             document.setDesc(apiMethod.desc());
                             document.setDevelop(apiMethod.develop());
                             document.setIndex(apiMethod.index());
-                            document.setCommentInReturnExample(apiMethod.commentInReturnExample());
-                            document.setReturnRecordLevel(apiMethod.returnRecordLevel());
                             document.setCommentInReturnExampleWithLevel(apiMethod.commentInReturnExampleWithLevel());
+
+                            boolean[] returnExample = apiMethod.commentInReturnExample();
+                            document.setCommentInReturnExample(
+                                    returnExample.length == 0 ? globalCommentInReturnExample : returnExample[0]);
+                            boolean[] returnRecordLevel = apiMethod.returnRecordLevel();
+                            document.setReturnRecordLevel(
+                                    returnRecordLevel.length == 0 ? globalReturnRecordLevel : returnRecordLevel[0]);
                         } else {
-                            document.setCommentInReturnExample(copyright.isCommentInReturnExample());
-                            document.setReturnRecordLevel(copyright.isReturnRecordLevel());
+                            document.setCommentInReturnExample(globalCommentInReturnExample);
+                            document.setReturnRecordLevel(globalReturnRecordLevel);
                         }
                         document.setExampleUrl(getExampleUrl(document.getId()));
 

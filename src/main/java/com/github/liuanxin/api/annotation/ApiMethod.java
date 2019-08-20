@@ -20,7 +20,7 @@ public @interface ApiMethod {
     int index() default Integer.MAX_VALUE;
 
     /** @return return whether the sample contains a comment */
-    boolean commentInReturnExample() default true;
+    boolean[] commentInReturnExample() default {};
 
     /**
      * true  : the hierarchical relationship corresponding to the field will be used to process the comment, Generics be sure to use certain types.
@@ -29,5 +29,11 @@ public @interface ApiMethod {
      */
     boolean commentInReturnExampleWithLevel() default true;
 
-    boolean returnRecordLevel() default false;
+    /**
+     * Return Field Description Whether to record the parent attribute when listed separately,
+     * regardless of this value when commentInReturnExample is true.
+     *
+     * forget this. It's a bad ide
+     */
+    boolean[] returnRecordLevel() default {};
 }
