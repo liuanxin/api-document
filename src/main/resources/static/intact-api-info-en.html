@@ -205,20 +205,28 @@
                             <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                         </h3>
                         <div class="module-api-info">
-                            <p class="module-api-info-basic">request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
+                            <p class="module-api-info-basic"><code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             {{
-                            var moduleDesc = '';
-                            if (url.develop && url.develop !== '') { moduleDesc += 'develop: ' + url.develop; }
-                            if (url.desc && url.desc !== '') { if (moduleDesc !== '') { moduleDesc += '<br>'; } moduleDesc += 'comment: ' + url.desc; }
+                            var moduleDesc = '', printExample = '';
+                            if (url.develop && url.develop !== '') {
+                                moduleDesc += 'develop: ' + url.develop;
+                            }
+                            if (url.desc && url.desc !== '') {
+                                if (moduleDesc !== '') { moduleDesc += '<br>'; }
+                                moduleDesc += 'comment: ' + url.desc;
+                            }
 
                             if (url.exampleUrl) {
-                            var moduleBlank = (moduleDesc !== '');
-                            moduleDesc += '<span class="link-example">';
-                            if (moduleBlank) { moduleDesc += '<br><br>'; }
-                            moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">Result example url</a></span>';
+                                var example = '<a target="_blank" href="' + url.exampleUrl + '">Result example url</a>';
+                                if (moduleDesc !== '') {
+                                    moduleDesc += '<br><br><span class="link-example">' + example + '</span>';
+                                } else {
+                                    printExample = ' link-example';
+                                    moduleDesc += example;
+                                }
                             }
                             }}
-                            <pre class="module-api-info-desc">{{= moduleDesc}}</pre>
+                            <pre class="module-api-info-desc{{printExample}}">{{= moduleDesc}}</pre>
 
                             {{
                             var globalParamList = it.tokenList || [];

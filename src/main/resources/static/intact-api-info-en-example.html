@@ -238,15 +238,18 @@
                         <div class="module-api-info">
                             <p class="module-api-info-basic">request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             {{
-                            var moduleDesc = '';
-                            if (url.develop && url.develop !== '') { moduleDesc += 'develop: ' + url.develop; }
-                            if (url.desc && url.desc !== '') { if (moduleDesc !== '') { moduleDesc += '<br>'; } moduleDesc += 'comment: ' + url.desc; }
+                            var moduleDesc = '', printExample = '';
+                            if (url.develop && url.develop !== '') {
+                                moduleDesc += 'develop: ' + url.develop;
+                            }
+                            if (url.desc && url.desc !== '') {
+                                if (moduleDesc !== '') { moduleDesc += '<br>'; }
+                                moduleDesc += 'comment: ' + url.desc;
+                            }
 
                             if (url.exampleUrl) {
-                            var moduleBlank = (moduleDesc !== '');
-                            moduleDesc += '<span class="link-example">';
-                            if (moduleBlank) { moduleDesc += '<br><br>'; }
-                            moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">Result example url</a></span>';
+                                if (moduleDesc !== '') { moduleDesc += '<br><br>'; }
+                                moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">Result example url</a>';
                             }
                             }}
                             <pre class="module-api-info-desc">{{= moduleDesc}}</pre>
@@ -313,8 +316,8 @@
 
                             var hasFile = false, hasHeader = false;
                             for (var i = 0; i < paramList.length; i++) {
-                            if (paramList[i].hasFile === true) { hasFile = true; }
-                            if (paramList[i].paramType === 'Header') { hasHeader = true; }
+                                if (paramList[i].hasFile === true) { hasFile = true; }
+                                if (paramList[i].paramType === 'Header') { hasHeader = true; }
                             }
                             }}
                             <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}{{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>

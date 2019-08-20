@@ -238,15 +238,18 @@
                         <div class="module-api-info">
                             <p class="module-api-info-basic"> 接口地址 <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             {{
-                            var moduleDesc = '';
-                            if (url.develop && url.develop !== '') { moduleDesc += '开发: ' + url.develop; }
-                            if (url.desc && url.desc !== '') { if (moduleDesc !== '') { moduleDesc += '<br>'; } moduleDesc += '说明: ' + url.desc; }
+                            var moduleDesc = '', printExample = '';
+                            if (url.develop && url.develop !== '') {
+                                moduleDesc += '开发: ' + url.develop;
+                            }
+                            if (url.desc && url.desc !== '') {
+                                if (moduleDesc !== '') { moduleDesc += '<br>'; }
+                                moduleDesc += '说明: ' + url.desc;
+                            }
 
                             if (url.exampleUrl) {
-                            var moduleBlank = (moduleDesc !== '');
-                            moduleDesc += '<span class="link-example">';
-                            if (moduleBlank) { moduleDesc += '<br><br>'; }
-                            moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a></span>';
+                                if (moduleDesc !== '') { moduleDesc += '<br><br>'; }
+                                moduleDesc += '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a>';
                             }
                             }}
                             <pre class="module-api-info-desc">{{= moduleDesc}}</pre>
