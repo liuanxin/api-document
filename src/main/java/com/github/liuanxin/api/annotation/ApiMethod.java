@@ -19,7 +19,11 @@ public @interface ApiMethod {
     /** @return more forward when smaller */
     int index() default Integer.MAX_VALUE;
 
-    /** @return return whether the sample contains a comment */
+    /**
+     * true  : output in the return example.
+     * false : listed separately.
+     * @return return whether the sample contains a comment
+     */
     boolean[] commentInReturnExample() default {};
 
     /**
