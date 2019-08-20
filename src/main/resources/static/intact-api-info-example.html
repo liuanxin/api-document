@@ -104,6 +104,10 @@
         .red {
             color: red;
         }
+        .disable {
+            background-color: #ddd !important;
+            cursor: not-allowed !important;
+        }
 
         .table-hover tbody tr:hover {
             background-color: rgba(0,0,0,.075);
@@ -750,6 +754,7 @@ function request(obj) {
         var responseData = response.find('pre');
         var start = new Date().getTime();
         $btn.attr('disabled', 'disabled');
+        $btn.addClass('disable');
         $.ajax(settings).done(function(result) {
             var html = timeLog(start);
             if (isBlank(result)) {
@@ -760,6 +765,7 @@ function request(obj) {
             responseData.html(html);
             response.show();
             $btn.removeAttr('disabled');
+            $btn.removeClass('disable');
         }).fail(function(error) {
             var html = timeLog(start);
             if (isBlank(error)) {
@@ -781,6 +787,7 @@ function request(obj) {
             responseData.html(html);
             response.show();
             $btn.removeAttr('disabled');
+            $btn.removeClass('disable');
         });
     }
 }
