@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.3</version>
 </dependency>
 #+END_SRC
 
@@ -37,14 +37,17 @@ public class ApiInfoConfig {
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("标题", "团队", "版本号", "版权")
 
+                    // // 如果设置成 true 则接口会返回空(可以在生产环境中开启), 不设置则默认是 false
+                    // .setOnline(online)
+
+                    // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
+                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+
                     // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
                     // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "参数有误"),
                     //         new DocumentResponse(500, "请求异常")
                     // ))
-
-                    // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
-                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
 
                     // // 全局 token, 这个配置会生成在每个接口的参数中, 如果只想在具体的接口上设置或者设置了此项但是想在具体的接口上忽略, 请使用 @ApiTokens 注解
                     // .setGlobalTokens(Arrays.asList(
@@ -52,8 +55,8 @@ public class ApiInfoConfig {
                     //         DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust(true)
                     // ))
 
-                    // // 如果设置成 true 则接口会返回空(可以在生产环境中开启), 不设置则默认是 false
-                    // .setOnline(online)
+                    // // 字段说明是否输出在返回示例中, 不设置则默认是 true, 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
+                    // .setCommentInReturnExample(false)
                     ;
     }
 }
@@ -92,7 +95,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
   develop    --> 开发者信息, 可以不设置
   desc       --> 接口详细说明. 可以不设置
   index      --> 索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序, 开发者信息 如果也一致会使用 接口标题 排序)
-  commentInReturnExample  返回字段说明是否写在返回示例中, 如果设置为 false 所有的字段说明将会在返回示例的下面单独罗列. 可以不设置, 默认是 true
+  commentInReturnExample --> 返回字段说明是否写在返回示例中, 如果设置为 false 所有的字段说明将会在返回示例的下面单独罗列. 不设置则以全局设置为准
 
 @ApiIgnore --> 标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
   value      --> 值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
@@ -145,7 +148,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
 #+BEGIN_SRC xml
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
-运行项目, 访问页面 ~http://ip:port/static/api-info.html~ (spring boot 则不需要 /static 二级目录), 如果要保存成 pdf 文件按 ~ctrl + p~ 即可. 
+运行项目, 访问页面 ~http://ip:port/static/api-info.html~ (spring boot 则不需要 /static 二级目录), 如果要保存成 pdf 文件按 ~ctrl + p~ 即可.
 
 页面 ~http://ip:port/static/api-info-example.html~ 直接请求后台接口
 

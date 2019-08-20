@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.3</version>
 </dependency>
 #+END_SRC
 
@@ -40,14 +40,17 @@ public class ApiInfoConfig {
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
 
+                    // // if true, api will return nil(when production use), if not set default was false.
+                    // .setOnline(online)
+
+                    // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
+                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+
                     // // if class or method has @ApiResponses, use that
                     // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "param error"),
                     //         new DocumentResponse(500, "request error")
                     // ))
-
-                    // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
-                    // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
 
                     // // current config will be generated in the parameters of each api,
                     // // if only want to use on a specific api, or set this global config but want to ignore on a specific api,
@@ -57,8 +60,9 @@ public class ApiInfoConfig {
                     //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust(true)
                     // ))
 
-                    // // if true, api will return nil(when production use), if not set default was false.
-                    // .setOnline(online)
+                    // // field comment is output in the return example. default is true. set to false will be listed separately.
+                    // // if the method is marked, it will be subject to
+                    // .setCommentInReturnExample(false)
                     ;
     }
 }
@@ -97,7 +101,7 @@ for example:
   develop    --> can not be set
   desc       --> description, can not be set
   index      --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
-  commentInReturnExample  --> if false, comment will show with display separately, default true
+  commentInReturnExample --> if false, comment will show with display separately, if not set, the global setting shall prevail
 
 @ApiIgnore --> in class or method. want to ignore some api, use it
   value      --> false will ignore
