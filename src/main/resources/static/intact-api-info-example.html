@@ -194,7 +194,12 @@
             padding-left: 38px;
             font-weight: 500;
         }
-        @media (max-width: 992px) {
+        @media print {
+            .print-nil {
+                display: none;
+            }
+        }
+        @media (max-width: 992px), print {
             .col-md-9 {
                 width: 100%;
             }
