@@ -352,7 +352,7 @@
                                                 <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
                                                 <td class="text-left">{{= param.dataType || ''}}</td>
                                                 {{? hasHeader}}<td class="text-left">{{= param.paramType || ''}}</td>{{?}}
-                                                <td class="text-left">
+                                                <td class="text-left" style="height: inherit;">
                                                     {{
                                                     var arr = [];
                                                     if (param.must) { arr.push('required'); }
@@ -390,7 +390,7 @@
                                                     {{??}}
                                                     <input name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
-                                                    <!-- 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 -->
+                                                    /* 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 */
                                                     <input style="display: none;"/>
                                                 </td>
                                             </tr>
@@ -399,10 +399,7 @@
                                     </table>
                                 </div>
                                 {{?}}
-                                <p>
-                                    <span style="display:none;" name="requestBody" requestBody="{{= url.requestBody}}"></span>
-                                    <input type="button" value="请求此接口" onclick="request(this);"/>
-                                </p>
+                                <p><input type="button" value="请求此接口" requestBody="{{= url.requestBody}}" onclick="request(this);"/></p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
                             </form>
@@ -617,8 +614,8 @@ function request(obj) {
 
     var method = $form.attr('method');
     var url = $form.attr('action');
-    var requestBody = $form.find('[name="requestBody"]').attr('requestBody');
-    var hasJson = requestBody === true || requestBody === 'true';
+    var requestBody = $btn.attr('requestBody');
+    var hasRequestBody = requestBody === true || requestBody === 'true';
 
     var map = objectifyForm($form);
     var params = map[0];
@@ -656,7 +653,7 @@ function request(obj) {
                 }
             });
         }
-        if (hasJson) {
+        if (hasRequestBody) {
             curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
             curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
         }
@@ -678,7 +675,7 @@ function request(obj) {
             });
         } else {
             if (Object.getOwnPropertyNames(params).length > 0) {
-                if (hasJson) {
+                if (hasRequestBody) {
                     curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
                 } else {
                     if ('GET' === method.toUpperCase()) {
@@ -750,7 +747,7 @@ function request(obj) {
             settings['processData'] = false;
             settings['contentType'] = false;
         } else {
-            if (hasJson) {
+            if (hasRequestBody) {
                 if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
                     response.find('pre').html("<span class='red'>浏览器不能通过 GET 请求发送 RequestBody 参数(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
                     response.show();

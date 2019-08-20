@@ -390,7 +390,7 @@
                                                     {{??}}
                                                     <input name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
-                                                    <!-- When there is only one input on the form, adding an invisible input can disable the carriage return event for that input. -->
+                                                    /* When there is only one input on the form, adding an invisible input can disable the carriage return event for that input. */
                                                     <input style="display:none;"/>
                                                 </td>
                                             </tr>
@@ -399,10 +399,7 @@
                                     </table>
                                 </div>
                                 {{?}}
-                                <p>
-                                    <span style="display:none;" name="requestBody" requestBody="{{= url.requestBody}}"></span>
-                                    <input type="button" value="Request backend" onclick="request(this);"/>
-                                </p>
+                                <p><input type="button" value="Request backend" requestBody="{{= url.requestBody}}" onclick="request(this);"/></p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
                             </form>
@@ -617,8 +614,8 @@ function request(obj) {
 
     var method = $form.attr('method');
     var url = $form.attr('action');
-    var requestBody = $form.find('[name="requestBody"]').attr('requestBody');
-    var hasJson = requestBody === true || requestBody === 'true';
+    var requestBody = $btn.attr('requestBody');
+    var hasRequestBody = requestBody === true || requestBody === 'true';
 
     var map = objectifyForm($form);
     var params = map[0];
@@ -656,7 +653,7 @@ function request(obj) {
                 }
             });
         }
-        if (hasJson) {
+        if (hasRequestBody) {
             curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
             curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
         }
@@ -678,7 +675,7 @@ function request(obj) {
             });
         } else {
             if (Object.getOwnPropertyNames(params).length > 0) {
-                if (hasJson) {
+                if (hasRequestBody) {
                     curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
                 } else {
                     if ('GET' === method.toUpperCase()) {
@@ -750,7 +747,7 @@ function request(obj) {
             settings['processData'] = false;
             settings['contentType'] = false;
         } else {
-            if (hasJson) {
+            if (hasRequestBody) {
                 if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
                     response.find('pre').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request(It's possible to use the above cURL), please contact the backend change to POST!</span>");
                     response.show();
