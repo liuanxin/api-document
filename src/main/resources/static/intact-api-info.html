@@ -159,7 +159,7 @@
             font-weight: 500;
         }
         @media print {
-            .link-example {
+            .print-nil {
                 display: none;
             }
         }
@@ -219,9 +219,9 @@
                             if (url.exampleUrl) {
                                 var example = '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a>';
                                 if (moduleDesc !== '') {
-                                    moduleDesc += '<span class="link-example"><br><br>' + example + '</span>';
+                                    moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
                                 } else {
-                                    printExample = ' link-example';
+                                    printExample = ' print-nil';
                                     moduleDesc += example;
                                 }
                             }
