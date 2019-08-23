@@ -390,8 +390,6 @@
                                                     {{??}}
                                                     <input type="text" name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
-                                                    /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
-                                                    <input type="text" style="display: none;"/>
                                                 </td>
                                             </tr>
                                             {{~}}
@@ -400,6 +398,8 @@
                                 </div>
                                 {{?}}
                                 <p>
+                                    /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
+                                    <input type="text" style="display: none;"/>
                                     <input type="button" value="请求此接口" requestBody="{{= url.requestBody}}" onclick="request(this);"/>
                                 </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>

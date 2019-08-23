@@ -390,8 +390,6 @@
                                                     {{??}}
                                                     <input type="text" name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
-                                                    /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
-                                                    <input type="text" style="display: none;"/>
                                                 </td>
                                             </tr>
                                             {{~}}
@@ -399,7 +397,11 @@
                                     </table>
                                 </div>
                                 {{?}}
-                                <p><input type="button" value="Request backend" requestBody="{{= url.requestBody}}" onclick="request(this);"/></p>
+                                <p>
+                                    /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
+                                    <input type="text" style="display: none;"/>
+                                    <input type="button" value="Request backend" requestBody="{{= url.requestBody}}" onclick="request(this);"/>
+                                </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
                             </form>
