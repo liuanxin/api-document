@@ -326,9 +326,10 @@
 
                             var hasFile = false, hasHeader = false;
                             for (var i = 0; i < paramList.length; i++) {
-                            if (paramList[i].hasFile === true) { hasFile = true; }
-                            if (paramList[i].paramType === 'Header') { hasHeader = true; }
+                                if (paramList[i].hasFile === true) { hasFile = true; }
+                                if (paramList[i].paramType === 'Header') { hasHeader = true; }
                             }
+                            var textNum = 0;
                             }}
                             <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}{{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? paramList && paramList.length > 0}}
@@ -388,6 +389,7 @@
                                                         {{?}}
                                                     </select>
                                                     {{??}}
+                                                    {{ textNum++; }}
                                                     <input type="text" name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
                                                 </td>
@@ -399,7 +401,7 @@
                                 {{?}}
                                 <p>
                                     /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
-                                    <input type="text" style="display: none;"/>
+                                    {{? textNum === 1 }}<input type="text" style="display: none;"/>{{?}}
                                     <input type="button" value="请求此接口" requestBody="{{= url.requestBody}}" onclick="request(this);"/>
                                 </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>

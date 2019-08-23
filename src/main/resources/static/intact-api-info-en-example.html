@@ -329,6 +329,7 @@
                                 if (paramList[i].hasFile === true) { hasFile = true; }
                                 if (paramList[i].paramType === 'Header') { hasHeader = true; }
                             }
+                            var textNum = 0;
                             }}
                             <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}{{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? paramList && paramList.length > 0}}
@@ -388,6 +389,7 @@
                                                         {{?}}
                                                     </select>
                                                     {{??}}
+                                                    {{ textNum++; }}
                                                     <input type="text" name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
                                                 </td>
@@ -399,7 +401,7 @@
                                 {{?}}
                                 <p>
                                     /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
-                                    <input type="text" style="display: none;"/>
+                                    {{? textNum === 1 }}<input type="text" style="display: none;"/>{{?}}
                                     <input type="button" value="Request backend" requestBody="{{= url.requestBody}}" onclick="request(this);"/>
                                 </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
