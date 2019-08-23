@@ -373,7 +373,7 @@
                                                     var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                                     }}
                                                     {{? param.dataType === 'file' }}
-                                                    <input name="{{= param.name || ''}}" type="file"{{= validateData}}/>
+                                                    <input type="file" name="{{= param.name || ''}}"{{= validateData}}/>
                                                     {{?? param.hasTextarea}}
                                                     <textarea name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
                                                     {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
@@ -388,10 +388,8 @@
                                                         {{?}}
                                                     </select>
                                                     {{??}}
-                                                    <input name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
+                                                    <input type="text" name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
-                                                    /* 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 */
-                                                    <input style="display: none;"/>
                                                 </td>
                                             </tr>
                                             {{~}}
@@ -399,7 +397,11 @@
                                     </table>
                                 </div>
                                 {{?}}
-                                <p><input type="button" value="请求此接口" requestBody="{{= url.requestBody}}" onclick="request(this);"/></p>
+                                <p>
+                                    /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
+                                    <input type="text" style="display: none;"/>
+                                    <input type="button" value="请求此接口" requestBody="{{= url.requestBody}}" onclick="request(this);"/>
+                                </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
                             </form>
