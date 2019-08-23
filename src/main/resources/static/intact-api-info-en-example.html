@@ -390,7 +390,8 @@
                                                     </select>
                                                     {{??}}
                                                     {{ textNum++; }}
-                                                    <input type="text" name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
+                                                    <input type="{{= (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
+                                                           name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
                                                 </td>
                                             </tr>
