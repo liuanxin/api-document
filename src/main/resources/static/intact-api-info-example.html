@@ -390,6 +390,8 @@
                                                     {{??}}
                                                     <input name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
                                                     {{?}}
+                                                    /* 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 */
+                                                    <input style="display: none;"/>
                                                 </td>
                                             </tr>
                                             {{~}}
@@ -397,8 +399,6 @@
                                     </table>
                                 </div>
                                 {{?}}
-                                /* 当表单上只有一个 input 时, 加多一个不可见的 input 可以禁用那个 input 的回车事件 */
-                                <input style="display: none;"/>
                                 <p><input type="button" value="请求此接口" requestBody="{{= url.requestBody}}" onclick="request(this);"/></p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
