@@ -589,7 +589,7 @@ $.get(projectDomain + '/api/info').done(function(data) {
 });
 
 function escapeHtml(html) {
-  return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 </script>
 
