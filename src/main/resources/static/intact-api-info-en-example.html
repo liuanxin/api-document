@@ -42,9 +42,18 @@
         input[type=button] {
             padding: 6px;
             width: 180px;
-            border: 1px solid;
+            background-color: #56baed;
+            border: none;
+            color: #fff;
+            box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
             border-radius: 4px;
-            background-color: #eee;
+            transition: all 0.3s ease-in-out;
+        }
+        input[type=button]:hover {
+            background-color: #39ace7;
+        }
+        input[type=button]:active {
+            transform: scale(0.95);
         }
         pre {
             font-size: 14px;
@@ -105,8 +114,9 @@
         .red {
             color: red;
         }
-        .disable {
-            background-color: #ddd !important;
+        .disabled {
+            color: #666 !important;
+            background-color: #ccc !important;
             cursor: not-allowed !important;
         }
 
@@ -766,7 +776,7 @@ function request(obj) {
         var responseData = response.find('pre');
         var start = new Date().getTime();
         $btn.attr('disabled', 'disabled');
-        $btn.addClass('disable');
+        $btn.addClass('disabled');
         $.ajax(settings).done(function(result) {
             var html = timeLog(start);
             if (isBlank(result)) {
@@ -777,7 +787,7 @@ function request(obj) {
             responseData.html(html);
             response.show();
             $btn.removeAttr('disabled');
-            $btn.removeClass('disable');
+            $btn.removeClass('disabled');
         }).fail(function(error) {
             var html = timeLog(start);
             if (isBlank(error)) {
@@ -799,7 +809,7 @@ function request(obj) {
             responseData.html(html);
             response.show();
             $btn.removeAttr('disabled');
-            $btn.removeClass('disable');
+            $btn.removeClass('disabled');
         });
     }
 }
