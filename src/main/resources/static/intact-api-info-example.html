@@ -356,7 +356,7 @@
                                             <tr{{? param.must}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                                 <td class="text-left">{{= param.name || ''}}</td>
                                                 <td class="text-left wrap">{{= param.desc || ''}}</td>
-                                                <td class="text-left">{{? param.must ? 'Yes' : 'No'}}</td>
+                                                <td class="text-left">{{= param.must ? 'Yes' : 'No'}}</td>
                                                 <td class="text-left">{{= param.dataType || ''}}</td>
                                                 {{? hasHeader}}<td class="text-left">{{= param.paramType || ''}}</td>{{?}}
                                                 <td class="text-left" style="height: inherit;">
