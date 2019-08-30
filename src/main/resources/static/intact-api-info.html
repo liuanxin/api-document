@@ -401,6 +401,11 @@ $(function() {
                     $bar.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
                 }
             }
+
+            var hash = $nav.find('.active > a:last').attr('href');
+            if (isNotBlank(hash)) {
+                window.history.pushState({}, '', hash);
+            }
         }
     });
 });
