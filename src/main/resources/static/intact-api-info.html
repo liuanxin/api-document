@@ -396,12 +396,13 @@ $(function() {
                 }
             }
 
-            var hash = $nav.find('.active > a:last').attr('href') || window.location.pathname;
+            var path = window.location.pathname;
+            var hash = $nav.find('.active > a:last').attr('href') || path;
             if (hash !== window.location.hash) {
                 if (first) {
                     first = false;
                     // add index hash + blank hash(used for replace)
-                    window.history.pushState({api: 'index'}, '', window.location.pathname);
+                    window.history.pushState({api: 'index'}, '', path);
                     window.history.pushState({api: ''}, '', '');
                 }
                 window.history.replaceState({api: hash}, '', hash);
