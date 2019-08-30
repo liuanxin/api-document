@@ -396,11 +396,12 @@ $(function() {
                 }
             }
 
-            var currentHash = $nav.find('.active > a:last').attr('href') || window.location.pathname;
-            var oldHash = window.location.hash;
-            if (currentHash !== oldHash) {
-                window.history.replaceState({api: currentHash}, '', currentHash);
+            var hash = $nav.find('.active > a:last').attr('href') || window.location.pathname;
+            if (hash !== window.location.hash) {
+                window.history.replaceState({api: hash}, '', hash);
             }
+        } else {
+            window.history.replaceState({api: 'info'}, '', window.location.pathname);
         }
     });
 });
