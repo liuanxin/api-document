@@ -62,7 +62,7 @@
         .module-api-info-desc {}
         .module-api-info-param {}
         .module-api-info-return {}
-        .radius-table {
+        .bottom-table {
             margin-bottom: 10px;
         }
 
@@ -85,9 +85,10 @@
         .table-bordered td, .table-bordered th {
             border: 1px solid #dee2e6;
         }
-        .nav-bar {
-            margin-top: 15px;
-            margin-bottom: 15px; /* top & bottom */
+        .bs-docs-sidebar {
+            width: inherit;
+            position: fixed;
+            margin: 15px 0;
         }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
@@ -178,18 +179,10 @@
             .bs-docs-sidebar {
                 padding-left: 10px;
             }
-            .bs-docs-sidebar.affix {
-                min-width: 223px;
-                width: 23%;
-            }
         }
         @media (min-width: 1201px) {
             .bs-docs-sidebar {
                 padding-left: 20px;
-            }
-            .bs-docs-sidebar.affix {
-                min-width: 278px;
-                width: 23.5%;
             }
         }
     </style>
@@ -244,7 +237,7 @@
                             }
                             }}
                             {{? paramList && paramList.length > 0}}
-                            <div class="module-api-info-param radius-table panel panel-default">
+                            <div class="module-api-info-param bottom-table panel panel-default">
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
                                         <tr>
@@ -277,7 +270,7 @@
                                 <pre class="src src-json">{{= url.commentJson || ''}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
-                                <div class="radius-table panel panel-default">
+                                <div class="bottom-table panel panel-default">
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
@@ -300,7 +293,7 @@
                                 {{?}}
 
                                 {{? (it.responseList && it.responseList.length > 0) || (url.responseList && url.responseList.length > 0)}}
-                                <div class="radius-table panel panel-default">
+                                <div class="bottom-table panel panel-default">
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
@@ -334,26 +327,24 @@
             </script>
         </div>
         <div class="col-md-3">
-            <nav class="nav-bar">
-                <div class="bs-docs-sidebar">
-                    <ul class="nav">
-                        <script id="url-nav-render" type="text/x-dot-template">
-                            {{~ it.moduleList  :module:index}}
-                            <li>
-                                <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
-                                <ul class="nav">
-                                    {{~ module.urlList  :url:urlIndex}}
-                                    <li>
-                                        <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
-                                    </li>
-                                    {{~}}
-                                </ul>
-                            </li>
-                            {{~}}
-                        </script>
-                    </ul>
-                </div>
-            </nav>
+            <div class="bs-docs-sidebar">
+                <ul class="nav">
+                    <script id="url-nav-render" type="text/x-dot-template">
+                        {{~ it.moduleList  :module:index}}
+                        <li>
+                            <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
+                            <ul class="nav">
+                                {{~ module.urlList  :url:urlIndex}}
+                                <li>
+                                    <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
+                                </li>
+                                {{~}}
+                            </ul>
+                        </li>
+                        {{~}}
+                    </script>
+                </ul>
+            </div>
         </div>
     </div>
 </main>
@@ -378,7 +369,7 @@ $(function() {
     'use strict';
     window.history.pushState({api: 'info'}, 'api-info', '');
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
-    $('.bs-docs-sidebar').affix();
+    // $('.bs-docs-sidebar').affix();
 
     var topBottomHeight = 30;
     var heightProperty = 'max-height';
@@ -439,7 +430,7 @@ function addLine(html) {
 }
 
 var locationDomain = window.location.protocol + '//' + window.location.host;
-if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(current + '/')) {
+if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
     $.ajaxSetup({
         crossDomain: true,
         xhrFields: { withCredentials: true }

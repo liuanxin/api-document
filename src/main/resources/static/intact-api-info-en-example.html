@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.min.css">
     <style type="text/css">
         html {
             position: relative;
@@ -84,7 +84,7 @@
         .module-api-info-desc {}
         .module-api-info-param {}
         .module-api-info-return {}
-        .radius-table {
+        .bottom-table {
             margin-bottom: 10px;
         }
         .example {
@@ -119,9 +119,10 @@
         .table-bordered td, .table-bordered th {
             border: 1px solid #dee2e6;
         }
-        .nav-bar {
-            margin-top: 15px;
-            margin-bottom: 15px; /* top & bottom */
+        .bs-docs-sidebar {
+            width: inherit;
+            position: fixed;
+            margin: 15px 0;
         }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
@@ -212,18 +213,10 @@
             .bs-docs-sidebar {
                 padding-left: 10px;
             }
-            .bs-docs-sidebar.affix {
-                min-width: 223px;
-                width: 23%;
-            }
         }
         @media (min-width: 1201px) {
             .bs-docs-sidebar {
                 padding-left: 20px;
-            }
-            .bs-docs-sidebar.affix {
-                min-width: 278px;
-                width: 23.5%;
             }
         }
     </style>
@@ -270,7 +263,7 @@
                                 <pre class="src src-json">{{= url.commentJson || ''}}</pre>
 
                                 {{? url.returnList && url.returnList.length > 0}}
-                                <div class="radius-table panel panel-default">
+                                <div class="bottom-table panel panel-default">
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
@@ -293,7 +286,7 @@
                                 {{?}}
 
                                 {{? (it.responseList && it.responseList.length > 0) || (url.responseList && url.responseList.length > 0)}}
-                                <div class="radius-table panel panel-default">
+                                <div class="bottom-table panel panel-default">
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
@@ -334,7 +327,7 @@
                             }}
                             <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}{{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? paramList && paramList.length > 0}}
-                                <div class="radius-table panel panel-default">
+                                <div class="bottom-table panel panel-default">
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
@@ -354,7 +347,7 @@
                                                 <td class="text-left">{{? param.must}}Yes{{??}}No{{?}}</td>
                                                 <td class="text-left">{{= param.dataType || ''}}</td>
                                                 {{? hasHeader}}<td class="text-left">{{= param.paramType || ''}}</td>{{?}}
-                                                <td class="text-left">
+                                                <td class="text-left" style="height: inherit;">
                                                     {{
                                                     var arr = [];
                                                     if (param.must) { arr.push('required'); }
@@ -382,7 +375,7 @@
                                                     <select name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
                                                         <option></option>
                                                         {{? Array.isArray(enumInfo) }}
-                                                        {{~ enumInfo  :em}}<option{{? example === em}} selected{{?}}>{{= em}}</option>{{~}}
+                                                        {{~ enumInfo  :e}}<option{{? example === e}} selected{{?}}>{{= e}}</option>{{~}}
                                                         {{??}}
                                                         {{ var k; for(k in enumInfo) { }}
                                                         <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected{{?}}>{{= enumInfo[k]}}</option>
@@ -417,26 +410,24 @@
             </script>
         </div>
         <div class="col-md-3">
-            <nav class="nav-bar">
-                <div class="bs-docs-sidebar">
-                    <ul class="nav">
-                        <script id="url-nav-render" type="text/x-dot-template">
-                            {{~ it.moduleList  :module:index}}
-                            <li>
-                                <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
-                                <ul class="nav">
-                                    {{~ module.urlList  :url:urlIndex}}
-                                    <li>
-                                        <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
-                                    </li>
-                                    {{~}}
-                                </ul>
-                            </li>
-                            {{~}}
-                        </script>
-                    </ul>
-                </div>
-            </nav>
+            <div class="bs-docs-sidebar">
+                <ul class="nav">
+                    <script id="url-nav-render" type="text/x-dot-template">
+                        {{~ it.moduleList  :module:index}}
+                        <li>
+                            <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
+                            <ul class="nav">
+                                {{~ module.urlList  :url:urlIndex}}
+                                <li>
+                                    <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
+                                </li>
+                                {{~}}
+                            </ul>
+                        </li>
+                        {{~}}
+                    </script>
+                </ul>
+            </div>
         </div>
     </div>
 </main>
@@ -462,7 +453,6 @@ $(function() {
     'use strict';
     window.history.pushState({api: 'info'}, 'api-info', window.location.pathname);
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
-    $('.bs-docs-sidebar').affix();
 
     var topBottomHeight = 30;
     var heightProperty = 'max-height';
