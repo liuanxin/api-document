@@ -4,6 +4,7 @@
     <title>api document</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.css">
     <style type="text/css">
@@ -459,6 +460,7 @@ var projectDomain = '';
 <script type="text/javascript">
 $(function() {
     'use strict';
+    window.history.pushState({api: 'info'}, 'api-info', window.location.pathname);
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
     $('.bs-docs-sidebar').affix();
 
@@ -486,9 +488,9 @@ $(function() {
                 }
             }
 
-            var hash = $nav.find('.active > a:last').attr('href');
-            if (isNotBlank(hash)) {
-                window.history.pushState({}, '', hash);
+            var hash = $nav.find('.active > a:last').attr('href') || window.location.pathname;
+            if (hash !== window.location.hash) {
+                window.history.replaceState({api: hash}, '', hash);
             }
         }
     });
@@ -567,12 +569,11 @@ $.get(projectDomain + '/api/info', function(data) {
                 $(this).html(addLine(html));
             });
 
-            var href = window.location.href;
-            if (href.includes('#')) {
-                href = href.substring(href.indexOf('#'), href.length);
-                var $anchor = $(href);
+            var hash = window.location.hash;
+            if (isNotBlank(hash)) {
+                var $anchor = $(hash);
                 if ($anchor.length > 0) {
-                    var $li = $('a[href="' + href + '"]').parent();
+                    var $li = $('a[href="' + hash + '"]').parent();
                     $li.addClass('active');
                     $li.parent().parent().addClass('active');
                     $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
