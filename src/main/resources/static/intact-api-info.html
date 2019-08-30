@@ -401,8 +401,8 @@ $(function() {
             if (hash !== window.location.hash) {
                 if (first) {
                     first = false;
-                    // add index hash + blank hash(used for replace)
-                    window.history.pushState({api: 'index'}, '', path);
+                    // index + blank(used for replace)
+                    window.history.replaceState({api: 'index'}, '', path);
                     window.history.pushState({api: ''}, '', '');
                 }
                 window.history.replaceState({api: hash}, '', hash);
