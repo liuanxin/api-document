@@ -374,6 +374,7 @@ $(function() {
     var topBottomHeight = 30;
     var heightProperty = 'max-height';
 
+    var first = true;
     var html = document.getElementsByTagName('html')[0];
     var footer = document.getElementsByTagName('footer')[0];
 
@@ -397,6 +398,12 @@ $(function() {
 
             var hash = $nav.find('.active > a:last').attr('href') || window.location.pathname;
             if (hash !== window.location.hash) {
+                if (first) {
+                    first = false;
+                    // add index hash + blank hash(used for replace)
+                    window.history.pushState({api: 'index'}, '', window.location.pathname);
+                    window.history.pushState({api: ''}, '', '');
+                }
                 window.history.replaceState({api: hash}, '', hash);
             }
         }
