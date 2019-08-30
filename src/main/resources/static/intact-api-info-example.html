@@ -455,7 +455,7 @@
 var projectDomain = '';
 </script>
 
-<script src="//cdn.bootcss.com/jquery/1.12.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(function() {
@@ -530,7 +530,7 @@ if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDom
     });
 }
 var $main = $('.col-md-9');
-$.get(projectDomain + '/api/info', function(data) {
+$.get(projectDomain + '/api/info').done(function(data) {
     if (isNotBlank(data)) {
         var documentInfo;
         if (typeof data === 'string') {
@@ -584,7 +584,7 @@ $.get(projectDomain + '/api/info', function(data) {
     } else {
         $main.html('<span class="red">无接口信息</span>');
     }
-}).error(function() {
+}).fail(function() {
     $main.html('<span class="red">接口请求错误</span>');
 });
 
