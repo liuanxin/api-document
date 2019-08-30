@@ -382,9 +382,9 @@
                                                     {{? param.dataType === 'file' }}
                                                     <input type="file" name="{{= param.name || ''}}"{{= validateData}}/>
                                                     {{?? param.hasTextarea}}
-                                                    <textarea name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>{{= example}}</textarea>
+                                                    <textarea name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} class="has-token"{{?}}>{{= example}}</textarea>
                                                     {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
-                                                    <select name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}}>
+                                                    <select name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} class="has-token"{{?}}>
                                                         <option></option>
                                                         {{? Array.isArray(enumInfo) }}
                                                         {{~ enumInfo  :e}}<option{{? example === e}} selected{{?}}>{{= e}}</option>{{~}}
@@ -397,7 +397,7 @@
                                                     {{??}}
                                                     {{ textNum++; }}
                                                     <input type="{{= (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
-                                                           name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} onchange="tokenChange(this);"{{?}} value="{{= example}}"/>
+                                                           name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} class="has-token"{{?}} value="{{= example}}"/>
                                                     {{?}}
                                                 </td>
                                             </tr>
@@ -409,7 +409,7 @@
                                 <p>
                                     /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
                                     {{? textNum === 1 }}<input type="text" style="display: none;"/>{{?}}
-                                    <input type="button" value="Request backend" requestBody="{{= url.requestBody}}" onclick="request(this);"/>
+                                    <input type="button" value="Request backend" requestBody="{{= url.requestBody}}"/>
                                 </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
@@ -461,6 +461,7 @@ var projectDomain = '';
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script type="text/javascript">
+/* basic: page scroll */
 $(function() {
     'use strict';
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
@@ -500,6 +501,7 @@ $(function() {
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/dot/1.1.2/doT.min.js"></script>
 <script type="text/javascript">
+/* data: page info */
 function isBlank(str) {
     return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
 }
@@ -529,6 +531,7 @@ if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDom
         xhrFields: { withCredentials: true }
     });
 }
+
 var $main = $('.col-md-9');
 $.get(projectDomain + '/api/info').done(function(data) {
     if (isNotBlank(data)) {
@@ -596,13 +599,7 @@ function escapeHtml(html) {
 <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/languages/jquery.validationEngine-en.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/jquery.validationEngine.min.js"></script>
 <script type="text/javascript">
-function tokenChange(obj) {
-    var name = $(obj).attr('name');
-    var value = $(obj).val();
-    localStorage.setItem(name, value);
-    $('[name="' + name + '"]').val(value);
-}
-
+/* action: request backend */
 if (isBlank(projectDomain)) {
     projectDomain = window.location.protocol + '//' + window.location.host;
 }
@@ -610,209 +607,6 @@ if (projectDomain.endsWith('/')) {
     projectDomain = projectDomain.substring(0, projectDomain.length - 1);
 }
 
-$.validationEngine.defaults.scroll = false;
-function request(obj) {
-    var $btn = $(obj);
-    var $form = $btn.parents('form');
-    var curl = $form.find('.curl');
-    var response = $form.find('.response');
-    curl.hide();
-    response.hide();
-
-    var flag = $form.validationEngine('validate');
-    if (!flag) {
-        return;
-    }
-
-    var method = $form.attr('method');
-    var url = $form.attr('action');
-    var requestBody = $btn.attr('requestBody');
-    var hasRequestBody = requestBody === true || requestBody === 'true';
-
-    var map = objectifyForm($form);
-    var params = map[0];
-    var headers = map[1];
-    var files = map[2];
-
-    if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
-        if (!url.startsWith('/')) {
-            url = '/' + url;
-        }
-        url = projectDomain + url;
-    }
-
-    var placeRegex = /{(.*?)}/;
-    while (placeRegex.test(url)) {
-        var group = RegExp.$1;
-        var value = params[group];
-        // url </user/{id}> change to </user/123>, params <name=xyz&id=&gender=1> change to <name=xyz&gender=1>
-        url = url.replace(placeRegex, value);
-        delete params[group];
-    }
-
-    {
-        var tmpUrl = url;
-        var line = ' \\\n';
-        var curlHtml = 'curl -i -X ' + method + line;
-        curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
-        if (isNotBlank(document.cookie)) {
-            curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
-        }
-        if (Object.getOwnPropertyNames(headers).length > 0) {
-            $.each(headers, function(key, value) {
-                if (isNotBlank(key) && isNotBlank(value)) {
-                    curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
-                }
-            });
-        }
-        if (hasRequestBody) {
-            curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
-            curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
-        }
-        if (files.length > 0) {
-            if (Object.getOwnPropertyNames(params).length > 0) {
-                $.each(params, function(key, value) {
-                    if (isNotBlank(key) && isNotBlank(value)) {
-                        curlHtml += "&nbsp; -F '" + (key + '=' + value) + "'" + line;
-                    }
-                });
-            }
-            $.each(files, function(i, file) {
-                var fileName = file.name;
-                var filePath = file.value;
-                if (isNotBlank(fileName) && isNotBlank(filePath)) {
-                    filePath = filePath.replace('C:\\fakepath\\', '/$REPLACE_REAL_PATH$/');
-                    curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
-                }
-            });
-        } else {
-            if (Object.getOwnPropertyNames(params).length > 0) {
-                if (hasRequestBody) {
-                    curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
-                } else {
-                    if ('GET' === method.toUpperCase()) {
-                        var paramArr = [];
-                        $.each(params, function(key, value) {
-                            if (isNotBlank(key) && isNotBlank(value)) {
-                                paramArr.push(key + '=' + value);
-                            }
-                        });
-                        var paramStr = paramArr.join('&');
-                        if (paramStr.length > 0) {
-                            tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
-                        }
-                    } else {
-                        $.each(params, function(key, value) {
-                            if (isNotBlank(key) && isNotBlank(value)) {
-                                curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
-                            }
-                        });
-                    }
-                }
-            }
-        }
-        curlHtml += "&nbsp; --url '" + tmpUrl + "'";
-        curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
-        if (curlHtml.length <= 100) {
-            curlHtml = curlHtml.replace(new RegExp(line.replace('\\', '\\\\'), 'g'), '');
-            if (!curlHtml.includes('\\')) {
-                curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
-            }
-        }
-        curl.find('pre').html(curlHtml);
-        curl.show();
-    }
-
-    {
-        var settings = {
-            url: url,
-            method: method,
-            beforeSend: function(request) {
-                if (Object.getOwnPropertyNames(headers).length > 0) {
-                    $.each(headers, function(key, value) {
-                        if (isNotBlank(key) && isNotBlank(value)) {
-                            request.setRequestHeader(key, value);
-                        }
-                    });
-                }
-            }
-        };
-        if (files.length > 0) {
-            if ('POST' !== method.toUpperCase()) {
-                response.find('pre').html("<span class='red'>Upload files must use POST(It's possible to use the above cURL), please contact the backend to change!</span>");
-                response.show();
-                return;
-            }
-
-            var formData = new FormData();
-            $.each(params, function(key, value) {
-                if (isNotBlank(key) && isNotBlank(value)) {
-                    formData.append(key, value);
-                }
-            });
-            $.each(files, function(i, f) {
-                formData.append(f.name, f.files[0]);
-            });
-
-            settings['data'] = formData;
-            settings['cache'] = false;
-            settings['processData'] = false;
-            settings['contentType'] = false;
-        } else {
-            if (hasRequestBody) {
-                if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
-                    response.find('pre').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request(It's possible to use the above cURL), please contact the backend change to POST!</span>");
-                    response.show();
-                    return;
-                }
-                settings['contentType'] = 'application/json';
-                settings['dataType'] = 'json';
-                settings['data'] = JSON.stringify(params);
-            } else {
-                settings['data'] = params;
-            }
-        }
-
-        var responseData = response.find('pre');
-        var start = new Date().getTime();
-        $btn.attr('disabled', 'disabled');
-        $btn.addClass('disabled');
-        $.ajax(settings).done(function(result) {
-            var html = timeLog(start);
-            if (isBlank(result)) {
-                html += '<span class="green">' + method + ' (' + url + ') success, but response nil</span>';
-            } else {
-                html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
-            }
-            responseData.html(html);
-            response.show();
-            $btn.removeAttr('disabled');
-            $btn.removeClass('disabled');
-        }).fail(function(error) {
-            var html = timeLog(start);
-            if (isBlank(error)) {
-                html += '<span class="red">' + method + ' (' + url + ') fail</span>';
-            } else {
-                html += '<span class="red">Response Code: ' + error.status + '</span>';
-                var json = error.responseJSON;
-                if (isNotBlank(json)) {
-                    html += '\n\n' + addLine(escapeHtml(JSON.stringify(json, null, 2)));
-                } else {
-                    var text = error.responseText;
-                    if (isNotBlank(text)) {
-                        html += '\n<span class="red wrap">Response Text: ' + escapeHtml(text) + '</span>';
-                    } else {
-                        html += '\n<span class="red">The response is empty</span>';
-                    }
-                }
-            }
-            responseData.html(html);
-            response.show();
-            $btn.removeAttr('disabled');
-            $btn.removeClass('disabled');
-        });
-    }
-}
 function timeLog(start) {
     var end = new Date().getTime();
     return 'use time: ' + (end - start) + 'ms\n' + formatDate(start) + ' -> ' + formatDate(end) + '\n\n';
@@ -865,6 +659,221 @@ function formatDate(date) {
     }
     return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + ' ' + S;
 }
+
+$(function() {
+    $.validationEngine.defaults.scroll = false;
+
+    $(document).on('change', '.has-token', function() {
+        $this = $(this);
+        var name = $this.attr('name');
+        var value = $this.val();
+        localStorage.setItem(name, value);
+        $('[name="' + name + '"]').val(value);
+    });
+
+    $(document).on('click', 'input[type="button"]', function() {
+        var $btn = $(this);
+        var $form = $btn.parents('form');
+        var curl = $form.find('.curl');
+        var response = $form.find('.response');
+        curl.hide();
+        response.hide();
+
+        var flag = $form.validationEngine('validate');
+        if (!flag) {
+            return;
+        }
+
+        var method = $form.attr('method');
+        var url = $form.attr('action');
+        var requestBody = $btn.attr('requestBody');
+        var hasRequestBody = requestBody === true || requestBody === 'true';
+
+        var map = objectifyForm($form);
+        var params = map[0];
+        var headers = map[1];
+        var files = map[2];
+
+        if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
+            if (!url.startsWith('/')) {
+                url = '/' + url;
+            }
+            url = projectDomain + url;
+        }
+
+        var placeRegex = /{(.*?)}/;
+        while (placeRegex.test(url)) {
+            var group = RegExp.$1;
+            var value = params[group];
+            // url </user/{id}> change to </user/123>, params <name=xyz&id=&gender=1> change to <name=xyz&gender=1>
+            url = url.replace(placeRegex, value);
+            delete params[group];
+        }
+
+        {
+            var tmpUrl = url;
+            var line = ' \\\n';
+            var curlHtml = 'curl -i -X ' + method + line;
+            curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
+            if (isNotBlank(document.cookie)) {
+                curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
+            }
+            if (Object.getOwnPropertyNames(headers).length > 0) {
+                $.each(headers, function(key, value) {
+                    if (isNotBlank(key) && isNotBlank(value)) {
+                        curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
+                    }
+                });
+            }
+            if (hasRequestBody) {
+                curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
+                curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
+            }
+            if (files.length > 0) {
+                if (Object.getOwnPropertyNames(params).length > 0) {
+                    $.each(params, function(key, value) {
+                        if (isNotBlank(key) && isNotBlank(value)) {
+                            curlHtml += "&nbsp; -F '" + (key + '=' + value) + "'" + line;
+                        }
+                    });
+                }
+                $.each(files, function(i, file) {
+                    var fileName = file.name;
+                    var filePath = file.value;
+                    if (isNotBlank(fileName) && isNotBlank(filePath)) {
+                        filePath = filePath.replace('C:\\fakepath\\', '/$REPLACE_REAL_PATH$/');
+                        curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
+                    }
+                });
+            } else {
+                if (Object.getOwnPropertyNames(params).length > 0) {
+                    if (hasRequestBody) {
+                        curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
+                    } else {
+                        if ('GET' === method.toUpperCase()) {
+                            var paramArr = [];
+                            $.each(params, function(key, value) {
+                                if (isNotBlank(key) && isNotBlank(value)) {
+                                    paramArr.push(key + '=' + value);
+                                }
+                            });
+                            var paramStr = paramArr.join('&');
+                            if (paramStr.length > 0) {
+                                tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
+                            }
+                        } else {
+                            $.each(params, function(key, value) {
+                                if (isNotBlank(key) && isNotBlank(value)) {
+                                    curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            curlHtml += "&nbsp; --url '" + tmpUrl + "'";
+            curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
+            if (curlHtml.length <= 100) {
+                curlHtml = curlHtml.replace(new RegExp(line.replace('\\', '\\\\'), 'g'), '');
+                if (!curlHtml.includes('\\')) {
+                    curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
+                }
+            }
+            curl.find('pre').html(curlHtml);
+            curl.show();
+        }
+
+        {
+            var settings = {
+                url: url,
+                method: method,
+                beforeSend: function(request) {
+                    if (Object.getOwnPropertyNames(headers).length > 0) {
+                        $.each(headers, function(key, value) {
+                            if (isNotBlank(key) && isNotBlank(value)) {
+                                request.setRequestHeader(key, value);
+                            }
+                        });
+                    }
+                }
+            };
+            if (files.length > 0) {
+                if ('POST' !== method.toUpperCase()) {
+                    response.find('pre').html("<span class='red'>Upload files must use POST(It's possible to use the above cURL), please contact the backend to change!</span>");
+                    response.show();
+                    return;
+                }
+
+                var formData = new FormData();
+                $.each(params, function(key, value) {
+                    if (isNotBlank(key) && isNotBlank(value)) {
+                        formData.append(key, value);
+                    }
+                });
+                $.each(files, function(i, f) {
+                    formData.append(f.name, f.files[0]);
+                });
+
+                settings['data'] = formData;
+                settings['cache'] = false;
+                settings['processData'] = false;
+                settings['contentType'] = false;
+            } else {
+                if (hasRequestBody) {
+                    if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
+                        response.find('pre').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request(It's possible to use the above cURL), please contact the backend change to POST!</span>");
+                        response.show();
+                        return;
+                    }
+                    settings['contentType'] = 'application/json';
+                    settings['dataType'] = 'json';
+                    settings['data'] = JSON.stringify(params);
+                } else {
+                    settings['data'] = params;
+                }
+            }
+
+            var responseData = response.find('pre');
+            var start = new Date().getTime();
+            $btn.attr('disabled', 'disabled');
+            $btn.addClass('disabled');
+            $.ajax(settings).done(function(result) {
+                var html = timeLog(start);
+                if (isBlank(result)) {
+                    html += '<span class="green">' + method + ' (' + url + ') success, but response nil</span>';
+                } else {
+                    html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
+                }
+                responseData.html(html);
+                response.show();
+                $btn.removeAttr('disabled');
+                $btn.removeClass('disabled');
+            }).fail(function(error) {
+                var html = timeLog(start);
+                if (isBlank(error)) {
+                    html += '<span class="red">' + method + ' (' + url + ') fail</span>';
+                } else {
+                    html += '<span class="red">Response Code: ' + error.status + '</span>';
+                    var json = error.responseJSON;
+                    if (isNotBlank(json)) {
+                        html += '\n\n' + addLine(escapeHtml(JSON.stringify(json, null, 2)));
+                    } else {
+                        var text = error.responseText;
+                        if (isNotBlank(text)) {
+                            html += '\n<span class="red wrap">Response Text: ' + escapeHtml(text) + '</span>';
+                        } else {
+                            html += '\n<span class="red">The response is empty</span>';
+                        }
+                    }
+                }
+                responseData.html(html);
+                response.show();
+                $btn.removeAttr('disabled');
+                $btn.removeClass('disabled');
+            });
+        }
+    });
+});
 </script>
 </body>
 </html>
