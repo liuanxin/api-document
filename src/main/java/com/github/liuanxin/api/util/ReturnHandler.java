@@ -324,8 +324,12 @@ public final class ReturnHandler {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             // add one record in list
             Collection list;
-            if (Set.class.isAssignableFrom(clazz)) {
+            if (LinkedHashSet.class.isAssignableFrom(clazz)) {
+                list = new LinkedHashSet();
+            } else if (Set.class.isAssignableFrom(clazz)) {
                 list = new HashSet();
+            } else if (LinkedList.class.isAssignableFrom(clazz)) {
+                list = new LinkedList();
             } else {
                 list = new ArrayList();
             }
@@ -335,7 +339,7 @@ public final class ReturnHandler {
             }
             return list;
         } else {
-            return Collections.emptyList();
+            return Set.class.isAssignableFrom(clazz) ? Collections.emptySet() : Collections.emptyList();
         }
     }
 
