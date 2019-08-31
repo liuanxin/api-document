@@ -667,8 +667,6 @@ function formatDate(date) {
     return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + ' ' + S;
 }
 
-$.validationEngine.defaults.scroll = false;
-
 $(function() {
     $(document).on('change', '.has-token', function () {
         $this = $(this);
@@ -686,7 +684,7 @@ $(function() {
         curl.hide();
         response.hide();
 
-        var flag = $form.validationEngine('validate');
+        var flag = $form.validationEngine('validate', { scroll: false });
         if (!flag) {
             return;
         }
