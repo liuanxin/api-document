@@ -667,6 +667,8 @@ function formatDate(date) {
     return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + ' ' + S;
 }
 
+$.validationEngine.defaults.scroll = false;
+
 $(function() {
     $(document).on('change', '.has-token', function() {
         $this = $(this);
