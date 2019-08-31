@@ -178,7 +178,7 @@
         @media (min-width: 993px) and (max-width: 1200px) {
             .bs-docs-sidebar {
                 padding-left: 10px;
-                width: calc(25% - 10px - 8px);
+                width: calc(25% - 10px - 3px);
             }
         }
         @media (min-width: 1201px) {
@@ -367,6 +367,7 @@ var projectDomain = '';
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script type="text/javascript">
+/* basic: page scroll */
 $(function() {
     'use strict';
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
@@ -380,6 +381,8 @@ $(function() {
     var $win = $(window);
     var $nav = $('.col-md-3');
     var $bar = $('.bs-docs-sidebar > .nav');
+
+    var firstScroll = true;
     $win.scroll(function() {
         if ($nav.css('display') !== 'none') {
             var footerTop = footer.offsetTop;
@@ -395,7 +398,12 @@ $(function() {
                 }
             }
 
-            var hash = $nav.find('.active > a:last').attr('href') || window.location.pathname;
+            if (firstScroll) {
+                firstScroll = false;
+                window.history.pushState({api: ''}, '', '');
+            }
+            var path = window.location.pathname;
+            var hash = $nav.find('.active > a:last').attr('href') || path;
             if (hash !== window.location.hash) {
                 window.history.replaceState({api: hash}, '', hash);
             }
@@ -406,6 +414,7 @@ $(function() {
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/dot/1.1.2/doT.min.js"></script>
 <script type="text/javascript">
+/* data: page info */
 function isBlank(str) {
     return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
 }

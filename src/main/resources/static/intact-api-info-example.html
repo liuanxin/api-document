@@ -222,7 +222,7 @@
         @media (min-width: 993px) and (max-width: 1200px) {
             .bs-docs-sidebar {
                 padding-left: 10px;
-                width: calc(25% - 10px - 8px);
+                width: calc(25% - 10px - 3px);
             }
         }
         @media (min-width: 1201px) {
@@ -475,6 +475,8 @@ $(function() {
     var $win = $(window);
     var $nav = $('.col-md-3');
     var $bar = $('.bs-docs-sidebar > .nav');
+
+    var firstScroll = true;
     $win.scroll(function() {
         if ($nav.css('display') !== 'none') {
             var footerTop = footer.offsetTop;
@@ -490,7 +492,12 @@ $(function() {
                 }
             }
 
-            var hash = $nav.find('.active > a:last').attr('href') || window.location.pathname;
+            if (firstScroll) {
+                firstScroll = false;
+                window.history.pushState({api: ''}, '', '');
+            }
+            var path = window.location.pathname;
+            var hash = $nav.find('.active > a:last').attr('href') || path;
             if (hash !== window.location.hash) {
                 window.history.replaceState({api: hash}, '', hash);
             }
