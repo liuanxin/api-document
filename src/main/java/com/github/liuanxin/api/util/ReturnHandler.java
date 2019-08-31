@@ -243,10 +243,10 @@ public final class ReturnHandler {
             return;
         }
         if (Collection.class.isAssignableFrom(innerClass)) {
-            setData(outClass, Collection.class, obj, handlerReturnJsonList(method, type, innerClass));
+            setData(outClass, innerClass, obj, handlerReturnJsonList(method, type, innerClass));
         }
         else if (Map.class.isAssignableFrom(innerClass)) {
-            setData(outClass, Map.class, obj, handlerReturnJsonMap(method, type));
+            setData(outClass, innerClass, obj, handlerReturnJsonMap(method, type));
         }
         else {
             Object value = handlerReturnWithObjClazz(method, innerClass);
