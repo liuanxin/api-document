@@ -246,6 +246,9 @@ public class Tools {
     public static boolean isNotEmpty(Map map) {
         return !isEmpty(map);
     }
+    public static <T> T first(T[] array) {
+        return isEmpty(array) ? null : array[0];
+    }
     public static <T> String toStr(Collection<T> collection) {
         if (isEmpty(collection)) {
             return EMPTY;
@@ -429,8 +432,7 @@ public class Tools {
         if (isNotEmpty(keyDefault)) {
             return keyDefault;
         } else if (clazz.isEnum()) {
-            Object[] enumConstants = clazz.getEnumConstants();
-            return (enumConstants.length > 0) ? enumConstants[0] : null;
+            return first(clazz.getEnumConstants());
         } else {
             return null;
         }
@@ -476,8 +478,7 @@ public class Tools {
             return defaultValue;
         } else if (clazz.isEnum()) {
             // Enum return first
-            Object[] enumConstants = clazz.getEnumConstants();
-            return (enumConstants.length > 0) ? enumConstants[0] : null;
+            return first(clazz.getEnumConstants());
         } else {
             return null;
         }

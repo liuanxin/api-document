@@ -165,24 +165,17 @@ public class DocumentController {
                         // response
                         document.setResponseList(handleResponse(handlerMethod));
 
-                        String returnType = handlerMethod.getMethod().getGenericReturnType().toString();
-                        if (Tools.isNotBlank(returnType)) {
-                            String prefix = "class ";
-                            if (returnType.startsWith(prefix)) {
-                                returnType = returnType.substring(prefix.length()).trim();
-                            }
-
-                            String method = handlerMethod.toString();
-                            // return param
-                            document.setReturnList(ReturnHandler.handlerReturn(method, returnType));
-                            // return json
-                            document.setReturnJson(ReturnHandler.handlerReturnJson(method, returnType));
-                        }
+                        ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
+                        String returnType = getReturnType(handlerMethod, apiMethod);
+                        String method = handlerMethod.toString();
+                        // return param
+                        document.setReturnList(ReturnHandler.handlerReturn(method, returnType));
+                        // return json
+                        document.setReturnJson(ReturnHandler.handlerReturnJson(method, returnType));
 
                         // meta info
-                        boolean globalCommentInReturnExample = copyright.isCommentInReturnExample();
-                        boolean globalReturnRecordLevel = copyright.isReturnRecordLevel();
-                        ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
+                        boolean globalCommentInReturn = copyright.isCommentInReturnExample();
+                        boolean globalRecordLevel = copyright.isReturnRecordLevel();
                         if (Tools.isNotBlank(apiMethod)) {
                             document.setTitle(apiMethod.value());
                             document.setDesc(apiMethod.desc());
@@ -190,15 +183,13 @@ public class DocumentController {
                             document.setIndex(apiMethod.index());
                             document.setCommentInReturnExampleWithLevel(apiMethod.commentInReturnExampleWithLevel());
 
-                            boolean[] returnExample = apiMethod.commentInReturnExample();
-                            document.setCommentInReturnExample(
-                                    returnExample.length == 0 ? globalCommentInReturnExample : returnExample[0]);
-                            boolean[] returnRecordLevel = apiMethod.returnRecordLevel();
-                            document.setReturnRecordLevel(
-                                    returnRecordLevel.length == 0 ? globalReturnRecordLevel : returnRecordLevel[0]);
+                            boolean[] commentInReturn = apiMethod.commentInReturnExample();
+                            document.setCommentInReturnExample(commentInReturn.length == 0 ? globalCommentInReturn : commentInReturn[0]);
+                            boolean[] recordLevel = apiMethod.returnRecordLevel();
+                            document.setReturnRecordLevel(recordLevel.length == 0 ? globalRecordLevel : recordLevel[0]);
                         } else {
-                            document.setCommentInReturnExample(globalCommentInReturnExample);
-                            document.setReturnRecordLevel(globalReturnRecordLevel);
+                            document.setCommentInReturnExample(globalCommentInReturn);
+                            document.setReturnRecordLevel(globalRecordLevel);
                         }
                         document.setExampleUrl(getExampleUrl(document.getId()));
 
@@ -243,6 +234,59 @@ public class DocumentController {
                 .setEnumInfo(Tools.allEnumInfo())
                 .setModuleList(moduleList);
         return new DocumentInfoAndUrlMap(documentInfo, documentMap);
+    }
+
+    private static String getReturnType(HandlerMethod handlerMethod, ApiMethod apiMethod) {
+        String returnType = Tools.EMPTY;
+        if (Tools.isNotBlank(apiMethod)) {
+            ApiReturnType customReturn = Tools.first(apiMethod.returnType());
+            if (Tools.isNotBlank(customReturn)) {
+                StringBuilder sbd = new StringBuilder();
+                sbd.append(customReturn.value().getName());
+                Class<?> parent = customReturn.genericParent();
+                if (parent != Void.class) {
+                    sbd.append("<").append(parent.getName());
+                }
+
+                Class<?>[] generics = customReturn.generic();
+                int genericLen = generics.length;
+                if (genericLen > 0) {
+                    Class<?>[] genericChild = customReturn.genericChild();
+                    int genericChildLen = genericChild.length;
+                    if (genericChildLen > 0 && genericLen > 1) {
+                        genericLen = 1;
+                    }
+
+                    sbd.append("<");
+                    for (int i = 0; i < genericLen; i++) {
+                        if (i > 0) {
+                            sbd.append(", ");
+                        }
+                        sbd.append(generics[i].getName());
+                    }
+                    if (genericChildLen > 0) {
+                        sbd.append("<");
+                        for (int i = 0; i < genericChildLen; i++) {
+                            if (i > 0) {
+                                sbd.append(", ");
+                            }
+                            sbd.append(genericChild[i].getName());
+                        }
+                        sbd.append(">");
+                    }
+                    sbd.append(">");
+                }
+
+                if (parent != Void.class) {
+                    sbd.append(">");
+                }
+                returnType = sbd.toString();
+            }
+        }
+        if (Tools.isEmpty(returnType)) {
+            returnType = handlerMethod.getMethod().getGenericReturnType().toString();
+        }
+        return returnType;
     }
 
     private static boolean hasRequestBody(HandlerMethod handlerMethod) {

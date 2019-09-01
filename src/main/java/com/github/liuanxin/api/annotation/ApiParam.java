@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 public @interface ApiParam {
 
     /** @return  param desc */
-    String value();
+    String value() default "";
 
     /** @return param name, if set will ignore paramName */
     String name() default "";

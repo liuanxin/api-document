@@ -319,7 +319,7 @@ public final class ReturnHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private static Collection handlerReturnJsonList(String method, String type, Class clazz) {
+    private static Collection handlerReturnJsonList(String method, String type, Class<?> clazz) {
         if (type.contains("<") && type.contains(">")) {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             // add one record in list
@@ -494,7 +494,7 @@ public final class ReturnHandler {
     }
 
     /** if not recursive class(level > 2 will error T_T ), return true */
-    private static boolean notRecursiveGeneric(Class clazz, Field field) {
+    private static boolean notRecursiveGeneric(Class<?> clazz, Field field) {
         try {
             Field signatureField = field.getClass().getDeclaredField("signature");
             signatureField.setAccessible(true);
