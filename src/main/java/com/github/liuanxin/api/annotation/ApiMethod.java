@@ -20,6 +20,8 @@ public @interface ApiMethod {
     int index() default Integer.MAX_VALUE;
 
     /**
+     * not set will use global config(default true).
+     *
      * true  : output in the return example.
      * false : listed separately.
      * @return return whether the sample contains a comment

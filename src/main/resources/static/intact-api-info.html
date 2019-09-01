@@ -66,9 +66,17 @@
             margin-bottom: 10px;
         }
         .text-left {
-            vertical-align: middle;
+            vertical-align: middle !important;
         }
         .response-example {
+            color: #337ab7;
+            text-decoration: none;
+            background-color: transparent;
+            cursor: pointer;
+        }
+        .response-example:focus, .response-example:hover {
+            color: #23527c;
+            text-decoration: underline;
         }
         .modal-dialog {
             width: 75%;
@@ -332,7 +340,7 @@
                                                 {{ var comment = response.comment; }}
                                                 {{? comment !== undefined && comment !== null && comment !== ''}}
                                                 <td class="text-left">
-                                                    <span class="response-example" title="点击查看示例" data-toggle="modal"
+                                                    <span class="response-example" title="点击查看响应 {{= response.code}} 时的示例" data-toggle="modal"
                                                           data-target="#{{= module.name}}-{{= url.id}}-{{= response.code}}">查看示例</span>
                                                 </td>
                                                 {{?? hasAction}}
