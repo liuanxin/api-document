@@ -96,11 +96,14 @@
         .bottom-table {
             margin-bottom: 10px;
         }
-        .example {
-            min-width: 200px;
+        .text-left {
+            vertical-align: middle;
         }
         .formError {
             white-space: nowrap;
+        }
+        .example {
+            min-width: 200px;
         }
         .curl, .response {
             display: none;
@@ -253,7 +256,7 @@
                         <div class="module-api-info">
                             <p class="module-api-info-basic">request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             {{
-                            var moduleDesc = '', printNil = '';
+                            var moduleDesc = '';
                             if (url.develop && url.develop !== '') {
                                 moduleDesc += 'develop: ' + url.develop;
                             }
@@ -262,7 +265,8 @@
                                 moduleDesc += 'comment: ' + url.desc;
                             }
 
-                            if (url.exampleUrl) {
+                            var printNil = '';
+                            if (url.exampleUrl && url.exampleUrl != '') {
                                 var example = '<a target="_blank" href="' + url.exampleUrl + '">Result example url</a>';
                                 if (moduleDesc !== '') {
                                     moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
@@ -283,9 +287,9 @@
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th scope="col" class="text-left">return field name</th>
-                                                <th scope="col" class="text-left">type</th>
-                                                <th scope="col" class="text-left">comment</th>
+                                                <th class="text-left">return field name</th>
+                                                <th class="text-left">type</th>
+                                                <th class="text-left">comment</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -301,22 +305,22 @@
                                 </div>
                                 {{?}}
 
-                                {{? (it.responseList && it.responseList.length > 0) || (url.responseList && url.responseList.length > 0)}}
+                                {{
+                                var responseList;
+                                if (url.responseList && url.responseList.length > 0) { responseList = url.responseList; }
+                                else if (it.responseList && it.responseList.length > 0) { responseList = it.responseList; }
+                                else { responseList = []; }
+                                }}
+                                {{? responseList.length > 0}}
                                 <div class="bottom-table panel panel-default">
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th scope="col" class="text-left">Response Code</th>
-                                                <th scope="col" class="text-left">comment</th>
+                                                <th class="text-left">Response Code</th>
+                                                <th class="text-left">comment</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {{
-                                            var responseList;
-                                            if (url.responseList && url.responseList.length > 0) { responseList = url.responseList; }
-                                            else if (it.responseList && it.responseList.length > 0) { responseList = it.responseList; }
-                                            else { responseList = []; }
-                                            }}
                                             {{~ responseList  :response}}
                                             <tr>
                                                 <td class="text-left">{{= response.code || ''}}</td>
@@ -347,12 +351,12 @@
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th scope="col" class="text-left">param name</th>
-                                                <th scope="col" class="text-left">comment</th>
-                                                <th scope="col" class="text-left">required</th>
-                                                <th scope="col" class="text-left">data type</th>
-                                                {{? hasHeader}}<th scope="col" class="text-left">param type</th>{{?}}
-                                                <th scope="col" class="text-left example">example</th>
+                                                <th class="text-left">param name</th>
+                                                <th class="text-left">comment</th>
+                                                <th class="text-left">required</th>
+                                                <th class="text-left">data type</th>
+                                                {{? hasHeader}}<th class="text-left">param type</th>{{?}}
+                                                <th class="text-left example">example</th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -77,6 +77,16 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     }
 
     public List<DocumentReturn> getReturnList() {
+        return returnList(commentInReturnExample, returnRecordLevel, returnList);
+    }
+
+    public String getCommentJson() {
+        return commentJson(returnJson, commentInReturnExample, commentInReturnExampleWithLevel, returnList);
+    }
+
+    public static List<DocumentReturn> returnList(boolean commentInReturnExample,
+                                                  boolean returnRecordLevel,
+                                                  List<DocumentReturn> returnList) {
         if (commentInReturnExample || Tools.isEmpty(returnList)) {
             return Collections.emptyList();
         }
@@ -99,8 +109,10 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         }
         return documentReturns;
     }
-
-    public String getCommentJson() {
+    public static String commentJson(String returnJson,
+                                     boolean commentInReturnExample,
+                                     boolean commentInReturnExampleWithLevel,
+                                     List<DocumentReturn> returnList) {
         if (Tools.isEmpty(returnJson)) {
             return Tools.EMPTY;
         }
@@ -116,13 +128,12 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             return commentJson;
         }
 
-        String[] split = commentJson.split(WRAP);
-        // add comment in json
         StringBuilder sbd = new StringBuilder();
 
+        String[] split = commentJson.split(WRAP);
         if (commentInReturnExampleWithLevel) {
             Map<Integer, String> indexMap = indexMap(split);
-            Map<String, String> commentMap = documentReturnMap();
+            Map<String, String> commentMap = documentReturnMap(returnList);
 
             for (int i = 0; i < split.length; i++) {
                 String comment = split[i];
@@ -136,7 +147,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             }
         } else {
             int index = 0;
-            // add comment in json
             for (String comment : split) {
                 sbd.append(comment);
 
@@ -228,7 +238,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
      * 27 : }
      * </pre>
      */
-    private Map<Integer, String> indexMap(String[] split) {
+    private static Map<Integer, String> indexMap(String[] split) {
         Map<Integer, String> indexMap = Tools.newHashMap();
         StringBuilder field = new StringBuilder();
         for (int i = 0; i < split.length; i++) {
@@ -277,7 +287,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
      * p7 : desc7
      * </pre>
      */
-    private Map<String, String> documentReturnMap() {
+    private static Map<String, String> documentReturnMap(List<DocumentReturn> returnList) {
         Map<String, String> returnMap = Tools.newHashMap();
         for (DocumentReturn documentReturn : returnList) {
             returnMap.put(documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY), documentReturn.getDesc());

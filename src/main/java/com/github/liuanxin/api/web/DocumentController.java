@@ -127,6 +127,10 @@ public class DocumentController {
         Map<String, DocumentModule> moduleMap = Tools.newLinkedHashMap();
         Map<String, DocumentUrl> documentMap = Tools.newLinkedHashMap();
 
+        // meta info
+        boolean globalCommentInReturn = copyright.isCommentInReturnExample();
+        boolean globalRecordLevel = copyright.isReturnRecordLevel();
+
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = mapping.getHandlerMethods();
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
             RequestMappingInfo requestMapping = entry.getKey();
@@ -162,20 +166,17 @@ public class DocumentController {
                         }
                         document.setRequestBody(hasRequestBody(handlerMethod));
                         document.setParamList(paramList);
-                        // response
-                        document.setResponseList(handleResponse(handlerMethod));
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
-                        String returnType = getReturnType(handlerMethod, apiMethod);
+                        String returnType = getReturnTypeByMethod(handlerMethod, apiMethod);
                         String method = handlerMethod.toString();
                         // return param
                         document.setReturnList(ReturnHandler.handlerReturn(method, returnType));
                         // return json
                         document.setReturnJson(ReturnHandler.handlerReturnJson(method, returnType));
 
-                        // meta info
-                        boolean globalCommentInReturn = copyright.isCommentInReturnExample();
-                        boolean globalRecordLevel = copyright.isReturnRecordLevel();
+                        boolean commentInReturn = globalCommentInReturn;
+                        boolean recordLevel = globalRecordLevel;
                         if (Tools.isNotBlank(apiMethod)) {
                             document.setTitle(apiMethod.value());
                             document.setDesc(apiMethod.desc());
@@ -183,15 +184,21 @@ public class DocumentController {
                             document.setIndex(apiMethod.index());
                             document.setCommentInReturnExampleWithLevel(apiMethod.commentInReturnExampleWithLevel());
 
-                            boolean[] commentInReturn = apiMethod.commentInReturnExample();
-                            document.setCommentInReturnExample(commentInReturn.length == 0 ? globalCommentInReturn : commentInReturn[0]);
-                            boolean[] recordLevel = apiMethod.returnRecordLevel();
-                            document.setReturnRecordLevel(recordLevel.length == 0 ? globalRecordLevel : recordLevel[0]);
-                        } else {
-                            document.setCommentInReturnExample(globalCommentInReturn);
-                            document.setReturnRecordLevel(globalRecordLevel);
+                            boolean[] commentInReturnExample = apiMethod.commentInReturnExample();
+                            if (commentInReturnExample.length > 0) {
+                                commentInReturn = commentInReturnExample[0];
+                            }
+                            boolean[] returnRecordLevel = apiMethod.returnRecordLevel();
+                            if (returnRecordLevel.length > 0) {
+                                recordLevel = returnRecordLevel[0];
+                            }
                         }
+
+                        document.setCommentInReturnExample(commentInReturn);
+                        document.setReturnRecordLevel(recordLevel);
                         document.setExampleUrl(getExampleUrl(document.getId()));
+                        // response
+                        document.setResponseList(methodResponse(handlerMethod, commentInReturn, recordLevel));
 
                         documentMap.put(document.getId(), document);
                         // add DocumentUrl to DocumentModule
@@ -230,63 +237,123 @@ public class DocumentController {
         }
         DocumentInfo documentInfo = new DocumentInfo()
                 .setTokenList(copyright.getGlobalTokens())
-                .setResponseList(copyright.getGlobalResponse())
+                .setResponseList(globalResponse(copyright.getGlobalResponse(), globalCommentInReturn, globalRecordLevel))
                 .setEnumInfo(Tools.allEnumInfo())
                 .setModuleList(moduleList);
         return new DocumentInfoAndUrlMap(documentInfo, documentMap);
     }
 
-    private static String getReturnType(HandlerMethod handlerMethod, ApiMethod apiMethod) {
-        String returnType = Tools.EMPTY;
+    private static String getReturnTypeByMethod(HandlerMethod handlerMethod, ApiMethod apiMethod) {
+        String returnType;
         if (Tools.isNotBlank(apiMethod)) {
-            ApiReturnType customReturn = Tools.first(apiMethod.returnType());
-            if (Tools.isNotBlank(customReturn)) {
-                StringBuilder sbd = new StringBuilder();
-                sbd.append(customReturn.value().getName());
-                Class<?> parent = customReturn.genericParent();
-                if (parent != Void.class) {
-                    sbd.append("<").append(parent.getName());
-                }
+            returnType = getReturnTypeByAnnotation(Tools.first(apiMethod.returnType()));
+        } else {
+            returnType = Tools.EMPTY;
+        }
 
-                Class<?>[] generics = customReturn.generic();
-                int genericLen = generics.length;
-                if (genericLen > 0) {
-                    Class<?>[] genericChild = customReturn.genericChild();
-                    int genericChildLen = genericChild.length;
-                    if (genericChildLen > 0 && genericLen > 1) {
-                        genericLen = 1;
+        if (Tools.isEmpty(returnType) && Tools.isNotBlank(handlerMethod)) {
+            returnType = handlerMethod.getMethod().getGenericReturnType().toString();
+        }
+        return returnType;
+    }
+    private static String getReturnTypeByAnnotation(ApiReturnType type) {
+        return Tools.isBlank(type)
+                ? null
+                : getReturnType(type.value(), type.firstGeneric(), type.secondGeneric(), type.thirdGeneric());
+    }
+    private static String getReturnType(Class<?> response, Class<?> first, Class<?>[] second, Class<?>[] third) {
+        if (Tools.isBlank(response)) {
+            return null;
+        } else {
+            StringBuilder sbd = new StringBuilder();
+            sbd.append(response.getName());
+            if (Tools.isNotBlank(first) && first != Void.class) {
+                sbd.append("<").append(first.getName());
+            }
+
+            if (Tools.isNotBlank(second)) {
+                int secondLen = second.length;
+                if (secondLen > 0) {
+                    int childrenLen = 0;
+                    if (Tools.isNotBlank(third)) {
+                        childrenLen = third.length;
+                        if (childrenLen > 0 && secondLen > 1) {
+                            secondLen = 1;
+                        }
                     }
 
                     sbd.append("<");
-                    for (int i = 0; i < genericLen; i++) {
+                    for (int i = 0; i < secondLen; i++) {
                         if (i > 0) {
                             sbd.append(", ");
                         }
-                        sbd.append(generics[i].getName());
+                        sbd.append(second[i].getName());
                     }
-                    if (genericChildLen > 0) {
+                    if (childrenLen > 0) {
                         sbd.append("<");
-                        for (int i = 0; i < genericChildLen; i++) {
+                        for (int i = 0; i < childrenLen; i++) {
                             if (i > 0) {
                                 sbd.append(", ");
                             }
-                            sbd.append(genericChild[i].getName());
+                            sbd.append(third[i].getName());
                         }
                         sbd.append(">");
                     }
                     sbd.append(">");
                 }
+            }
 
-                if (parent != Void.class) {
-                    sbd.append(">");
-                }
-                returnType = sbd.toString();
+            if (Tools.isNotBlank(first) && first != Void.class) {
+                sbd.append(">");
+            }
+            return sbd.toString();
+        }
+    }
+    private static String getReturnTypeByResponse(DocumentResponse res) {
+        return Tools.isBlank(res)
+                ? null
+                : getReturnType(res.getResponse(), res.getGenericParent(), res.getGeneric(), res.getGenericChild());
+    }
+
+    private static List<DocumentResponse> globalResponse(List<DocumentResponse> globalResponse,
+                                                         boolean globalCommentInReturn,
+                                                         boolean globalRecordLevel) {
+        for (DocumentResponse response : globalResponse) {
+            String type = getReturnTypeByResponse(response);
+            if (Tools.isNotBlank(type)) {
+                String method = "global handler";
+                String json = ReturnHandler.handlerReturnJson(method, type);
+                List<DocumentReturn> returnList = ReturnHandler.handlerReturn(method, type);
+
+                response.setComment(DocumentUrl.commentJson(json, globalCommentInReturn, true, returnList));
+                response.setReturnList(DocumentUrl.returnList(globalCommentInReturn, globalRecordLevel, returnList));
             }
         }
-        if (Tools.isEmpty(returnType)) {
-            returnType = handlerMethod.getMethod().getGenericReturnType().toString();
+        return globalResponse;
+    }
+    private static List<DocumentResponse> methodResponse(HandlerMethod handlerMethod,
+                                                         boolean methodCommentInReturn,
+                                                         boolean methodRecordLevel) {
+        List<DocumentResponse> responseList = new LinkedList<>();
+        ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
+        if (Tools.isNotBlank(responses)) {
+            for (ApiResponse apiResponse : responses.value()) {
+                DocumentResponse response = new DocumentResponse(apiResponse);
+
+                String type = getReturnTypeByAnnotation(Tools.first(apiResponse.type()));
+                if (Tools.isNotBlank(type)) {
+                    String method = handlerMethod.toString();
+                    String json = ReturnHandler.handlerReturnJson(method, type);
+                    List<DocumentReturn> returnList = ReturnHandler.handlerReturn(method, type);
+
+                    response.setComment(DocumentUrl.commentJson(json, methodCommentInReturn, true, returnList));
+                    response.setReturnList(DocumentUrl.returnList(methodCommentInReturn, methodRecordLevel, returnList));
+                }
+
+                responseList.add(response);
+            }
         }
-        return returnType;
+        return responseList;
     }
 
     private static boolean hasRequestBody(HandlerMethod handlerMethod) {
@@ -297,17 +364,6 @@ public class DocumentController {
             }
         }
         return false;
-    }
-
-    private static List<DocumentResponse> handleResponse(HandlerMethod handlerMethod) {
-        List<DocumentResponse> responseList = new LinkedList<>();
-        ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
-        if (Tools.isNotBlank(responses)) {
-            for (ApiResponse response : responses.value()) {
-                responseList.add(new DocumentResponse(response.code(), response.msg()));
-            }
-        }
-        return responseList;
     }
 
     private static String getExampleUrl(String param) {

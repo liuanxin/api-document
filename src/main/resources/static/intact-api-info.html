@@ -65,7 +65,11 @@
         .bottom-table {
             margin-bottom: 10px;
         }
-
+        .text-left {
+            vertical-align: middle;
+        }
+        .response-example {
+        }
         .bold {
             font-weight: bold;
         }
@@ -205,7 +209,7 @@
                         <div class="module-api-info">
                             <p class="module-api-info-basic">接口地址 <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                             {{
-                            var moduleDesc = '', printNil = '';
+                            var moduleDesc = '';
                             if (url.develop && url.develop !== '') {
                                 moduleDesc += '开发: ' + url.develop;
                             }
@@ -214,7 +218,8 @@
                                 moduleDesc += '说明: ' + url.desc;
                             }
 
-                            if (url.exampleUrl) {
+                            var printNil = '';
+                            if (url.exampleUrl && url.exampleUrl != '') {
                                 var example = '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a>';
                                 if (moduleDesc !== '') {
                                     moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
@@ -243,12 +248,12 @@
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
                                         <tr>
-                                            <th scope="col" class="text-left">参数名称</th>
-                                            <th scope="col" class="text-left">数据类型</th>
-                                            <th scope="col" class="text-left">必须</th>
-                                            <th scope="col" class="text-left">说明</th>
-                                            {{? hasExample}}<th scope="col" class="text-left">示例</th>{{?}}
-                                            {{? hasHeader}}<th scope="col" class="text-left">参数类型</th>{{?}}
+                                            <th class="text-left">参数名称</th>
+                                            <th class="text-left">数据类型</th>
+                                            <th class="text-left">必须</th>
+                                            <th class="text-left">说明</th>
+                                            {{? hasExample}}<th class="text-left">示例</th>{{?}}
+                                            {{? hasHeader}}<th class="text-left">参数类型</th>{{?}}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -276,9 +281,9 @@
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th scope="col" class="text-left">返回字段名称</th>
-                                                <th scope="col" class="text-left">类型</th>
-                                                <th scope="col" class="text-left">说明</th>
+                                                <th class="text-left">名称</th>
+                                                <th class="text-left">类型</th>
+                                                <th class="text-left">说明</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -294,31 +299,89 @@
                                 </div>
                                 {{?}}
 
-                                {{? (it.responseList && it.responseList.length > 0) || (url.responseList && url.responseList.length > 0)}}
+                                {{
+                                var responseList;
+                                if (url.responseList && url.responseList.length > 0) { responseList = url.responseList; }
+                                else if (it.responseList && it.responseList.length > 0) { responseList = it.responseList; }
+                                else { responseList = []; }
+
+                                var hasAction = false;
+                                for (var i = 0; i < responseList.length; i++) {
+                                var comment = responseList[i].comment;
+                                if (comment !== undefined && comment !== null && comment !== '') { hasAction = true; }
+                                }
+                                console.log('hasAction: ' + hasAction);
+                                }}
+                                {{? responseList.length > 0}}
                                 <div class="bottom-table panel panel-default">
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                             <tr>
-                                                <th scope="col" class="text-left">响应码</th>
-                                                <th scope="col" class="text-left">说明</th>
+                                                <th class="text-left">响应码</th>
+                                                <th class="text-left">说明</th>
+                                                {{? hasAction}}<th class="text-left">操作</th>{{?}}
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {{
-                                            var responseList;
-                                            if (url.responseList && url.responseList.length > 0) { responseList = url.responseList; }
-                                            else if (it.responseList && it.responseList.length > 0) { responseList = it.responseList; }
-                                            else { responseList = []; }
-                                            }}
                                             {{~ responseList  :response}}
                                             <tr>
                                                 <td class="text-left">{{= response.code || ''}}</td>
                                                 <td class="text-left">{{= response.msg || ''}}</td>
+                                                <td class="text-left">
+                                                    {{ var comment = response.comment; console.log('comment: ' + comment); }}
+                                                    {{? comment !== undefined && comment !== null && comment !== ''}}
+                                                    <span class="response-example" title="点击查看示例" data-toggle="modal"
+                                                          data-id="#{{= module.name}}-{{= url.id}}-{{= response.code}}">查看示例</span>
+                                                    {{?}}
+                                                </td>
                                             </tr>
                                             {{~}}
                                         </tbody>
                                     </table>
                                 </div>
+
+                                {{~ responseList  :response}}
+                                {{ var comment = response.comment; }}
+                                {{? comment !== undefined && comment !== null && comment !== ''}}
+                                <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <h4 class="modal-title">{{= module.name}} ==> {{= url.title}} 响应 {{= response.code}} 时的示例</h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <pre class="src src-json">{{= response.comment || ''}}</pre>
+
+                                            {{? response.returnList && response.returnList.length > 0}}
+                                            <div class="bottom-table panel panel-default">
+                                                <table class="table table-striped table-bordered table-hover table-condensed">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="text-left">名称</th>
+                                                        <th class="text-left">类型</th>
+                                                        <th class="text-left">说明</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    {{~ response.returnList  :rtn}}
+                                                    <tr>
+                                                        <td class="text-left">{{= rtn.name || ''}}</td>
+                                                        <td class="text-left">{{= rtn.type || ''}}</td>
+                                                        <td class="text-left wrap">{{= rtn.desc || ''}}</td>
+                                                    </tr>
+                                                    {{~}}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            {{?}}
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{?}}
+                                {{~}}
                                 {{?}}
                             </div>
                         </div>
@@ -504,6 +567,13 @@ $.get(projectDomain + '/api/info').done(function(data) {
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+
+$(function() {
+    $(document).on('click', '.response-example', function() {
+        var modalId = $(this).attr('data-id');
+        $(modalId).modal('show');
+    });
+});
 </script>
 </body>
 </html>
