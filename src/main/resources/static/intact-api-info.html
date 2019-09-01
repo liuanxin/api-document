@@ -333,7 +333,7 @@
                                                 {{? comment !== undefined && comment !== null && comment !== ''}}
                                                 <td class="text-left">
                                                     <span class="response-example" title="点击查看示例" data-toggle="modal"
-                                                          data-id="#{{= module.name}}-{{= url.id}}-{{= response.code}}">查看示例</span>
+                                                          data-target="#{{= module.name}}-{{= url.id}}-{{= response.code}}">查看示例</span>
                                                 </td>
                                                 {{?? hasAction}}
                                                 <td class="text-left"></td>
@@ -575,13 +575,6 @@ $.get(projectDomain + '/api/info').done(function(data) {
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
-
-$(function() {
-    $(document).on('click', '.response-example', function() {
-        var modalId = $(this).attr('data-id');
-        $(modalId).modal('show');
-    });
-});
 </script>
 </body>
 </html>
