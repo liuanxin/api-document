@@ -70,6 +70,9 @@
         }
         .response-example {
         }
+        .modal-dialog {
+            width: 75%;
+        }
         .bold {
             font-weight: bold;
         }
@@ -310,7 +313,6 @@
                                 var comment = responseList[i].comment;
                                 if (comment !== undefined && comment !== null && comment !== '') { hasAction = true; }
                                 }
-                                console.log('hasAction: ' + hasAction);
                                 }}
                                 {{? responseList.length > 0}}
                                 <div class="bottom-table panel panel-default">
@@ -327,13 +329,15 @@
                                             <tr>
                                                 <td class="text-left">{{= response.code || ''}}</td>
                                                 <td class="text-left">{{= response.msg || ''}}</td>
+                                                {{ var comment = response.comment; }}
+                                                {{? comment !== undefined && comment !== null && comment !== ''}}
                                                 <td class="text-left">
-                                                    {{ var comment = response.comment; console.log('comment: ' + comment); }}
-                                                    {{? comment !== undefined && comment !== null && comment !== ''}}
                                                     <span class="response-example" title="点击查看示例" data-toggle="modal"
                                                           data-id="#{{= module.name}}-{{= url.id}}-{{= response.code}}">查看示例</span>
-                                                    {{?}}
                                                 </td>
+                                                {{?? hasAction}}
+                                                <td class="text-left"></td>
+                                                {{?}}
                                             </tr>
                                             {{~}}
                                         </tbody>
@@ -346,8 +350,12 @@
                                 <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade" tabindex="-1" aria-hidden="true">
                                     <div class="modal-dialog modal-content">
                                         <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                            <h4 class="modal-title">{{= module.name}} ==> {{= url.title}} 响应 {{= response.code}} 时的示例</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                            <h4 class="modal-title">
+                                                模块「{{= module.name}}」接口「{{= url.title}}」响应「{{= response.code}}」时的示例
+                                            </h4>
                                         </div>
                                         <div class="modal-body">
                                             <pre class="src src-json">{{= response.comment || ''}}</pre>
