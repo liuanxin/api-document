@@ -354,10 +354,11 @@
                                 {{~ responseList  :response}}
                                 {{ var comment = response.comment; }}
                                 {{? comment !== undefined && comment !== null && comment !== ''}}
-                                <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade" tabindex="-1" aria-hidden="true">
+                                <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
+                                     tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                                     <div class="modal-dialog modal-content">
                                         <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            <button type="button" class="close" data-dismiss="modal">
                                                 &times;
                                             </button>
                                             <h4 class="modal-title">
@@ -409,10 +410,11 @@
                 {{~ it.responseList  :response}}
                 {{ var comment = response.comment; }}
                 {{? comment !== undefined && comment !== null && comment !== ''}}
-                <div id="global-{{= response.code}}" class="modal fade" tabindex="-1" aria-hidden="true">
+                <div id="global-{{= response.code}}" class="modal fade" tabindex="-1"
+                     aria-hidden="true" data-backdrop="static" data-keyboard="false">
                     <div class="modal-dialog modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            <button type="button" class="close" data-dismiss="modal">
                                 &times;
                             </button>
                             <h4 class="modal-title">

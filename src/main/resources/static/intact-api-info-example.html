@@ -346,8 +346,8 @@
                                             }}
                                             {{? comment !== undefined && comment !== null && comment !== ''}}
                                             <td class="text-left">
-                                                <span class="response-example" title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
-                                                      data-toggle="modal" data-target="#{{= targetId}}">查看示例</span>
+                                                <a title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
+                                                   data-toggle="modal" href="#{{= targetId}}">查看示例</a>
                                             </td>
                                             {{?? hasAction}}
                                             <td class="text-left"></td>
@@ -362,10 +362,11 @@
                                 {{~ responseList  :response}}
                                 {{ var comment = response.comment; }}
                                 {{? comment !== undefined && comment !== null && comment !== ''}}
-                                <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade" tabindex="-1" aria-hidden="true">
+                                <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
+                                     tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
                                     <div class="modal-dialog modal-content">
                                         <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                            <button type="button" class="close" data-dismiss="modal">
                                                 &times;
                                             </button>
                                             <h4 class="modal-title">
@@ -508,10 +509,11 @@
                 {{~ it.responseList  :response}}
                 {{ var comment = response.comment; }}
                 {{? comment !== undefined && comment !== null && comment !== ''}}
-                <div id="global-{{= response.code}}" class="modal fade" tabindex="-1" aria-hidden="true">
+                <div id="global-{{= response.code}}" class="modal fade" tabindex="-1"
+                     aria-hidden="true" data-backdrop="static" data-keyboard="false">
                     <div class="modal-dialog modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            <button type="button" class="close" data-dismiss="modal">
                                 &times;
                             </button>
                             <h4 class="modal-title">
