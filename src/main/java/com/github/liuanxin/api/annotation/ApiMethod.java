@@ -44,7 +44,7 @@ public @interface ApiMethod {
     boolean[] returnRecordLevel() default {};
 
     /**
-     * customize return type, if set, will ignore 「the return type」 on method
+     * customize return type, if set will ignore 「the return type」 on method
      */
     ApiReturnType[] returnType() default {};
 }
