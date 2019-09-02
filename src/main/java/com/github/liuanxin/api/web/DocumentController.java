@@ -254,29 +254,35 @@ public class DocumentController {
         if (Tools.isEmpty(returnType) && Tools.isNotBlank(handlerMethod)) {
             returnType = handlerMethod.getMethod().getGenericReturnType().toString();
         }
+        if (Tools.isNotBlank(returnType)) {
+            String prefix = "class ";
+            if (returnType.startsWith(prefix)) {
+                returnType = returnType.substring(prefix.length());
+            }
+        }
         return returnType;
     }
     private static String getReturnTypeByAnnotation(ApiReturnType type) {
         return Tools.isBlank(type)
                 ? null
-                : getReturnType(type.value(), type.firstGeneric(), type.secondGeneric(), type.thirdGeneric());
+                : getReturnType(type.value(), type.genericParent(), type.generic(), type.genericChild());
     }
-    private static String getReturnType(Class<?> response, Class<?> first, Class<?>[] second, Class<?>[] third) {
+    private static String getReturnType(Class<?> response, Class<?> genericParent, Class<?>[] generic, Class<?>[] genericChild) {
         if (Tools.isBlank(response)) {
             return null;
         } else {
             StringBuilder sbd = new StringBuilder();
             sbd.append(response.getName());
-            if (Tools.isNotBlank(first) && first != Void.class) {
-                sbd.append("<").append(first.getName());
+            if (Tools.isNotBlank(genericParent) && genericParent != Void.class) {
+                sbd.append("<").append(genericParent.getName());
             }
 
-            if (Tools.isNotBlank(second)) {
-                int secondLen = second.length;
+            if (Tools.isNotBlank(generic)) {
+                int secondLen = generic.length;
                 if (secondLen > 0) {
                     int childrenLen = 0;
-                    if (Tools.isNotBlank(third)) {
-                        childrenLen = third.length;
+                    if (Tools.isNotBlank(genericChild)) {
+                        childrenLen = genericChild.length;
                         if (childrenLen > 0 && secondLen > 1) {
                             secondLen = 1;
                         }
@@ -287,7 +293,7 @@ public class DocumentController {
                         if (i > 0) {
                             sbd.append(", ");
                         }
-                        sbd.append(second[i].getName());
+                        sbd.append(generic[i].getName());
                     }
                     if (childrenLen > 0) {
                         sbd.append("<");
@@ -295,7 +301,7 @@ public class DocumentController {
                             if (i > 0) {
                                 sbd.append(", ");
                             }
-                            sbd.append(third[i].getName());
+                            sbd.append(genericChild[i].getName());
                         }
                         sbd.append(">");
                     }
@@ -303,7 +309,7 @@ public class DocumentController {
                 }
             }
 
-            if (Tools.isNotBlank(first) && first != Void.class) {
+            if (Tools.isNotBlank(genericParent) && genericParent != Void.class) {
                 sbd.append(">");
             }
             return sbd.toString();

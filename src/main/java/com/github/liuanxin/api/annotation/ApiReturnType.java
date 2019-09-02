@@ -30,9 +30,9 @@ public @interface ApiReturnType {
 
     Class<?> value();
 
-    Class<?> firstGeneric() default Void.class;
+    Class<?> genericParent() default Void.class;
 
-    Class<?>[] secondGeneric() default {};
+    Class<?>[] generic() default {};
 
-    Class<?>[] thirdGeneric() default {};
+    Class<?>[] genericChild() default {};
 }
