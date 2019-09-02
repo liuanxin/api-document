@@ -202,3 +202,5 @@ Request Backend's example
 [[https://raw.githubusercontent.com/liuanxin/image/master/api-example-en.png]]
 -
 [[https://raw.githubusercontent.com/liuanxin/image/master/api-example-en2.png]]
+-
+[[https://raw.githubusercontent.com/liuanxin/image/master/api-example-en.gif]]

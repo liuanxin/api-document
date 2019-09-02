@@ -195,3 +195,5 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
 [[https://raw.githubusercontent.com/liuanxin/image/master/api-example.png]]
 -
 [[https://raw.githubusercontent.com/liuanxin/image/master/api-example2.png]]
+-
+[[https://raw.githubusercontent.com/liuanxin/image/master/api-example.gif]]
