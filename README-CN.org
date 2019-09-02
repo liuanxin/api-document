@@ -16,7 +16,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.3</version>
+    <version>0.5.4</version>
 </dependency>
 #+END_SRC
 
@@ -46,7 +46,7 @@ public class ApiInfoConfig {
                     // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
                     // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "参数有误"),
-                    //         new DocumentResponse(500, "请求异常")
+                    //         new DocumentResponse(500, "请求异常").setResponse(XXX.class) // 见 @ApiReturnType 示例说明
                     // ))
 
                     // // 全局 token, 这个配置会生成在每个接口的参数中, 如果只想在具体的接口上设置或者设置了此项但是想在具体的接口上忽略, 请使用 @ApiTokens 注解
@@ -82,12 +82,37 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
   @ApiResponse --> 嵌套注解
     code         --> 响应码, 如 400
     msg          --> 响应说明, 如 参数不正确
+    type         --> 嵌套注解 @ApiReturnType[] 定义返回类型
 
 示例如下:
 @ApiResponses({
-    @ApiResponse(code = 400, msg = "参数有误"),
+    @ApiResponse(code = 400, msg = "参数有误", type = { @ApiReturnType(XXX.class }),
     @ApiResponse(code = 500, msg = "请求异常")
 })
+
+
+@ApiReturnType --> 嵌套注解, 用在 @ApiResponse 和 @ApiMethod 中
+  value          --> 返回类型
+  generic        --> 返回类型的泛型类型
+  genericParent  --> 返回类型中泛型类型的父层级
+  genericChild   --> 返回类型的泛型类型的子层级
+
+示例如下:
+   XXX ==> @ApiReturnType(XXX.class)
+
+   List<XXX>        ==> @ApiReturnType(value = List.class, generic = XXX.class)
+   Set<XXX>         ==> @ApiReturnType(value = Set.class,  generic = XXX.class)
+   Map<String, XXX> ==> @ApiReturnType(value = Map.class,  generic = { String.class, XXX.class })
+   JsonResult<XXX>  ==> @ApiReturnType(value = JsonResult.class, generic = XXX.class)
+
+   JsonResult<List<XXX>>        ==> @ApiReturnType(value = JsonResult.class, genericParent = List.class, generic = XXX.class)
+   JsonResult<Set<XXX>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = Set.class,  generic = XXX.class)
+   JsonResult<Map<String, XXX>> ==> @ApiReturnType(value = JsonResult.class, genericParent = Map.class,  generic = { String.class, XXX.class })
+   JsonResult<YYY<XXX>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class,  generic = XXX.class)
+
+   JsonResult<YYY<List<XXX>>>        ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = List.class, genericChild = XXX.class)
+   JsonResult<YYY<Set<XXX>>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = Set.class,  genericChild = XXX.class)
+   JsonResult<YYY<Map<String, XXX>>> ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = Map.class,  genericChild = { String.class, XXX.class })
 
 
 @ApiMethod --> 标注在方法上
@@ -96,6 +121,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
   desc       --> 接口详细说明. 可以不设置
   index      --> 索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序, 开发者信息 如果也一致会使用 接口标题 排序)
   commentInReturnExample --> 返回字段说明是否写在返回示例中, 如果设置为 false 所有的字段说明将会在返回示例的下面单独罗列. 不设置则以全局设置为准
+  returnType --> 嵌套注解 @ApiReturnType[] 自定义返回类型, 如果设置将忽略方法上的返回类型
 
 @ApiIgnore --> 标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
   value      --> 值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准

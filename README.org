@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.3</version>
+    <version>0.5.4</version>
 </dependency>
 #+END_SRC
 
@@ -49,7 +49,7 @@ public class ApiInfoConfig {
                     // // if class or method has @ApiResponses, use that
                     // .setGlobalResponse(Arrays.asList(
                     //         new DocumentResponse(400, "param error"),
-                    //         new DocumentResponse(500, "request error")
+                    //         new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
                     // ))
 
                     // // current config will be generated in the parameters of each api,
@@ -88,12 +88,37 @@ annotation for this
   @ApiResponse  --> nested annotation
     code          --> Response Code, for example: 400
     msg           --> response message, for example: param error
+    type          --> nested annotation: @ApiReturnType[]
 
 for example:
 @ApiResponses({
-    @ApiResponse(code = 400, msg = "param error"),
+    @ApiResponse(code = 400, msg = "param error", type = { @ApiReturnType(XXX.class }),
     @ApiResponse(code = 500, msg = "request error")
 })
+
+
+@ApiReturnType --> nested annotation, use on @ApiResponse and @ApiMethod
+  value          --> return class
+  generic        --> return type of generic type
+  genericParent  --> returns the parent level of the generic type in the type
+  genericChild   --> returns the sub-level of the generic type of the type
+
+for example:
+   XXX ==> @ApiReturnType(XXX.class)
+
+   List<XXX>        ==> @ApiReturnType(value = List.class, generic = XXX.class)
+   Set<XXX>         ==> @ApiReturnType(value = Set.class,  generic = XXX.class)
+   Map<String, XXX> ==> @ApiReturnType(value = Map.class,  generic = { String.class, XXX.class })
+   JsonResult<XXX>  ==> @ApiReturnType(value = JsonResult.class, generic = XXX.class)
+
+   JsonResult<List<XXX>>        ==> @ApiReturnType(value = JsonResult.class, genericParent = List.class, generic = XXX.class)
+   JsonResult<Set<XXX>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = Set.class,  generic = XXX.class)
+   JsonResult<Map<String, XXX>> ==> @ApiReturnType(value = JsonResult.class, genericParent = Map.class,  generic = { String.class, XXX.class })
+   JsonResult<YYY<XXX>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class,  generic = XXX.class)
+
+   JsonResult<YYY<List<XXX>>>        ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = List.class, genericChild = XXX.class)
+   JsonResult<YYY<Set<XXX>>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = Set.class,  genericChild = XXX.class)
+   JsonResult<YYY<Map<String, XXX>>> ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = Map.class,  genericChild = { String.class, XXX.class })
 
 
 @ApiMethod --> in method
@@ -102,6 +127,7 @@ for example:
   desc       --> description, can not be set
   index      --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
   commentInReturnExample --> if false, comment will show with display separately, if not set, the global setting shall prevail
+  returnType --> nested annotation: @ApiReturnType[]. customize return type, if set will ignore 「the return type」 on method
 
 @ApiIgnore --> in class or method. want to ignore some api, use it
   value      --> false will ignore
