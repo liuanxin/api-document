@@ -1,5 +1,5 @@
 
-[[README.org][English Readme]] | 中文说明([[https://liuanxin.github.io/api-info.html][去看一下示例]])
+[[README.org][English Readme]] | 中文说明([[https://liuanxin.github.io/api-info.html][看看实际效果]])
 
 [[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]]
 
