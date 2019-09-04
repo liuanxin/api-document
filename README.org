@@ -1,7 +1,7 @@
 
 English Readme | [[README-CN.org][中文说明]]
 
-[[https://liuanxin.github.io/api-info-en.html]] | [[https://github.com/liuanxin/api-document-example-en][example project(spring boot 2)]]
+[[https://liuanxin.github.io/api-info-en.html][ONLINE EXAMPLE]] | [[https://github.com/liuanxin/api-document-example-en][example project(spring boot 2)]]
 
 ** comment
 
