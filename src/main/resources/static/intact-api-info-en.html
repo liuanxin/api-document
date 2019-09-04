@@ -518,29 +518,34 @@ $(function() {
     }
     $win.scroll(function() {
         if ($nav.css('display') !== 'none') {
-            var footerTop = footer.offsetTop;
-            var scrollTop = $win.scrollTop();
-            var pageHeight = scrollTop + $win.height();
-            if (footerTop >= scrollTop && footerTop < (pageHeight)) {
-                var footViewHeight = pageHeight - footerTop;
-                $bar.css(heightProperty, 'calc(100vh - ' + (topBottomHeight + footViewHeight) + 'px)');
-            } else {
-                var htmlViewHeight = (html.clientHeight - topBottomHeight) + 'px';
-                if ($bar.css(heightProperty) !== htmlViewHeight) {
-                    $bar.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
+            {
+                var footerTop = footer.offsetTop;
+                var scrollTop = $win.scrollTop();
+                var pageHeight = scrollTop + $win.height();
+                if (footerTop >= scrollTop && footerTop < (pageHeight)) {
+                    var footViewHeight = pageHeight - footerTop;
+                    $bar.css(heightProperty, 'calc(100vh - ' + (topBottomHeight + footViewHeight) + 'px)');
+                } else {
+                    var htmlViewHeight = (html.clientHeight - topBottomHeight) + 'px';
+                    if ($bar.css(heightProperty) !== htmlViewHeight) {
+                        $bar.css(heightProperty, 'calc(100vh - ' + topBottomHeight + 'px)');
+                    }
                 }
             }
 
-            if (firstScroll) {
-                firstScroll = false;
-                window.history.pushState({api: ''}, '', '');
-            }
-            var hash = $nav.find('.active > a:last').attr('href');
-            if (hash !== window.location.hash) {
-                if (hash === undefined || hash === null || hash === '') {
-                    window.history.replaceState({api: 'index'}, '', window.location.pathname);
-                } else {
-                    window.history.replaceState({api: hash}, '', hash);
+
+            {
+                if (firstScroll) {
+                    firstScroll = false;
+                    window.history.pushState({api: ''}, '', '');
+                }
+                var hash = $nav.find('.active > a:last').attr('href');
+                if (hash !== window.location.hash) {
+                    if (hash === undefined || hash === null || hash === '') {
+                        window.history.replaceState({api: 'index'}, '', window.location.pathname);
+                    } else {
+                        window.history.replaceState({api: hash}, '', hash);
+                    }
                 }
             }
         }
@@ -591,43 +596,53 @@ $.get(projectDomain + '/api/info').done(function(data) {
         }
 
 
-        var copyright = documentInfo.copyright;
-        if (isNotBlank(copyright.title)) {
-            $('title').html(copyright.title);
-        }
-        var $copyrightRender = $('#copyright');
-        var template = doT.template($copyrightRender.html());
-        $copyrightRender.parent().html(template(copyright));
-
-
-        var doc = documentInfo.document;
-        var $urlRender = $('#url-render');
-        var urlRenderTemplate = doT.template($urlRender.html());
-        $urlRender.parent().html(urlRenderTemplate(doc));
-
-        var $navRender = $('#url-nav-render');
-        var navRenderTemplate = doT.template($navRender.html());
-        $navRender.parent().html(navRenderTemplate(doc));
-
-        $('pre[class="src src-json"]').each(function() {
-            var $html = escapeHtml($(this).html());
-            var html;
-            if (isNotBlank($html)) {
-                html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
-            } else {
-                html = '<span class="red">Return null or Can not analyze return type</span>';
+        {
+            var copyright = documentInfo.copyright;
+            if (isBlank(copyright)) {
+                return;
             }
-            $(this).html(addLine(html));
-        });
+            if (isNotBlank(copyright.title)) {
+                $('title').html(copyright.title);
+            }
+            var $copyrightRender = $('#copyright');
+            var template = doT.template($copyrightRender.html());
+            $copyrightRender.parent().html(template(copyright));
+        }
 
-        var hash = window.location.hash;
-        if (isNotBlank(hash)) {
-            var $anchor = $(hash);
-            if ($anchor.length > 0) {
-                var $li = $('a[href="' + hash + '"]').parent();
-                $li.addClass('active');
-                $li.parent().parent().addClass('active');
-                $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
+
+        {
+            var doc = documentInfo.document;
+            if (isBlank(doc)) {
+                return;
+            }
+            var $urlRender = $('#url-render');
+            var urlRenderTemplate = doT.template($urlRender.html());
+            $urlRender.parent().html(urlRenderTemplate(doc));
+
+            var $navRender = $('#url-nav-render');
+            var navRenderTemplate = doT.template($navRender.html());
+            $navRender.parent().html(navRenderTemplate(doc));
+
+            $('pre[class="src src-json"]').each(function () {
+                var $html = escapeHtml($(this).html());
+                var html;
+                if (isNotBlank($html)) {
+                    html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+                } else {
+                    html = '<span class="red">Return null or Can not analyze return type</span>';
+                }
+                $(this).html(addLine(html));
+            });
+
+            var hash = window.location.hash;
+            if (isNotBlank(hash)) {
+                var $anchor = $(hash);
+                if ($anchor.length > 0) {
+                    var $li = $('a[href="' + hash + '"]').parent();
+                    $li.addClass('active');
+                    $li.parent().parent().addClass('active');
+                    $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
+                }
             }
         }
     } else {
