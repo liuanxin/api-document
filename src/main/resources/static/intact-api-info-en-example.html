@@ -785,7 +785,7 @@ function objectifyForm(form) {
         var value = field.value;
 
         var header = form.find('[name="' + name + '"]').attr('header');
-        if (header && header === 'true') {
+        if (header && (header === 'true' || header === true)) {
             headers[name] = value;
         } else {
             params[name] = value;
