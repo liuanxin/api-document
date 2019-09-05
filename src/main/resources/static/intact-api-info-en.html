@@ -628,7 +628,7 @@ $.get(projectDomain + '/api/info').done(function(data) {
             var navRenderTemplate = doT.template($navRender.html());
             $navRender.parent().html(navRenderTemplate(doc));
 
-            $('pre[class="src src-json"]').each(function () {
+            $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
                 var html;
                 if (isNotBlank($html)) {

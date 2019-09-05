@@ -40,13 +40,11 @@
             width: 100%;
         }
         input[type=button] {
-            padding: 6px;
             width: 180px;
-            background-color: #56baed;
             border: none;
             color: #fff;
+            background-color: #56baed;
             box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-            border-radius: 4px;
             transition: all 0.3s ease-in-out;
         }
         input[type=button]:hover {
@@ -129,12 +127,6 @@
         }
         .red {
             color: red;
-        }
-        .disabled {
-            color: #666 !important;
-            background-color: #ccc !important;
-            cursor: not-allowed !important;
-            box-shadow: 0 10px 30px 0 rgba(0,0,0,.4) !important;
         }
 
         .bs-docs-sidebar {
@@ -343,8 +335,8 @@
                                             }}
                                             {{? comment !== undefined && comment !== null && comment !== ''}}
                                             <td class="text-left">
-                                                <a title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
-                                                   data-toggle="modal" href="#{{= targetId}}">查看示例</a>
+                                                <span class="response-example" title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
+                                                   data-toggle="modal" data-target="#{{= targetId}}">查看示例</span>
                                             </td>
                                             {{?? hasAction}}
                                             <td class="text-left"></td>
@@ -455,32 +447,42 @@
 
                                                 var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
-                                                var validateData = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' class="validate[' + arrJoin + ']"') : '';
+                                                var validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
                                                 var header = ('Header' === param.paramType) ? ' header="true"' : '';
                                                 var example = localStorage.getItem(param.name) || param.example || '';
+                                                var tokenClass = param.hasToken ? ' has-token' : '';
 
                                                 var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
                                                 var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                                 }}
                                                 {{? param.dataType === 'file' }}
-                                                <input type="file" name="{{= param.name || ''}}"{{= validateData}}/>
+                                                <div class="input-group">
+                                                    <label class="input-group-btn">
+                                                        <span class="btn btn-default{{? param.must}} bold{{?}}">
+                                                            选择文件
+                                                            <input type="file" name="{{= param.name || ''}}" style="display: none;">
+                                                        </span>
+                                                    </label>
+                                                    <input type="text" class="form-control{{? param.must}} bold{{?}}{{= validateClass}}" readonly="readonly">
+                                                </div>
                                                 {{?? param.hasTextarea}}
-                                                <textarea name="{{= param.name || ''}}"{{= header}}{{= validateData}} {{? param.hasToken}} class="has-token"{{?}}>{{= example}}</textarea>
+                                                <textarea class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                                 {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
-                                                <select name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} class="has-token"{{?}}>
+                                                <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                                     <option></option>
                                                     {{? Array.isArray(enumInfo) }}
-                                                    {{~ enumInfo  :e}}<option{{? example === e}} selected{{?}}>{{= e}}</option>{{~}}
+                                                        {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
                                                     {{??}}
                                                     {{ var k; for(k in enumInfo) { }}
-                                                    <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected{{?}}>{{= enumInfo[k]}}</option>
+                                                    <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected="selected"{{?}}>{{= enumInfo[k]}}</option>
                                                     {{ } }}
                                                     {{?}}
                                                 </select>
                                                 {{??}}
                                                 {{ textNum++; }}
-                                                <input type="{{= (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
-                                                       name="{{= param.name || ''}}"{{= header}}{{= validateData}}{{? param.hasToken}} class="has-token"{{?}} value="{{= example}}"/>
+                                                <input class="form-control{{= validateClass}}{{= tokenClass}}"
+                                                       type="{{= (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
+                                                       name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                                 {{?}}
                                             </td>
                                         </tr>
@@ -492,7 +494,7 @@
                                 <p>
                                     /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
                                     {{? textNum === 1 }}<input type="text" style="display: none;"/>{{?}}
-                                    <input type="button" value="请求此接口" requestBody="{{= url.requestBody}}"/>
+                                    <input class="btn" type="button" value="请求此接口" requestBody="{{= url.requestBody}}"/>
                                 </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
@@ -827,6 +829,10 @@ function formatDate(date) {
 $.validationEngine.defaults.scroll = false;
 
 $(function() {
+    $(document).on('change', ':file', function() {
+        var $this = $(this);
+        $this.parents('.input-group').find(':text').val($this.val());
+    });
     $(document).on('change', '.has-token', function() {
         var $this = $(this);
         var name = $this.attr('name');
