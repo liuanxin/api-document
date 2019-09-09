@@ -79,6 +79,9 @@
         .panel {
             overflow: auto;
         }
+        .input-group {
+            position: unset;
+        }
         .module {}
         .module-name {
             border-bottom: 5px solid #eee;
@@ -438,7 +441,11 @@
                                             <td class="text-left">{{= param.name || ''}}</td>
                                             <td class="text-left wrap">{{= param.desc || ''}}</td>
                                             <td class="text-left">{{= param.must ? 'Yes' : 'No'}}</td>
-                                            <td class="text-left">{{= param.dataType || ''}}</td>
+                                            <td class="text-left">{{=
+                                                param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
+                                                ? param.showDataType
+                                                : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
+                                            }}</td>
                                             {{? hasHeader}}<td class="text-left">{{= param.paramType || ''}}</td>{{?}}
                                             <td class="text-left" style="height: inherit;">
                                                 {{
@@ -461,7 +468,7 @@
                                                 var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
                                                 var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                                 }}
-                                                {{? param.dataType === 'file' }}
+                                                {{? param.dataType === 'file'}}
                                                 <div class="input-group">
                                                     <label class="input-group-btn">
                                                         <span class="btn btn-default{{? param.must}} bold{{?}}">
@@ -473,7 +480,7 @@
                                                 </div>
                                                 {{?? param.hasTextarea}}
                                                 <textarea class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
-                                                {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== '' }}
+                                                {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
                                                 <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                                     <option></option>
                                                     {{? Array.isArray(enumInfo) }}
@@ -999,7 +1006,8 @@ $(function() {
             } else {
                 if (hasRequestBody) {
                     if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
-                        response.find('pre').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request(It's possible to use the above cURL), please contact the backend change to POST!</span>");
+                        response.find('pre').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request" +
+                            "(It's possible to use the above cURL), please contact the backend change to POST!</span>");
                         response.show();
                         return;
                     }

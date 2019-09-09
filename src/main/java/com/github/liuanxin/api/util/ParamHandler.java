@@ -156,9 +156,9 @@ public final class ParamHandler {
             if (Tools.isNotEmpty(paramName)) {
                 param.setName(paramName);
             }
-            String dataType = apiParam.dataType();
-            if (Tools.isNotEmpty(dataType)) {
-                param.setDataType(apiParam.dataType());
+            String showDataType = apiParam.dataType();
+            if (Tools.isNotEmpty(showDataType)) {
+                param.setShowDataType(showDataType);
             }
 
             param.setParamType(apiParam.paramType().toString());

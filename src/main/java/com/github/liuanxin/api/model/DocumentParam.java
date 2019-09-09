@@ -18,6 +18,7 @@ public class DocumentParam {
 
     private String name;
     private String dataType;
+    private String showDataType;
     private String paramType = Tools.EMPTY;
     private Boolean must = false;
     private String desc = Tools.EMPTY;
