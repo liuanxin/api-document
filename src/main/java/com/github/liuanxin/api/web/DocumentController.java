@@ -316,7 +316,7 @@ public class DocumentController {
         }
     }
     private static String getReturnTypeByResponse(DocumentResponse res) {
-        return Tools.isBlank(res)
+        return Tools.isBlank(res) || Tools.isBlank(res.getResponse())
                 ? null
                 : getReturnType(res.getResponse(), res.getGenericParent(), res.getGeneric(), res.getGenericChild());
     }
@@ -327,7 +327,7 @@ public class DocumentController {
         for (DocumentResponse response : globalResponse) {
             String type = getReturnTypeByResponse(response);
             if (Tools.isNotBlank(type)) {
-                String method = "global handler";
+                String method = response.getCode() + ":" + response.getMsg();
                 String json = ReturnHandler.handlerReturnJson(method, type);
                 List<DocumentReturn> returnList = ReturnHandler.handlerReturn(method, type);
 

@@ -86,13 +86,13 @@
             width: 75%;
         }
         .bold {
-            font-weight: bold;
+            font-weight: bold !important;
         }
         .wrap {
             white-space: pre-wrap;
         }
         .red {
-            color: red;
+            color: red !important;
         }
 
         .bs-docs-sidebar {
@@ -301,7 +301,7 @@
                                         <tr>
                                             <td class="text-left">{{= rtn.name || ''}}</td>
                                             <td class="text-left">{{= rtn.type || ''}}</td>
-                                            <td class="text-left wrap">{{= rtn.desc || ''}}</td>
+                                            <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
                                         </tr>
                                         {{~}}
                                         </tbody>
@@ -391,7 +391,7 @@
                                                     <tr>
                                                         <td class="text-left">{{= rtn.name || ''}}</td>
                                                         <td class="text-left">{{= rtn.type || ''}}</td>
-                                                        <td class="text-left wrap">{{= rtn.desc || ''}}</td>
+                                                        <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
                                                     </tr>
                                                     {{~}}
                                                     </tbody>
@@ -447,7 +447,7 @@
                                     <tr>
                                         <td class="text-left">{{= rtn.name || ''}}</td>
                                         <td class="text-left">{{= rtn.type || ''}}</td>
-                                        <td class="text-left wrap">{{= rtn.desc || ''}}</td>
+                                        <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
                                     </tr>
                                     {{~}}
                                     </tbody>
@@ -641,6 +641,11 @@ $.get(projectDomain + '/api/info').done(function(data) {
                 var html;
                 if (isNotBlank($html)) {
                     html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+
+                    var recursiveRegex = /(\/\* !!!RECURSIVE OBJECT!!! \*\/)/;
+                    if (recursiveRegex.test($html)) {
+                        html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">/* !!!递归实体!!! */</span>');
+                    }
                 } else {
                     html = '<span class="red">响应为空 或 无法解析返回类型</span>';
                 }
