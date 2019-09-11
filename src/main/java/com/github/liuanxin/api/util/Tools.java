@@ -177,10 +177,13 @@ public class Tools {
     public static boolean isNotEmpty(Object obj) {
         return !isEmpty(obj);
     }
+    private static String toStr(Object obj) {
+        return isBlank(obj) ? EMPTY : obj.toString();
+    }
 
     // ========== date ==========
     private static final Date TMP_DATE = new Date();
-    public static Date parseDate(String source) {
+    static Date parseDate(String source) {
         if (isNotBlank(source)) {
             source = source.trim();
             for (DateType type : DateType.values()) {
@@ -376,12 +379,13 @@ public class Tools {
                     Object code = getMethod(em, "getCode");
                     String name = em.name();
                     if (isNotEmpty(code)) {
+                        String key = toStr(code);
                         Object value = getMethod(em, "getValue");
                         // has getValue return <code1: value1, code2: value2 ...>
                         // no getValue return <code1: name1, code2: name2 ...>
                         Object obj = isNotEmpty(value) ? value : name;
-                        sbd.append(code).append(":").append(obj);
-                        map.put(code.toString(), obj);
+                        sbd.append(key).append(":").append(obj);
+                        map.put(key, obj);
                     } else {
                         // no getCode return <name1, name2>
                         // sbd.append(em.ordinal()).append(":");
