@@ -748,9 +748,9 @@ $.get(projectDomain + '/api/info').done(function(data) {
                 if (isNotBlank($html)) {
                     html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
 
-                    var recursiveRegex = /(\/\* !!!RECURSIVE OBJECT!!! \*\/)/;
+                    var recursiveRegex = /(!!!RECURSIVE OBJECT!!!)/;
                     if (recursiveRegex.test($html)) {
-                        html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">/* !!!递归实体!!! */</span>');
+                        html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">!!!递归实体!!!</span>');
                     }
                 } else {
                     html = '<span class="red">响应为空 或 无法解析返回类型</span>';

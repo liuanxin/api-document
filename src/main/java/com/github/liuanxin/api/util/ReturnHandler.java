@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.util;
 
+import com.github.liuanxin.api.annotation.ApiModel;
 import com.github.liuanxin.api.annotation.ApiReturn;
 import com.github.liuanxin.api.annotation.ApiReturnIgnore;
 import com.github.liuanxin.api.model.DocumentReturn;
@@ -103,7 +104,19 @@ public final class ReturnHandler {
                 // field not static, not final, and not annotation ignore
                 if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                         && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
-                    String name = field.getName();
+                    String name = null;
+                    ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
+                    if (Tools.isNotBlank(apiReturn)) {
+                        name = apiReturn.name();
+                    } else {
+                        ApiModel apiModel = field.getAnnotation(ApiModel.class);
+                        if (Tools.isNotBlank(apiModel)) {
+                            name = apiModel.name();
+                        }
+                    }
+                    if (Tools.isEmpty(name)) {
+                        name = field.getName();
+                    }
                     returnList.add(returnInfo(field, space + name + parent));
 
                     Class<?> fieldType = field.getType();
@@ -170,15 +183,25 @@ public final class ReturnHandler {
         DocumentReturn documentReturn = new DocumentReturn();
         documentReturn.setName(name).setType(Tools.getInputType(fieldType));
 
+        String desc = null;
         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-        String desc;
-        if (Tools.isNotEmpty(apiReturn)) {
+        if (Tools.isNotBlank(apiReturn)) {
             desc = apiReturn.value();
             String returnType = apiReturn.type();
             if (Tools.isNotEmpty(returnType)) {
                 documentReturn.setType(returnType);
             }
         } else {
+            ApiModel apiModel = field.getAnnotation(ApiModel.class);
+            if (Tools.isNotBlank(apiModel)) {
+                desc = apiModel.value();
+                String returnType = apiModel.dataType();
+                if (Tools.isNotEmpty(returnType)) {
+                    documentReturn.setType(returnType);
+                }
+            }
+        }
+        if (Tools.isBlank(desc)) {
             desc = Tools.EMPTY;
         }
         documentReturn.setDesc(Tools.descInfo(fieldType, desc));
@@ -309,8 +332,8 @@ public final class ReturnHandler {
                     if (GENERIC_CLASS_NAME.contains(clazzType.toString()) || clazzType == fieldClazz) {
                         Class<?> tmpClazz = getParameterizedType(type);
                         Class<?> tmpType = getParameterizedType(clazzType);
-                        if ((tmpClazz != null && Collection.class.isAssignableFrom(tmpClazz))
-                                || (tmpType != null && Collection.class.isAssignableFrom(tmpType))) {
+                        if ((Tools.isNotBlank(tmpClazz) && Collection.class.isAssignableFrom(tmpClazz))
+                                || (Tools.isNotBlank(tmpType) && Collection.class.isAssignableFrom(tmpType))) {
                             setField(field, obj, Tools.lists(value));
                         } else {
                             setField(field, obj, value);
@@ -428,51 +451,42 @@ public final class ReturnHandler {
                     && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
                 String name = field.getName();
                 Class<?> fieldType = field.getType();
+
+                String example = null;
                 ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
+                if (Tools.isNotBlank(apiReturn)) {
+                    example = Tools.isEmpty(apiReturn.example()) ? apiReturn.value() : apiReturn.example();
+                } else {
+                    ApiModel apiModel = field.getAnnotation(ApiModel.class);
+                    if (Tools.isNotBlank(apiModel)) {
+                        example = Tools.isEmpty(apiModel.example()) ? apiModel.value() : apiModel.example();
+                    }
+                }
+                if (Tools.isBlank(example)) {
+                    example = Tools.EMPTY;
+                }
                 // if type is String, use the annotation comment with the value
                 if (fieldType == String.class) {
-                    String value;
-                    if (Tools.isNotEmpty(apiReturn)) {
-                        value = apiReturn.example();
-                        if (Tools.isEmpty(value)) {
-                            value = apiReturn.value();
-                        }
-                    } else {
-                        value = Tools.EMPTY;
-                    }
-                    setField(field, obj, value);
+                    setField(field, obj, example);
                 } else if (fieldType == String[].class) {
-                    String[] value;
-                    if (Tools.isNotEmpty(apiReturn)) {
-                        String example = apiReturn.example();
-                        if (Tools.isEmpty(example)) {
-                            example = apiReturn.value();
-                        }
-                        value = new String[] { example };
-                    } else {
-                        value = new String[] { Tools.EMPTY };
-                    }
-                    setField(field, obj, value);
+                    setField(field, obj, new String[] { example });
                 }
                 else if (Tools.basicType(fieldType)) {
-                    String example = Tools.isEmpty(apiReturn) ? null : apiReturn.example();
                     setField(field, obj, Tools.getReturnTypeExample(fieldType, example));
                 }
                 else if (Date.class.isAssignableFrom(fieldType)) {
-                    String example = Tools.isEmpty(apiReturn) ? null : apiReturn.example();
-                    setField(field, obj, Tools.parse(example));
+                    setField(field, obj, Tools.parseDate(example));
                 }
                 else if (fieldType.isArray()) {
                     Class<?> arrType = fieldType.getComponentType();
                     Object arr = Array.newInstance(arrType, 1);
-                    Object example;
-                    if (Tools.basicType(arrType)
-                            && Tools.isNotEmpty(apiReturn) && Tools.isNotEmpty(apiReturn.example())) {
-                        example = Tools.getReturnTypeExample(arrType, apiReturn.example());
+                    Object object;
+                    if (Tools.basicType(arrType) && Tools.isNotEmpty(example)) {
+                        object = Tools.getReturnTypeExample(arrType, example);
                     } else {
-                        example = handlerReturnWithObjClazz(selfRecursive, name, method, arrType);
+                        object = handlerReturnWithObjClazz(selfRecursive, name, method, arrType);
                     }
-                    Array.set(arr, 0, example);
+                    Array.set(arr, 0, object);
                     setField(field, obj, arr);
                 }
                 else {
@@ -482,10 +496,9 @@ public final class ReturnHandler {
                             String objClass = genericInfo.substring(genericInfo.indexOf("<") + 1, genericInfo.lastIndexOf(">")).trim();
                             Class<?> fieldClass = getClass(objClass);
                             // List<basic type> use @ApiReturn's info
-                            if (Tools.basicType(fieldClass)
-                                    && Tools.isNotEmpty(apiReturn) && Tools.isNotEmpty(apiReturn.example())) {
-                                Object example = Tools.getReturnTypeExample(fieldClass, apiReturn.example());
-                                setField(field, obj, Collections.singletonList(example));
+                            if (Tools.basicType(fieldClass) && Tools.isNotEmpty(example)) {
+                                Object object = Tools.getReturnTypeExample(fieldClass, example);
+                                setField(field, obj, Collections.singletonList(object));
                             } else {
                                 setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
                             }

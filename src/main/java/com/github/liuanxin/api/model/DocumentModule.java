@@ -41,7 +41,7 @@ public class DocumentModule implements Comparable<DocumentModule> {
 
     @Override
     public int compareTo(DocumentModule module) {
-        if (module == null) {
+        if (Tools.isBlank(module)) {
             return -1;
         }
 

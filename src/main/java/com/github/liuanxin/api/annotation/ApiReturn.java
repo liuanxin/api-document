@@ -8,7 +8,10 @@ import java.lang.annotation.*;
 public @interface ApiReturn {
 
     /** @return return comment */
-    String value();
+    String value() default "";
+
+    /** @return return name, use with comment in return example, if set will ignore field name(@JsonProperty) */
+    String name() default "";
 
     /** @return when customize type comment, use this(example for Enum) */
     String type() default "";

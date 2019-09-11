@@ -169,10 +169,10 @@ public class Tools {
         return obj == null;
     }
     public static boolean isNotBlank(Object obj) {
-        return obj != null;
+        return !isBlank(obj);
     }
     public static boolean isEmpty(Object obj) {
-        return obj == null || EMPTY.equals(obj.toString().trim());
+        return isBlank(obj) || EMPTY.equals(obj.toString().trim());
     }
     public static boolean isNotEmpty(Object obj) {
         return !isEmpty(obj);
@@ -180,13 +180,13 @@ public class Tools {
 
     // ========== date ==========
     private static final Date TMP_DATE = new Date();
-    public static Date parse(String source) {
+    public static Date parseDate(String source) {
         if (isNotBlank(source)) {
             source = source.trim();
             for (DateType type : DateType.values()) {
                 try {
                     Date date = new SimpleDateFormat(type.getValue()).parse(source);
-                    if (date != null) {
+                    if (Tools.isNotBlank(date)) {
                         return date;
                     }
                 } catch (ParseException | IllegalArgumentException ignore) {
@@ -229,19 +229,19 @@ public class Tools {
 
     // ========== array map ==========
     private static <T> boolean isEmpty(T[] array) {
-        return array == null || array.length == 0;
+        return isBlank(array) || array.length == 0;
     }
     private static <T> boolean isNotEmpty(T[] array) {
         return !isEmpty(array);
     }
     public static <T> boolean isEmpty(Collection<T> collection) {
-        return collection == null || collection.isEmpty();
+        return isBlank(collection) || collection.isEmpty();
     }
     public static <T> boolean isNotEmpty(Collection<T> collection) {
         return !isEmpty(collection);
     }
     private static boolean isEmpty(Map map) {
-        return map == null || map.isEmpty();
+        return isBlank(map) || map.isEmpty();
     }
     public static boolean isNotEmpty(Map map) {
         return !isEmpty(map);

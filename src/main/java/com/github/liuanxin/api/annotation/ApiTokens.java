@@ -7,7 +7,5 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiTokens {
 
-    boolean value() default true;
-
-    ApiToken[] token() default {};
+    ApiToken[] value() default {};
 }

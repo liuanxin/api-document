@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.util;
 
+import com.github.liuanxin.api.annotation.ApiModel;
 import com.github.liuanxin.api.annotation.ApiParam;
 import com.github.liuanxin.api.annotation.ApiParamIgnore;
 import com.github.liuanxin.api.model.DocumentParam;
@@ -14,6 +15,7 @@ import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("DuplicatedCode")
 public final class ParamHandler {
 
     private static final LocalVariableTableParameterNameDiscoverer VARIABLE
@@ -34,7 +36,8 @@ public final class ParamHandler {
                         if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                                 && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
                             ApiParam apiParam = field.getAnnotation(ApiParam.class);
-                            params.add(paramInfo(field.getName(), field.getType(), apiParam, false));
+                            ApiModel apiModel = field.getAnnotation(ApiModel.class);
+                            params.add(paramInfo(field.getName(), field.getType(), apiParam, apiModel, false));
                         }
                     }
                 } else {
@@ -43,8 +46,10 @@ public final class ParamHandler {
                     // String paramName = parameter.getParameterName();
                     String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
                     ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
+                    ApiModel apiModel = parameter.getParameterAnnotation(ApiModel.class);
                     // if param was required, use it.
-                    params.add(paramInfo(getParamName(parameter, paramName), parameterType, apiParam, paramHasMust(parameter)));
+                    params.add(paramInfo(getParamName(parameter, paramName), parameterType,
+                            apiParam, apiModel, paramHasMust(parameter)));
                 }
             }
         }
@@ -53,42 +58,42 @@ public final class ParamHandler {
 
     private static String getParamName(MethodParameter parameter, String paramName) {
         RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
-        if (requestParam != null && Tools.isNotEmpty(requestParam.value())) {
+        if (Tools.isNotBlank(requestParam) && Tools.isNotEmpty(requestParam.value())) {
             return requestParam.value();
         }
 
         PathVariable pathVariable = parameter.getParameterAnnotation(PathVariable.class);
-        if (pathVariable != null && Tools.isNotEmpty(pathVariable.value())) {
+        if (Tools.isNotBlank(pathVariable) && Tools.isNotEmpty(pathVariable.value())) {
             return pathVariable.value();
         }
 
         RequestAttribute requestAttribute = parameter.getParameterAnnotation(RequestAttribute.class);
-        if (requestAttribute != null && Tools.isNotEmpty(requestAttribute.value())) {
+        if (Tools.isNotBlank(requestAttribute) && Tools.isNotEmpty(requestAttribute.value())) {
             return requestAttribute.value();
         }
 
         RequestHeader requestHeader = parameter.getParameterAnnotation(RequestHeader.class);
-        if (requestHeader != null && Tools.isNotEmpty(requestHeader.value())) {
+        if (Tools.isNotBlank(requestHeader) && Tools.isNotEmpty(requestHeader.value())) {
             return requestHeader.value();
         }
 
         RequestPart requestPart = parameter.getParameterAnnotation(RequestPart.class);
-        if (requestPart != null && Tools.isNotEmpty(requestPart.value())) {
+        if (Tools.isNotBlank(requestPart) && Tools.isNotEmpty(requestPart.value())) {
             return requestPart.value();
         }
 
         SessionAttribute sessionAttribute = parameter.getParameterAnnotation(SessionAttribute.class);
-        if (sessionAttribute != null && Tools.isNotEmpty(sessionAttribute.value())) {
+        if (Tools.isNotBlank(sessionAttribute) && Tools.isNotEmpty(sessionAttribute.value())) {
             return sessionAttribute.value();
         }
 
         MatrixVariable matrixVariable = parameter.getParameterAnnotation(MatrixVariable.class);
-        if (matrixVariable != null && Tools.isNotEmpty(matrixVariable.value())) {
+        if (Tools.isNotBlank(matrixVariable) && Tools.isNotEmpty(matrixVariable.value())) {
             return matrixVariable.value();
         }
 
         CookieValue cookieValue = parameter.getParameterAnnotation(CookieValue.class);
-        if (cookieValue != null && Tools.isNotEmpty(cookieValue.value())) {
+        if (Tools.isNotBlank(cookieValue) && Tools.isNotEmpty(cookieValue.value())) {
             return cookieValue.value();
         }
         return paramName;
@@ -96,51 +101,52 @@ public final class ParamHandler {
 
     private static boolean paramHasMust(MethodParameter parameter) {
         RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
-        if (requestParam != null && requestParam.required()) {
+        if (Tools.isNotBlank(requestParam) && requestParam.required()) {
             return true;
         }
 
         PathVariable pathVariable = parameter.getParameterAnnotation(PathVariable.class);
-        if (pathVariable != null && pathVariable.required()) {
+        if (Tools.isNotBlank(pathVariable) && pathVariable.required()) {
             return true;
         }
 
         RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-        if (requestBody != null && requestBody.required()) {
+        if (Tools.isNotBlank(requestBody) && requestBody.required()) {
             return true;
         }
 
         RequestAttribute requestAttribute = parameter.getParameterAnnotation(RequestAttribute.class);
-        if (requestAttribute != null && requestAttribute.required()) {
+        if (Tools.isNotBlank(requestAttribute) && requestAttribute.required()) {
             return true;
         }
 
         RequestHeader requestHeader = parameter.getParameterAnnotation(RequestHeader.class);
-        if (requestHeader != null && requestHeader.required()) {
+        if (Tools.isNotBlank(requestHeader) && requestHeader.required()) {
             return true;
         }
 
         RequestPart requestPart = parameter.getParameterAnnotation(RequestPart.class);
-        if (requestPart != null && requestPart.required()) {
+        if (Tools.isNotBlank(requestPart) && requestPart.required()) {
             return true;
         }
 
         SessionAttribute sessionAttribute = parameter.getParameterAnnotation(SessionAttribute.class);
-        if (sessionAttribute != null && sessionAttribute.required()) {
+        if (Tools.isNotBlank(sessionAttribute) && sessionAttribute.required()) {
             return true;
         }
 
         MatrixVariable matrixVariable = parameter.getParameterAnnotation(MatrixVariable.class);
-        if (matrixVariable != null && matrixVariable.required()) {
+        if (Tools.isNotBlank(matrixVariable) && matrixVariable.required()) {
             return true;
         }
 
         CookieValue cookieValue = parameter.getParameterAnnotation(CookieValue.class);
-        return cookieValue != null && cookieValue.required();
+        return Tools.isNotBlank(cookieValue) && cookieValue.required();
     }
 
     /** collect param info */
-    private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam, boolean must) {
+    private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam,
+                                           ApiModel apiModel, boolean must) {
         DocumentParam param = new DocumentParam();
         param.setName(name);
 
@@ -170,10 +176,36 @@ public final class ParamHandler {
             param.setHasTextarea(apiParam.textarea());
             param.setStyle(apiParam.style());
         } else {
-            desc = Tools.EMPTY;
+            if (Tools.isNotEmpty(apiModel)) {
+                desc = apiModel.value();
+
+                String paramName = apiModel.name();
+                if (Tools.isNotEmpty(paramName)) {
+                    param.setName(paramName);
+                }
+                String showDataType = apiModel.dataType();
+                if (Tools.isNotEmpty(showDataType)) {
+                    param.setShowDataType(showDataType);
+                }
+
+                param.setParamType(apiModel.paramType().toString());
+
+                String example = apiModel.example();
+                if (Tools.isNotEmpty(example)) {
+                    param.setExample(example);
+                }
+                param.setHasTextarea(apiModel.textarea());
+                param.setStyle(apiModel.style());
+            } else {
+                desc = Tools.EMPTY;
+            }
         }
         // if param has no @RequestParam(required = true) etc..., use custom value
-        param.setMust(must || (Tools.isNotEmpty(apiParam) && apiParam.must()));
+        param.setMust(
+                must
+                || (Tools.isNotEmpty(apiParam) && apiParam.must())
+                || (Tools.isNotEmpty(apiModel) && apiModel.must())
+        );
         param.setDesc(Tools.descInfo(type, desc));
         return param;
     }

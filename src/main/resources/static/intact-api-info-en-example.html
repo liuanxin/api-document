@@ -748,7 +748,7 @@ $.get(projectDomain + '/api/info').done(function(data) {
                 if (isNotBlank($html)) {
                     html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
 
-                    var recursiveRegex = /(\/\* !!!RECURSIVE OBJECT!!! \*\/)/;
+                    var recursiveRegex = /(!!!RECURSIVE OBJECT!!!)/;
                     if (recursiveRegex.test($html)) {
                         html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">$1</span>');
                     }

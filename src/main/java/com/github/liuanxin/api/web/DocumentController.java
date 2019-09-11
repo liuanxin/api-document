@@ -154,14 +154,13 @@ public class DocumentController {
                             document.setUseGlobalParam(true);
                         } else {
                             document.setUseGlobalParam(false);
-                            if (apiTokens.value()) {
-                                List<DocumentParam> extraParams = new LinkedList<>();
-                                for (ApiToken token : apiTokens.token()) {
-                                    extraParams.add(DocumentParam.buildToken(token));
-                                }
-                                if (extraParams.size() > 0) {
-                                    paramList.addAll(0, extraParams);
-                                }
+
+                            List<DocumentParam> extraParams = new LinkedList<>();
+                            for (ApiToken token : apiTokens.value()) {
+                                extraParams.add(DocumentParam.buildToken(token));
+                            }
+                            if (extraParams.size() > 0) {
+                                paramList.addAll(0, extraParams);
                             }
                         }
                         document.setRequestBody(hasRequestBody(handlerMethod));
