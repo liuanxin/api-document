@@ -19,7 +19,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.4</version>
+    <version>0.5.5</version>
 </dependency>
 #+END_SRC
 
@@ -81,27 +81,29 @@ annotation for this
 #+BEGIN_EXAMPLE
 @ApiGroup --> in class or method. use the method if all of that
   value     --> module info, must set(name-description, name used to generate the anchor point, description used to display, separated by the horizontal line -, description is displayed as name if it is empty)
-  index     --> more forward when smaller("index" first, "description" second, "name" third -> with sort), if set multi module and different index, use the smaller
+  index     --> can not be set, more forward when smaller("index" first, "description" second, "name" third -> with sort), if set multi module and different index, use the smaller
 
 
 @ApiResponses --> in class or method
+  value         --> @ApiResponse[], must set
+
   @ApiResponse  --> nested annotation
-    code          --> Response Code, for example: 400
-    msg           --> response message, for example: param error
+    code          --> must set, for example: 400
+    msg           --> must set, for example: param error
     type          --> nested annotation: @ApiReturnType[]
 
 for example:
-@ApiResponses({
+@ApiResponses({ // marked on class or method will return the specified response, otherwise it will take the global response configuration.
     @ApiResponse(code = 400, msg = "param error", type = { @ApiReturnType(XXX.class }),
     @ApiResponse(code = 500, msg = "request error")
 })
 
 
 @ApiReturnType --> nested annotation, use on @ApiResponse and @ApiMethod
-  value          --> return class
-  generic        --> return type of generic type
-  genericParent  --> returns the parent level of the generic type in the type
-  genericChild   --> returns the sub-level of the generic type of the type
+  value          --> return class, must set
+  generic        --> return type of generic type, can not be set
+  genericParent  --> returns the parent level of the generic type in the type, can not be set
+  genericChild   --> returns the sub-level of the generic type of the type, can not be set
 
 for example:
    XXX ==> @ApiReturnType(XXX.class)
@@ -125,7 +127,7 @@ for example:
   value      --> method title, must set
   develop    --> can not be set
   desc       --> description, can not be set
-  index      --> more forward when smaller("index" first, "developer" second, "title" third -> with sort)
+  index      --> more forward when smaller, can not be set("index" first, "developer" second, "title" third -> with sort)
   commentInReturnExample --> if false, comment will show with display separately, if not set, the global setting shall prevail
   returnType --> nested annotation: @ApiReturnType[]. customize return type, if set will ignore 「the return type」 on method
 
@@ -134,46 +136,60 @@ for example:
 
 
 @ApiParam --> in param or field
-  value     --> must set
-  name      --> if set, will ignore param name or field name
-  dataType  --> if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、email、url、ipv4
-  example   --> used in api examples, can not set
+  value     --> param comment, can not be set
+  name      --> if set, can not be set, will ignore param name or field name
+  dataType  --> if type was custom can use, can not be set(for example: enum, but param type was be int). can be: int、long、float、double、email、url、ipv4
+  example   --> used in api examples, can not be set
   paramType --> can not be set, Header or Query, default is Query
-  must      --> if param annotation @RequestParam(required = true) etc... will ignore this config
-  textarea  --> default false, in example page, this field will show to <textarea ...></textarea>
-  style     --> html style with param on page, for example: color:green;height:35px;
+  must      --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
+  textarea  --> can not be set, default false, in example page, this field will show to <textarea ...></textarea>
+  style     --> can not be set. html style with param on page, for example: color:green;height:35px;
 
 @ApiParamIgnore --> in param or field
 
 
 @ApiReturn --> in field
-  value      --> must set
-  type       --> if type was custom can use(for example: enum, but return type was be int)
-  example    --> return example, only if the field is a string or underlying data type(including BigInteger and BigDecimal)
+  value      --> can not be set
+  name       --> return name, can not be set, if set will ignore field name(when use @JsonProperty)
+  type       --> if type was custom can use, can not be set(for example: enum, but return type was be int)
+  example    --> return example, can not be set, only if the field is a string or underlying data type(including BigInteger and BigDecimal)
 
 @ApiReturnIgnore --> in field
 
 
-@ApiTokens --> in class or method
-  value      --> if set false, the api of the current method or class does not need to pass token information. When the global setting and some api are not needed, use @ApiTokens(false)
-  token      --> @ApiToken[]
+@ApiTokens --> in class or method, if marked, the api interface corresponding to the current method or class does not need to pass global token information.
+  value      --> @ApiToken[]
 
   @ApiToken  --> nested annotation
     name       --> must set
-    desc       --> can not set
-    example    --> can not set
+    desc       --> can not be set
+    example    --> can not be set
     paramType  --> can not be set, Header or Query, default is Header
     must       --> default false
     textarea   --> default false
-    style      --> html style with param on page
+    style      --> can not be set. html style with param on page, for example: color:green;height:35px;
 
 for example:
-@ApiTokens(false)
+@ApiTokens // marked on class or method will not generate global token information.
 
 @ApiTokens(token = {
     @ApiToken(name = "x-token", desc = "oauth info", example = "abc-xyz", textarea = true),
     @ApiToken(name = "x-version", desc = "api version", example = "1.0", paramType = ParamType.Query, must = true)
 })
+
+
+@ApiModel --> Combined with the annotations of the @ApiParam and @ApiReturn, Please do not abuse. You should try to use the first two.
+  value     --> (return type or param name)'s comment, can not be set
+  name      --> (return type or param name)'s name, can not be set
+  dataType  --> (return type or param name)'s type, can not be set, use with customize: int、long、float、double、email、url、ipv4
+  example   --> (return type or param name)'s example, can not be set
+
+  -- The above attributes apply to both the request parameter and the return field. The following attributes are only used on the request parameters.
+
+  paramType --> param type, can not be set. Header or Query, default is Query
+  must      --> param required, can not be set, if has @RequestParam(required = true) etc... will ignore this setting
+  textarea  --> param will show with textarea, can not be set, default is false
+  style     --> can not be set. html style with param on page, for example: color:green;height:35px;
 #+END_EXAMPLE
 
 if not spring boot project, add this config
