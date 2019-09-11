@@ -21,7 +21,7 @@ public class Recursive {
     public boolean checkRecursive() {
         return check(self, parent);
     }
-    private boolean check(Class<?> self, Recursive parent) {
+    private static boolean check(Class<?> self, Recursive parent) {
         if (Tools.isBlank(parent)) {
             return false;
         } else if (parent.self == self) {
@@ -36,7 +36,7 @@ public class Recursive {
         orbit(this, sbd);
         return sbd.toString();
     }
-    private void orbit(Recursive self, StringBuilder sbd) {
+    private static void orbit(Recursive self, StringBuilder sbd) {
         if (Tools.isNotBlank(self)) {
             if (Tools.isNotBlank(self.parent)) {
                 orbit(self.parent, sbd);
