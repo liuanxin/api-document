@@ -124,7 +124,8 @@ public final class ReturnHandler {
                                                 method, childRecursive.getOrbit());
                                     }
                                     DocumentReturn last = returnList.get(returnList.size() - 1);
-                                    last.setDesc("!!!RECURSIVE OBJECT!!!");
+                                    String desc = last.getDesc();
+                                    last.setDesc("!!!RECURSIVE OBJECT!!!" + (Tools.isEmpty(desc) ? Tools.EMPTY : (" " + desc)));
                                 } else {
                                     String innerParent = (LEVEL_APPEND + name + parent);
                                     handlerReturn(selfRecursive, name, space + TAB, innerParent, method, genericType, returnList);
