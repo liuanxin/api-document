@@ -24,11 +24,12 @@ public final class ReturnHandler {
 
     public static List<DocumentReturn> handlerReturn(String method, String returnType) {
         List<DocumentReturn> returnList = new LinkedList<>();
-        handlerReturn(null, Tools.EMPTY, Tools.EMPTY, method, returnType, returnList);
+        handlerReturn(null, null, Tools.EMPTY, Tools.EMPTY, method, returnType, returnList);
         return returnList;
     }
 
-    private static void handlerReturn(Recursive parentRecursive, String space, String parent, String method,
+    private static void handlerReturn(Recursive parentRecursive, String fieldName,
+                                      String space, String parent, String method,
                                       String type, List<DocumentReturn> returnList) {
         if (Tools.isEmpty(type) || "void".equals(type)) {
             return;
@@ -54,7 +55,7 @@ public final class ReturnHandler {
         if (Collection.class.isAssignableFrom(outClass)) {
             if (type.contains("<") && type.contains(">")) {
                 String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                handlerReturn(parentRecursive, space, parent, method, classType, returnList);
+                handlerReturn(parentRecursive, fieldName, space, parent, method, classType, returnList);
             }
         }
         else if (Map.class.isAssignableFrom(outClass)) {
@@ -90,20 +91,20 @@ public final class ReturnHandler {
 
                     // handle value
                     String innerParent = (LEVEL_APPEND + key.toString() + parent);
-                    handlerReturn(parentRecursive, space + TAB, innerParent, method, keyValue[1].trim(), returnList);
+                    handlerReturn(parentRecursive, fieldName, space + TAB, innerParent, method, keyValue[1].trim(), returnList);
                 }
             }
         }
         else if (Tools.notBasicType(outClass)) {
-            Recursive selfRecursive = new Recursive(parentRecursive, outClass);
+            Recursive selfRecursive = new Recursive(parentRecursive, fieldName, outClass);
             Map<String, String> tmpFieldMap = Tools.newHashMap();
             for (Field field : outClass.getDeclaredFields()) {
                 int mod = field.getModifiers();
                 // field not static, not final, and not annotation ignore
                 if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                         && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
-                    String fieldName = field.getName();
-                    returnList.add(returnInfo(field, space + fieldName + parent));
+                    String name = field.getName();
+                    returnList.add(returnInfo(field, space + name + parent));
 
                     Class<?> fieldType = field.getType();
                     if (fieldType.isArray()) {
@@ -116,7 +117,7 @@ public final class ReturnHandler {
                             if (fieldType != Object.class
                                     && !Collection.class.isAssignableFrom(fieldType)
                                     && !Map.class.isAssignableFrom(fieldType)) {
-                                Recursive childRecursive = new Recursive(selfRecursive, fieldType);
+                                Recursive childRecursive = new Recursive(selfRecursive, name, fieldType);
                                 if (childRecursive.checkRecursive()) {
                                     if (LOGGER.isWarnEnabled()) {
                                         LOGGER.warn("!!!method {} field({}) ==> return type recursive!!!",
@@ -125,24 +126,24 @@ public final class ReturnHandler {
                                     DocumentReturn last = returnList.get(returnList.size() - 1);
                                     last.setDesc("!!!RECURSIVE OBJECT!!!");
                                 } else {
-                                    String innerParent = (LEVEL_APPEND + fieldName + parent);
-                                    handlerReturn(selfRecursive, space + TAB, innerParent, method, genericType, returnList);
+                                    String innerParent = (LEVEL_APPEND + name + parent);
+                                    handlerReturn(selfRecursive, name, space + TAB, innerParent, method, genericType, returnList);
                                 }
                             } else {
-                                String innerParent = (LEVEL_APPEND + fieldName + parent);
-                                handlerReturn(selfRecursive, space + TAB, innerParent, method, genericType, returnList);
+                                String innerParent = (LEVEL_APPEND + name + parent);
+                                handlerReturn(selfRecursive, name, space + TAB, innerParent, method, genericType, returnList);
                             }
                         }
-                        tmpFieldMap.put(genericType, fieldName);
+                        tmpFieldMap.put(genericType, name);
                     }
                 }
             }
             // handler generic
             if (type.contains("<") && type.contains(">")) {
                 String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                String fieldName = handlerReturnFieldName(tmpFieldMap, innerType);
-                String innerParent = (LEVEL_APPEND + fieldName + parent);
-                handlerReturn(selfRecursive, space + TAB, innerParent, method, innerType, returnList);
+                String name = handlerReturnFieldName(tmpFieldMap, innerType);
+                String innerParent = (LEVEL_APPEND + name + parent);
+                handlerReturn(selfRecursive, name, space + TAB, innerParent, method, innerType, returnList);
             }
         }
         /*
@@ -208,11 +209,11 @@ public final class ReturnHandler {
     // ========== json ==========
 
     public static String handlerReturnJson(String method, String returnType) {
-        Object obj = handlerReturnJsonObj(null, method, returnType);
+        Object obj = handlerReturnJsonObj(null, null, method, returnType);
         return Tools.isNotEmpty(obj) ? Tools.toJson(obj) : Tools.EMPTY;
     }
 
-    private static Object handlerReturnJsonObj(Recursive parentRecursive, String method, String type) {
+    private static Object handlerReturnJsonObj(Recursive parentRecursive, String fieldName, String method, String type) {
         if (Tools.isEmpty(type) || "void".equals(type)) {
             return null;
         }
@@ -235,22 +236,22 @@ public final class ReturnHandler {
         }
 
         if (Collection.class.isAssignableFrom(outClass)) {
-            return handlerReturnJsonList(parentRecursive, method, type, outClass);
+            return handlerReturnJsonList(parentRecursive, fieldName, method, type, outClass);
         }
         else if (Map.class.isAssignableFrom(outClass)) {
-            return handlerReturnJsonMap(parentRecursive, method, type);
+            return handlerReturnJsonMap(parentRecursive, fieldName, method, type);
         }
         else {
-            Object obj = handlerReturnWithObjClazz(parentRecursive, method, outClass);
+            Object obj = handlerReturnWithObjClazz(parentRecursive, fieldName, method, outClass);
             if (Tools.isNotEmpty(obj) && type.contains("<") && type.contains(">")) {
                 String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                handlerReturnJsonWithObj(parentRecursive, outClass, method, innerType, obj);
+                handlerReturnJsonWithObj(parentRecursive, fieldName, outClass, method, innerType, obj);
             }
             return obj;
         }
     }
 
-    private static void handlerReturnJsonWithObj(Recursive parentRecursive, Class<?> outClass,
+    private static void handlerReturnJsonWithObj(Recursive parentRecursive, String fieldName, Class<?> outClass,
                                                  String method, String type, Object obj) {
         String className = type.contains("<") ? type.substring(0, type.indexOf("<")).trim() : type;
         if (Tools.isEmpty(className) || "void".equals(className)) {
@@ -261,18 +262,18 @@ public final class ReturnHandler {
             return;
         }
         if (Collection.class.isAssignableFrom(innerClass)) {
-            setData(outClass, innerClass, obj, handlerReturnJsonList(parentRecursive, method, type, innerClass));
+            setData(outClass, innerClass, obj, handlerReturnJsonList(parentRecursive, fieldName, method, type, innerClass));
         }
         else if (Map.class.isAssignableFrom(innerClass)) {
-            setData(outClass, innerClass, obj, handlerReturnJsonMap(parentRecursive, method, type));
+            setData(outClass, innerClass, obj, handlerReturnJsonMap(parentRecursive, fieldName, method, type));
         }
         else {
-            Object value = handlerReturnWithObjClazz(parentRecursive, method, innerClass);
+            Object value = handlerReturnWithObjClazz(parentRecursive, fieldName, method, innerClass);
             if (Tools.isNotEmpty(value)) {
                 setData(outClass, innerClass, obj, value);
                 if (type.contains("<") && type.contains(">")) {
                     String innerType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-                    handlerReturnJsonWithObj(parentRecursive, innerClass, method, innerType, value);
+                    handlerReturnJsonWithObj(parentRecursive, fieldName, innerClass, method, innerType, value);
                 }
             }
         }
@@ -337,7 +338,8 @@ public final class ReturnHandler {
     }
 
     @SuppressWarnings("unchecked")
-    private static Collection handlerReturnJsonList(Recursive parentRecursive, String method, String type, Class<?> clazz) {
+    private static Collection handlerReturnJsonList(Recursive parentRecursive, String fieldName,
+                                                    String method, String type, Class<?> clazz) {
         if (type.contains("<") && type.contains(">")) {
             String obj = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             // add one record in list
@@ -351,7 +353,7 @@ public final class ReturnHandler {
             } else {
                 list = new ArrayList();
             }
-            Object object = handlerReturnJsonObj(parentRecursive, method, obj);
+            Object object = handlerReturnJsonObj(parentRecursive, fieldName, method, obj);
             if (Tools.isNotBlank(object)) {
                 list.add(object);
             }
@@ -361,7 +363,7 @@ public final class ReturnHandler {
         }
     }
 
-    private static Map handlerReturnJsonMap(Recursive parentRecursive, String method, String type) {
+    private static Map handlerReturnJsonMap(Recursive parentRecursive, String fieldName, String method, String type) {
         if (type.contains("<") && type.contains(">")) {
             // add one key:value in map
             String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
@@ -385,14 +387,14 @@ public final class ReturnHandler {
                     return Collections.emptyMap();
                 } else {
                     // key may be empty String: "", value may by null
-                    return Tools.maps(key, handlerReturnJsonObj(parentRecursive, method, keyValue[1].trim()));
+                    return Tools.maps(key, handlerReturnJsonObj(parentRecursive, fieldName, method, keyValue[1].trim()));
                 }
             }
         }
         return Collections.emptyMap();
     }
 
-    private static Object handlerReturnWithObjClazz(Recursive parentRecursive, String method, Class<?> clazz) {
+    private static Object handlerReturnWithObjClazz(Recursive parentRecursive, String fieldName, String method, Class<?> clazz) {
         if (Tools.isEmpty(clazz) || clazz == Object.class) {
             return null;
         }
@@ -403,7 +405,7 @@ public final class ReturnHandler {
         else if (clazz.isArray()) {
             Class<?> arrType = clazz.getComponentType();
             Object arr = Array.newInstance(arrType, 1);
-            Array.set(arr, 0, handlerReturnWithObjClazz(parentRecursive, method, arrType));
+            Array.set(arr, 0, handlerReturnWithObjClazz(parentRecursive, fieldName, method, arrType));
             return arr;
         }
 
@@ -418,11 +420,12 @@ public final class ReturnHandler {
             return null;
         }
 
-        Recursive selfRecursive = new Recursive(parentRecursive, clazz);
+        Recursive selfRecursive = new Recursive(parentRecursive, fieldName, clazz);
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
             if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                     && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
+                String name = field.getName();
                 Class<?> fieldType = field.getType();
                 ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                 // if type is String, use the annotation comment with the value
@@ -466,7 +469,7 @@ public final class ReturnHandler {
                             && Tools.isNotEmpty(apiReturn) && Tools.isNotEmpty(apiReturn.example())) {
                         example = Tools.getReturnTypeExample(arrType, apiReturn.example());
                     } else {
-                        example = handlerReturnWithObjClazz(selfRecursive, method, arrType);
+                        example = handlerReturnWithObjClazz(selfRecursive, name, method, arrType);
                     }
                     Array.set(arr, 0, example);
                     setField(field, obj, arr);
@@ -483,26 +486,28 @@ public final class ReturnHandler {
                                 Object example = Tools.getReturnTypeExample(fieldClass, apiReturn.example());
                                 setField(field, obj, Collections.singletonList(example));
                             } else {
-                                setField(field, obj, handlerReturnJsonList(selfRecursive, method, genericInfo, fieldType));
+                                setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
                             }
                         } else {
-                            setField(field, obj, handlerReturnJsonList(selfRecursive, method, genericInfo, fieldType));
+                            setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
                         }
                     } else if (Map.class.isAssignableFrom(fieldType)) {
-                        setField(field, obj, handlerReturnJsonMap(selfRecursive, method, genericInfo));
+                        setField(field, obj, handlerReturnJsonMap(selfRecursive, fieldName, method, genericInfo));
                     } else {
                         if (Tools.notBasicType(fieldType) && fieldType != Object.class) {
-                            Recursive childRecursive = new Recursive(selfRecursive, fieldType);
+                            Recursive childRecursive = new Recursive(selfRecursive, name, fieldType);
                             if (!childRecursive.checkRecursive()) {
-                                /*if (LOGGER.isWarnEnabled()) {
+                                setField(field, obj, handlerReturnWithObjClazz(selfRecursive, name, method, getClass(genericInfo)));
+                            }
+                            /* else {
+                                if (LOGGER.isWarnEnabled()) {
                                     LOGGER.warn("!!!method {} field({}) ==> handle json, return type recursive!!!",
                                             method, childRecursive.getOrbit());
                                 }
-                            } else {*/
-                                setField(field, obj, handlerReturnWithObjClazz(selfRecursive, method, getClass(genericInfo)));
                             }
+                            */
                         } else {
-                            setField(field, obj, handlerReturnWithObjClazz(selfRecursive, method, getClass(genericInfo)));
+                            setField(field, obj, handlerReturnWithObjClazz(selfRecursive, name, method, getClass(genericInfo)));
                         }
                     }
                 }
