@@ -321,9 +321,7 @@ public class Tools {
         if (isNotBlank(clazz) && clazz.isEnum()) {
             Object[] constants = clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
-                if (isEmpty(obj)) {
-                    return constants[0];
-                } else {
+                if (isNotEmpty(obj)) {
                     String source = obj.toString().trim();
                     for (Object em : constants) {
                         if (source.equalsIgnoreCase(((Enum) em).name())) {
@@ -343,8 +341,8 @@ public class Tools {
                         }
                         */
                     }
-                    return constants[0];
                 }
+                return constants[0];
             }
         }
         return null;

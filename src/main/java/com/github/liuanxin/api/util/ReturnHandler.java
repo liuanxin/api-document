@@ -481,7 +481,7 @@ public final class ReturnHandler {
                     Class<?> arrType = fieldType.getComponentType();
                     Object arr = Array.newInstance(arrType, 1);
                     Object object;
-                    if (Tools.basicType(arrType) && Tools.isNotEmpty(example)) {
+                    if (Tools.basicType(arrType)) {
                         object = Tools.getReturnTypeExample(arrType, example);
                     } else {
                         object = handlerReturnWithObjClazz(selfRecursive, name, method, arrType);
@@ -495,10 +495,8 @@ public final class ReturnHandler {
                         if (genericInfo.contains("<") && genericInfo.contains(">")) {
                             String objClass = genericInfo.substring(genericInfo.indexOf("<") + 1, genericInfo.lastIndexOf(">")).trim();
                             Class<?> fieldClass = getClass(objClass);
-                            // List<basic type> use @ApiReturn's info
-                            if (Tools.basicType(fieldClass) && Tools.isNotEmpty(example)) {
-                                Object object = Tools.getReturnTypeExample(fieldClass, example);
-                                setField(field, obj, Collections.singletonList(object));
+                            if (Tools.basicType(fieldClass)) {
+                                setField(field, obj, Collections.singletonList(Tools.getReturnTypeExample(fieldClass, example)));
                             } else {
                                 setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
                             }
