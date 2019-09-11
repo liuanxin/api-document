@@ -340,6 +340,7 @@ public class Tools {
                         }
                         */
                     }
+                    return constants[0];
                 }
             }
         }
