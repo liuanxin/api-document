@@ -202,6 +202,6 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
 
 最终效果如下
 
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+[[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
 字段说明不显示在返回示例中, 单独罗列
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api2.png]]
+[[https://raw.githubusercontent.com/liuanxin/image/master/api2.png]]
