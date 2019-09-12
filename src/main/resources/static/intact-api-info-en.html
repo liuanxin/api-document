@@ -173,16 +173,30 @@
             font-weight: 500;
         }
         @media print {
-            .print-nil {
+            pre .line-number, .print-nil {
                 display: none;
+            }
+            pre, .text-left, .panel {
+                overflow: unset;
+            }
+            pre, .text-left {
+                white-space: pre-wrap;
             }
         }
         @media (max-width: 992px), print {
+            table thead tr th {
+                white-space: nowrap;
+            }
             .col-md-9 {
                 width: 100%;
             }
             .col-md-3 {
                 display: none;
+            }
+        }
+        @media (max-width: 992px) {
+            .modal-dialog {
+                width: 96%;
             }
         }
         @media (min-width: 993px) and (max-width: 1200px) {
@@ -332,7 +346,7 @@
                                         <tr>
                                             <th class="text-left">Response Code</th>
                                             <th class="text-left">Comment</th>
-                                            {{? hasAction}}<th class="text-left">Action</th>{{?}}
+                                            {{? hasAction}}<th class="text-left print-nil">Action</th>{{?}}
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -345,12 +359,12 @@
                                             var targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
                                             }}
                                             {{? comment !== undefined && comment !== null && comment !== ''}}
-                                            <td class="text-left">
+                                            <td class="text-left print-nil">
                                                 <span class="response-example" title="Example when clicking to view response {{= response.code + ': ' + response.msg}}"
                                                       data-toggle="modal" data-target="#{{= targetId}}">View example</span>
                                             </td>
                                             {{?? hasAction}}
-                                            <td class="text-left"></td>
+                                            <td class="text-left print-nil"></td>
                                             {{?}}
                                         </tr>
                                         {{~}}
