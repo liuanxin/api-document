@@ -23,7 +23,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.5</version>
+    <version>0.5.6</version>
 </dependency>
 #+END_SRC
 
@@ -157,6 +157,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
 
 
 @ApiTokens --> 标注在类或方法上, 只要标注了就表示当前方法或类对应的接口不需要传递全局 token 信息
+  useGlobal  --> 是否使用全局 token, 可以不设置, 默认是 false
   value      --> @ApiToken[], 可以不设置, 表示当前接口需要传递的 token 信息
 
   @ApiToken --> 嵌套注解
