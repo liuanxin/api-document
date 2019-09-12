@@ -153,7 +153,7 @@ public class DocumentController {
                         if (Tools.isBlank(apiTokens)) {
                             document.setUseGlobalParam(true);
                         } else {
-                            document.setUseGlobalParam(false);
+                            document.setUseGlobalParam(apiTokens.useGlobal());
 
                             List<DocumentParam> extraParams = new LinkedList<>();
                             for (ApiToken token : apiTokens.value()) {
