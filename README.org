@@ -215,8 +215,6 @@ Final document collect for this
 [[###][https://raw.githubusercontent.com/liuanxin/image/master/api-en.png]]
 -
 [[###][https://raw.githubusercontent.com/liuanxin/image/master/api-en2.png]]
--
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-en.gif]]
 
 -----
 
@@ -225,5 +223,3 @@ Request Backend's example
 [[###][https://raw.githubusercontent.com/liuanxin/image/master/api-example-en.png]]
 -
 [[###][https://raw.githubusercontent.com/liuanxin/image/master/api-example-en2.png]]
--
-[[###][https://raw.githubusercontent.com/liuanxin/image/master/api-example-en.gif]]
