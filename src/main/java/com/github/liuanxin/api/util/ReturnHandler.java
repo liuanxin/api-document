@@ -465,13 +465,7 @@ public final class ReturnHandler {
                 if (Tools.isBlank(example)) {
                     example = Tools.EMPTY;
                 }
-                // if type is String, use the annotation comment with the value
-                if (fieldType == String.class) {
-                    setField(field, obj, example);
-                } else if (fieldType == String[].class) {
-                    setField(field, obj, new String[] { example });
-                }
-                else if (Tools.basicType(fieldType)) {
+                if (Tools.basicType(fieldType)) {
                     setField(field, obj, Tools.getReturnTypeExample(fieldType, example));
                 }
                 else if (Date.class.isAssignableFrom(fieldType)) {
@@ -510,14 +504,12 @@ public final class ReturnHandler {
                             Recursive childRecursive = new Recursive(selfRecursive, name, fieldType);
                             if (!childRecursive.checkRecursive()) {
                                 setField(field, obj, handlerReturnWithObjClazz(selfRecursive, name, method, getClass(genericInfo)));
-                            }
-                            /* else {
+                            } /* else {
                                 if (LOGGER.isWarnEnabled()) {
                                     LOGGER.warn("!!!method {} field({}) ==> handle json, return type recursive!!!",
                                             method, childRecursive.getOrbit());
                                 }
-                            }
-                            */
+                            } */
                         } else {
                             setField(field, obj, handlerReturnWithObjClazz(selfRecursive, name, method, getClass(genericInfo)));
                         }
