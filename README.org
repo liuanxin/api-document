@@ -1,7 +1,14 @@
 
-English Readme([[https://liuanxin.github.io/api-info-en.html][Look at the effect]]) | [[README-CN.org][中文说明]]
+English Readme | [[README-CN.org][中文说明]]
+
+-----
 
 [[https://github.com/liuanxin/api-document-example-en][example project(spring boot 2)]]
+
+[[https://liuanxin.github.io/api-info-en.html][Look at the effect]]
+
+[[https://liuanxin.github.io/api-info-en-example.html][Look at the effects of front and back interactive requests]]
+
 
 ** comment
 
