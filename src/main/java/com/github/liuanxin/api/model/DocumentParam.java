@@ -35,7 +35,7 @@ public class DocumentParam {
 
     public static DocumentParam buildToken(ApiToken token) {
         DocumentParam param = new DocumentParam();
-        param.setDataType("String");
+        param.setDataType(token.dataType());
         param.setName(token.name());
         param.setDesc(token.desc());
         param.setExample(token.example());
