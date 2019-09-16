@@ -354,7 +354,7 @@ public class Tools {
         // enum append (code:value)
         String enumInfo = collectEnumInfo(clazz);
         if (isNotEmpty(enumInfo)) {
-            return isEmpty(desc) ? enumInfo : String.format("%s(enum => %s)", desc, enumInfo);
+            return isEmpty(desc) ? enumInfo : String.format("%s(%s)", desc, enumInfo);
         } else {
             return isEmpty(desc) ? EMPTY : desc;
         }
