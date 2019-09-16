@@ -439,8 +439,8 @@
                             }
                             var textNum = 0;
                             }}
-                            <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}{{? url.url}}
-                                  action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
+                            <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}
+                                  {{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
                                 {{? paramList && paramList.length > 0}}
                                 <div class="bottom-table panel panel-default">
                                     <table class="table table-striped table-bordered table-hover table-condensed">
