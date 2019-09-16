@@ -5,7 +5,7 @@
 
 [[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]]
 
-[[https://liuanxin.github.io/api-info.html][看看收集到的文档效果]]
+[[https://liuanxin.github.io/api-info.html][看看效果]]
 
 [[https://liuanxin.github.io/api-info-example.html][看看前后端交互请求的效果]]
 
