@@ -256,10 +256,14 @@
                             var urlParamList = url.paramList || [];
                             var paramList = (url.useGlobalParam === '1') ? globalParamList.concat(urlParamList) : urlParamList;
 
-                            var hasExample = false, hasHeader = false;
+                            var hasDesc = false, hasExample = false, hasHeader = false;
                             for (var i = 0; i < paramList.length; i++) {
+                                var paramDesc = paramList[i].desc;
+                                if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
+
                                 var urlExample = paramList[i].example;
                                 if (urlExample !== undefined && urlExample !== null && urlExample !== '') { hasExample = true; }
+
                                 if (paramList[i].paramType === '1') { hasHeader = true; }
                             }
                             }}
@@ -271,7 +275,7 @@
                                         <th class="text-left">param name</th>
                                         <th class="text-left">data type</th>
                                         <th class="text-left">required</th>
-                                        <th class="text-left">comment</th>
+                                        {{? hasDesc}}<th class="text-left">comment</th>{{?}}
                                         {{? hasExample}}<th class="text-left">example</th>{{?}}
                                         {{? hasHeader}}<th class="text-left">param type</th>{{?}}
                                     </tr>
@@ -286,7 +290,7 @@
                                             : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                         }}</td>
                                         <td class="text-left">{{= param.hasMust === '1' ? 'Yes' : 'No'}}</td>
-                                        <td class="text-left wrap">{{= param.desc || ''}}</td>
+                                        {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                         {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
                                         {{? hasHeader}}<td class="text-left">{{= (param.paramType || '') === '1' ? 'Header' : 'Query'}}</td>{{?}}
                                     </tr>

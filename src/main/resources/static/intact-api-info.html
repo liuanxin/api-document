@@ -256,10 +256,14 @@
                             var urlParamList = url.paramList || [];
                             var paramList = (url.useGlobalParam === '1') ? globalParamList.concat(urlParamList) : urlParamList;
 
-                            var hasExample = false, hasHeader = false;
+                            var hasDesc = false, hasExample = false, hasHeader = false;
                             for (var i = 0; i < paramList.length; i++) {
+                                var paramDesc = paramList[i].desc;
+                                if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
+
                                 var urlExample = paramList[i].example;
                                 if (urlExample !== undefined && urlExample !== null && urlExample !== '') { hasExample = true; }
+
                                 if (paramList[i].paramType === '1') { hasHeader = true; }
                             }
                             }}
@@ -271,7 +275,7 @@
                                         <th class="text-left">参数名称</th>
                                         <th class="text-left">数据类型</th>
                                         <th class="text-left">必须</th>
-                                        <th class="text-left">说明</th>
+                                        {{? hasDesc}}<th class="text-left">说明</th>{{?}}
                                         {{? hasExample}}<th class="text-left">示例</th>{{?}}
                                         {{? hasHeader}}<th class="text-left">参数类型</th>{{?}}
                                     </tr>
@@ -286,7 +290,7 @@
                                             : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                         }}</td>
                                         <td class="text-left">{{= param.hasMust === '1' ? 'Yes' : 'No'}}</td>
-                                        <td class="text-left wrap">{{= param.desc || ''}}</td>
+                                        {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                         {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
                                         {{? hasHeader}}<td class="text-left">{{= (param.paramType || '') === '1' ? 'Header' : 'Query'}}</td>{{?}}
                                     </tr>

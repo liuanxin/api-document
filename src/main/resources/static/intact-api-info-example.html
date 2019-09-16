@@ -429,8 +429,11 @@
                             var urlParamList = url.paramList || [];
                             var paramList = (url.useGlobalParam === '1') ? globalParamList.concat(urlParamList) : urlParamList;
 
-                            var hasFile = false, hasHeader = false;
+                            var hasDesc = false, hasFile = false, hasHeader = false;
                             for (var i = 0; i < paramList.length; i++) {
+                                var paramDesc = paramList[i].desc;
+                                if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
+
                                 if (paramList[i].hasFile === '1') { hasFile = true; }
                                 if (paramList[i].paramType === '1') { hasHeader = true; }
                             }
@@ -444,25 +447,17 @@
                                         <thead>
                                         <tr>
                                             <th class="text-left">参数名称</th>
-                                            <th class="text-left">说明</th>
+                                            <th class="text-left example">示例</th>
                                             <th class="text-left">必须</th>
                                             <th class="text-left">数据类型</th>
                                             {{? hasHeader}}<th class="text-left">参数类型</th>{{?}}
-                                            <th class="text-left example">示例</th>
+                                            {{? hasDesc}}<th class="text-left">说明</th>{{?}}
                                         </tr>
                                         </thead>
                                         <tbody>
                                         {{~ paramList  :param:paramIndex}}
                                         <tr{{? param.hasMust === '1'}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                             <td class="text-left">{{= param.name || ''}}</td>
-                                            <td class="text-left wrap">{{= param.desc || ''}}</td>
-                                            <td class="text-left">{{= param.hasMust === '1' ? 'Yes' : 'No'}}</td>
-                                            <td class="text-left">{{=
-                                                param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
-                                                ? param.showDataType
-                                                : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
-                                            }}</td>
-                                            {{? hasHeader}}<td class="text-left">{{= (param.paramType || '') === '1' ? 'Header' : 'Query'}}</td>{{?}}
                                             <td class="text-left" style="height: inherit;">
                                                 {{
                                                 var arr = [];
@@ -487,10 +482,10 @@
                                                 {{? param.dataType === 'file'}}
                                                 <div class="input-group">
                                                     <label class="input-group-btn">
-                                                        <span class="btn btn-default{{? param.hasMust === '1'}} bold{{?}}">
-                                                            选择文件
-                                                            <input type="file" name="{{= param.name || ''}}" style="display: none;">
-                                                        </span>
+                                                            <span class="btn btn-default{{? param.hasMust === '1'}} bold{{?}}">
+                                                                选择文件
+                                                                <input type="file" name="{{= param.name || ''}}" style="display: none;">
+                                                            </span>
                                                     </label>
                                                     <input type="text" class="form-control{{? param.hasMust === '1'}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                                 </div>
@@ -500,7 +495,7 @@
                                                 <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                                     <option></option>
                                                     {{? Array.isArray(enumInfo) }}
-                                                        {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
+                                                    {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
                                                     {{??}}
                                                     {{ var k; for(k in enumInfo) { }}
                                                     <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected="selected"{{?}}>{{= enumInfo[k]}}</option>
@@ -521,6 +516,14 @@
                                                        name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                                 {{?}}
                                             </td>
+                                            <td class="text-left">{{= param.hasMust === '1' ? 'Yes' : 'No'}}</td>
+                                            <td class="text-left">{{=
+                                                param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
+                                                ? param.showDataType
+                                                : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
+                                            }}</td>
+                                            {{? hasHeader}}<td class="text-left">{{= (param.paramType || '') === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                            {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                         </tr>
                                         {{~}}
                                         </tbody>
