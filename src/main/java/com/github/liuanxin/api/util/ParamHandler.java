@@ -12,11 +12,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("DuplicatedCode")
 public final class ParamHandler {
+
+    private static final List<String> DATES = Arrays.asList("date", "time", "datetime");
 
     private static final LocalVariableTableParameterNameDiscoverer VARIABLE
             = new LocalVariableTableParameterNameDiscoverer();
@@ -152,11 +156,16 @@ public final class ParamHandler {
 
         String inputType = Tools.getInputType(type);
         param.setDataType(inputType);
-        param.setHasFile(Tools.hasFileInput(inputType));
+        param.setHasFile(Tools.hasFileInput(inputType) ? "1" : Tools.EMPTY);
 
         String desc;
         if (Tools.isNotEmpty(apiParam)) {
             desc = apiParam.value();
+            String datePattern = apiParam.datePattern();
+            if (Tools.isNotEmpty(datePattern) &&
+                    (Date.class.isAssignableFrom(type) || DATES.contains(apiParam.dataType().toLowerCase()))) {
+                desc = Tools.isEmpty(desc) ? datePattern : desc + "(" + datePattern + ")";
+            }
 
             String paramName = apiParam.name();
             if (Tools.isNotEmpty(paramName)) {
@@ -167,44 +176,50 @@ public final class ParamHandler {
                 param.setShowDataType(showDataType);
             }
 
-            param.setParamType(apiParam.paramType().toString());
+            param.setParamType(apiParam.paramType().hasHeader() ? "1" : Tools.EMPTY);
 
             String example = apiParam.example();
             if (Tools.isNotEmpty(example)) {
                 param.setExample(example);
             }
-            param.setHasTextarea(apiParam.textarea());
+            param.setHasTextarea(apiParam.textarea() ? "1" : Tools.EMPTY);
+            param.setDatePattern(datePattern);
             param.setStyle(apiParam.style());
-        } else {
-            if (Tools.isNotEmpty(apiModel)) {
-                desc = apiModel.value();
-
-                String paramName = apiModel.name();
-                if (Tools.isNotEmpty(paramName)) {
-                    param.setName(paramName);
-                }
-                String showDataType = apiModel.dataType();
-                if (Tools.isNotEmpty(showDataType)) {
-                    param.setShowDataType(showDataType);
-                }
-
-                param.setParamType(apiModel.paramType().toString());
-
-                String example = apiModel.example();
-                if (Tools.isNotEmpty(example)) {
-                    param.setExample(example);
-                }
-                param.setHasTextarea(apiModel.textarea());
-                param.setStyle(apiModel.style());
-            } else {
-                desc = Tools.EMPTY;
+        } else if (Tools.isNotEmpty(apiModel)) {
+            desc = apiModel.value();
+            String datePattern = apiModel.datePattern();
+            if (Tools.isNotEmpty(datePattern) &&
+                    (Date.class.isAssignableFrom(type) || DATES.contains(apiModel.dataType().toLowerCase()))) {
+                desc = Tools.isEmpty(desc) ? datePattern : desc + "(" + datePattern + ")";
             }
+
+            String paramName = apiModel.name();
+            if (Tools.isNotEmpty(paramName)) {
+                param.setName(paramName);
+            }
+            String showDataType = apiModel.dataType();
+            if (Tools.isNotEmpty(showDataType)) {
+                param.setShowDataType(showDataType);
+            }
+
+            param.setParamType(apiModel.paramType().hasHeader() ? "1" : Tools.EMPTY);
+
+            String example = apiModel.example();
+            if (Tools.isNotEmpty(example)) {
+                param.setExample(example);
+            }
+            param.setHasTextarea(apiModel.textarea() ? "1" : Tools.EMPTY);
+            param.setDatePattern(datePattern);
+            param.setStyle(apiModel.style());
+        } else {
+            desc = Tools.EMPTY;
         }
+
         // if param has no @RequestParam(required = true) etc..., use custom value
-        param.setMust(
+        param.setHasMust(
                 must
                 || (Tools.isNotEmpty(apiParam) && apiParam.must())
-                || (Tools.isNotEmpty(apiModel) && apiModel.must())
+                || (Tools.isNotEmpty(apiModel) && apiModel.must()) ? "1" : Tools.EMPTY
         );
         param.setDesc(Tools.descInfo(type, desc));
         return param;

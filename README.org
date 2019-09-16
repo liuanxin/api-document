@@ -63,8 +63,8 @@ public class ApiInfoConfig {
                     // // if only want to use on a specific api, or set this global config but want to ignore on a specific api,
                     // // use @ApiTokens annotation
                     // .setGlobalTokens(Arrays.asList(
-                    //         DocumentParam.buildToken("x-token", "oauth info", "abc-xyz", ParamType.Header).setHasTextarea(true),
-                    //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust(true)
+                    //         DocumentParam.buildToken("x-token", "oauth info", "abc-xyz", ParamType.Header).setHasTextarea("1"),
+                    //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
                     // ))
 
                     // // field comment is output in the return example. default is true. set to false will be listed separately.
@@ -145,7 +145,7 @@ for example:
 @ApiParam --> in param or field
   value     --> param comment, can not be set
   name      --> if set, can not be set, will ignore param name or field name
-  dataType  --> if type was custom can use, can not be set(for example: enum, but param type was be int). can be: int、long、float、double、email、url、ipv4
+  dataType  --> if type was custom can use, can not be set(for example: enum, but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
   example   --> used in api examples, can not be set
   paramType --> can not be set, Header or Query, default is Query
   must      --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
@@ -189,7 +189,7 @@ for example:
 @ApiModel --> Combined with the annotations of the @ApiParam and @ApiReturn, Please do not abuse. You should try to use the first two.
   value     --> (return type or param name)'s comment, can not be set
   name      --> (return type or param name)'s name, can not be set
-  dataType  --> (return type or param name)'s type, can not be set, use with customize: int、long、float、double、email、url、ipv4
+  dataType  --> (return type or param name)'s type, can not be set, use with customize: int、long、float、double、date、phone、email、url、ipv4
   example   --> (return type or param name)'s example, can not be set
 
   -- The above attributes apply to both the request parameter and the return field. The following attributes are only used on the request parameters.

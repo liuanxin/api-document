@@ -58,8 +58,8 @@ public class ApiInfoConfig {
 
                     // // 全局 token, 这个配置会生成在每个接口的参数中, 如果只想在具体的接口上设置或者设置了此项但是想在具体的接口上忽略, 请使用 @ApiTokens 注解
                     // .setGlobalTokens(Arrays.asList(
-                    //         DocumentParam.buildToken("x-token", "认证数据", "abc-xyz", ParamType.Header).setHasTextarea(true),
-                    //         DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust(true)
+                    //         DocumentParam.buildToken("x-token", "认证数据", "abc-xyz", ParamType.Header).setHasTextarea("1"),
+                    //         DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
                     // ))
 
                     // // 字段说明是否输出在返回示例中, 不设置则默认是 true, 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
@@ -137,7 +137,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
 @ApiParam --> 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
   value     --> 参数说明, 可以不设置
   name      --> 参数名, 可以不设置, 如果设置了将会无视参数名或字段名
-  dataType  --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用: int、long、float、double、email、url、ipv4
+  dataType  --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用: int、long、float、double、date、phone、email、url、ipv4
   example   --> 参数示例. 用在接口示例时有用, 可以不设置
   paramType --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query
   must      --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
@@ -180,7 +180,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
 @ApiModel --> 结合了 @ApiParam 和 @ApiReturn 两个注解的注解, 可以同时说明请求参数和返回字段, 请不要滥用, 应该尽量用前两者
   value     --> 返回或参数说明, 可以不设置
   name      --> 返回或参数名, 可以不设置, 如果设置了将会无视参数名或字段名
-  dataType  --> 返回或参数的数据类型. 可以不设置, 自定义时有用: int、long、float、double、email、url、ipv4
+  dataType  --> 返回或参数的数据类型. 可以不设置, 自定义时有用: int、long、float、double、date、phone、email、url、ipv4
   example   --> 返回或参数的示例. 用在接口示例时有用, 可以不设置
 
   -- 上面的属性同时作用在 请求参数 和 返回字段 上, 下面的属性只用在 请求参数 上

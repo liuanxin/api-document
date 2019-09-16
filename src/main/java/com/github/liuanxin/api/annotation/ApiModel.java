@@ -7,13 +7,13 @@ import java.lang.annotation.*;
 @Documented
 public @interface ApiModel {
 
-    /** @return  desc */
+    /** @return desc */
     String value() default "";
 
     /** @return name, if set will ignore param name or file name */
     String name() default "";
 
-    /** @return when customize type(for example: enum, but param type was be int). can be: int、long、float、double、phone、email、url、ipv4 */
+    /** @return when customize type(for example: enum, but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4 */
     String dataType() default "";
 
     /** @return return example, only if the field is a string or underlying data type(including BigInteger and BigDecimal) */
@@ -31,6 +31,9 @@ public @interface ApiModel {
 
     /** @return in html, true will be textarea, default was input. */
     boolean textarea() default false;
+
+    /** @return pattern of the date parameter */
+    String datePattern() default "";
 
     /** @return show html style in page */
     String style() default "";

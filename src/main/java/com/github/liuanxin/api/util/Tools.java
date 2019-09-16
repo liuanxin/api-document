@@ -353,14 +353,10 @@ public class Tools {
         }
         // enum append (code:value)
         String enumInfo = collectEnumInfo(clazz);
-        if (isEmpty(desc)) {
-            return enumInfo;
+        if (isNotEmpty(enumInfo)) {
+            return isEmpty(desc) ? enumInfo : String.format("%s(enum => %s)", desc, enumInfo);
         } else {
-            if (isEmpty(enumInfo)) {
-                return desc;
-            } else {
-                return desc + String.format("(enum => %s)", enumInfo);
-            }
+            return isEmpty(desc) ? EMPTY : desc;
         }
     }
     private static String collectEnumInfo(Class<?> clazz) {

@@ -4,7 +4,7 @@ public enum ParamType {
 
     Header, Query;
 
-    public static boolean hasHeader(String type) {
-        return Header.name().equalsIgnoreCase(type);
+    public boolean hasHeader() {
+        return this == Header;
     }
 }

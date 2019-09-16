@@ -151,9 +151,9 @@ public class DocumentController {
                         // no annotation: use global, annotation is false: not use, annotation is true: use self
                         ApiTokens apiTokens = getAnnotation(handlerMethod, ApiTokens.class);
                         if (Tools.isBlank(apiTokens)) {
-                            document.setUseGlobalParam(true);
+                            document.setUseGlobalParam("1");
                         } else {
-                            document.setUseGlobalParam(apiTokens.useGlobal());
+                            document.setUseGlobalParam(apiTokens.useGlobal() ? "1" : Tools.EMPTY);
 
                             List<DocumentParam> extraParams = new LinkedList<>();
                             for (ApiToken token : apiTokens.value()) {
@@ -163,7 +163,7 @@ public class DocumentController {
                                 paramList.addAll(0, extraParams);
                             }
                         }
-                        document.setRequestBody(hasRequestBody(handlerMethod));
+                        document.setRequestBody(hasRequestBody(handlerMethod) ? "1" : Tools.EMPTY);
                         document.setParamList(paramList);
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
