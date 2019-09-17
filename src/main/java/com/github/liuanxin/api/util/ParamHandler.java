@@ -8,7 +8,6 @@ import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -33,15 +32,21 @@ public final class ParamHandler {
             if (Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
                 // if param not basicType, into a layer of processing
                 Class<?> parameterType = parameter.getParameterType();
-                if (!parameterType.equals(MultipartFile.class) && Tools.notBasicType(parameterType)) {
+                ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
+                ApiModel apiModel = parameter.getParameterAnnotation(ApiModel.class);
+                String showDataType = Tools.isNotBlank(apiParam)
+                        ? apiParam.dataType()
+                        : (Tools.isNotBlank(apiModel) ? apiModel.dataType() : null);
+
+                if (Tools.hasInDepth(showDataType, parameterType)) {
                     for (Field field : parameterType.getDeclaredFields()) {
                         int mod = field.getModifiers();
                         // field not static, not final, not annotation ignore
                         if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
                                 && Tools.isBlank(field.getAnnotation(ApiParamIgnore.class))) {
-                            ApiParam apiParam = field.getAnnotation(ApiParam.class);
-                            ApiModel apiModel = field.getAnnotation(ApiModel.class);
-                            params.add(paramInfo(field.getName(), field.getType(), apiParam, apiModel, false));
+                            ApiParam fieldParam = field.getAnnotation(ApiParam.class);
+                            ApiModel fieldModel = field.getAnnotation(ApiModel.class);
+                            params.add(paramInfo(field.getName(), field.getType(), fieldParam, fieldModel, false));
                         }
                     }
                 } else {
@@ -49,8 +54,6 @@ public final class ParamHandler {
                     // if use java 8 and open options in javac -parameters, parameter.parameterName() can be get
                     // String paramName = parameter.getParameterName();
                     String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
-                    ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
-                    ApiModel apiModel = parameter.getParameterAnnotation(ApiModel.class);
                     // if param was required, use it.
                     params.add(paramInfo(getParamName(parameter, paramName), parameterType,
                             apiParam, apiModel, paramHasMust(parameter)));
