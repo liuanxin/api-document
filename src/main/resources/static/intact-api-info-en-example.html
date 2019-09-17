@@ -456,40 +456,43 @@
                                         </thead>
                                         <tbody>
                                         {{~ paramList  :param:paramIndex}}
-                                        <tr{{? param.hasMust === '1' || param.hasMust === 1}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
+                                        {{
+                                        var hasTextarea = param.hasTextarea === '1' || param.hasTextarea === 1;
+                                        var arr = [];
+                                        var hasMust;
+                                        if (param.hasMust === '1' || param.hasMust === 1) { hasMust = true; arr.push('required'); }
+                                        else { hasMust = false; }
+
+                                        if (param.dataType === 'int' || param.dataType === 'long') { arr.push('custom[integer]'); }
+                                        else if (param.dataType === 'float' || param.dataType === 'double') { arr.push('custom[number]'); }
+                                        else if (param.dataType === 'email') { arr.push('custom[email]'); }
+                                        else if (param.dataType === 'url') { arr.push('custom[url]'); }
+                                        else if (param.dataType === 'ipv4') { arr.push('custom[ipv4]'); }
+
+                                        var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
+
+                                        var validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
+                                        var tokenClass = (param.hasToken === '1' || param.hasToken === 1) ? ' has-token' : '';
+                                        var header = (param.paramType === '1' || param.paramType === 1) ? ' header="true"' : '';
+                                        var example = localStorage.getItem(param.name) || param.example || '';
+
+                                        var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
+                                        var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
+                                        }}
+                                        <tr{{? hasMust}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                             <td class="text-left">{{= param.name || ''}}</td>
                                             <td class="text-left" style="height: inherit;">
-                                                {{
-                                                var arr = [];
-                                                if (param.hasMust === '1' || param.hasMust === 1) { arr.push('required'); }
-
-                                                if (param.dataType === 'int' || param.dataType === 'long') { arr.push('custom[integer]'); }
-                                                else if (param.dataType === 'float' || param.dataType === 'double') { arr.push('custom[number]'); }
-                                                else if (param.dataType === 'email') { arr.push('custom[email]'); }
-                                                else if (param.dataType === 'url') { arr.push('custom[url]'); }
-                                                else if (param.dataType === 'ipv4') { arr.push('custom[ipv4]'); }
-
-                                                var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
-
-                                                var validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
-                                                var tokenClass = (param.hasToken === '1' || param.hasToken === 1) ? ' has-token' : '';
-                                                var header = (param.paramType === '1' || param.paramType === 1) ? ' header="true"' : '';
-                                                var example = localStorage.getItem(param.name) || param.example || '';
-
-                                                var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
-                                                var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
-                                                }}
                                                 {{? param.dataType === 'file'}}
                                                 <div class="input-group">
                                                     <label class="input-group-btn">
-                                                            <span class="btn btn-default{{? param.hasMust === '1' || param.hasMust === 1}} bold{{?}}">
-                                                                Browse...
-                                                                <input type="file" name="{{= param.name || ''}}" style="display: none;">
-                                                            </span>
+                                                        <span class="btn btn-default{{? hasMust}} bold{{?}}">
+                                                            Browse...
+                                                            <input type="file" name="{{= param.name || ''}}" style="display: none;">
+                                                        </span>
                                                     </label>
-                                                    <input type="text" class="form-control{{? param.hasMust === '1' || param.hasMust === 1}} bold{{?}}{{= validateClass}}" readonly="readonly">
+                                                    <input type="text" class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                                 </div>
-                                                {{?? param.hasTextarea === '1' || param.hasTextarea === 1}}
+                                                {{?? hasTextarea}}
                                                 <textarea class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                                 {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
                                                 <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
@@ -503,11 +506,12 @@
                                                     {{?}}
                                                 </select>
                                                 {{?? param.showDataType === 'date' || param.dataType === 'date'}}
+                                                {{ var hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
                                                 <div class="input-group date form-datetime">
                                                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                                    <input type="text" class="form-control{{? param.hasMust === '1' || param.hasMust === 1}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
-                                                           data-date-format="{{= param.datePattern || ''}}" readonly="readonly"
-                                                           name="{{= param.name || ''}}"{{= header}}/>
+                                                    <input type="text" name="{{= param.name || ''}}"{{= header}}
+                                                           class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
+                                                           readonly="readonly"{{? hasFormat}} data-date-format="{{= param.datePattern}}"{{?}}/>
                                                 </div>
                                                 {{??}}
                                                 {{ textNum++; }}
@@ -516,7 +520,7 @@
                                                        name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                                 {{?}}
                                             </td>
-                                            <td class="text-left">{{= (param.hasMust === '1' || param.hasMust === 1) ? 'Yes' : 'No'}}</td>
+                                            <td class="text-left">{{= hasMust ? 'Yes' : 'No'}}</td>
                                             <td class="text-left">{{=
                                                 param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
                                                 ? param.showDataType
