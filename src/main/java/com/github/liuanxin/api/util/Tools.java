@@ -415,17 +415,17 @@ public class Tools {
     static boolean hasInDepth(String showDataType, Class<?> parameterType) {
         return !MultipartFile.class.isAssignableFrom(parameterType)
                 && notBasicType(parameterType)
-                && !hasSetBasicType(showDataType);
+                && notShowByBasicType(showDataType);
     }
-    private static boolean hasSetBasicType(String dataType) {
+    private static boolean notShowByBasicType(String dataType) {
         if (isNotEmpty(dataType)) {
             for (String key : BASIC_TYPE_VALUE_MAP.keySet()) {
                 if (key.equalsIgnoreCase(dataType)) {
-                    return true;
+                    return false;
                 }
             }
         }
-        return false;
+        return true;
     }
     private static Object getTypeDefaultValue(Class<?> clazz) {
         return BASIC_TYPE_VALUE_MAP.get(clazz.getSimpleName());
