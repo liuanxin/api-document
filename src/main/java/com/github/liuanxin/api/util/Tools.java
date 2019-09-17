@@ -415,7 +415,7 @@ public class Tools {
     static boolean hasInDepth(String showDataType, Class<?> parameterType) {
         return !MultipartFile.class.isAssignableFrom(parameterType)
                 && notBasicType(parameterType)
-                && hasSetBasicType(showDataType);
+                && !hasSetBasicType(showDataType);
     }
     private static boolean hasSetBasicType(String dataType) {
         if (isNotEmpty(dataType)) {
