@@ -427,15 +427,15 @@
                             {{
                             var globalParamList = it.tokenList || [];
                             var urlParamList = url.paramList || [];
-                            var paramList = (url.useGlobalParam === '1') ? globalParamList.concat(urlParamList) : urlParamList;
+                            var paramList = (url.useGlobalParam === '1' || url.useGlobalParam === 1) ? globalParamList.concat(urlParamList) : urlParamList;
 
                             var hasDesc = false, hasFile = false, hasHeader = false;
                             for (var i = 0; i < paramList.length; i++) {
                                 var paramDesc = paramList[i].desc;
                                 if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
 
-                                if (paramList[i].hasFile === '1') { hasFile = true; }
-                                if (paramList[i].paramType === '1') { hasHeader = true; }
+                                if (paramList[i].hasFile === '1' || paramList[i].hasFile === 1) { hasFile = true; }
+                                if (paramList[i].paramType === '1' || paramList[i].paramType === 1) { hasHeader = true; }
                             }
                             var textNum = 0;
                             }}
@@ -456,12 +456,12 @@
                                         </thead>
                                         <tbody>
                                         {{~ paramList  :param:paramIndex}}
-                                        <tr{{? param.hasMust === '1'}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
+                                        <tr{{? param.hasMust === '1' || param.hasMust === 1}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                             <td class="text-left">{{= param.name || ''}}</td>
                                             <td class="text-left" style="height: inherit;">
                                                 {{
                                                 var arr = [];
-                                                if (param.hasMust === '1') { arr.push('required'); }
+                                                if (param.hasMust === '1' || param.hasMust === 1) { arr.push('required'); }
 
                                                 if (param.dataType === 'int' || param.dataType === 'long') { arr.push('custom[integer]'); }
                                                 else if (param.dataType === 'float' || param.dataType === 'double') { arr.push('custom[number]'); }
@@ -472,8 +472,8 @@
                                                 var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
                                                 var validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
-                                                var tokenClass = (param.hasToken === '1') ? ' has-token' : '';
-                                                var header = (param.paramType === '1') ? ' header="true"' : '';
+                                                var tokenClass = (param.hasToken === '1' || param.hasToken === 1) ? ' has-token' : '';
+                                                var header = (param.paramType === '1' || param.paramType === 1) ? ' header="true"' : '';
                                                 var example = localStorage.getItem(param.name) || param.example || '';
 
                                                 var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
@@ -482,14 +482,14 @@
                                                 {{? param.dataType === 'file'}}
                                                 <div class="input-group">
                                                     <label class="input-group-btn">
-                                                            <span class="btn btn-default{{? param.hasMust === '1'}} bold{{?}}">
+                                                            <span class="btn btn-default{{? param.hasMust === '1' || param.hasMust === 1}} bold{{?}}">
                                                                 Browse...
                                                                 <input type="file" name="{{= param.name || ''}}" style="display: none;">
                                                             </span>
                                                     </label>
-                                                    <input type="text" class="form-control{{? param.hasMust === '1'}} bold{{?}}{{= validateClass}}" readonly="readonly">
+                                                    <input type="text" class="form-control{{? param.hasMust === '1' || param.hasMust === 1}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                                 </div>
-                                                {{?? param.hasTextarea === '1'}}
+                                                {{?? param.hasTextarea === '1' || param.hasTextarea === 1}}
                                                 <textarea class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                                 {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
                                                 <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
@@ -505,7 +505,7 @@
                                                 {{?? param.showDataType === 'date' || param.dataType === 'date'}}
                                                 <div class="input-group date form-datetime">
                                                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                                    <input type="text" class="form-control{{? param.hasMust === '1'}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
+                                                    <input type="text" class="form-control{{? param.hasMust === '1' || param.hasMust === 1}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
                                                            data-date-format="{{= param.datePattern || ''}}" readonly="readonly"
                                                            name="{{= param.name || ''}}"{{= header}}/>
                                                 </div>
@@ -516,13 +516,13 @@
                                                        name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                                 {{?}}
                                             </td>
-                                            <td class="text-left">{{= param.hasMust === '1' ? 'Yes' : 'No'}}</td>
+                                            <td class="text-left">{{= (param.hasMust === '1' || param.hasMust === 1) ? 'Yes' : 'No'}}</td>
                                             <td class="text-left">{{=
                                                 param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
                                                 ? param.showDataType
                                                 : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                             }}</td>
-                                            {{? hasHeader}}<td class="text-left">{{= (param.paramType || '') === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                            {{? hasHeader}}<td class="text-left">{{= (param.paramType === '1' || param.paramType === 1) ? 'Header' : 'Query'}}</td>{{?}}
                                             {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                         </tr>
                                         {{~}}
@@ -533,7 +533,7 @@
                                 <p>
                                     /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
                                     {{? textNum === 1 }}<input type="text" style="display: none;"/>{{?}}
-                                    <input class="btn" type="button" value="Request backend" requestBody="{{= url.requestBody}}"/>
+                                    <input class="btn" type="button" value="Request backend"{{? url.requestBody === '1' || url.requestBody === 1}} requestBody="1"{{?}}/>
                                 </p>
                                 <div class="curl"><pre class="src src-json"></pre></div>
                                 <div class="response"><pre class="src src-json"></pre></div>
@@ -912,7 +912,7 @@ $(function() {
         var method = $form.attr('method');
         var url = $form.attr('action');
         var requestBody = $btn.attr('requestBody');
-        var hasRequestBody = requestBody === true || requestBody === 'true';
+        var hasRequestBody = requestBody === '1' || requestBody === 1;
 
         var map = objectifyForm($form);
         var params = map[0];
