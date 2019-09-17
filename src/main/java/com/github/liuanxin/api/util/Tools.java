@@ -187,7 +187,7 @@ public class Tools {
     }
 
     // ========== date ==========
-    static Date parseDate(String source) {
+    private static Date parseDate(String source) {
         if (isNotBlank(source)) {
             source = source.trim();
             for (DateType type : DateType.values()) {
@@ -571,6 +571,9 @@ public class Tools {
                 return defaultObj;
             }
         }
+        else if (clazz == Date.class) {
+            return Tools.parseDate(example);
+        }
         else if (clazz == BigInteger.class) {
             try {
                 return new BigInteger(example);
@@ -695,6 +698,10 @@ public class Tools {
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
+        }
+
+        else if (clazz == Date[].class) {
+            return new Date[] { Tools.parseDate(example) };
         }
 
         else if (clazz == BigInteger[].class) {

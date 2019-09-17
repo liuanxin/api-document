@@ -455,21 +455,15 @@ public final class ReturnHandler {
                 String example = null;
                 ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                 if (Tools.isNotBlank(apiReturn)) {
-                    example = Tools.isEmpty(apiReturn.example()) ? apiReturn.value() : apiReturn.example();
+                    example = apiReturn.example();
                 } else {
                     ApiModel apiModel = field.getAnnotation(ApiModel.class);
                     if (Tools.isNotBlank(apiModel)) {
-                        example = Tools.isEmpty(apiModel.example()) ? apiModel.value() : apiModel.example();
+                        example = apiModel.example();
                     }
-                }
-                if (Tools.isBlank(example)) {
-                    example = Tools.EMPTY;
                 }
                 if (Tools.basicType(fieldType)) {
                     setField(field, obj, Tools.getReturnTypeExample(fieldType, example));
-                }
-                else if (Date.class.isAssignableFrom(fieldType)) {
-                    setField(field, obj, Tools.parseDate(example));
                 }
                 else if (fieldType.isArray()) {
                     Class<?> arrType = fieldType.getComponentType();
@@ -503,7 +497,7 @@ public final class ReturnHandler {
                         if (Tools.notBasicType(fieldType) && fieldType != Object.class) {
                             Recursive childRecursive = new Recursive(selfRecursive, name, fieldType);
                             if (!childRecursive.checkRecursive()) {
-                                setField(field, obj, handlerReturnWithObjClazz(selfRecursive, name, method, getClass(genericInfo)));
+                                setExample(method, obj, selfRecursive, field, name, fieldType, example, genericInfo);
                             } /* else {
                                 if (LOGGER.isWarnEnabled()) {
                                     LOGGER.warn("!!!method {} field({}) ==> handle json, return type recursive!!!",
@@ -511,13 +505,28 @@ public final class ReturnHandler {
                                 }
                             } */
                         } else {
-                            setField(field, obj, handlerReturnWithObjClazz(selfRecursive, name, method, getClass(genericInfo)));
+                            setExample(method, obj, selfRecursive, field, name, fieldType, example, genericInfo);
                         }
                     }
                 }
             }
         }
         return obj;
+    }
+
+    private static void setExample(String method, Object obj, Recursive selfRecursive, Field field,
+                                   String name, Class<?> fieldType, String example, String genericInfo) {
+        if (Tools.isNotEmpty(example)) {
+            try {
+                setField(field, obj, fieldType.getConstructor(String.class).newInstance(example));
+            } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn("Cannot constructor {}, Please add Constructor or remove Example", e.getMessage());
+                }
+            }
+        } else {
+            setField(field, obj, handlerReturnWithObjClazz(selfRecursive, name, method, getClass(genericInfo)));
+        }
     }
 
     private static void setField(Field field, Object obj, Object value) {
