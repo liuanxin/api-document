@@ -26,7 +26,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.6</version>
+    <version>0.5.7</version>
 </dependency>
 #+END_SRC
 
@@ -143,14 +143,15 @@ for example:
 
 
 @ApiParam --> in param or field
-  value     --> param comment, can not be set
-  name      --> if set, can not be set, will ignore param name or field name
-  dataType  --> if type was custom can use, can not be set(for example: enum, but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
-  example   --> used in api examples, can not be set
-  paramType --> can not be set, Header or Query, default is Query
-  must      --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
-  textarea  --> can not be set, default false, in example page, this field will show to <textarea ...></textarea>
-  style     --> can not be set. html style with param on page, for example: color:green;height:35px;
+  value       --> param comment, can not be set
+  name        --> if set, can not be set, will ignore param name or field name
+  dataType    --> if type was custom can use, can not be set(for example: enum, but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
+  example     --> used in api examples, can not be set
+  paramType   --> can not be set, Header or Query, default is Query
+  must        --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
+  textarea    --> can not be set, param will show with textarea(in example page), default is false
+  datePattern --> can not be set, is param type has Date, for example: MM/DD/YYYY HH:mm:ss
+  style       --> can not be set. html style with param on page, for example: color:green;height:35px;
 
 @ApiParamIgnore --> in param or field
 
@@ -169,13 +170,15 @@ for example:
   value      --> @ApiToken[]
 
   @ApiToken  --> nested annotation
-    name       --> must set
-    desc       --> can not be set
-    example    --> can not be set
-    paramType  --> can not be set, Header or Query, default is Header
-    must       --> default false
-    textarea   --> default false
-    style      --> can not be set. html style with param on page, for example: color:green;height:35px;
+    name        --> must set
+    desc        --> can not be set
+    example     --> can not be set
+    dataType    --> data type. for example: int、long、float、double、date、phone、email、url、ipv4
+    paramType   --> can not be set, Header or Query, default is Header
+    must        --> default false
+    textarea    --> default false
+    datePattern --> parameter type is date format of the date, can not be set. for example: MM/DD/YYYY HH:mm:ss
+    style       --> can not be set. html style with param on page, for example: color:green;height:35px;
 
 for example:
 @ApiTokens // marked on class or method will not generate global token information.
@@ -194,10 +197,11 @@ for example:
 
   -- The above attributes apply to both the request parameter and the return field. The following attributes are only used on the request parameters.
 
-  paramType --> param type, can not be set. Header or Query, default is Query
-  must      --> param required, can not be set, if has @RequestParam(required = true) etc... will ignore this setting
-  textarea  --> param will show with textarea, can not be set, default is false
-  style     --> can not be set. html style with param on page, for example: color:green;height:35px;
+  paramType   --> param type, can not be set. Header or Query, default is Query
+  must        --> param required, can not be set, if has @RequestParam(required = true) etc... will ignore this setting
+  textarea    --> can not be set, param will show with textarea(in example page), default is false
+  datePattern --> can not be set, is param type has Date, for example: MM/DD/YYYY HH:mm:ss
+  style       --> can not be set. html style with param on page, for example: color:green;height:35px;
 #+END_EXAMPLE
 
 if not spring boot project, add this config
