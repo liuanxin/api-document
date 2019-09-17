@@ -463,11 +463,12 @@
                                         if (param.hasMust === '1' || param.hasMust === 1) { hasMust = true; arr.push('required'); }
                                         else { hasMust = false; }
 
-                                        if (param.dataType === 'int' || param.dataType === 'long') { arr.push('custom[integer]'); }
-                                        else if (param.dataType === 'float' || param.dataType === 'double') { arr.push('custom[number]'); }
-                                        else if (param.dataType === 'email') { arr.push('custom[email]'); }
-                                        else if (param.dataType === 'url') { arr.push('custom[url]'); }
-                                        else if (param.dataType === 'ipv4') { arr.push('custom[ipv4]'); }
+                                        var dataType = (param.dataType || '').toLowerCase();
+                                        if (dataType === 'int' || dataType === 'long') { arr.push('custom[integer]'); }
+                                        else if (dataType === 'float' || dataType === 'double') { arr.push('custom[number]'); }
+                                        else if (dataType === 'email') { arr.push('custom[email]'); }
+                                        else if (dataType === 'url') { arr.push('custom[url]'); }
+                                        else if (dataType === 'ipv4') { arr.push('custom[ipv4]'); }
 
                                         var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
@@ -482,7 +483,7 @@
                                         <tr{{? hasMust}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                             <td class="text-left">{{= param.name || ''}}</td>
                                             <td class="text-left" style="height: inherit;">
-                                                {{? param.dataType === 'file'}}
+                                                {{? dataType === 'file'}}
                                                 <div class="input-group">
                                                     <label class="input-group-btn">
                                                         <span class="btn btn-default{{? hasMust}} bold{{?}}">
@@ -505,7 +506,7 @@
                                                     {{ } }}
                                                     {{?}}
                                                 </select>
-                                                {{?? param.showDataType === 'date' || param.dataType === 'date'}}
+                                                {{?? (param.showDataType || '').toLowerCase() === 'date' || dataType === 'date'}}
                                                 {{ var hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
                                                 <div class="input-group date form-datetime">
                                                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
@@ -522,9 +523,9 @@
                                             </td>
                                             <td class="text-left">{{= hasMust ? 'Yes' : 'No'}}</td>
                                             <td class="text-left">{{=
-                                                param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
-                                                ? param.showDataType
-                                                : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
+                                                param.showDataType && param.showDataType !== ''
+                                                    ? param.showDataType
+                                                    : (param.dataType && param.dataType !== '' ? param.dataType : '')
                                             }}</td>
                                             {{? hasHeader}}<td class="text-left">{{= (param.paramType === '1' || param.paramType === 1) ? 'Header' : 'Query'}}</td>{{?}}
                                             {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
