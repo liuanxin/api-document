@@ -24,6 +24,7 @@ public class Tools {
     private static final String SPLIT = ",";
 
     private static final String FILE_TYPE = "file";
+    private static final Date DATE = new Date();
 
     /** enum info */
     private static final Map<String, Object> ENUM_MAP = maps();
@@ -57,6 +58,7 @@ public class Tools {
             BigInteger.class.getSimpleName(), long.class,
             BigDecimal.class.getSimpleName(), double.class,
             String.class.getSimpleName(), String.class,
+            Date.class.getSimpleName(), Date.class,
 
             // up type, down array type
 
@@ -86,7 +88,8 @@ public class Tools {
 
             BigInteger[].class.getSimpleName(), long[].class,
             BigDecimal[].class.getSimpleName(), double[].class,
-            String[].class.getSimpleName(), String[].class
+            String[].class.getSimpleName(), String[].class,
+            Date[].class.getSimpleName(), Date[].class
     );
 
     /** { basic-type : default-value } */
@@ -118,6 +121,7 @@ public class Tools {
             BigInteger.class.getSimpleName(), BigInteger.ZERO,
             BigDecimal.class.getSimpleName(), BigDecimal.ZERO,
             String.class.getSimpleName(), EMPTY,
+            Date.class.getSimpleName(), DATE,
 
             // up type, down array type
 
@@ -147,7 +151,8 @@ public class Tools {
 
             BigInteger[].class.getSimpleName(), new BigInteger[] { BigInteger.ZERO },
             BigDecimal[].class.getSimpleName(), new BigDecimal[] { BigDecimal.ZERO },
-            String[].class.getSimpleName(), new String[] { EMPTY }
+            String[].class.getSimpleName(), new String[] { EMPTY },
+            Date[].class.getSimpleName(), new Date[] { DATE }
     );
 
     private static final Map<String, Object> DEFAULT_MAP_KEY = maps(
@@ -182,7 +187,6 @@ public class Tools {
     }
 
     // ========== date ==========
-    private static final Date TMP_DATE = new Date();
     static Date parseDate(String source) {
         if (isNotBlank(source)) {
             source = source.trim();
@@ -196,7 +200,7 @@ public class Tools {
                 }
             }
         }
-        return TMP_DATE;
+        return DATE;
     }
 
     // ========== json ==========
