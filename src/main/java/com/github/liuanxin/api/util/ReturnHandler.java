@@ -452,25 +452,27 @@ public final class ReturnHandler {
                 String name = field.getName();
                 Class<?> fieldType = field.getType();
 
-                String example = null;
+                String basicTypeExample = null, example = null;
                 ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
                 if (Tools.isNotBlank(apiReturn)) {
                     example = apiReturn.example();
+                    basicTypeExample = Tools.isEmpty(example) ? apiReturn.value() : example;
                 } else {
                     ApiModel apiModel = field.getAnnotation(ApiModel.class);
                     if (Tools.isNotBlank(apiModel)) {
                         example = apiModel.example();
+                        basicTypeExample = Tools.isEmpty(example) ? apiModel.value() : example;
                     }
                 }
                 if (Tools.basicType(fieldType)) {
-                    setField(field, obj, Tools.getReturnTypeExample(fieldType, example));
+                    setField(field, obj, Tools.getReturnTypeExample(fieldType, basicTypeExample));
                 }
                 else if (fieldType.isArray()) {
                     Class<?> arrType = fieldType.getComponentType();
                     Object arr = Array.newInstance(arrType, 1);
                     Object object;
                     if (Tools.basicType(arrType)) {
-                        object = Tools.getReturnTypeExample(arrType, example);
+                        object = Tools.getReturnTypeExample(arrType, basicTypeExample);
                     } else {
                         object = handlerReturnWithObjClazz(selfRecursive, name, method, arrType);
                     }
@@ -484,7 +486,7 @@ public final class ReturnHandler {
                             String objClass = genericInfo.substring(genericInfo.indexOf("<") + 1, genericInfo.lastIndexOf(">")).trim();
                             Class<?> fieldClass = getClass(objClass);
                             if (Tools.basicType(fieldClass)) {
-                                setField(field, obj, Collections.singletonList(Tools.getReturnTypeExample(fieldClass, example)));
+                                setField(field, obj, Collections.singletonList(Tools.getReturnTypeExample(fieldClass, basicTypeExample)));
                             } else {
                                 setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
                             }
