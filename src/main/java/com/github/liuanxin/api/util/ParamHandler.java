@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Date;
@@ -29,7 +30,7 @@ public final class ParamHandler {
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];
-            if (Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
+            if (Tools.isNotBlank(parameter) && Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
                 // if param not basicType, into a layer of processing
                 Class<?> parameterType = parameter.getParameterType();
                 ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
@@ -53,10 +54,15 @@ public final class ParamHandler {
                     // The variable name is erased when compiled by jvm, parameter.parameterName() is null
                     // if use java 8 and open options in javac -parameters, parameter.parameterName() can be get
                     // String paramName = parameter.getParameterName();
-                    String paramName = VARIABLE.getParameterNames(parameter.getMethod())[i];
-                    // if param was required, use it.
-                    params.add(paramInfo(getParamName(parameter, paramName), parameterType,
-                            apiParam, apiModel, paramHasMust(parameter)));
+                    Method method = parameter.getMethod();
+                    if (Tools.isNotBlank(method)) {
+                        String[] parameterNames = VARIABLE.getParameterNames(method);
+                        if (Tools.isNotBlank(parameterNames) && parameterNames.length > i) {
+                            // if param was required, use it.
+                            params.add(paramInfo(getParamName(parameter, parameterNames[i]), parameterType,
+                                    apiParam, apiModel, paramHasMust(parameter)));
+                        }
+                    }
                 }
             }
         }
