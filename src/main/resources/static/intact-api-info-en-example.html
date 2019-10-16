@@ -739,13 +739,7 @@ if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDom
 var $main = $('.col-md-9');
 $.get(projectDomain + '/api/info').done(function(data) {
     if (isNotBlank(data)) {
-        var documentInfo;
-        if (typeof data === 'string') {
-            documentInfo = JSON.parse(data);
-        } else {
-            documentInfo = data;
-        }
-
+        var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
 
         {
             var copyright = documentInfo.copyright;
@@ -759,7 +753,6 @@ $.get(projectDomain + '/api/info').done(function(data) {
             var template = doT.template($copyrightRender.html());
             $copyrightRender.parent().html(template(copyright));
         }
-
 
         {
             var doc = documentInfo.document;
