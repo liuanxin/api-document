@@ -564,18 +564,13 @@ $(function() {
                 }
             }
 
-
             {
-                if (firstScroll) {
-                    firstScroll = false;
-                    window.history.pushState({api: ''}, '', '');
-                }
-                var hash = $nav.find('.active > a:last').attr('href');
-                if (hash !== window.location.hash) {
-                    if (hash === undefined || hash === null || hash === '') {
+                var navHash = $nav.find('.active > a:last').attr('href');
+                if (navHash !== window.location.hash) {
+                    if (navHash === undefined || navHash === null || navHash === '') {
                         window.history.replaceState({api: 'index'}, '', window.location.pathname);
                     } else {
-                        window.history.replaceState({api: hash}, '', hash);
+                        window.history.replaceState({api: navHash}, '', navHash);
                     }
                 }
             }
@@ -667,9 +662,9 @@ $.get(projectDomain + '/api/info').done(function(data) {
             if (isNotBlank(hash)) {
                 var $anchor = $(hash);
                 if ($anchor.length > 0) {
-                    var $li = $('a[href="' + hash + '"]').parent();
+                    var $li = $('a[href="' + hash + '"]').parents('li');
                     $li.addClass('active');
-                    $li.parent().parent().addClass('active');
+                    $li.parents('li').addClass('active');
                     $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
                 }
             }
