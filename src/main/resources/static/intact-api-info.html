@@ -565,8 +565,17 @@ $(function() {
             }
 
             {
+                var currentHash = window.location.hash;
+                if (firstScroll && currentHash !== undefined && currentHash !== null && currentHash.trim() !== '') {
+                    firstScroll = false;
+
+                    var $li = $('a[href="' + currentHash + '"]').parents('li');
+                    $li.addClass('active');
+                    $li.parents('li').addClass('active');
+                }
+
                 var navHash = $nav.find('.active > a:last').attr('href');
-                if (navHash !== window.location.hash) {
+                if (navHash !== currentHash) {
                     if (navHash === undefined || navHash === null || navHash === '') {
                         window.history.replaceState({api: 'index'}, '', window.location.pathname);
                     } else {
