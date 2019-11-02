@@ -97,7 +97,7 @@ annotation for this
   @ApiResponse  --> nested annotation
     code          --> must set, for example: 400
     msg           --> must set, for example: param error
-    type          --> nested annotation: @ApiReturnType[]
+    type          --> nested annotation: @ApiReturnType[], can not be set
 
 for example:
 @ApiResponses({ // marked on class or method will return the specified response, otherwise it will take the global response configuration.
@@ -165,7 +165,7 @@ for example:
 @ApiReturnIgnore --> in field
 
 
-@ApiTokens --> in class or method, if marked, the api interface corresponding to the current method or class does not need to pass global token information.
+@ApiTokens --> in class or method
   useGlobal  --> whether to use global token, cant not be set, default is false
   value      --> @ApiToken[]
 
