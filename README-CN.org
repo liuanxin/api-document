@@ -89,7 +89,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
   @ApiResponse --> 嵌套注解
     code         --> 响应码, 必须设置, 如 400
     msg          --> 响应说明, 必须设置, 如 参数不正确
-    type         --> 嵌套注解 @ApiReturnType[] 定义返回类型
+    type         --> 嵌套注解 @ApiReturnType[] 定义返回类型, 可以不设置
 
 示例如下:
 @ApiResponses({  // 标注在类或接口上表示相关的接口会返回指定的响应, 否则会走全局的响应配置
@@ -157,7 +157,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
 @ApiReturnIgnore --> 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
 
 
-@ApiTokens --> 标注在类或方法上, 只要标注了就表示当前方法或类对应的接口不需要传递全局 token 信息
+@ApiTokens --> 标注在类或方法上
   useGlobal  --> 是否使用全局 token, 可以不设置, 默认是 false
   value      --> @ApiToken[], 可以不设置, 表示当前接口需要传递的 token 信息
 
