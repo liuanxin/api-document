@@ -1072,6 +1072,7 @@ $(function() {
                 } else {
                     html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
                 }
+                responseData.css('white-space', '');
                 responseData.html(html);
                 response.show();
                 $btn.removeAttr('disabled');
@@ -1084,7 +1085,7 @@ $(function() {
                     html += '<span class="red">响应码: ' + error.status + '</span>';
                     var json = error.responseJSON;
                     if (isNotBlank(json)) {
-                        html += '\n\n' + addLine(escapeHtml(JSON.stringify(json, null, 2)));
+                        html += '\n\n' + escapeHtml(JSON.stringify(json, null, 2));
                     } else {
                         var text = error.responseText;
                         if (isNotBlank(text)) {
@@ -1094,6 +1095,7 @@ $(function() {
                         }
                     }
                 }
+                responseData.css('white-space', 'pre-wrap');
                 responseData.html(html);
                 response.show();
                 $btn.removeAttr('disabled');
