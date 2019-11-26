@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.util;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.liuanxin.api.annotation.ApiModel;
 import com.github.liuanxin.api.annotation.ApiReturn;
 import com.github.liuanxin.api.annotation.ApiReturnIgnore;
@@ -101,36 +102,31 @@ public final class ReturnHandler {
             Map<String, String> tmpFieldMap = Tools.newHashMap();
             for (Field field : outClass.getDeclaredFields()) {
                 int mod = field.getModifiers();
-                // field not static, not final, and not annotation ignore
-                if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                        && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
-                    String name = null;
-                    ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                    if (Tools.isNotBlank(apiReturn)) {
-                        name = apiReturn.name();
-                    } else {
-                        ApiModel apiModel = field.getAnnotation(ApiModel.class);
-                        if (Tools.isNotBlank(apiModel)) {
-                            name = apiModel.name();
+                if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)) {
+                    JsonIgnore jsonIgnore = field.getAnnotation(JsonIgnore.class);
+                    boolean ignore = Tools.isEmpty(jsonIgnore) || !jsonIgnore.value();
+                    if (ignore && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
+                        String name = null;
+                        ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
+                        if (Tools.isNotBlank(apiReturn)) {
+                            name = apiReturn.name();
+                        } else {
+                            ApiModel apiModel = field.getAnnotation(ApiModel.class);
+                            if (Tools.isNotBlank(apiModel)) {
+                                name = apiModel.name();
+                            }
                         }
-                    }
-                    if (Tools.isEmpty(name)) {
-                        name = field.getName();
-                    }
-                    returnList.add(returnInfo(field, space + name + parent));
+                        if (Tools.isEmpty(name)) {
+                            name = field.getName();
+                        }
+                        returnList.add(returnInfo(field, space + name + parent));
 
-                    Class<?> fieldType = field.getType();
-                    if (fieldType.isArray()) {
-                        fieldType = fieldType.getComponentType();
-                    }
-                    // not Date Time Timestamp to recursive handle
-                    if (!Date.class.isAssignableFrom(fieldType) /* && not other type */ ) {
-                        String genericType = field.getGenericType().toString();
-                        if (Tools.notBasicType(fieldType)) {
-                            if (fieldType != Object.class
-                                    && !Collection.class.isAssignableFrom(fieldType)
-                                    && !Map.class.isAssignableFrom(fieldType)) {
-                                Recursive childRecursive = new Recursive(selfRecursive, name, fieldType);
+                        Class<?> fieldType = getArrayType(field.getType());
+                        // not Date Time Timestamp to recursive handle
+                        if (!Date.class.isAssignableFrom(fieldType) /* && not other type */) {
+                            String genericType = field.getGenericType().toString();
+                            if (Tools.notBasicType(fieldType)) {
+                                Recursive childRecursive = new Recursive(selfRecursive, name, genericType);
                                 if (childRecursive.checkRecursive()) {
                                     if (LOGGER.isWarnEnabled()) {
                                         LOGGER.warn("!!!method {} field({}) ==> return type recursive!!!",
@@ -143,12 +139,9 @@ public final class ReturnHandler {
                                     String innerParent = (LEVEL_APPEND + name + parent);
                                     handlerReturn(selfRecursive, name, space + TAB, innerParent, method, genericType, returnList);
                                 }
-                            } else {
-                                String innerParent = (LEVEL_APPEND + name + parent);
-                                handlerReturn(selfRecursive, name, space + TAB, innerParent, method, genericType, returnList);
                             }
+                            tmpFieldMap.put(genericType, name);
                         }
-                        tmpFieldMap.put(genericType, name);
                     }
                 }
             }
@@ -167,6 +160,14 @@ public final class ReturnHandler {
             returnList.add(new DocumentReturn(name, name, name));
         }
         */
+    }
+
+    private static Class<?> getArrayType(Class<?> clazz) {
+        if (clazz.isArray()) {
+            return getArrayType(clazz.getComponentType());
+        } else {
+            return clazz;
+        }
     }
 
     /** collect return info */
@@ -447,68 +448,65 @@ public final class ReturnHandler {
         Recursive selfRecursive = new Recursive(parentRecursive, fieldName, clazz);
         for (Field field : clazz.getDeclaredFields()) {
             int mod = field.getModifiers();
-            if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)
-                    && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
-                String name = field.getName();
-                Class<?> fieldType = field.getType();
+            if (!Modifier.isStatic(mod) && !Modifier.isFinal(mod)) {
+                JsonIgnore jsonIgnore = field.getAnnotation(JsonIgnore.class);
+                boolean ignore = Tools.isEmpty(jsonIgnore) || !jsonIgnore.value();
+                if (ignore && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
+                    String name = field.getName();
+                    Class<?> fieldType = field.getType();
 
-                String basicTypeExample = null, example = null;
-                ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                if (Tools.isNotBlank(apiReturn)) {
-                    example = apiReturn.example();
-                    basicTypeExample = Tools.isEmpty(example) ? apiReturn.value() : example;
-                } else {
-                    ApiModel apiModel = field.getAnnotation(ApiModel.class);
-                    if (Tools.isNotBlank(apiModel)) {
-                        example = apiModel.example();
-                        basicTypeExample = Tools.isEmpty(example) ? apiModel.value() : example;
-                    }
-                }
-                if (Tools.basicType(fieldType)) {
-                    setField(field, obj, Tools.getReturnTypeExample(fieldType, basicTypeExample));
-                }
-                else if (fieldType.isArray()) {
-                    Class<?> arrType = fieldType.getComponentType();
-                    Object arr = Array.newInstance(arrType, 1);
-                    Object object;
-                    if (Tools.basicType(arrType)) {
-                        object = Tools.getReturnTypeExample(arrType, basicTypeExample);
+                    String basicTypeExample = null, example = null;
+                    ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
+                    if (Tools.isNotBlank(apiReturn)) {
+                        example = apiReturn.example();
+                        basicTypeExample = Tools.isEmpty(example) ? apiReturn.value() : example;
                     } else {
-                        object = handlerReturnWithObjClazz(selfRecursive, name, method, arrType);
-                    }
-                    Array.set(arr, 0, object);
-                    setField(field, obj, arr);
-                }
-                else {
-                    String genericInfo = field.getGenericType().toString();
-                    if (Collection.class.isAssignableFrom(fieldType)) {
-                        if (genericInfo.contains("<") && genericInfo.contains(">")) {
-                            String objClass = genericInfo.substring(genericInfo.indexOf("<") + 1, genericInfo.lastIndexOf(">")).trim();
-                            Class<?> fieldClass = getClass(objClass);
-                            if (Tools.basicType(fieldClass)) {
-                                setField(field, obj, Collections.singletonList(Tools.getReturnTypeExample(fieldClass, basicTypeExample)));
-                            } else {
-                                setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
-                            }
-                        } else {
-                            setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
+                        ApiModel apiModel = field.getAnnotation(ApiModel.class);
+                        if (Tools.isNotBlank(apiModel)) {
+                            example = apiModel.example();
+                            basicTypeExample = Tools.isEmpty(example) ? apiModel.value() : example;
                         }
-                    } else if (Map.class.isAssignableFrom(fieldType)) {
-                        setField(field, obj, handlerReturnJsonMap(selfRecursive, fieldName, method, genericInfo));
+                    }
+                    if (Tools.basicType(fieldType)) {
+                        setField(field, obj, Tools.getReturnTypeExample(fieldType, basicTypeExample));
+                    } else if (fieldType.isArray()) {
+                        Class<?> arrType = fieldType.getComponentType();
+                        Object arr = Array.newInstance(arrType, 1);
+                        Object object;
+                        if (Tools.basicType(arrType)) {
+                            object = Tools.getReturnTypeExample(arrType, basicTypeExample);
+                        } else {
+                            object = handlerReturnWithObjClazz(selfRecursive, name, method, arrType);
+                        }
+                        Array.set(arr, 0, object);
+                        setField(field, obj, arr);
                     } else {
-                        if (Tools.notBasicType(fieldType) && fieldType != Object.class) {
-                            Recursive childRecursive = new Recursive(selfRecursive, name, fieldType);
-                            if (!childRecursive.checkRecursive()) {
-                                setExample(method, obj, selfRecursive, field, name, fieldType, example, genericInfo);
-                            } /* else {
-                                if (LOGGER.isWarnEnabled()) {
-                                    LOGGER.warn("!!!method {} field({}) ==> handle json, return type recursive!!!",
-                                            method, childRecursive.getOrbit());
+                        String genericInfo = field.getGenericType().toString();
+                        Recursive childRecursive = new Recursive(selfRecursive, name, genericInfo);
+                        if (!childRecursive.checkRecursive()) {
+                            if (Collection.class.isAssignableFrom(fieldType)) {
+                                if (genericInfo.contains("<") && genericInfo.contains(">")) {
+                                    String objClass = genericInfo.substring(genericInfo.indexOf("<") + 1, genericInfo.lastIndexOf(">")).trim();
+                                    Class<?> fieldClass = getClass(objClass);
+                                    if (Tools.basicType(fieldClass)) {
+                                        setField(field, obj, Collections.singletonList(Tools.getReturnTypeExample(fieldClass, basicTypeExample)));
+                                    } else {
+                                        setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
+                                    }
+                                } else {
+                                    setField(field, obj, handlerReturnJsonList(selfRecursive, fieldName, method, genericInfo, fieldType));
                                 }
-                            } */
-                        } else {
-                            setExample(method, obj, selfRecursive, field, name, fieldType, example, genericInfo);
-                        }
+                            } else if (Map.class.isAssignableFrom(fieldType)) {
+                                setField(field, obj, handlerReturnJsonMap(selfRecursive, fieldName, method, genericInfo));
+                            } else {
+                                setExample(method, obj, selfRecursive, field, name, fieldType, example, genericInfo);
+                            }
+                        } /* else {
+                            if (LOGGER.isWarnEnabled()) {
+                                LOGGER.warn("!!!method {} field({}) ==> handle json, return type recursive!!!",
+                                        method, childRecursive.getOrbit());
+                            }
+                        } */
                     }
                 }
             }

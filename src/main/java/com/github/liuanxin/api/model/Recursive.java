@@ -7,6 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import java.util.Collection;
+import java.util.Map;
+
 @Setter
 @Getter
 @NoArgsConstructor
@@ -20,9 +23,19 @@ public class Recursive {
     private Class<?> self;
 
 
+    public Recursive(Recursive parent, String fieldName, String genericType) {
+        this.parent = parent;
+        this.fieldName = fieldName;
+        this.self = getGenericType(genericType);
+    }
+
     /**
      * <pre>
      * public class A { ... private A x; }
+     *
+     * OR
+     *
+     * public class A { ... private List<A> x; }
      *
      * OR
      *
@@ -84,6 +97,36 @@ public class Recursive {
             if (Tools.isNotBlank(self.fieldName)) {
                 sbd.append(" ").append(self.fieldName);
             }
+        }
+    }
+
+
+    private static Class<?> getGenericType(String str) {
+        if (str.contains("<") && str.contains(">")) {
+            Class<?> parent = getClass(str.substring(0, str.indexOf("<")));
+            if (parent == null) {
+                return getClass(str);
+            } else {
+                String genericString = str.substring(str.indexOf("<") + 1, str.lastIndexOf(">"));
+                if (Collection.class.isAssignableFrom(parent)) {
+                    return getGenericType(genericString.trim());
+                } else if (Map.class.isAssignableFrom(parent)) {
+                    String[] keyValue = genericString.split(",");
+                    if (keyValue.length == 2) {
+                        return getGenericType(keyValue[1].trim());
+                    }
+                }
+                return parent;
+            }
+        } else {
+            return getClass(str);
+        }
+    }
+    private static Class<?> getClass(String clazz) {
+        try {
+            return Class.forName(clazz);
+        } catch (ClassNotFoundException ignore) {
+            return null;
         }
     }
 }
