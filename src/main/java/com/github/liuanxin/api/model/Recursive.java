@@ -35,7 +35,11 @@ public class Recursive {
      *
      * OR
      *
-     * public class A { ... private List<A> x; }
+     * public class A { ... private List&lt;A> x; }
+     *
+     * OR
+     *
+     * public class A { ... private Map&lt;String, A> x; }
      *
      * OR
      *
