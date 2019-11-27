@@ -215,7 +215,7 @@ test backend url, request ~http://ip:port/static/api-info-en-example.html~
 
 -----
 
-Final document collect for this
+Final document collect for this: https://liuanxin.github.io/api-info-en.html
 
 [[https://raw.githubusercontent.com/liuanxin/image/master/api-en.png]]
 -
