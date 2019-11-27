@@ -26,7 +26,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.8</version>
+    <version>0.5.9</version>
 </dependency>
 #+END_SRC
 
@@ -162,7 +162,7 @@ for example:
   type       --> if type was custom can use, can not be set(for example: enum, but return type was be int)
   example    --> return example, can not be set, only if the field is a string or underlying data type(including BigInteger and BigDecimal)
 
-@ApiReturnIgnore --> in field
+@ApiReturnIgnore --> in field, use with @JsonIgnore is also
 
 
 @ApiTokens --> in class or method

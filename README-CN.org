@@ -23,7 +23,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.8</version>
+    <version>0.5.9</version>
 </dependency>
 #+END_SRC
 
@@ -154,7 +154,7 @@ PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项�
   type       --> 返回类型, 可以不设置, 自定义(比如字段类型是枚举, 但是显示在文档上时是 int 时)用到
   example    --> 返回示例, 可以不设置, 只用在字段是 String 或基础数据类型(包括 BigInteger 和 BigDecimal)上
 
-@ApiReturnIgnore --> 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解
+@ApiReturnIgnore --> 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解, 在字段上标注 @JsonIgnore 也是一样的
 
 
 @ApiTokens --> 标注在类或方法上
