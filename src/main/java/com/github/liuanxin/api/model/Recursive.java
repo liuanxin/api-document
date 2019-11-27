@@ -23,6 +23,7 @@ public class Recursive {
     private Class<?> self;
 
 
+    /** use with field: new Recursive(parent, fieldName, field.getGenericType().toString()) */
     public Recursive(Recursive parent, String fieldName, String genericType) {
         this.parent = parent;
         this.fieldName = fieldName;
@@ -111,10 +112,12 @@ public class Recursive {
             if (parent == null) {
                 return getClass(str);
             } else {
+                // List<XXX> or Map<String, XXX>
                 String genericString = str.substring(str.indexOf("<") + 1, str.lastIndexOf(">"));
                 if (Collection.class.isAssignableFrom(parent)) {
                     return getGenericType(genericString.trim());
                 } else if (Map.class.isAssignableFrom(parent)) {
+                    // Map use Value, ignore key
                     String[] keyValue = genericString.split(",");
                     if (keyValue.length == 2) {
                         return getGenericType(keyValue[1].trim());
