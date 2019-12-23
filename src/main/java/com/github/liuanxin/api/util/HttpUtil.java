@@ -97,7 +97,7 @@ public class HttpUtil {
             }
         } catch (IOException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error("request ({}, {}) exception", url, method, e);
+                LOGGER.error(String.format("request (%s, %s) exception", method, url), e);
             }
         } finally {
             if (connection != null) {
@@ -118,12 +118,12 @@ public class HttpUtil {
                 InputStreamReader in = new InputStreamReader(input, StandardCharsets.UTF_8);
                 BufferedReader reader = new BufferedReader(in)
         ) {
-            StringBuilder sb = new StringBuilder();
+            StringBuilder sbd = new StringBuilder();
             String str;
             while ((str = reader.readLine()) != null) {
-                sb.append(str);
+                sbd.append(str);
             }
-            return sb.toString();
+            return sbd.toString();
         } catch (IOException e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error("input stream to string exception", e);
