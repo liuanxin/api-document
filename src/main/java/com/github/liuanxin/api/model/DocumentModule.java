@@ -35,6 +35,28 @@ public class DocumentModule implements Comparable<DocumentModule> {
             }
         }
     }
+    public void fillModule(String moduleName) {
+        if (Tools.isNotEmpty(moduleName)) {
+            String[] split = moduleName.split("-");
+            String name, info;
+            if (split.length > 1) {
+                name = split[0];
+                info = split[1];
+            } else {
+                name = info = moduleName;
+            }
+            this.name = name + this.name;
+            this.info = info + "(" + this.info + ")";
+        }
+    }
+    public void fillExampleUrl(String moduleUrl) {
+        for (DocumentUrl documentUrl : urlList) {
+            String exampleUrl = documentUrl.getExampleUrl();
+            if (!exampleUrl.startsWith(moduleUrl)) {
+                documentUrl.setExampleUrl(moduleUrl + exampleUrl);
+            }
+        }
+    }
     public void addUrl(DocumentUrl url) {
         if (Tools.isBlank(urlList)) {
             urlList = new LinkedList<>();

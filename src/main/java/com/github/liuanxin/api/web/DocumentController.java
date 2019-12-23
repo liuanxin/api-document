@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import java.lang.annotation.Annotation;
 import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Pattern;
@@ -119,37 +120,30 @@ public class DocumentController {
 
     private static List<DocumentInfo> getProjects(Map<String, String> projectMap) {
         if (Tools.isNotEmpty(projectMap)) {
+            int s = projectMap.size();
+            ThreadPoolExecutor executor = new ThreadPoolExecutor(s, s, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
             List<DocumentInfo> returnList = new ArrayList<>();
             for (Map.Entry<String, String> entry : projectMap.entrySet()) {
-                String moduleName = entry.getKey();
-                String moduleUrl = entry.getValue();
+                final String moduleName = entry.getKey();
+                final String moduleUrl = entry.getValue();
                 if (Tools.isNotEmpty(moduleName) && Tools.isNotEmpty(moduleUrl)) {
-                    String url = moduleUrl.endsWith("/") ? moduleUrl.substring(0, moduleUrl.length() - 1) : moduleUrl;
-                    String requestInfo = HttpUtil.get(url + PARENT_URL_PREFIX + INFO_URL);
-                    ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
-                    if (Tools.isNotBlank(projectInfo)) {
-                        DocumentInfo documentInfo = projectInfo.getDocument();
-                        if (Tools.isNotBlank(documentInfo)) {
-                            for (DocumentModule module : documentInfo.getModuleList()) {
-                                String[] split = moduleName.split("-");
-                                String name, info;
-                                if (split.length > 1) {
-                                    name = split[0];
-                                    info = split[1];
-                                } else {
-                                    name = info = moduleName;
-                                }
-                                name += module.getName();
-                                info += "(" + module.getInfo() + ")";
-                                module.fillNameAndInfo(name + "-" + info);
-                                for (DocumentUrl documentUrl : module.getUrlList()) {
-                                    String exampleUrl = documentUrl.getExampleUrl();
-                                    if (!exampleUrl.startsWith(url)) {
-                                        documentUrl.setExampleUrl(url + exampleUrl);
-                                    }
-                                }
+                    List<Future<DocumentInfo>> futureList = new ArrayList<>();
+                    futureList.add(executor.submit(new Callable<DocumentInfo>() {
+                        @Override
+                        public DocumentInfo call() {
+                            String u = moduleUrl.endsWith("/") ? moduleUrl.substring(0, moduleUrl.length() - 1) : moduleUrl;
+                            String requestInfo = HttpUtil.get(u + PARENT_URL_PREFIX + INFO_URL);
+                            ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
+                            return Tools.isBlank(projectInfo) ? null : projectInfo.fillModule(moduleName, moduleUrl);
+                        }
+                    }));
+                    for (Future<DocumentInfo> future : futureList) {
+                        try {
+                            DocumentInfo info = future.get();
+                            if (Tools.isNotBlank(info)) {
+                                returnList.add(info);
                             }
-                            returnList.add(documentInfo);
+                        } catch (InterruptedException | ExecutionException ignore) {
                         }
                     }
                 }

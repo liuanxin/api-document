@@ -15,4 +15,12 @@ public class ReturnInfo {
 
     private DocumentInfo document;
     private DocumentCopyright copyright;
+
+    public DocumentInfo fillModule(String moduleName, String moduleUrl) {
+        for (DocumentModule module : document.getModuleList()) {
+            module.fillModule(moduleName);
+            module.fillExampleUrl(moduleUrl);
+        }
+        return document;
+    }
 }
