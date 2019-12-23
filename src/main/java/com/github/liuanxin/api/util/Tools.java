@@ -2,6 +2,7 @@ package com.github.liuanxin.api.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.github.liuanxin.api.constant.ApiConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,13 +19,6 @@ import java.util.*;
 public class Tools {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Tools.class);
-
-    public static final String EMPTY = "";
-    private static final String SPACE = " ";
-    private static final String SPLIT = ",";
-
-    private static final String FILE_TYPE = "file";
-    private static final Date DATE = new Date();
 
     /** enum info */
     private static final Map<String, Object> ENUM_MAP = maps();
@@ -120,8 +114,8 @@ public class Tools {
 
             BigInteger.class.getSimpleName(), BigInteger.ZERO,
             BigDecimal.class.getSimpleName(), BigDecimal.ZERO,
-            String.class.getSimpleName(), EMPTY,
-            Date.class.getSimpleName(), DATE,
+            String.class.getSimpleName(), ApiConst.EMPTY,
+            Date.class.getSimpleName(), ApiConst.DATE,
 
             // up type, down array type
 
@@ -151,8 +145,8 @@ public class Tools {
 
             BigInteger[].class.getSimpleName(), new BigInteger[] { BigInteger.ZERO },
             BigDecimal[].class.getSimpleName(), new BigDecimal[] { BigDecimal.ZERO },
-            String[].class.getSimpleName(), new String[] { EMPTY },
-            Date[].class.getSimpleName(), new Date[] { DATE }
+            String[].class.getSimpleName(), new String[] { ApiConst.EMPTY },
+            Date[].class.getSimpleName(), new Date[] { ApiConst.DATE }
     );
 
     private static final Map<String, Object> DEFAULT_MAP_KEY = maps(
@@ -177,13 +171,13 @@ public class Tools {
         return !isBlank(obj);
     }
     public static boolean isEmpty(Object obj) {
-        return isBlank(obj) || EMPTY.equals(obj.toString().trim());
+        return isBlank(obj) || ApiConst.EMPTY.equals(obj.toString().trim());
     }
     public static boolean isNotEmpty(Object obj) {
         return !isEmpty(obj);
     }
     private static String toStr(Object obj) {
-        return isBlank(obj) ? EMPTY : obj.toString();
+        return isBlank(obj) ? ApiConst.EMPTY : obj.toString();
     }
 
     // ========== date ==========
@@ -200,7 +194,7 @@ public class Tools {
                 }
             }
         }
-        return DATE;
+        return ApiConst.DATE;
     }
 
     // ========== json ==========
@@ -209,7 +203,7 @@ public class Tools {
     private static final ObjectWriter PRETTY_RENDER = RENDER.writerWithDefaultPrettyPrinter();
     public static String toJson(Object obj) {
         if (isEmpty(obj)) {
-            return EMPTY;
+            return ApiConst.EMPTY;
         }
         try {
             return RENDER.writeValueAsString(obj);
@@ -217,7 +211,7 @@ public class Tools {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error(String.format("obj(%s) to json exception", obj.toString()), e);
             }
-            return EMPTY;
+            return ApiConst.EMPTY;
         }
     }
     public static <T> T toObject(String json, Class<T> clazz) {
@@ -235,7 +229,7 @@ public class Tools {
     }
     public static String toPrettyJson(String json) {
         if (isEmpty(json)) {
-            return EMPTY;
+            return ApiConst.EMPTY;
         }
         try {
             return PRETTY_RENDER.writeValueAsString(RENDER.readValue(json, Object.class));
@@ -243,7 +237,7 @@ public class Tools {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error(String.format("str(%s) to pretty json exception", json), e);
             }
-            return EMPTY;
+            return ApiConst.EMPTY;
         }
     }
 
@@ -271,14 +265,14 @@ public class Tools {
     }
     public static <T> String toStr(Collection<T> collection) {
         if (isEmpty(collection)) {
-            return EMPTY;
+            return ApiConst.EMPTY;
         }
         StringBuilder sbd = new StringBuilder();
         int i = 0;
         for (T t : collection) {
             sbd.append(t);
             if (i + 1 != collection.size()) {
-                sbd.append(SPLIT);
+                sbd.append(ApiConst.SPLIT);
             }
             i++;
         }
@@ -373,7 +367,7 @@ public class Tools {
         if (isNotEmpty(enumInfo)) {
             return isEmpty(desc) ? enumInfo : String.format("%s(%s)", desc, enumInfo);
         } else {
-            return isEmpty(desc) ? EMPTY : desc;
+            return isEmpty(desc) ? ApiConst.EMPTY : desc;
         }
     }
     private static String collectEnumInfo(Class<?> clazz) {
@@ -381,7 +375,7 @@ public class Tools {
             Enum[] constants = (Enum[]) clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
                 StringBuilder sbd = new StringBuilder();
-                String split = SPLIT + SPACE;
+                String split = ApiConst.SPLIT + ApiConst.SPACE;
                 // enum info, maybe Map or maybe List
                 Map<String, Object> map = newHashMap();
                 List<String> list = lists();
@@ -414,7 +408,7 @@ public class Tools {
                 }
             }
         }
-        return EMPTY;
+        return ApiConst.EMPTY;
     }
     public static Map<String, Object> allEnumInfo() {
         return ENUM_MAP;
@@ -470,11 +464,11 @@ public class Tools {
     }
 
     static boolean hasFileInput(String fileType) {
-        return FILE_TYPE.equals(fileType);
+        return ApiConst.FILE_TYPE.equals(fileType);
     }
     static String getInputType(Class<?> type) {
         if (isBlank(type)) {
-            return EMPTY;
+            return ApiConst.EMPTY;
         }
         if (type.isArray()) {
             return getType(type.getComponentType()) + "[]";
@@ -485,7 +479,7 @@ public class Tools {
     private static String getType(Class<?> type) {
         // upload file
         if (MultipartFile.class.isAssignableFrom(type)) {
-            return FILE_TYPE;
+            return ApiConst.FILE_TYPE;
         }
         String paramType = type.getSimpleName();
         Class<?> basicClass = getBasicType(paramType);

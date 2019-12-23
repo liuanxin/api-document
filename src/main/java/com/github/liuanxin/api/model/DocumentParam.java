@@ -2,7 +2,7 @@ package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ApiToken;
-import com.github.liuanxin.api.util.Tools;
+import com.github.liuanxin.api.constant.ApiConst;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -30,7 +30,7 @@ public class DocumentParam {
 
     public static DocumentParam buildToken(String name, String desc, String example, boolean textarea) {
         return new DocumentParam().setDataType("String").setHasToken("1").setParamType("1")
-                .setName(name).setDesc(desc).setExample(example).setHasTextarea(textarea ? "1" : Tools.EMPTY);
+                .setName(name).setDesc(desc).setExample(example).setHasTextarea(textarea ? "1" : ApiConst.EMPTY);
     }
 
     public static DocumentParam buildToken(ApiToken token) {
@@ -40,9 +40,9 @@ public class DocumentParam {
         param.setDesc(token.desc());
         param.setExample(token.example());
         param.setHasToken("1");
-        param.setParamType(token.paramType().hasHeader() ? "1" : Tools.EMPTY);
-        param.setHasMust(token.must() ? "1" : Tools.EMPTY);
-        param.setHasTextarea(token.textarea() ? "1" : Tools.EMPTY);
+        param.setParamType(token.paramType().hasHeader() ? "1" : ApiConst.EMPTY);
+        param.setHasMust(token.must() ? "1" : ApiConst.EMPTY);
+        param.setHasTextarea(token.textarea() ? "1" : ApiConst.EMPTY);
         param.setStyle(token.style());
         return param;
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.liuanxin.api.annotation.ApiModel;
 import com.github.liuanxin.api.annotation.ApiReturn;
 import com.github.liuanxin.api.annotation.ApiReturnIgnore;
+import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.model.DocumentReturn;
 import com.github.liuanxin.api.model.Recursive;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ public final class ReturnHandler {
 
     public static List<DocumentReturn> handlerReturn(String method, String returnType) {
         List<DocumentReturn> returnList = new LinkedList<>();
-        handlerReturn(null, null, Tools.EMPTY, Tools.EMPTY, method, returnType, returnList);
+        handlerReturn(null, null, ApiConst.EMPTY, ApiConst.EMPTY, method, returnType, returnList);
         return returnList;
     }
 
@@ -134,7 +135,7 @@ public final class ReturnHandler {
                                     }
                                     DocumentReturn last = returnList.get(returnList.size() - 1);
                                     String desc = last.getDesc();
-                                    last.setDesc("!!!RECURSIVE OBJECT!!!" + (Tools.isEmpty(desc) ? Tools.EMPTY : (" " + desc)));
+                                    last.setDesc("!!!RECURSIVE OBJECT!!!" + (Tools.isEmpty(desc) ? ApiConst.EMPTY : (ApiConst.SPACE + desc)));
                                 } else {
                                     String innerParent = (LEVEL_APPEND + name + parent);
                                     handlerReturn(selfRecursive, name, space + TAB, innerParent, method, genericType, returnList);
@@ -203,7 +204,7 @@ public final class ReturnHandler {
             }
         }
         if (Tools.isBlank(desc)) {
-            desc = Tools.EMPTY;
+            desc = ApiConst.EMPTY;
         }
         documentReturn.setDesc(Tools.descInfo(fieldType, desc));
         return documentReturn;
@@ -228,14 +229,14 @@ public final class ReturnHandler {
         if (Tools.isEmpty(name)) {
             name = fieldMap.get(Object.class.getName());
         }
-        return Tools.isEmpty(name) ? Tools.EMPTY : name;
+        return Tools.isEmpty(name) ? ApiConst.EMPTY : name;
     }
 
     // ========== json ==========
 
     public static String handlerReturnJson(String method, String returnType) {
         Object obj = handlerReturnJsonObj(null, null, method, returnType);
-        return Tools.isNotEmpty(obj) ? Tools.toJson(obj) : Tools.EMPTY;
+        return Tools.isNotEmpty(obj) ? Tools.toJson(obj) : ApiConst.EMPTY;
     }
 
     private static Object handlerReturnJsonObj(Recursive parentRecursive, String fieldName, String method, String type) {
@@ -306,8 +307,8 @@ public final class ReturnHandler {
 
 
     private static Class<?> getClass(String className) {
-        if (className.contains(" ")) {
-            className = className.substring(className.indexOf(" ")).trim();
+        if (className.contains(ApiConst.SPACE)) {
+            className = className.substring(className.indexOf(ApiConst.SPACE)).trim();
         }
         Class<?> clazz = Tools.getBasicType(className);
         if (Tools.isEmpty(clazz)) {
@@ -353,8 +354,8 @@ public final class ReturnHandler {
                 className = className.substring(0, className.indexOf("<")).trim();
             }
             // 「class java.lang.Object」 etc ...
-            if (className.contains(" ")) {
-                className = className.substring(className.indexOf(" ")).trim();
+            if (className.contains(ApiConst.SPACE)) {
+                className = className.substring(className.indexOf(ApiConst.SPACE)).trim();
             }
             tmpType = Class.forName(className);
         } catch (ClassNotFoundException ignore) {

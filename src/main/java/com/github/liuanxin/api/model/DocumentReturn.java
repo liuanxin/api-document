@@ -1,6 +1,6 @@
 package com.github.liuanxin.api.model;
 
-import com.github.liuanxin.api.util.Tools;
+import com.github.liuanxin.api.constant.ApiConst;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ public class DocumentReturn {
 
     private String name;
     private String type;
-    private String desc = Tools.EMPTY;
+    private String desc = ApiConst.EMPTY;
 
 
     @Override

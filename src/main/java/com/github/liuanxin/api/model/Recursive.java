@@ -1,5 +1,6 @@
 package com.github.liuanxin.api.model;
 
+import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.util.Tools;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -100,7 +101,7 @@ public class Recursive {
             }
             sbd.append(self.self.getName());
             if (Tools.isNotBlank(self.fieldName)) {
-                sbd.append(" ").append(self.fieldName);
+                sbd.append(ApiConst.SPACE).append(self.fieldName);
             }
         }
     }

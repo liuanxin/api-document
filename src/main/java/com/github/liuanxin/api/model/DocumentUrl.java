@@ -2,6 +2,7 @@ package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
@@ -31,16 +32,16 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
 
 
     private String id;
-    private String title = Tools.EMPTY;
-    private String desc = Tools.EMPTY;
-    private String develop = Tools.EMPTY;
+    private String title = ApiConst.EMPTY;
+    private String desc = ApiConst.EMPTY;
+    private String develop = ApiConst.EMPTY;
 
     private String exampleUrl;
     private String method;
     private String url;
 
-    private String useGlobalParam = Tools.EMPTY;
-    private String requestBody = Tools.EMPTY;
+    private String useGlobalParam = ApiConst.EMPTY;
+    private String requestBody = ApiConst.EMPTY;
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;
@@ -65,10 +66,10 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         }
 
         String url = SPLIT_PATTERN.matcher(this.url).replaceAll("-");
-        url = START_BIG_PATTERN.matcher(url).replaceAll(Tools.EMPTY);
-        url = END_BIG_PATTERN.matcher(url).replaceAll(Tools.EMPTY);
+        url = START_BIG_PATTERN.matcher(url).replaceAll(ApiConst.EMPTY);
+        url = END_BIG_PATTERN.matcher(url).replaceAll(ApiConst.EMPTY);
         if (Tools.isNotEmpty(method)) {
-            return method.toLowerCase() + (url.startsWith("-") ? Tools.EMPTY : "-") + url;
+            return method.toLowerCase() + (url.startsWith("-") ? ApiConst.EMPTY : "-") + url;
         } else {
             return url.startsWith("-") ? url.substring(1) : url;
         }
@@ -121,16 +122,16 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
                                      boolean commentInReturnExampleWithLevel,
                                      List<DocumentReturn> returnList) {
         if (Tools.isEmpty(returnJson)) {
-            return Tools.EMPTY;
+            return ApiConst.EMPTY;
         }
 
         String commentJson = Tools.toPrettyJson(returnJson);
         if (Tools.isEmpty(commentJson)) {
-            return Tools.EMPTY;
+            return ApiConst.EMPTY;
         }
 
         // for windows pretty... \r\n to \n
-        commentJson = commentJson.replace("\r", Tools.EMPTY);
+        commentJson = commentJson.replace("\r", ApiConst.EMPTY);
         if (!commentInReturnExample) {
             return commentJson;
         }
@@ -161,7 +162,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
                 if (returnList.size() > index) {
                     DocumentReturn documentReturn = returnList.get(index);
                     if (Tools.isNotEmpty(documentReturn)) {
-                        String returnName = documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY).trim();
+                        String returnName = documentReturn.getName().replace(ReturnHandler.TAB, ApiConst.EMPTY).trim();
                         if (returnName.contains(ReturnHandler.LEVEL_APPEND)) {
                             returnName = returnName.substring(0, returnName.indexOf(ReturnHandler.LEVEL_APPEND)).trim();
                         }
@@ -297,7 +298,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private static Map<String, String> documentReturnMap(List<DocumentReturn> returnList) {
         Map<String, String> returnMap = Tools.newHashMap();
         for (DocumentReturn documentReturn : returnList) {
-            returnMap.put(documentReturn.getName().replace(ReturnHandler.TAB, Tools.EMPTY), documentReturn.getDesc());
+            returnMap.put(documentReturn.getName().replace(ReturnHandler.TAB, ApiConst.EMPTY), documentReturn.getDesc());
         }
         return returnMap;
     }
