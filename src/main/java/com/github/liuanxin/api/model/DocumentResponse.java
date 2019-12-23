@@ -3,6 +3,7 @@ package com.github.liuanxin.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ApiResponse;
+import com.github.liuanxin.api.util.Tools;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -14,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class DocumentResponse {
+public class DocumentResponse implements Comparable<DocumentResponse> {
 
     private int code;
     private String msg;
@@ -75,5 +76,10 @@ public class DocumentResponse {
     @Override
     public int hashCode() {
         return Objects.hash(code, msg, comment, returnList);
+    }
+
+    @Override
+    public int compareTo(DocumentResponse response) {
+        return Tools.isBlank(response) ? -1 : (this.code - response.getCode());
     }
 }

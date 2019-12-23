@@ -81,5 +81,6 @@ public class DocumentInfo {
             this.enumInfo = new LinkedHashMap<>(enumMap);
             this.moduleList = new ArrayList<>(moduleSet);
         }
+        Collections.sort(responseList);
     }
 }
