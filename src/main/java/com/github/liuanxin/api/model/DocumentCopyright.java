@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Setter
@@ -52,6 +53,10 @@ public class DocumentCopyright {
      */
     @JsonIgnore
     private boolean returnRecordLevel = false;
+
+    /** use it when want to collect other project */
+    @JsonIgnore
+    private Map<String, String> projectMap;
 
 
     public DocumentCopyright(String title, String team, String version, String copyright) {

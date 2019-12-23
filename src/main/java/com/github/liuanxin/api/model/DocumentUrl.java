@@ -9,10 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 @Setter
@@ -33,6 +30,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private static final Pattern END_BIG_PATTERN = Pattern.compile("}");
 
 
+    private String id;
     private String title = Tools.EMPTY;
     private String desc = Tools.EMPTY;
     private String develop = Tools.EMPTY;
@@ -46,7 +44,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;
-    // private String commentJson;
+    private String commentJson;
 
 
     @JsonIgnore
@@ -62,6 +60,10 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
 
 
     public String getId() {
+        if (Tools.isNotEmpty(id)) {
+            return id;
+        }
+
         String url = SPLIT_PATTERN.matcher(this.url).replaceAll("-");
         url = START_BIG_PATTERN.matcher(url).replaceAll(Tools.EMPTY);
         url = END_BIG_PATTERN.matcher(url).replaceAll(Tools.EMPTY);
@@ -77,12 +79,17 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     }
 
     public List<DocumentReturn> getReturnList() {
-        return returnList(commentInReturnExample, returnRecordLevel, returnList);
+        return Tools.isNotEmpty(returnList)
+                ? returnList
+                : returnList(commentInReturnExample, returnRecordLevel, returnList);
     }
 
     public String getCommentJson() {
-        return commentJson(returnJson, commentInReturnExample, commentInReturnExampleWithLevel, returnList);
+        return Tools.isNotEmpty(commentJson)
+                ? commentJson
+                : commentJson(returnJson, commentInReturnExample, commentInReturnExampleWithLevel, returnList);
     }
+
 
     public static List<DocumentReturn> returnList(boolean commentInReturnExample,
                                                   boolean returnRecordLevel,
@@ -314,5 +321,27 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
                 return title.compareTo(obj.getTitle());
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocumentUrl that = (DocumentUrl) o;
+        return Objects.equals(title, that.title) &&
+                Objects.equals(desc, that.desc) &&
+                Objects.equals(develop, that.develop) &&
+                Objects.equals(exampleUrl, that.exampleUrl) &&
+                Objects.equals(method, that.method) &&
+                Objects.equals(url, that.url) &&
+                Objects.equals(useGlobalParam, that.useGlobalParam) &&
+                Objects.equals(requestBody, that.requestBody) &&
+                Objects.equals(paramList, that.paramList) &&
+                Objects.equals(responseList, that.responseList) &&
+                Objects.equals(returnList, that.returnList);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, desc, develop, exampleUrl, method, url, useGlobalParam, requestBody, paramList, responseList, returnList);
     }
 }

@@ -220,6 +220,19 @@ public class Tools {
             return EMPTY;
         }
     }
+    public static <T> T toObject(String json, Class<T> clazz) {
+        if (isBlank(json)) {
+            return null;
+        }
+        try {
+            return RENDER.readValue(json, clazz);
+        } catch (Exception e) {
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error(String.format("json(%s) to Object(%s) exception", json, clazz.getName()), e);
+            }
+            return null;
+        }
+    }
     public static String toPrettyJson(String json) {
         if (isEmpty(json)) {
             return EMPTY;
@@ -235,10 +248,10 @@ public class Tools {
     }
 
     // ========== array map ==========
-    private static <T> boolean isEmpty(T[] array) {
+    public static <T> boolean isEmpty(T[] array) {
         return isBlank(array) || array.length == 0;
     }
-    private static <T> boolean isNotEmpty(T[] array) {
+    public static <T> boolean isNotEmpty(T[] array) {
         return !isEmpty(array);
     }
     public static <T> boolean isEmpty(Collection<T> collection) {

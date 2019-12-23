@@ -2,9 +2,12 @@ package com.github.liuanxin.api.web;
 
 import com.github.liuanxin.api.annotation.*;
 import com.github.liuanxin.api.model.*;
+import com.github.liuanxin.api.util.HttpUtil;
 import com.github.liuanxin.api.util.ParamHandler;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -23,6 +26,8 @@ import java.util.regex.Pattern;
 @RestController("document-collect-controller")
 @RequestMapping(DocumentController.PARENT_URL_PREFIX)
 public class DocumentController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentController.class);
 
     static final String PARENT_URL_PREFIX = "/api";
 
@@ -98,16 +103,60 @@ public class DocumentController {
             LOCK.lock();
             try {
                 if (Tools.isBlank(return_info) && Tools.isBlank(url_map)) {
-                    DocumentInfoAndUrlMap documentInfoAndUrlMap = infoAndUrlMap(mapping, copyright);
-                    DocumentInfo document = documentInfoAndUrlMap.getDocumentInfo();
+                    DocumentInfoAndUrlMap infoAndUrlMap = infoAndUrlMap(mapping, copyright);
+                    infoAndUrlMap.appendDocument(getProjects(copyright.getProjectMap()));
+                    DocumentInfo document = infoAndUrlMap.getDocumentInfo();
                     DocumentCopyright documentCopyright = copyright(copyright, document.getModuleList());
 
                     return_info = Tools.toJson(new ReturnInfo(document, documentCopyright));
-                    url_map = documentInfoAndUrlMap.getDocumentMap();
+                    url_map = infoAndUrlMap.getDocumentMap();
                 }
             } finally {
                 LOCK.unlock();
             }
+        }
+    }
+
+    private static List<DocumentInfo> getProjects(Map<String, String> projectMap) {
+        if (Tools.isNotEmpty(projectMap)) {
+            List<DocumentInfo> returnList = new ArrayList<>();
+            for (Map.Entry<String, String> entry : projectMap.entrySet()) {
+                String moduleName = entry.getKey();
+                String moduleUrl = entry.getValue();
+                if (Tools.isNotEmpty(moduleName) && Tools.isNotEmpty(moduleUrl)) {
+                    String url = moduleUrl.endsWith("/") ? moduleUrl.substring(0, moduleUrl.length() - 1) : moduleUrl;
+                    String requestInfo = HttpUtil.get(url + PARENT_URL_PREFIX + INFO_URL);
+                    ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
+                    if (Tools.isNotBlank(projectInfo)) {
+                        DocumentInfo documentInfo = projectInfo.getDocument();
+                        if (Tools.isNotBlank(documentInfo)) {
+                            for (DocumentModule module : documentInfo.getModuleList()) {
+                                String[] split = moduleName.split("-");
+                                String name, info;
+                                if (split.length > 1) {
+                                    name = split[0];
+                                    info = split[1];
+                                } else {
+                                    name = info = moduleName;
+                                }
+                                name += module.getName();
+                                info += "(" + module.getInfo() + ")";
+                                module.fillNameAndInfo(name + "-" + info);
+                                for (DocumentUrl documentUrl : module.getUrlList()) {
+                                    String exampleUrl = documentUrl.getExampleUrl();
+                                    if (!exampleUrl.startsWith(url)) {
+                                        documentUrl.setExampleUrl(url + exampleUrl);
+                                    }
+                                }
+                            }
+                            returnList.add(documentInfo);
+                        }
+                    }
+                }
+            }
+            return returnList;
+        } else {
+            return Collections.emptyList();
         }
     }
 
@@ -195,11 +244,12 @@ public class DocumentController {
 
                         document.setCommentInReturnExample(commentInReturn);
                         document.setReturnRecordLevel(recordLevel);
-                        document.setExampleUrl(getExampleUrl(document.getId()));
+                        String id = document.getId();
+                        document.setExampleUrl(getExampleUrl(id));
                         // response
                         document.setResponseList(methodResponse(handlerMethod, commentInReturn, recordLevel));
 
-                        documentMap.put(document.getId(), document);
+                        documentMap.put(id, document);
                         // add DocumentUrl to DocumentModule
                         ApiGroup apiGroup = getAnnotation(handlerMethod, ApiGroup.class);
                         if (Tools.isBlank(apiGroup)) {

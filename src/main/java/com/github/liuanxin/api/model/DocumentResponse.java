@@ -3,15 +3,14 @@ package com.github.liuanxin.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ApiResponse;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.util.List;
+import java.util.Objects;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -60,5 +59,21 @@ public class DocumentResponse {
         this.generic = generic;
         this.genericChild = genericChild;
         return this;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocumentResponse that = (DocumentResponse) o;
+        return code == that.code &&
+                Objects.equals(msg, that.msg) &&
+                Objects.equals(comment, that.comment) &&
+                Objects.equals(returnList, that.returnList);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(code, msg, comment, returnList);
     }
 }

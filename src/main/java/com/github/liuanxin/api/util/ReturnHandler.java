@@ -362,7 +362,7 @@ public final class ReturnHandler {
         return tmpType;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static Collection handlerReturnJsonList(Recursive parentRecursive, String fieldName,
                                                     String method, String type, Class<?> clazz) {
         if (type.contains("<") && type.contains(">")) {
@@ -388,6 +388,7 @@ public final class ReturnHandler {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     private static Map handlerReturnJsonMap(Recursive parentRecursive, String fieldName, String method, String type) {
         if (type.contains("<") && type.contains(">")) {
             // add one key:value in map

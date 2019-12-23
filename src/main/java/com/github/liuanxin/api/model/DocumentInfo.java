@@ -1,13 +1,13 @@
 package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.github.liuanxin.api.util.Tools;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Setter
 @Getter
@@ -18,7 +18,8 @@ public class DocumentInfo {
 
     private List<DocumentParam> tokenList;
     private List<DocumentResponse> responseList;
-    /**<pre>
+    /**
+     * <pre>
      * public enum Gender { <span style="color:green">// This enum will collect to: { Gender: [ "Nil", "Male", "Female" ] }</span>
      *   Nil, Male, Female;
      * }
@@ -48,4 +49,37 @@ public class DocumentInfo {
      */
     private Map<String, Object> enumInfo;
     private List<DocumentModule> moduleList;
+
+
+    public void append(List<DocumentInfo> projects) {
+        if (Tools.isNotEmpty(projects)) {
+            Set<DocumentParam> tokenSet = Tools.isBlank(tokenList)
+                    ? new LinkedHashSet<DocumentParam>()
+                    : new LinkedHashSet<>(tokenList);
+
+            Set<DocumentResponse> responseSet = Tools.isBlank(responseList)
+                    ? new LinkedHashSet<DocumentResponse>()
+                    : new LinkedHashSet<>(responseList);
+
+            Map<String, Object> enumMap = Tools.isBlank(enumInfo)
+                    ? new LinkedHashMap<String, Object>()
+                    : new LinkedHashMap<>(enumInfo);
+
+            Set<DocumentModule> moduleSet = Tools.isBlank(moduleList)
+                    ? new LinkedHashSet<DocumentModule>()
+                    : new LinkedHashSet<>(moduleList);
+
+            for (DocumentInfo info : projects) {
+                tokenSet.addAll(info.getTokenList());
+                responseSet.addAll(info.getResponseList());
+                enumMap.putAll(info.getEnumInfo());
+                moduleSet.addAll(info.getModuleList());
+            }
+
+            this.tokenList = new ArrayList<>(tokenSet);
+            this.responseList = new ArrayList<>(responseSet);
+            this.enumInfo = new LinkedHashMap<>(enumMap);
+            this.moduleList = new ArrayList<>(moduleSet);
+        }
+    }
 }

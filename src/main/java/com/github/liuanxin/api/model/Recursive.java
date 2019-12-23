@@ -131,7 +131,8 @@ public class Recursive {
     }
     private static Class<?> getClass(String clazz) {
         try {
-            return Class.forName(clazz);
+            String prefix = "class ";
+            return Class.forName(clazz.startsWith(prefix) ? clazz.substring(prefix.length()) : clazz);
         } catch (ClassNotFoundException ignore) {
             return null;
         }

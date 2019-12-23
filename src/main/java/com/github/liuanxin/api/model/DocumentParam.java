@@ -3,13 +3,13 @@ package com.github.liuanxin.api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ApiToken;
 import com.github.liuanxin.api.util.Tools;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Setter
-@Getter
+import java.util.Objects;
+
+@Data
 @NoArgsConstructor
 @Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -45,5 +45,32 @@ public class DocumentParam {
         param.setHasTextarea(token.textarea() ? "1" : Tools.EMPTY);
         param.setStyle(token.style());
         return param;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocumentParam that = (DocumentParam) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(dataType, that.dataType) &&
+                Objects.equals(showDataType, that.showDataType) &&
+                Objects.equals(paramType, that.paramType) &&
+                Objects.equals(hasMust, that.hasMust) &&
+                Objects.equals(desc, that.desc) &&
+                Objects.equals(example, that.example) &&
+                Objects.equals(hasTextarea, that.hasTextarea) &&
+                Objects.equals(datePattern, that.datePattern) &&
+                Objects.equals(hasFile, that.hasFile) &&
+                Objects.equals(hasToken, that.hasToken) &&
+                Objects.equals(style, that.style);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(
+                name, dataType, showDataType, paramType, hasMust, desc,
+                example, hasTextarea, datePattern, hasFile, hasToken, style
+        );
     }
 }

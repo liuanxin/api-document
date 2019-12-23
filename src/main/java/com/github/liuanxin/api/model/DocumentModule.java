@@ -2,16 +2,14 @@ package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.liuanxin.api.util.Tools;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.util.LinkedList;
 import java.util.List;
 
-@Setter
-@Getter
+@Data
 @NoArgsConstructor
 @Accessors(chain = true)
 public class DocumentModule implements Comparable<DocumentModule> {
@@ -20,10 +18,13 @@ public class DocumentModule implements Comparable<DocumentModule> {
     private int index = Integer.MAX_VALUE;
 
     private String name;
-    private String info = Tools.EMPTY;
-    private List<DocumentUrl> urlList = new LinkedList<>();
+    private String info;
+    private List<DocumentUrl> urlList;
 
     public DocumentModule(String groupName) {
+        fillNameAndInfo(groupName);
+    }
+    public void fillNameAndInfo(String groupName) {
         if (Tools.isNotEmpty(groupName)) {
             String[] split = groupName.split("-");
             if (split.length > 1) {
@@ -35,6 +36,9 @@ public class DocumentModule implements Comparable<DocumentModule> {
         }
     }
     public void addUrl(DocumentUrl url) {
+        if (Tools.isBlank(urlList)) {
+            urlList = new LinkedList<>();
+        }
         urlList.add(url);
     }
 
