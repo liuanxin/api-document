@@ -47,39 +47,39 @@ public class ApiInfoConfig {
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
 
-            // // if true, api will return nil(when production use), if not set default was false.
-            // .setOnline(online)
+                // // if true, api will return nil(when production use), if not set default was false.
+                // .setOnline(online)
 
-            // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
-                   // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+                // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
+                       // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
 
-            // // if class or method has @ApiResponses, use that
-            // .setGlobalResponse(Arrays.asList(
-            //         new DocumentResponse(400, "param error"),
-            //         new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
-            // ))
+                // // if class or method has @ApiResponses, use that
+                // .setGlobalResponse(Arrays.asList(
+                //         new DocumentResponse(400, "param error"),
+                //         new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
+                // ))
 
-            // // current config will be generated in the parameters of each api,
-            // // if only want to use on a specific api, or set this global config but want to ignore on a specific api,
-            // // use @ApiTokens annotation
-            // .setGlobalTokens(Arrays.asList(
-            //         DocumentParam.buildToken("x-token", "oauth info", "abc-xyz", ParamType.Header).setHasTextarea("1"),
-            //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
-            // ))
+                // // current config will be generated in the parameters of each api,
+                // // if only want to use on a specific api, or set this global config but want to ignore on a specific api,
+                // // use @ApiTokens annotation
+                // .setGlobalTokens(Arrays.asList(
+                //         DocumentParam.buildToken("x-token", "oauth info", "abc-xyz", ParamType.Header).setHasTextarea("1"),
+                //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
+                // ))
 
-            // // use when you want to collect multiple documents in one place,
-            // // ensure that the global response description and global token of all projects are consistent.
-            // // attaching them together(current practice) may cause documentation errors.
-            // .setProjectMap(new HashMap<String, String>() {{
-            //         // key: name. value is the project address
-            //         put("user", "http://ip:port/user");
-            //         put("product", "http://ip:port/product");
-            // }})
+                // // field comment is output in the return example. default is true. set to false will be listed separately.
+                // // if the method is marked, it will be subject to
+                // .setCommentInReturnExample(false)
 
-            // // field comment is output in the return example. default is true. set to false will be listed separately.
-            // // if the method is marked, it will be subject to
-            // .setCommentInReturnExample(false)
-            ;
+                // // use when you want to collect multiple documents in one place,
+                // // ensure that the global response description and global token of all projects are consistent.
+                // // duplicate and attaching them together(current practice) may cause documentation errors.
+                // .setProjectMap(new HashMap<String, String>() {{
+                //         // key: name. value is the project address
+                //         put("user", "http://ip:port/user");
+                //         put("product", "http://ip:port/product");
+                // }})
+                ;
     }
 }
 #+END_SRC

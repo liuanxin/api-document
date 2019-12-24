@@ -44,34 +44,34 @@ public class ApiInfoConfig {
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("标题", "团队", "版本号", "版权")
 
-            // // 如果设置成 true 则接口会返回空(可以在生产环境中开启), 不设置则默认是 false
-            // .setOnline(online)
+                // // 如果设置成 true 则接口会返回空(可以在生产环境中开启), 不设置则默认是 false
+                // .setOnline(online)
 
-            // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
-                   // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+                // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
+                       // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
 
-            // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
-            // .setGlobalResponse(Arrays.asList(
-            //         new DocumentResponse(400, "参数有误"),
-            //         new DocumentResponse(500, "请求异常").setResponse(XXX.class) // 见 @ApiReturnType 示例说明
-            // ))
+                // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
+                // .setGlobalResponse(Arrays.asList(
+                //         new DocumentResponse(400, "参数有误"),
+                //         new DocumentResponse(500, "请求异常").setResponse(XXX.class) // 见 @ApiReturnType 示例说明
+                // ))
 
-            // // 全局 token, 这个配置会生成在每个接口的参数中, 如果只想在具体的接口上设置或者设置了此项但是想在具体的接口上忽略, 请使用 @ApiTokens 注解
-            // .setGlobalTokens(Arrays.asList(
-            //         DocumentParam.buildToken("x-token", "认证数据", "abc-xyz", ParamType.Header).setHasTextarea("1"),
-            //         DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
-            // ))
+                // // 全局 token, 这个配置会生成在每个接口的参数中, 如果只想在具体的接口上设置或者设置了此项但是想在具体的接口上忽略, 请使用 @ApiTokens 注解
+                // .setGlobalTokens(Arrays.asList(
+                //         DocumentParam.buildToken("x-token", "认证数据", "abc-xyz", ParamType.Header).setHasTextarea("1"),
+                //         DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
+                // ))
 
-            // // 想要将多个文档收集到一处时使用, 请务必保证所有项目的全局响应说明和全局 token 是一致的, 附加在一起(当前做法)可能会导致文档错误
-            // .setProjectMap(new HashMap<String, String>() {{
-            //         // key 格式: 名称-说明, 如: user-用户. value 是项目地址, 如: http://ip:port
-            //         put("user-用户", "http://ip:port/user");
-            //         put("product-商品", "http://ip:port/product");
-            // }})
+                // // 字段说明是否输出在返回示例中, 不设置则默认是 true, 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
+                // .setCommentInReturnExample(false)
 
-            // // 字段说明是否输出在返回示例中, 不设置则默认是 true, 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
-            // .setCommentInReturnExample(false)
-            ;
+                // // 想要将多个文档收集到一处时使用, 请务必保证所有项目的全局响应说明和全局 token 是一致的, 去重并附加在一起(当前做法)可能会导致文档错误
+                // .setProjectMap(new HashMap<String, String>() {{
+                //         // key 格式: 名称-说明, 如: user-用户. value 是项目地址, 如: http://ip:port
+                //         put("user-用户", "http://ip:port/user");
+                //         put("product-商品", "http://ip:port/product");
+                // }})
+                ;
     }
 }
 #+END_SRC
