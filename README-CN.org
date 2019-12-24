@@ -23,7 +23,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.9</version>
+    <version>0.6.1</version>
 </dependency>
 #+END_SRC
 
@@ -61,6 +61,13 @@ public class ApiInfoConfig {
                     //         DocumentParam.buildToken("x-token", "认证数据", "abc-xyz", ParamType.Header).setHasTextarea("1"),
                     //         DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
                     // ))
+
+                    // // 想要将多个文档收集到一处时使用, 请务必保证所有项目的全局响应说明和全局 token 是一致的, 附加在一起(当前做法)可能会导致文档错误
+                    // .setProjectMap(new HashMap<String, String>() {{
+                    //         // key 格式: 名称-说明, 如: user-用户. value 是项目地址, 如: http://ip:port
+                    //         put("user-用户", "http://ip:port/user");
+                    //         put("product-商品", "http://ip:port/product");
+                    // }})
 
                     // // 字段说明是否输出在返回示例中, 不设置则默认是 true, 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
                     // .setCommentInReturnExample(false)

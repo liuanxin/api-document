@@ -26,7 +26,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.5.9</version>
+    <version>0.6.1</version>
 </dependency>
 #+END_SRC
 
@@ -67,6 +67,15 @@ public class ApiInfoConfig {
                     //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
                     // ))
 
+                    // // use when you want to collect multiple documents in one place,
+                    // // ensure that the global response description and global token of all projects are consistent.
+                    // // attaching them together(current practice) may cause documentation errors.
+                    // .setProjectMap(new HashMap<String, String>() {{
+                    //         // key: name. value is the project address
+                    //         put("user", "http://ip:port/user");
+                    //         put("product", "http://ip:port/product");
+                    // }})
+
                     // // field comment is output in the return example. default is true. set to false will be listed separately.
                     // // if the method is marked, it will be subject to
                     // .setCommentInReturnExample(false)
@@ -87,8 +96,8 @@ For generics, be sure to use certain types, such as <String> <User> etc. If use 
 annotation for this
 #+BEGIN_EXAMPLE
 @ApiGroup --> in class or method. use the method if all of that
-  value     --> module info, must set(name-description, name used to generate the anchor point, description used to display, separated by the horizontal line -, description is displayed as name if it is empty)
-  index     --> can not be set, more forward when smaller("index" first, "description" second, "name" third -> with sort), if set multi module and different index, use the smaller
+  value     --> module info, must set
+  index     --> can not be set, more forward when smaller("index" first, "module info" second -> with sort), if set multi module and different index, use the smaller
 
 
 @ApiResponses --> in class or method
