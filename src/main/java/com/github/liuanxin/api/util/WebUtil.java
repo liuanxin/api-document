@@ -21,9 +21,9 @@ public final class WebUtil {
 
     public static List<DocumentInfo> getProjects(Map<String, String> projectMap) {
         if (Tools.isNotEmpty(projectMap)) {
-            int s = projectMap.size();
-            ThreadPoolExecutor executor = new ThreadPoolExecutor(s, s, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
             List<DocumentInfo> returnList = new ArrayList<>();
+
+            ThreadPoolExecutor executor = threadPool(projectMap.size());
             List<Future<DocumentInfo>> futureList = new ArrayList<>();
             for (Map.Entry<String, String> entry : projectMap.entrySet()) {
                 final String name = entry.getKey();
@@ -53,6 +53,20 @@ public final class WebUtil {
         } else {
             return Collections.emptyList();
         }
+    }
+    public static ThreadPoolExecutor threadPool(int size) {
+        int cpus = Runtime.getRuntime().availableProcessors();
+
+        int pool;
+        BlockingQueue<Runnable> queue;
+        if (size > cpus) {
+            pool = cpus;
+            queue = new LinkedBlockingQueue<>(size - cpus);
+        } else {
+            pool = size;
+            queue = new SynchronousQueue<>();
+        }
+        return new ThreadPoolExecutor(pool, pool, 60L, TimeUnit.SECONDS, queue);
     }
 
     public static DocumentCopyright copyright(DocumentCopyright copyright, List<DocumentModule> moduleList) {
