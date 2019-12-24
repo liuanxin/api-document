@@ -73,7 +73,7 @@ public class ApiInfoConfig {
 
                 // // use when you want to collect multiple documents in one place,
                 // // ensure that the global response description and global token of all projects are consistent.
-                // // duplicate and attaching them together(current practice) may cause documentation errors.
+                // // if not, duplicate and attaching them together(current practice) may cause documentation errors.
                 // .setProjectMap(new HashMap<String, String>() {{
                 //         // key: name. value is the project address
                 //         put("user", "http://ip:port/user");
