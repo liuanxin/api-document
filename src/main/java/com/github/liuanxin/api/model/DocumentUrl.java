@@ -65,13 +65,13 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             return id;
         }
 
-        String url = SPLIT_PATTERN.matcher(this.url).replaceAll("-");
+        String url = SPLIT_PATTERN.matcher(this.url).replaceAll(ApiConst.HORIZON);
         url = START_BIG_PATTERN.matcher(url).replaceAll(ApiConst.EMPTY);
         url = END_BIG_PATTERN.matcher(url).replaceAll(ApiConst.EMPTY);
         if (Tools.isNotEmpty(method)) {
-            return method.toLowerCase() + (url.startsWith("-") ? ApiConst.EMPTY : "-") + url;
+            return method.toLowerCase() + (url.startsWith(ApiConst.HORIZON) ? ApiConst.EMPTY : ApiConst.HORIZON) + url;
         } else {
-            return url.startsWith("-") ? url.substring(1) : url;
+            return url.startsWith(ApiConst.HORIZON) ? url.substring(1) : url;
         }
     }
 

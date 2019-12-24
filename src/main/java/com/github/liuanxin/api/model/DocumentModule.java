@@ -1,6 +1,7 @@
 package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.util.Tools;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public class DocumentModule implements Comparable<DocumentModule> {
     }
     public void fillNameAndInfo(String groupName) {
         if (Tools.isNotEmpty(groupName)) {
-            String[] split = groupName.split("-");
+            String[] split = groupName.split(ApiConst.HORIZON);
             if (split.length > 1) {
                 this.name = split[0];
                 this.info = split[1];
@@ -37,7 +38,7 @@ public class DocumentModule implements Comparable<DocumentModule> {
     }
     public void fillModule(String moduleName) {
         if (Tools.isNotEmpty(moduleName)) {
-            String[] split = moduleName.split("-");
+            String[] split = moduleName.split(ApiConst.HORIZON);
             String name, info;
             if (split.length > 1) {
                 name = split[0];

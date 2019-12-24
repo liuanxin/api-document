@@ -152,11 +152,12 @@ public final class WebUtil {
                             String className = handlerMethod.getBeanType().getSimpleName();
                             String info = className;
 
-                            String classSuffix = "Controller";
-                            if (className.endsWith(classSuffix)) {
-                                info = className.substring(0, className.indexOf(classSuffix));
+                            String classSuffix = "controller";
+                            String lowerClassName = className.toLowerCase();
+                            if (lowerClassName.endsWith(classSuffix)) {
+                                info = className.substring(0, lowerClassName.indexOf(classSuffix));
                             }
-                            addGroup(moduleMap, 0, info + "-" + className, document);
+                            addGroup(moduleMap, 0, info + ApiConst.HORIZON + className, document);
                         } else {
                             int index = apiGroup.index();
                             for (String group : apiGroup.value()) {

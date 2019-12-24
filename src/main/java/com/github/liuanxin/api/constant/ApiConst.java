@@ -20,6 +20,7 @@ public final class ApiConst {
     public static final String EMPTY = "";
     public static final String SPACE = " ";
     public static final String SPLIT = ",";
+    public static final String HORIZON = "-";
     public static final String FILE_TYPE = "file";
     public static final Date NOW = new Date();
 
