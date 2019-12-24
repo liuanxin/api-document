@@ -115,7 +115,7 @@ public class Tools {
             BigInteger.class.getSimpleName(), BigInteger.ZERO,
             BigDecimal.class.getSimpleName(), BigDecimal.ZERO,
             String.class.getSimpleName(), ApiConst.EMPTY,
-            Date.class.getSimpleName(), ApiConst.DATE,
+            Date.class.getSimpleName(), ApiConst.NOW,
 
             // up type, down array type
 
@@ -146,7 +146,7 @@ public class Tools {
             BigInteger[].class.getSimpleName(), new BigInteger[] { BigInteger.ZERO },
             BigDecimal[].class.getSimpleName(), new BigDecimal[] { BigDecimal.ZERO },
             String[].class.getSimpleName(), new String[] { ApiConst.EMPTY },
-            Date[].class.getSimpleName(), new Date[] { ApiConst.DATE }
+            Date[].class.getSimpleName(), new Date[] { ApiConst.NOW }
     );
 
     private static final Map<String, Object> DEFAULT_MAP_KEY = maps(
@@ -194,7 +194,7 @@ public class Tools {
                 }
             }
         }
-        return ApiConst.DATE;
+        return ApiConst.NOW;
     }
 
     // ========== json ==========

@@ -24,29 +24,29 @@ public final class WebUtil {
             int s = projectMap.size();
             ThreadPoolExecutor executor = new ThreadPoolExecutor(s, s, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>());
             List<DocumentInfo> returnList = new ArrayList<>();
+            List<Future<DocumentInfo>> futureList = new ArrayList<>();
             for (Map.Entry<String, String> entry : projectMap.entrySet()) {
-                final String moduleName = entry.getKey();
-                final String moduleUrl = entry.getValue();
-                if (Tools.isNotEmpty(moduleName) && Tools.isNotEmpty(moduleUrl)) {
-                    List<Future<DocumentInfo>> futureList = new ArrayList<>();
+                final String name = entry.getKey();
+                final String url = entry.getValue();
+                if (Tools.isNotEmpty(name) && Tools.isNotEmpty(url)) {
                     futureList.add(executor.submit(new Callable<DocumentInfo>() {
                         @Override
                         public DocumentInfo call() {
-                            String u = moduleUrl.endsWith("/") ? moduleUrl.substring(0, moduleUrl.length() - 1) : moduleUrl;
-                            String requestInfo = HttpUtil.get(u + ApiConst.PARENT_URL_PREFIX + ApiConst.INFO_URL);
+                            String uri = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+                            String requestInfo = HttpUtil.get(uri + ApiConst.URL_PREFIX + ApiConst.URL_INFO);
                             ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
-                            return Tools.isBlank(projectInfo) ? null : projectInfo.fillModule(moduleName, moduleUrl);
+                            return Tools.isBlank(projectInfo) ? null : projectInfo.fillModule(name, url);
                         }
                     }));
-                    for (Future<DocumentInfo> future : futureList) {
-                        try {
-                            DocumentInfo info = future.get();
-                            if (Tools.isNotBlank(info)) {
-                                returnList.add(info);
-                            }
-                        } catch (InterruptedException | ExecutionException ignore) {
-                        }
+                }
+            }
+            for (Future<DocumentInfo> future : futureList) {
+                try {
+                    DocumentInfo info = future.get();
+                    if (Tools.isNotBlank(info)) {
+                        returnList.add(info);
                     }
+                } catch (InterruptedException | ExecutionException ignore) {
                 }
             }
             return returnList;
@@ -299,7 +299,6 @@ public final class WebUtil {
                     response.setComment(DocumentUrl.commentJson(json, methodCommentInReturn, true, returnList));
                     response.setReturnList(DocumentUrl.returnList(methodCommentInReturn, methodRecordLevel, returnList));
                 }
-
                 responseList.add(response);
             }
         }
@@ -318,7 +317,7 @@ public final class WebUtil {
 
     private static String getExampleUrl(String param) {
         // return exampleUrl.replaceFirst("\\{.*?\\}", param);
-        return ApiConst.ID_URL_PATTERN.matcher(ApiConst.PARENT_URL_PREFIX + ApiConst.EXAMPLE_URL).replaceFirst(param);
+        return ApiConst.ID_URL_PATTERN.matcher(ApiConst.URL_PREFIX + ApiConst.URL_EXAMPLE).replaceFirst(param);
     }
 
     private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {

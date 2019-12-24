@@ -7,11 +7,13 @@ import java.util.regex.Pattern;
 
 public final class ApiConst {
 
-    public static final String PARENT_URL_PREFIX = "/api";
-    public static final String VERSION_CLEAR = "/clear";
+    public static final String BEAN_NAME = "document-collect-controller";
+
+    public static final String URL_PREFIX = "/api";
+    public static final String URL_CLEAR = "/clear";
+    public static final String URL_INFO = "/info";
     public static final String PLACEHOLDER = "id";
-    public static final String EXAMPLE_URL = "/example/{" + PLACEHOLDER + "}.json";
-    public static final String INFO_URL = "/info";
+    public static final String URL_EXAMPLE = "/example/{" + PLACEHOLDER + "}.json";
     public static final String PRODUCES = "application/json; charset=UTF-8";
 
 
@@ -19,7 +21,7 @@ public final class ApiConst {
     public static final String SPACE = " ";
     public static final String SPLIT = ",";
     public static final String FILE_TYPE = "file";
-    public static final Date DATE = new Date();
+    public static final Date NOW = new Date();
 
 
     public static final String HTTP = "http://";
