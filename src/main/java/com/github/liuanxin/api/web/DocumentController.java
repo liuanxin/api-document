@@ -3,18 +3,22 @@ package com.github.liuanxin.api.web;
 import com.github.liuanxin.api.annotation.ApiIgnore;
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.model.*;
+import com.github.liuanxin.api.util.HttpUtil;
 import com.github.liuanxin.api.util.Tools;
 import com.github.liuanxin.api.util.WebUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @ApiIgnore
-@RestController(ApiConst.BEAN_NAME)
+@RestController(ApiConst.CONTROLLER_NAME)
 @RequestMapping(ApiConst.URL_PREFIX)
 public class DocumentController {
 
@@ -42,6 +46,41 @@ public class DocumentController {
         return 1;
     }
 
+    @GetMapping(value = ApiConst.URL_PROJECT, produces = ApiConst.PRODUCES)
+    public String getProjectInfo(String p) {
+        if (copyright.isProjectMerge()) {
+            return ApiConst.EMPTY;
+        }
+
+        Map<String, String> projectMap = copyright.getProjectMap();
+        if (Tools.isEmpty(projectMap)) {
+            return ApiConst.EMPTY;
+        }
+
+        boolean flag = false;
+        List<List<String>> returnList = new ArrayList<>();
+        for (Map.Entry<String, String> entry : projectMap.entrySet()) {
+            String key = entry.getKey();
+            String url = entry.getValue();
+            if (Tools.isNotEmpty(key) && Tools.isNotEmpty(url)) {
+                String[] split = key.split(ApiConst.HORIZON);
+                String name, value;
+                if (split.length > 1) {
+                    name = split[0];
+                    value = split[1];
+                } else {
+                    name = value = key;
+                }
+
+                returnList.add(Arrays.asList(name, value, HttpUtil.getUrl(url)));
+                if (Tools.isNotEmpty(p) && name.equalsIgnoreCase(p) || value.equals(p)) {
+                    flag = true;
+                }
+            }
+        }
+        return Tools.isEmpty(p) || flag ? Tools.toJson(returnList) : ApiConst.EMPTY;
+    }
+
     @GetMapping(value = ApiConst.URL_EXAMPLE, produces = ApiConst.PRODUCES)
     public String urlExample(@PathVariable(ApiConst.PLACEHOLDER) String id) {
         if (Tools.isBlank(copyright) || copyright.isOnline()) {
@@ -58,7 +97,7 @@ public class DocumentController {
     }
 
     @GetMapping(value = ApiConst.URL_INFO, produces = ApiConst.PRODUCES)
-    public String url() {
+    public String url(String p) {
         if (Tools.isBlank(copyright) || copyright.isOnline()) {
             return ApiConst.EMPTY;
         } else {
@@ -73,7 +112,9 @@ public class DocumentController {
             try {
                 if (Tools.isBlank(return_info_cache) && Tools.isBlank(url_map_cache)) {
                     DocumentInfoAndUrlMap infoAndUrlMap = WebUtil.infoAndUrlMap(mapping, copyright);
-                    infoAndUrlMap.appendDocument(WebUtil.getProjects(copyright.getProjectMap()));
+                    if (copyright.isProjectMerge()) {
+                        infoAndUrlMap.appendDocument(WebUtil.getProjects(copyright.getProjectMap()));
+                    }
                     DocumentInfo document = infoAndUrlMap.getDocumentInfo();
                     DocumentCopyright documentCopyright = WebUtil.copyright(copyright, document.getModuleList());
 

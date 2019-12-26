@@ -215,7 +215,7 @@ public class Tools {
         }
     }
     public static <T> T toObject(String json, Class<T> clazz) {
-        if (isBlank(json)) {
+        if (isEmpty(json)) {
             return null;
         }
         try {
@@ -294,7 +294,7 @@ public class Tools {
         return new LinkedHashMap<>();
     }
 
-    static <K, V> HashMap<K, V> maps(Object... keysAndValues) {
+    public static <K, V> HashMap<K, V> maps(Object... keysAndValues) {
         return (HashMap<K, V>) maps(newHashMap(), keysAndValues);
     }
     @SuppressWarnings("unchecked")

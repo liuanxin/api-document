@@ -62,6 +62,19 @@ public class HttpUtil {
             return url.substring(0, (getIndex(url)));
         }
     }
+    public static String getUrl(String url) {
+        String lowerUrl = url.toLowerCase();
+        String returnUrl;
+        if (lowerUrl.startsWith(ApiConst.HTTP)) {
+            returnUrl = url.substring(ApiConst.HP.length());
+        } else if (lowerUrl.startsWith(ApiConst.HTTPS)) {
+            returnUrl = url.substring(ApiConst.HPS.length());
+        } else {
+            returnUrl = url;
+        }
+        return returnUrl.endsWith("/") ? returnUrl.substring(0, returnUrl.length() - 1) : returnUrl;
+    }
+
     private static int getIndex(String tmp) {
         return tmp.contains(ApiConst.URL_SPLIT) ? tmp.indexOf(ApiConst.URL_SPLIT) : tmp.length();
     }

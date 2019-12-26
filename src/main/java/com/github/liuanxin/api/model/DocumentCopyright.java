@@ -46,7 +46,7 @@ public class DocumentCopyright {
     private boolean commentInReturnExample = true;
 
     /**
-     * Return Field Description Whether to record the parent attribute when listed separately,
+     * return Field Description Whether to record the parent attribute when listed separately,
      * regardless of this value when commentInReturnExample is true.
      *
      * forget this. It's a bad ide
@@ -54,6 +54,9 @@ public class DocumentCopyright {
     @JsonIgnore
     private boolean returnRecordLevel = false;
 
+    /** whether to combine multiple projects as expected */
+    @JsonIgnore
+    private boolean projectMerge = false;
     /** use it when want to collect other project */
     @JsonIgnore
     private Map<String, String> projectMap;

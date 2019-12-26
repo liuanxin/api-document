@@ -56,6 +56,10 @@ public class DocumentModule implements Comparable<DocumentModule> {
             if (!exampleUrl.startsWith(moduleUrl)) {
                 documentUrl.setExampleUrl(moduleUrl + exampleUrl);
             }
+            String url = documentUrl.getUrl();
+            if (!exampleUrl.startsWith(moduleUrl)) {
+                documentUrl.setUrl(moduleUrl + url);
+            }
         }
     }
     public void addUrl(DocumentUrl url) {
