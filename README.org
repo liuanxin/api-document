@@ -83,7 +83,7 @@ public class ApiInfoConfig {
                 // // ensure that the global response description and global token of all projects are consistent.
                 // // if not, duplicate and attaching them together(current practice) may cause documentation errors.
                 // .setProjectMap(new LinkedHashMap<String, String>() {{
-                //         // key: name. value is the project address
+                //         // key: name, value: project address
                 //         put("user", "http://ip:port/user");
                 //         put("product", "http://ip:port/product");
                 // }})
