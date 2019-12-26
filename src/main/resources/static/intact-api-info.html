@@ -737,7 +737,7 @@ $(function() {
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        loadData();
+        location.reload();
     });
 
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
