@@ -47,7 +47,7 @@ public class ApiInfoConfig {
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
 
-                // // if true, api will return nil(when production use), if not set default was false.
+                // // not collect if true, default is false.
                 // .setOnline(online)
 
                 // // if some interface can't use @ApiIgnore, set this(url|method, method can be ignore)
