@@ -257,7 +257,7 @@ public final class ReturnHandler {
             return null;
         }
         Class<?> outClass = getClass(className);
-        if (Tools.isEmpty(outClass)) {
+        if (Tools.isBlank(outClass)) {
             return null;
         }
 
@@ -284,7 +284,7 @@ public final class ReturnHandler {
             return;
         }
         Class<?> innerClass = getClass(className);
-        if (Tools.isEmpty(innerClass)) {
+        if (Tools.isBlank(innerClass)) {
             return;
         }
         if (Collection.class.isAssignableFrom(innerClass)) {
@@ -314,6 +314,9 @@ public final class ReturnHandler {
         if (Tools.isEmpty(clazz)) {
             try {
                 clazz = Class.forName(className);
+                if (clazz == Void.class) {
+                    return null;
+                }
             } catch (ClassNotFoundException ignore) {
             }
         }
@@ -358,6 +361,9 @@ public final class ReturnHandler {
                 className = className.substring(className.indexOf(ApiConst.SPACE)).trim();
             }
             tmpType = Class.forName(className);
+            if (tmpType == Void.class) {
+                return null;
+            }
         } catch (ClassNotFoundException ignore) {
         }
         return tmpType;

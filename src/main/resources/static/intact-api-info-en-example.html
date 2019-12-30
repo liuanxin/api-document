@@ -472,15 +472,15 @@
                         {{
                         var globalParamList = it.tokenList || [];
                         var urlParamList = url.paramList || [];
-                        var paramList = (url.useGlobalParam === '1' || url.useGlobalParam === 1) ? globalParamList.concat(urlParamList) : urlParamList;
+                        var paramList = String(url.useGlobalParam) === '1' ? globalParamList.concat(urlParamList) : urlParamList;
 
                         var hasDesc = false, hasFile = false, hasHeader = false;
                         for (var i = 0; i < paramList.length; i++) {
                             var paramDesc = paramList[i].desc;
                             if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
 
-                            if (paramList[i].hasFile === '1' || paramList[i].hasFile === 1) { hasFile = true; }
-                            if (paramList[i].paramType === '1' || paramList[i].paramType === 1) { hasHeader = true; }
+                            if (String(paramList[i].hasFile) === '1') { hasFile = true; }
+                            if (String(paramList[i].paramType) === '1') { hasHeader = true; }
                         }
                         var textNum = 0;
                         }}
@@ -502,10 +502,10 @@
                                     <tbody>
                                     {{~ paramList  :param:paramIndex}}
                                     {{
-                                    var hasTextarea = param.hasTextarea === '1' || param.hasTextarea === 1;
+                                    var hasTextarea = String(param.hasTextarea) === '1';
                                     var arr = [];
                                     var hasMust;
-                                    if (param.hasMust === '1' || param.hasMust === 1) { hasMust = true; arr.push('required'); }
+                                    if (String(param.hasMust) === '1') { hasMust = true; arr.push('required'); }
                                     else { hasMust = false; }
 
                                     var dataType = (param.dataType || '').toLowerCase();
@@ -518,8 +518,8 @@
                                     var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
                                     var validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
-                                    var tokenClass = (param.hasToken === '1' || param.hasToken === 1) ? ' has-token' : '';
-                                    var header = (param.paramType === '1' || param.paramType === 1) ? ' header="true"' : '';
+                                    var tokenClass = String(param.hasToken) === '1' ? ' has-token' : '';
+                                    var header = String(param.paramType) === '1' ? ' header="true"' : '';
                                     var example = localStorage.getItem(param.name) || param.example || '';
 
                                     var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
@@ -572,7 +572,7 @@
                                                 ? param.showDataType
                                                 : (param.dataType && param.dataType !== '' ? param.dataType : '')
                                         }}</td>
-                                        {{? hasHeader}}<td class="text-left">{{= (param.paramType === '1' || param.paramType === 1) ? 'Header' : 'Query'}}</td>{{?}}
+                                        {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
                                         {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                     </tr>
                                     {{~}}
@@ -583,7 +583,7 @@
                             <p>
                                 /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
                                 {{? textNum === 1 }}<input type="text" style="display: none;"/>{{?}}
-                                <input class="btn" type="button" value="Request backend"{{? url.requestBody === '1' || url.requestBody === 1}} requestBody="1"{{?}}/>
+                                <input class="btn" type="button" value="Request backend"{{? String(url.requestBody) === '1'}} requestBody="1"{{?}}/>
                             </p>
                             <div class="curl"><pre class="src src-json"></pre></div>
                             <div class="response"><pre class="src src-json"></pre></div>
@@ -931,7 +931,7 @@ function objectifyForm(form) {
         var value = field.value;
 
         var header = form.find('[name="' + name + '"]').attr('header');
-        if (header && (header === 'true' || header === true)) {
+        if (header && String(header) === 'true') {
             headers[name] = value;
         } else {
             params[name] = value;
@@ -1003,8 +1003,7 @@ $(function() {
         var projectDomain = getProjectDomain();
         var method = $form.attr('method');
         var url = $form.attr('action');
-        var requestBody = $btn.attr('requestBody');
-        var hasRequestBody = requestBody === '1' || requestBody === 1;
+        var hasRequestBody = String($btn.attr('requestBody')) === '1';
 
         var map = objectifyForm($form);
         var params = map[0];

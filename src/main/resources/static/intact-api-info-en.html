@@ -303,7 +303,7 @@
                         {{
                         var globalParamList = it.tokenList || [];
                         var urlParamList = url.paramList || [];
-                        var paramList = (url.useGlobalParam === '1' || url.useGlobalParam === 1) ? globalParamList.concat(urlParamList) : urlParamList;
+                        var paramList = String(url.useGlobalParam) === '1' ? globalParamList.concat(urlParamList) : urlParamList;
 
                         var hasDesc = false, hasExample = false, hasHeader = false;
                         for (var i = 0; i < paramList.length; i++) {
@@ -313,7 +313,7 @@
                             var urlExample = paramList[i].example;
                             if (urlExample !== undefined && urlExample !== null && urlExample !== '') { hasExample = true; }
 
-                            if (paramList[i].paramType === '1' || paramList[i].paramType === 1) { hasHeader = true; }
+                            if (String(paramList[i].paramType) === '1') { hasHeader = true; }
                         }
                         }}
                         {{? paramList && paramList.length > 0}}
@@ -331,17 +331,17 @@
                                 </thead>
                                 <tbody>
                                 {{~ paramList  :param}}
-                                <tr{{? param.hasMust === '1' || param.hasMust === 1}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
+                                <tr{{? String(param.hasMust) === '1'}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                 <td class="text-left">{{= param.name || ''}}</td>
                                 <td class="text-left">{{=
                                     param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
                                     ? param.showDataType
                                     : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                     }}</td>
-                                <td class="text-left">{{= (param.hasMust === '1' || param.hasMust === 1) ? 'Yes' : 'No'}}</td>
+                                <td class="text-left">{{= String(param.hasMust) === '1' ? 'Yes' : 'No'}}</td>
                                 {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                 {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
-                                {{? hasHeader}}<td class="text-left">{{= (param.paramType === '1' || param.paramType === 1) ? 'Header' : 'Query'}}</td>{{?}}
+                                {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
                                 </tr>
                                 {{~}}
                                 </tbody>
