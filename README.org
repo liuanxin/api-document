@@ -100,6 +100,63 @@ ResponseEntity will handle the generic type it defines (it will not be resolved 
 PS: You can refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example project(spring boot 2)]].
 For generics, be sure to use certain types, such as <String> <User> etc. If use a type like <T> <Object> will not be able to parse
 
+#+BEGIN_SRC java
+@SpringBootApplication
+public class ExampleApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ExampleApplication.class, args);
+    }
+}
+
+@ApiGroup("example")
+@RestController
+public class ExampleController {
+    @ApiMethod("user list")
+    @GetMapping("/example")
+    public JsonResult<DemoVo> example(@ApiParam("user type") String type, Page page) {
+        return JsonResult.success("example api", new DemoVo());
+    }
+}
+
+@Data
+public class JsonResult<T> {
+    @ApiReturn("return code")
+    private JsonCode code;
+
+    @ApiReturn("return message")
+    private String msg;
+
+    @ApiReturn("return data")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private T data;
+
+    ...
+}
+
+@Data
+public class Page {
+    @ApiParam("current page")
+    private Integer page;
+
+    @ApiParam("page limit")
+    private Integer limit;
+
+    ...
+}
+
+@Data
+public class DemoVo {
+    private Long id;
+
+    @ApiReturn("名称")
+    private String name;
+
+    ...
+}
+#+END_SRC
+
+Run and Request ~http://127.0.0.1:8080/api-info.html~, see[[https://github.com/liuanxin/api-document-example-en][example project(spring boot 2)]]
+
 
 annotation for this
 #+BEGIN_EXAMPLE

@@ -89,6 +89,63 @@ ResponseEntity 会处理其定义的泛型类型(不设置将无法解析)
 PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]] 的全局处理.
 泛型请务必使用确切的类型, 如 <String> <User> 等, 如果使用 <T> <Object> 这样的类型将会无法解析.
 
+#+BEGIN_SRC java
+@SpringBootApplication
+public class ExampleApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ExampleApplication.class, args);
+    }
+}
+
+@ApiGroup("example-示例")
+@RestController
+public class ExampleController {
+    @ApiMethod("用户列表")
+    @GetMapping("/example")
+    public JsonResult<DemoVo> example(@ApiParam("类型") String type, Page page) {
+        return JsonResult.success("示例接口", new DemoVo());
+    }
+}
+
+@Data
+public class JsonResult<T> {
+    @ApiReturn("返回码")
+    private JsonCode code;
+
+    @ApiReturn("返回说明")
+    private String msg;
+
+    @ApiReturn("返回数据")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private T data;
+
+    ...
+}
+
+@Data
+public class Page {
+    @ApiParam("当前页数")
+    private Integer page;
+
+    @ApiParam("每页条数")
+    private Integer limit;
+
+    ...
+}
+
+@Data
+public class DemoVo {
+    private Long id;
+
+    @ApiReturn("名称")
+    private String name;
+
+    ...
+}
+#+END_SRC
+
+运行后浏览器 ~http://127.0.0.1:8080/api-info.html~ 即可查看到效果, 见[[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]]
+
 相关注解如下
 #+BEGIN_EXAMPLE
 @ApiGroup --> 标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
