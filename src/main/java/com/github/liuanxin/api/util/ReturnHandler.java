@@ -1,6 +1,7 @@
 package com.github.liuanxin.api.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.liuanxin.api.annotation.ApiModel;
 import com.github.liuanxin.api.annotation.ApiReturn;
 import com.github.liuanxin.api.annotation.ApiReturnIgnore;
@@ -108,13 +109,18 @@ public final class ReturnHandler {
                     boolean ignore = Tools.isEmpty(jsonIgnore) || !jsonIgnore.value();
                     if (ignore && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
                         String name = null;
-                        ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                        if (Tools.isNotBlank(apiReturn)) {
-                            name = apiReturn.name();
+                        JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
+                        if (Tools.isNotBlank(jsonProperty)) {
+                            name = jsonProperty.value();
                         } else {
-                            ApiModel apiModel = field.getAnnotation(ApiModel.class);
-                            if (Tools.isNotBlank(apiModel)) {
-                                name = apiModel.name();
+                            ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
+                            if (Tools.isNotBlank(apiReturn)) {
+                                name = apiReturn.name();
+                            } else {
+                                ApiModel apiModel = field.getAnnotation(ApiModel.class);
+                                if (Tools.isNotBlank(apiModel)) {
+                                    name = apiModel.name();
+                                }
                             }
                         }
                         if (Tools.isEmpty(name)) {
