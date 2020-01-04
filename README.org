@@ -153,7 +153,7 @@ public class DemoVo {
 }
 #+END_SRC
 
-Run and Request ~http://127.0.0.1:8080/api-info.html~, see[[https://liuanxin.github.io/api-info-en.html][example]]
+Run and Request ~http://127.0.0.1:8080/api-info.html~, see: [[https://liuanxin.github.io/api-info-en.html][example]]
 
 
 annotation for this
