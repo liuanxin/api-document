@@ -144,7 +144,7 @@ public class DemoVo {
 }
 #+END_SRC
 
-运行后浏览器 ~http://127.0.0.1:8080/api-info.html~ 即可查看到效果, 见[[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]]
+运行后浏览器打开 ~http://127.0.0.1:8080/api-info.html~ 即可查看到效果, 见[[https://liuanxin.github.io/api-info.html][示例]]
 
 相关注解如下
 #+BEGIN_EXAMPLE
