@@ -79,9 +79,7 @@ public class ApiInfoConfig {
                 // //     otherwise it will be inaccessible due to cross-domain issues
                 // .setProjectMerge(true)
 
-                // // use when you want to collect multiple documents in one place,
-                // // ensure that the global response description and global token of all projects are consistent.
-                // // if not, duplicate and attaching them together(current practice) may cause documentation errors.
+                // // Collecting document for other projects
                 // .setProjectMap(new LinkedHashMap<String, String>() {{
                 //         // key: name, value: project address
                 //         put("user", "http://ip:port/user");
