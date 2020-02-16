@@ -68,7 +68,6 @@ public class ApiInfoConfig {
                 // ))
 
                 // // field comment is output in the return example. default is true. set to false will be listed separately.
-                // // if the method is marked, it will be subject to
                 // .setCommentInReturnExample(false)
 
 
