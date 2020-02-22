@@ -102,8 +102,8 @@ public class ExampleApplication {
 public class ExampleController {
     @ApiMethod("用户列表")
     @GetMapping("/example")
-    public JsonResult<DemoVo> example(@ApiParam("类型") String type, Page page) {
-        return JsonResult.success("示例接口", new DemoVo());
+    public JsonResult<List<DemoVo>> example(@ApiParam("类型") String type, Page page) {
+        return JsonResult.success("示例接口", Arrays.asList(new DemoVo()));
     }
 }
 
