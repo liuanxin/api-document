@@ -736,7 +736,7 @@ function showInScreen(ele) {
     var eleTop = $ele.offset().top;
     var eleBottom = eleTop + $ele.height();
 
-    return ((eleBottom <= winBottom) && (eleTop >= winTop));
+    return (eleBottom <= winBottom) && (eleTop >= winTop);
 }
 
 function getProjectDomain() {
