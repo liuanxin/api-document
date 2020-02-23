@@ -884,11 +884,10 @@ function loadData() {
                     return;
                 }
 
-                var title = copyright.title;
-                if (isNotBlank(title)) {
-                    $title.html(title);
-                    $headerContent.html(title);
-                }
+                var title = (isNotBlank(copyright.title) ? (copyright.title + ' - ') : '') + '前后端交互';
+                $title.html(title);
+                $headerContent.html(title);
+
                 $footer.html(copyrightTemplate(copyright));
             }
 
