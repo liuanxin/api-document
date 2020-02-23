@@ -384,7 +384,9 @@
                                     <tr>
                                         <td class="text-left">{{= rtn.name || ''}}</td>
                                         <td class="text-left">{{= rtn.type || ''}}</td>
-                                        <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}</td>
+                                        <td class="text-left wrap">
+                                            {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}
+                                        </td>
                                     </tr>
                                     {{~}}
                                     </tbody>
@@ -429,7 +431,8 @@
                                         }}
                                         {{? comment !== undefined && comment !== null && comment !== ''}}
                                         <td class="text-left print-nil">
-                                            <span class="response-example" title="Example when clicking to view response {{= response.code + ': ' + response.msg}}"
+                                            <span class="response-example"
+                                                  title="Example when clicking to view response {{= response.code + ': ' + response.msg}}"
                                                   data-toggle="modal" data-target="#{{= targetId}}">View example</span>
                                         </td>
                                         {{?? hasAction}}
@@ -474,7 +477,9 @@
                                                 <tr>
                                                     <td class="text-left">{{= rtn.name || ''}}</td>
                                                     <td class="text-left">{{= rtn.type || ''}}</td>
-                                                    <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}</td>
+                                                    <td class="text-left wrap">
+                                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}
+                                                    </td>
                                                 </tr>
                                                 {{~}}
                                                 </tbody>
@@ -530,7 +535,9 @@
                                 <tr>
                                     <td class="text-left">{{= rtn.name || ''}}</td>
                                     <td class="text-left">{{= rtn.type || ''}}</td>
-                                    <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}</td>
+                                    <td class="text-left wrap">
+                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}
+                                    </td>
                                 </tr>
                                 {{~}}
                                 </tbody>
@@ -644,11 +651,15 @@ $.get('/api/project').done(function(data) {
             projectHtml += '</div>';
             $(".header").append(projectHtml);
 
-            $('.project-choose').on("change", function() {
+            $('.project-choose').change(function() {
                 var projectUrl = $(this).find('option:selected').data('url');
                 var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
                 history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-                location.reload();
+                /* If switch items in the footer, the footerTop is still the same as before, */
+                /* which will cause the nav to not be displayed(just scroll it). */
+                /* Can use location.reload () when switching items (but this will cause an additional interface call) */
+                /* location.reload(); */
+                loadData();
             });
         }
     }
@@ -768,9 +779,9 @@ $(function() {
         } else {
             $header.removeClass(scrolled);
         }
-
-        if ($nav.css('display') !== 'none') {
-            { /* 如果在页脚切换项目, 这时的 footerTop 还会是之前的, 这会导致 nav 无法显示, 再滚动一下就好了, 切换项目用 location.reload() 可以解决 */
+        /* If switch items in the footer, the footerTop is still the same as before */
+        if ($nav.css('display') !== 'none') { /* which will cause the nav to not be displayed(just scroll it). */
+            { /* Can use location.reload () when switching items (but this will cause an additional api call) */
                 var footer = document.getElementsByTagName('footer')[0];
                 var footerTop = footer.offsetTop;
                 var scrollTop = $win.scrollTop();

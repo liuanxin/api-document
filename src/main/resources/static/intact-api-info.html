@@ -384,7 +384,9 @@
                                     <tr>
                                         <td class="text-left">{{= rtn.name || ''}}</td>
                                         <td class="text-left">{{= rtn.type || ''}}</td>
-                                        <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
+                                        <td class="text-left wrap">
+                                            {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}
+                                        </td>
                                     </tr>
                                     {{~}}
                                     </tbody>
@@ -474,7 +476,9 @@
                                                 <tr>
                                                     <td class="text-left">{{= rtn.name || ''}}</td>
                                                     <td class="text-left">{{= rtn.type || ''}}</td>
-                                                    <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
+                                                    <td class="text-left wrap">
+                                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}
+                                                    </td>
                                                 </tr>
                                                 {{~}}
                                                 </tbody>
@@ -530,7 +534,9 @@
                                 <tr>
                                     <td class="text-left">{{= rtn.name || ''}}</td>
                                     <td class="text-left">{{= rtn.type || ''}}</td>
-                                    <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
+                                    <td class="text-left wrap">
+                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}
+                                    </td>
                                 </tr>
                                 {{~}}
                                 </tbody>
@@ -644,11 +650,16 @@ $.get('/api/project').done(function(data) {
             projectHtml += '</div>';
             $(".header").append(projectHtml);
 
-            $('.project-choose').on("change", function() {
+            $('.project-choose').change(function() {
                 var projectUrl = $(this).find('option:selected').data('url');
                 var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
                 history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-                location.reload();
+                /*
+                如果在页脚切换项目, 这时的 footerTop 还是之前的, 这会导致 nav 无法显示(滚动一下就好了),
+                切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用)
+                */
+                /* location.reload(); */
+                loadData();
             });
         }
     }
@@ -770,7 +781,7 @@ $(function() {
         }
 
         if ($nav.css('display') !== 'none') {
-            { /* 如果在页脚切换项目, 这时的 footerTop 还会是之前的, 这会导致 nav 无法显示, 再滚动一下就好了, 切换项目用 location.reload() 可以解决 */
+            { /* 如果在页脚切换项目, 这时的 footerTop 还是之前的, 这会导致 nav 无法显示(滚动一下就好了), 切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用) */
                 var footer = document.getElementsByTagName('footer')[0];
                 var footerTop = footer.offsetTop;
                 var scrollTop = $win.scrollTop();
