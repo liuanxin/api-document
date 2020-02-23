@@ -74,18 +74,18 @@ public class Recursive {
     /**
      * <pre>
      * public class A { ... private A x; }
-     * will return <span style="color:green">"A --> A x"</span>
+     * will return <span style="color:green">"A --&gt; A x"</span>
      *
      *
      * public class A { ... private B x; }
      * public class B { ... private A xx; }
-     * will return <span style="color:green">"A --> B x --> A xx"</span>
+     * will return <span style="color:green">"A --&gt; B x --&gt; A xx"</span>
      *
      *
      * public class A { ... private B x; }
      * public class B { ... private List&lt;C&gt; xx; }
      * public class C { ... private Map&lt;String, A&gt; xxx; }
-     * will return <span style="color:green">"A --> B x --> C xx --> A xxx --> B x"</span>
+     * will return <span style="color:green">"A --&gt; B x --&gt; C xx --&gt; A xxx --&gt; B x"</span>
      * </pre>
      */
     public String getOrbit() {
