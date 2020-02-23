@@ -548,7 +548,7 @@
                                                 <label class="input-group-btn">
                                                     <span class="btn btn-default{{? hasMust}} bold{{?}}">
                                                         Browse...
-                                                        <input type="file" name="{{= param.name || ''}}" style="display: none;">
+                                                        <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
                                                     </span>
                                                 </label>
                                                 <input type="text" class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}" readonly="readonly">
@@ -597,8 +597,8 @@
                             {{?}}
                             <p>
                                 /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
-                                {{? textNum === 1 }}<input type="text" style="display: none;"/>{{?}}
-                                <input class="btn" type="button" value="Request backend"{{? String(url.requestBody) === '1'}} requestBody="1"{{?}}/>
+                                {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
+                                <input class="form-submit btn" type="button" value="Request backend"{{? String(url.requestBody) === '1'}} requestBody="1"{{?}}/>
                             </p>
                             <div class="curl"><pre class="src src-json"></pre></div>
                             <div class="response"><pre class="src src-json"></pre></div>
@@ -934,7 +934,7 @@ function loadData() {
                     showClose: true
                 });
 
-                $(':file').change(function() {
+                $('.form-file').change(function() {
                     var $this = $(this);
                     $this.parents('.input-group').find(':text').val($this.val());
                 });
@@ -947,7 +947,7 @@ function loadData() {
                     $('[name="' + name + '"]').val(value);
                 });
 
-                $('input[type="button"]').click(function() {
+                $('.form-submit').click(function() {
                     var $btn = $(this);
                     var $form = $btn.parents('form');
                     var curl = $form.find('.curl');
