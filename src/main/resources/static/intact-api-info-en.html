@@ -431,8 +431,7 @@
                                         }}
                                         {{? comment !== undefined && comment !== null && comment !== ''}}
                                         <td class="text-left print-nil">
-                                            <span class="response-example"
-                                                  title="Example when clicking to view response {{= response.code + ': ' + response.msg}}"
+                                            <span class="response-example" title="click to view response {{= response.code + ': ' + response.msg}}"
                                                   data-toggle="modal" data-target="#{{= targetId}}">View example</span>
                                         </td>
                                         {{?? hasAction}}
@@ -618,6 +617,18 @@ function addLine(html) {
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+function showInScreen(ele) {
+    var $ele = $(ele);
+    var $win = $(window);
+
+    var winTop = $win.scrollTop();
+    var winBottom = winTop + $win.height();
+
+    var eleTop = $ele.offset().top;
+    var eleBottom = eleTop + $ele.height();
+
+    return ((eleBottom <= winBottom) && (eleTop >= winTop));
+}
 
 $.get('/api/project').done(function(data) {
     if (isNotBlank(data)) {
@@ -655,11 +666,13 @@ $.get('/api/project').done(function(data) {
                 var projectUrl = $(this).find('option:selected').data('url');
                 var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
                 history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-                /* If switch items in the footer, the footerTop is still the same as before, */
-                /* which will cause the nav to not be displayed(just scroll it). */
-                /* Can use location.reload () when switching items (but this will cause an additional interface call) */
-                /* location.reload(); */
-                loadData();
+                /* If switch items in the footer, the footerTop is still the same as before, which will cause the nav to not be displayed
+                (just scroll it). Can use location.reload () when switching items(but this will cause an additional interface call) */
+                if (showInScreen('footer')) {
+                    location.reload();
+                } else {
+                    loadData();
+                }
             });
         }
     }
@@ -779,9 +792,9 @@ $(function() {
         } else {
             $header.removeClass(scrolled);
         }
-        /* If switch items in the footer, the footerTop is still the same as before */
-        if ($nav.css('display') !== 'none') { /* which will cause the nav to not be displayed(just scroll it). */
-            { /* Can use location.reload () when switching items (but this will cause an additional api call) */
+
+        if ($nav.css('display') !== 'none') {
+            {
                 var footer = document.getElementsByTagName('footer')[0];
                 var footerTop = footer.offsetTop;
                 var scrollTop = $win.scrollTop();

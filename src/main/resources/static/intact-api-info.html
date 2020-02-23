@@ -617,6 +617,18 @@ function addLine(html) {
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+function showInScreen(ele) {
+    var $ele = $(ele);
+    var $win = $(window);
+
+    var winTop = $win.scrollTop();
+    var winBottom = winTop + $win.height();
+
+    var eleTop = $ele.offset().top;
+    var eleBottom = eleTop + $ele.height();
+
+    return ((eleBottom <= winBottom) && (eleTop >= winTop));
+}
 
 $.get('/api/project').done(function(data) {
     if (isNotBlank(data)) {
@@ -654,12 +666,13 @@ $.get('/api/project').done(function(data) {
                 var projectUrl = $(this).find('option:selected').data('url');
                 var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
                 history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-                /*
-                如果在页脚切换项目, 这时的 footerTop 还是之前的, 这会导致 nav 无法显示(滚动一下就好了),
-                切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用)
-                */
-                /* location.reload(); */
-                loadData();
+                /* 如果在页脚切换项目, 这时的 footerTop 还是之前的, 将会导致 nav 无法显示(滚动一下就好了),
+                切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用) */
+                if (showInScreen('footer')) {
+                    location.reload();
+                } else {
+                    loadData();
+                }
             });
         }
     }
@@ -781,7 +794,7 @@ $(function() {
         }
 
         if ($nav.css('display') !== 'none') {
-            { /* 如果在页脚切换项目, 这时的 footerTop 还是之前的, 这会导致 nav 无法显示(滚动一下就好了), 切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用) */
+            {
                 var footer = document.getElementsByTagName('footer')[0];
                 var footerTop = footer.offsetTop;
                 var scrollTop = $win.scrollTop();

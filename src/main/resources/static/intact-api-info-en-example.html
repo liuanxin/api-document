@@ -420,7 +420,7 @@
                                         }}
                                         {{? comment !== undefined && comment !== null && comment !== ''}}
                                         <td class="text-left print-nil">
-                                            <span class="response-example" title="Example when clicking to view response {{= response.code + ': ' + response.msg}}"
+                                            <span class="response-example" title="click to view response {{= response.code + ': ' + response.msg}}"
                                                   data-toggle="modal" data-target="#{{= targetId}}">View example</span>
                                         </td>
                                         {{?? hasAction}}
@@ -726,6 +726,18 @@ function addLine(html) {
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+function showInScreen(ele) {
+    var $ele = $(ele);
+    var $win = $(window);
+
+    var winTop = $win.scrollTop();
+    var winBottom = winTop + $win.height();
+
+    var eleTop = $ele.offset().top;
+    var eleBottom = eleTop + $ele.height();
+
+    return ((eleBottom <= winBottom) && (eleTop >= winTop));
+}
 
 function getProjectDomain() {
     var projectDomain = $('.project-choose').find('option:selected').data('url');
@@ -820,8 +832,12 @@ $.get('/api/project').done(function(data) {
                 var projectUrl = $(this).find('option:selected').data('url');
                 var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
                 history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-                /* location.reload(); */
-                loadData();
+
+                if (showInScreen('footer')) {
+                    location.reload();
+                } else {
+                    loadData();
+                }
             });
         }
     }
