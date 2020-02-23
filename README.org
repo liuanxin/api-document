@@ -7,7 +7,7 @@ English Readme | [[README-CN.org][中文说明]]
 
 [[https://liuanxin.github.io/api-info-en.html][Look at the effect]]
 
-[[https://liuanxin.github.io/api-info-en-example.html][Look at the effects of front and back interactive requests]]
+[[https://liuanxin.github.io/api-info-en-example.html][Look at the effects of Front-Back-end interaction]]
 
 
 ** comment
