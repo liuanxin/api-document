@@ -18,20 +18,26 @@
             font-size: 16px;
         }
         header {
-            position: sticky;
             top: 0;
+            position: sticky;
             height: 50px;
             width: 100%;
             z-index: 999;
             transition: all .3s ease-in-out;
-            background-color: transparent;
-            border-bottom: 1px solid transparent;
+            border-bottom: 1px solid #f7f8f8;
             display: flex;
         }
         header.scrolled {
-            background-color: #fff;
-            border-bottom: 1px solid #f7f8f8;
             box-shadow: 0 0 10px -2px #333;
+            background: rgba(255,255,255,0.94);
+        }
+        .anchor {
+            display: block;
+            position: relative;
+            top: -51px;
+            visibility: hidden;
+            width: 0;
+            height: 0;
         }
         input, select {
             min-width: 180px;
@@ -304,16 +310,25 @@
     </style>
 </head>
 <body>
+<header class="print-nil">
+    <div class="header container-fluid">
+        <div class="header-content"></div>
+    </div>
+</header>
 <main class="container-fluid">
     <div class="row">
         <div id="url-info" class="col-md-9"></div>
         <script id="url-render" type="text/x-dot-template">
             {{~ it.moduleList  :module:index}}
             <div class="{{= index + 1 === it.moduleList.length ? 'module-last' : 'module'}}">
-                <h2 id="{{= module.name}}" class="module-name"><span>{{= index + 1}}</span> {{= module.info || ''}}</h2>
+                <span id="{{= module.name}}" class="anchor"></span>
+                <h2 class="module-name">
+                    <span>{{= index + 1}}</span> {{= module.info || ''}}
+                </h2>
                 {{~ module.urlList  :url:urlIndex}}
                 <div class="module-api">
-                    <h3 id="{{= module.name}}-{{= url.id}}" class="module-api-index">
+                    <span id="{{= module.name}}-{{= url.id}}" class="anchor"></span>
+                    <h3 class="module-api-index">
                         <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                     </h3>
                     <div class="module-api-info">
@@ -683,6 +698,9 @@
 <script src="//cdn.bootcss.com/dot/1.1.2/doT.min.js"></script>
 <script src="//cdn.bootcss.com/moment.js/2.24.0/moment.min.js"></script><script src="//cdn.bootcss.com/moment.js/2.24.0/locale/zh-cn.js"></script>
 <script src="//cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+<script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/languages/jquery.validationEngine-zh_CN.min.js"></script>
+<script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/jquery.validationEngine.min.js"></script>
+
 <script type="text/javascript">
 function isBlank(str) {
     return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
@@ -709,216 +727,10 @@ function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-$.get('/api/project').done(function(data) {
-    if (isNotBlank(data)) {
-        var projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
-        if (isNotBlank(projectInfo)) {
-            var projectHtml = '<header class="print-nil">';
-            projectHtml += '<div class="header container-fluid">';
-            projectHtml += '<div class="header-content"></div>';
-            projectHtml += '<div class="header-text">选择项目:</div>';
-            projectHtml += '<div class="header-select">';
-            projectHtml += '<select class="project-choose form-control" name="p">';
-            projectHtml += '<option value="">当前</option>';
-
-            var project = location.search;
-            var param = 'p=', append = '&';
-            if (project.includes(param)) {
-                project = project.substring(project.indexOf(param) + param.length);
-                if (project.includes(append)) {
-                    project = project.substring(0, project.indexOf(append));
-                }
-            }
-            for (var index in projectInfo) {
-                var arr = projectInfo[index];
-                if (arr.length === 3) {
-                    projectHtml += '<option value="' + arr[0] + '" data-url="' + arr[2] + '"';
-                    if (project.toLowerCase() === arr[0].toLowerCase() || project === arr[1]) {
-                        projectHtml += ' selected';
-                    }
-                    projectHtml += '>' + arr[1] + '</option>';
-                }
-            }
-
-            projectHtml += '</select>';
-            projectHtml += '</div>';
-            projectHtml += '</div>';
-            projectHtml += '</header>';
-            $("body").prepend(projectHtml);
-        }
-    }
-    loadData();
-}).fail(function () {
-    loadData();
-});
-
 function getProjectDomain() {
     var projectDomain = $('.project-choose').find('option:selected').data('url');
     return isBlank(projectDomain) ? (location.protocol + '//' + location.host) : projectDomain;
 }
-
-var copyrightTemplate = doT.template($('#copyright').html());
-var urlRenderTemplate = doT.template($('#url-render').html());
-var navRenderTemplate = doT.template($('#url-nav-render').html());
-
-function loadData() {
-    var projectDomain = getProjectDomain();
-
-    var $title = $('title');
-    var $headerContent = $('.header-content');
-    var $footer = $('footer');
-    var $urlInfo = $('#url-info');
-    var $urlNavInfo = $('#url-nav-info');
-
-    var requestData = {
-        type: 'GET',
-        url: projectDomain + '/api/info',
-    };
-    var locationDomain = location.protocol + '//' + location.host;
-    if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
-        requestData.crossDomain = true;
-    }
-
-    $title.html('');
-    $headerContent.html('');
-    $footer.html('');
-    $urlInfo.html('');
-    $urlNavInfo.html('');
-
-    $.ajax(requestData).done(function (data) {
-        if (isNotBlank(data)) {
-            var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
-
-            {
-                var copyright = documentInfo.copyright;
-                if (isBlank(copyright)) {
-                    return;
-                }
-
-                var title = copyright.title;
-                if (isNotBlank(title)) {
-                    $title.html(title);
-                    $headerContent.html(title);
-                }
-                $footer.html(copyrightTemplate(copyright));
-            }
-
-            {
-                var doc = documentInfo.document;
-                if (isBlank(doc)) {
-                    return;
-                }
-                $urlInfo.html(urlRenderTemplate(doc));
-                $urlNavInfo.html(navRenderTemplate(doc));
-
-                $('pre[class="src src-json"]').each(function () {
-                    var $html = escapeHtml($(this).html());
-                    var html;
-                    if (isNotBlank($html)) {
-                        html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
-
-                        var recursiveRegex = /(!!!RECURSIVE OBJECT!!!)/;
-                        if (recursiveRegex.test($html)) {
-                            html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">!!!递归实体!!!</span>');
-                        }
-                    } else {
-                        html = '<span class="red">响应为空 或 无法解析返回类型</span>';
-                    }
-                    $(this).html(addLine(html));
-                });
-
-                var hash = location.hash;
-                if (isNotBlank(hash)) {
-                    var $anchor = $(hash);
-                    if ($anchor.length > 0) {
-                        var $li = $('a[href="' + hash + '"]').parents('li');
-                        $li.addClass('active');
-                        $li.parents('li').addClass('active');
-                        $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
-                    }
-                }
-
-                $('.form-datetime').datetimepicker({
-                    ignoreReadonly: true,
-                    showTodayButton: true,
-                    showClear: true,
-                    showClose: true
-                });
-            }
-        } else {
-            $urlInfo.html('<span class="red">无接口信息</span>');
-        }
-    }).fail(function () {
-        $urlInfo.html('<span class="red">接口请求错误</span>');
-    });
-}
-
-$(function() {
-    $('.project-choose').on("change", function() {
-        var projectUrl = $(this).find('option:selected').data('url');
-        var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
-        history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        location.reload();
-    });
-
-    $(document.body).scrollspy({target: '.bs-docs-sidebar'});
-
-    var headerHeight = isBlank($('header').html()) ? 0 : 50;
-    var topBottomHeight = 30;
-    var heightProperty = 'max-height';
-
-    var html = document.getElementsByTagName('html')[0];
-    var footer = document.getElementsByTagName('footer')[0];
-
-    var $win = $(window);
-    var $nav = $('.col-md-3');
-    var $bar = $('.bs-docs-sidebar > .nav');
-
-    $win.scroll(function() {
-        var scrolled = 'scrolled';
-        var $header = $('header');
-        if ($win.scrollTop() > 0) {
-            if (!$header.hasClass(scrolled)) {
-                $header.addClass(scrolled);
-            }
-        } else {
-            $header.removeClass(scrolled);
-        }
-
-        if ($nav.css('display') !== 'none') {
-            {
-                var footerTop = footer.offsetTop;
-                var scrollTop = $win.scrollTop();
-                var pageHeight = scrollTop + $win.height();
-                if (footerTop >= scrollTop && footerTop < (pageHeight)) {
-                    var footViewHeight = pageHeight - footerTop;
-                    $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
-                } else {
-                    var htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
-                    if ($bar.css(heightProperty) !== htmlViewHeight) {
-                        $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
-                    }
-                }
-            }
-
-            {
-                var navHash = $nav.find('.active > a:last').attr('href');
-                if (navHash !== location.hash) {
-                    if (isBlank(navHash)) {
-                        history.replaceState({api: 'index'}, '', location.pathname + location.search);
-                    } else {
-                        history.replaceState({api: navHash}, '', location.pathname + location.search + navHash);
-                    }
-                }
-            }
-        }
-    });
-});
-</script>
-
-<script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/languages/jquery.validationEngine-zh_CN.min.js"></script>
-<script src="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/jquery.validationEngine.min.js"></script>
-<script type="text/javascript">
 function timeLog(start) {
     var end = new Date().getTime();
     return '请求时长: ' + (end - start) + 'ms\n' + formatDate(start) + ' -> ' + formatDate(end) + '\n\n';
@@ -972,233 +784,428 @@ function formatDate(date) {
     return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + ' ' + S;
 }
 
-$.validationEngine.defaults.scroll = false;
+$.get('/api/project').done(function(data) {
+    if (isNotBlank(data)) {
+        var projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+        if (isNotBlank(projectInfo)) {
+            var projectHtml = '<div class="header-text">选择项目:</div>';
+            projectHtml += '<div class="header-select">';
+            projectHtml += '<select class="project-choose form-control" name="p">';
+            projectHtml += '<option value="">当前</option>';
 
-$(function() {
-    $(document).on('change', ':file', function() {
-        var $this = $(this);
-        $this.parents('.input-group').find(':text').val($this.val());
-    });
-    $(document).on('change', '.has-token', function() {
-        var $this = $(this);
-        var name = $this.attr('name');
-        var value = $this.val();
-        localStorage.setItem(name, value);
-        $('[name="' + name + '"]').val(value);
-    });
-
-    $(document).on('click', 'input[type="button"]', function() {
-        var $btn = $(this);
-        var $form = $btn.parents('form');
-        var curl = $form.find('.curl');
-        var response = $form.find('.response');
-        curl.hide();
-        response.hide();
-
-        var flag = $form.validationEngine('validate', { scroll: false });
-        if (!flag) {
-            return;
-        }
-
-        var projectDomain = getProjectDomain();
-        var method = $form.attr('method');
-        var url = $form.attr('action');
-        var requestBody = $btn.attr('requestBody');
-        var hasRequestBody = String(requestBody) === '1';
-
-        var map = objectifyForm($form);
-        var params = map[0];
-        var headers = map[1];
-        var files = map[2];
-
-        if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
-            if (!url.startsWith('/')) {
-                url = '/' + url;
-            }
-            url = projectDomain + url;
-        }
-
-        var placeRegex = /{(.*?)}/;
-        while (placeRegex.test(url)) {
-            var group = RegExp.$1;
-            var value = params[group];
-            // url 由 </user/{id}> 改成 </user/123>, 参数由 <name=xyz&id=123&gender=1> 改成 <name=xyz&gender=1>
-            url = url.replace(placeRegex, value);
-            delete params[group];
-        }
-
-
-        {
-            var tmpUrl = url;
-            var line = ' \\\n';
-            var curlHtml = 'curl -i -X ' + method + line;
-            curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
-            if (isNotBlank(document.cookie)) {
-                curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
-            }
-            if (Object.getOwnPropertyNames(headers).length > 0) {
-                $.each(headers, function(key, value) {
-                    if (isNotBlank(key) && isNotBlank(value)) {
-                        curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
-                    }
-                });
-            }
-            if (hasRequestBody) {
-                curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
-                curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
-            }
-            if (files.length > 0) {
-                if (Object.getOwnPropertyNames(params).length > 0) {
-                    $.each(params, function(key, value) {
-                        if (isNotBlank(key) && isNotBlank(value)) {
-                            curlHtml += "&nbsp; -F '" + (key + '=' + value) + "'" + line;
-                        }
-                    });
-                }
-                $.each(files, function(i, file) {
-                    var fileName = file.name;
-                    var filePath = file.value;
-                    if (isNotBlank(fileName) && isNotBlank(filePath)) {
-                        filePath = filePath.replace('C:\\fakepath\\', '/$替换真实路径$/');
-                        curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
-                    }
-                });
-            } else {
-                if (Object.getOwnPropertyNames(params).length > 0) {
-                    if (hasRequestBody) {
-                        curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
-                    } else {
-                        if ('GET' === method.toUpperCase()) {
-                            var paramArr = [];
-                            $.each(params, function(key, value) {
-                                if (isNotBlank(key) && isNotBlank(value)) {
-                                    paramArr.push(key + '=' + value);
-                                }
-                            });
-                            var paramStr = paramArr.join('&');
-                            if (paramStr.length > 0) {
-                                tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
-                            }
-                        } else {
-                            $.each(params, function(key, value) {
-                                if (isNotBlank(key) && isNotBlank(value)) {
-                                    curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
-                                }
-                            });
-                        }
-                    }
+            var project = location.search;
+            var param = 'p=', append = '&';
+            if (project.includes(param)) {
+                project = project.substring(project.indexOf(param) + param.length);
+                if (project.includes(append)) {
+                    project = project.substring(0, project.indexOf(append));
                 }
             }
-            curlHtml += "&nbsp; --url '" + (tmpUrl.startsWith('//') ? (location.protocol + tmpUrl) : tmpUrl) + "'";
-            curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
-            if (curlHtml.length <= 100) {
-                curlHtml = curlHtml.replace(new RegExp(line.replace('\\', '\\\\'), 'g'), '');
-                if (!curlHtml.includes('\\')) {
-                    curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
-                }
-            }
-            curl.find('pre').html(curlHtml);
-            curl.show();
-        }
-
-
-        {
-            var settings = {
-                url: url,
-                method: method,
-                beforeSend: function(request) {
-                    if (Object.getOwnPropertyNames(headers).length > 0) {
-                        $.each(headers, function(key, value) {
-                            if (isNotBlank(key) && isNotBlank(value)) {
-                                request.setRequestHeader(key, value);
-                            }
-                        });
+            for (var index in projectInfo) {
+                var arr = projectInfo[index];
+                if (arr.length === 3) {
+                    projectHtml += '<option value="' + arr[0] + '" data-url="' + arr[2] + '"';
+                    if (project.toLowerCase() === arr[0].toLowerCase() || project === arr[1]) {
+                        projectHtml += ' selected';
                     }
+                    projectHtml += '>' + arr[1] + '</option>';
                 }
-            };
-
-            var locationDomain = location.protocol + '//' + location.host;
-            if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
-                settings.crossDomain = true;
-                settings.xhrFields = { withCredentials: true };
             }
-            if (files.length > 0) {
-                if ('POST' !== method.toUpperCase()) {
-                    response.find('pre').html("<span class='red'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
-                    response.show();
+
+            projectHtml += '</select>';
+            projectHtml += '</div>';
+            $(".header").append(projectHtml);
+
+            $('.project-choose').change(function() {
+                var projectUrl = $(this).find('option:selected').data('url');
+                var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
+                history.replaceState({api: $(this).val()}, '', location.pathname + hash);
+                location.reload();
+            });
+        }
+    }
+    loadData();
+}).fail(function() {
+    loadData();
+});
+
+var copyrightTemplate = doT.template($('#copyright').html());
+var urlRenderTemplate = doT.template($('#url-render').html());
+var navRenderTemplate = doT.template($('#url-nav-render').html());
+
+function loadData() {
+    var projectDomain = getProjectDomain();
+
+    var $title = $('title');
+    var $headerContent = $('.header-content');
+    var $footer = $('footer');
+    var $urlInfo = $('#url-info');
+    var $urlNavInfo = $('#url-nav-info');
+
+    var requestData = {
+        type: 'GET',
+        url: projectDomain + '/api/info'
+    };
+    var locationDomain = location.protocol + '//' + location.host;
+    if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
+        requestData.crossDomain = true;
+    }
+
+    $title.html('');
+    $headerContent.html('');
+    $footer.html('');
+    $urlInfo.html('');
+    $urlNavInfo.html('');
+
+    $.ajax(requestData).done(function(data) {
+        if (isNotBlank(data)) {
+            var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+
+            {
+                var copyright = documentInfo.copyright;
+                if (isBlank(copyright)) {
                     return;
                 }
 
-                var formData = new FormData();
-                $.each(params, function(key, value) {
-                    if (isNotBlank(key) && isNotBlank(value)) {
-                        formData.append(key, value);
+                var title = copyright.title;
+                if (isNotBlank(title)) {
+                    $title.html(title);
+                    $headerContent.html(title);
+                }
+                $footer.html(copyrightTemplate(copyright));
+            }
+
+            {
+                var doc = documentInfo.document;
+                if (isBlank(doc)) {
+                    return;
+                }
+                $urlInfo.html(urlRenderTemplate(doc));
+                $urlNavInfo.html(navRenderTemplate(doc));
+
+                $('pre[class="src src-json"]').each(function() {
+                    var $html = escapeHtml($(this).html());
+                    var html;
+                    if (isNotBlank($html)) {
+                        html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+
+                        var recursiveRegex = /(!!!RECURSIVE OBJECT!!!)/;
+                        if (recursiveRegex.test($html)) {
+                            html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">!!!递归实体!!!</span>');
+                        }
+                    } else {
+                        html = '<span class="red">响应为空 或 无法解析返回类型</span>';
                     }
-                });
-                $.each(files, function(i, f) {
-                    formData.append(f.name, f.files[0]);
+                    $(this).html(addLine(html));
                 });
 
-                settings['data'] = formData;
-                settings['cache'] = false;
-                settings['processData'] = false;
-                settings['contentType'] = false;
-            } else {
-                if (hasRequestBody) {
-                    if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
-                        response.find('pre').html("<span class='red'>浏览器不能通过 GET 请求发送 RequestBody 参数" +
-                            "(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
-                        response.show();
+                var hash = location.hash;
+                if (isNotBlank(hash)) {
+                    var $anchor = $(hash);
+                    if ($anchor.length > 0) {
+                        var $li = $('a[href="' + hash + '"]').parents('li');
+                        $li.addClass('active');
+                        $li.parents('li').addClass('active');
+                        $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
+                    }
+                }
+
+                $('.form-datetime').datetimepicker({
+                    ignoreReadonly: true,
+                    showTodayButton: true,
+                    showClear: true,
+                    showClose: true
+                });
+
+                $(':file').change(function() {
+                    var $this = $(this);
+                    $this.parents('.input-group').find(':text').val($this.val());
+                });
+
+                $('.has-token').change(function() {
+                    var $this = $(this);
+                    var name = $this.attr('name');
+                    var value = $this.val();
+                    localStorage.setItem(name, value);
+                    $('[name="' + name + '"]').val(value);
+                });
+
+                $('input[type="button"]').click(function() {
+                    var $btn = $(this);
+                    var $form = $btn.parents('form');
+                    var curl = $form.find('.curl');
+                    var response = $form.find('.response');
+                    curl.hide();
+                    response.hide();
+
+                    $.validationEngine.defaults.scroll = false;
+                    var flag = $form.validationEngine('validate', { scroll: false });
+                    if (!flag) {
                         return;
                     }
-                    settings['contentType'] = 'application/json';
-                    settings['dataType'] = 'json';
-                    settings['data'] = JSON.stringify(params);
+
+                    var projectDomain = getProjectDomain();
+                    var method = $form.attr('method');
+                    var url = $form.attr('action');
+                    var hasRequestBody = String($btn.attr('requestBody')) === '1';
+
+                    var map = objectifyForm($form);
+                    var params = map[0];
+                    var headers = map[1];
+                    var files = map[2];
+
+                    if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
+                        if (!url.startsWith('/')) {
+                            url = '/' + url;
+                        }
+                        url = projectDomain + url;
+                    }
+
+                    var placeRegex = /{(.*?)}/;
+                    while (placeRegex.test(url)) {
+                        var group = RegExp.$1;
+                        var value = params[group];
+                        // url 由 </user/{id}> 改成 </user/123>, 参数由 <name=xyz&id=123&gender=1> 改成 <name=xyz&gender=1>
+                        url = url.replace(placeRegex, value);
+                        delete params[group];
+                    }
+
+
+                    {
+                        var tmpUrl = url;
+                        var line = ' \\\n';
+                        var curlHtml = 'curl -i -X ' + method + line;
+                        curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
+                        if (isNotBlank(document.cookie)) {
+                            curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
+                        }
+                        if (Object.getOwnPropertyNames(headers).length > 0) {
+                            $.each(headers, function(key, value) {
+                                if (isNotBlank(key) && isNotBlank(value)) {
+                                    curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
+                                }
+                            });
+                        }
+                        if (hasRequestBody) {
+                            curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
+                            curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
+                        }
+                        if (files.length > 0) {
+                            if (Object.getOwnPropertyNames(params).length > 0) {
+                                $.each(params, function(key, value) {
+                                    if (isNotBlank(key) && isNotBlank(value)) {
+                                        curlHtml += "&nbsp; -F '" + (key + '=' + value) + "'" + line;
+                                    }
+                                });
+                            }
+                            $.each(files, function(i, file) {
+                                var fileName = file.name;
+                                var filePath = file.value;
+                                if (isNotBlank(fileName) && isNotBlank(filePath)) {
+                                    filePath = filePath.replace('C:\\fakepath\\', '/$替换真实路径$/');
+                                    curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
+                                }
+                            });
+                        } else {
+                            if (Object.getOwnPropertyNames(params).length > 0) {
+                                if (hasRequestBody) {
+                                    curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
+                                } else {
+                                    if ('GET' === method.toUpperCase()) {
+                                        var paramArr = [];
+                                        $.each(params, function(key, value) {
+                                            if (isNotBlank(key) && isNotBlank(value)) {
+                                                paramArr.push(key + '=' + value);
+                                            }
+                                        });
+                                        var paramStr = paramArr.join('&');
+                                        if (paramStr.length > 0) {
+                                            tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
+                                        }
+                                    } else {
+                                        $.each(params, function(key, value) {
+                                            if (isNotBlank(key) && isNotBlank(value)) {
+                                                curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                        curlHtml += "&nbsp; --url '" + (tmpUrl.startsWith('//') ? (location.protocol + tmpUrl) : tmpUrl) + "'";
+                        curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
+                        if (curlHtml.length <= 100) {
+                            curlHtml = curlHtml.replace(new RegExp(line.replace('\\', '\\\\'), 'g'), '');
+                            if (!curlHtml.includes('\\')) {
+                                curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
+                            }
+                        }
+                        curl.find('pre').html(curlHtml);
+                        curl.show();
+                    }
+
+
+                    {
+                        var settings = {
+                            url: url,
+                            method: method,
+                            beforeSend: function(request) {
+                                if (Object.getOwnPropertyNames(headers).length > 0) {
+                                    $.each(headers, function(key, value) {
+                                        if (isNotBlank(key) && isNotBlank(value)) {
+                                            request.setRequestHeader(key, value);
+                                        }
+                                    });
+                                }
+                            }
+                        };
+
+                        var locationDomain = location.protocol + '//' + location.host;
+                        if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
+                            settings.crossDomain = true;
+                            settings.xhrFields = { withCredentials: true };
+                        }
+                        if (files.length > 0) {
+                            if ('POST' !== method.toUpperCase()) {
+                                response.find('pre').html("<span class='red'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
+                                response.show();
+                                return;
+                            }
+
+                            var formData = new FormData();
+                            $.each(params, function(key, value) {
+                                if (isNotBlank(key) && isNotBlank(value)) {
+                                    formData.append(key, value);
+                                }
+                            });
+                            $.each(files, function(i, f) {
+                                formData.append(f.name, f.files[0]);
+                            });
+
+                            settings['data'] = formData;
+                            settings['cache'] = false;
+                            settings['processData'] = false;
+                            settings['contentType'] = false;
+                        } else {
+                            if (hasRequestBody) {
+                                if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
+                                    response.find('pre').html("<span class='red'>浏览器不能通过 GET 请求发送 RequestBody 参数" +
+                                        "(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
+                                    response.show();
+                                    return;
+                                }
+                                settings['contentType'] = 'application/json';
+                                settings['dataType'] = 'json';
+                                settings['data'] = JSON.stringify(params);
+                            } else {
+                                settings['data'] = params;
+                            }
+                        }
+
+                        var responseData = response.find('pre');
+                        var start = new Date().getTime();
+                        $btn.attr('disabled', 'disabled');
+                        $btn.addClass('disabled');
+                        $.ajax(settings).done(function(result) {
+                            var html = timeLog(start);
+                            if (isBlank(result)) {
+                                html += '<span class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</span>';
+                            } else {
+                                html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
+                            }
+                            responseData.css('white-space', '');
+                            responseData.html(html);
+                            response.show();
+                            $btn.removeAttr('disabled');
+                            $btn.removeClass('disabled');
+                        }).fail(function(error) {
+                            var html = timeLog(start);
+                            if (isBlank(error)) {
+                                html += '<span class="red">' + method + ' 请求(' + url + ')失败</span>';
+                            } else {
+                                html += '<span class="red">响应码: ' + error.status + '</span>';
+                                var json = error.responseJSON;
+                                if (isNotBlank(json)) {
+                                    html += '\n\n' + escapeHtml(JSON.stringify(json, null, 2));
+                                } else {
+                                    var text = error.responseText;
+                                    if (isNotBlank(text)) {
+                                        html += '\n<span class="red wrap">响应文本: ' + escapeHtml(text) + '</span>';
+                                    } else {
+                                        html += '\n<span class="red">响应为空</span>';
+                                    }
+                                }
+                            }
+                            responseData.css('white-space', 'pre-wrap');
+                            responseData.html(html);
+                            response.show();
+                            $btn.removeAttr('disabled');
+                            $btn.removeClass('disabled');
+                        });
+                    }
+                });
+            }
+        } else {
+            $urlInfo.html('<span class="red">无接口信息</span>');
+        }
+    }).fail(function() {
+        $urlInfo.html('<span class="red">接口请求错误</span>');
+    });
+}
+
+$(function() {
+    $(document.body).scrollspy({target: '.bs-docs-sidebar'});
+
+    var headerHeight = isBlank($('header').html()) ? 0 : 50;
+    var topBottomHeight = 30;
+    var heightProperty = 'max-height';
+
+    var html = document.getElementsByTagName('html')[0];
+    var footer = document.getElementsByTagName('footer')[0];
+
+    $(window).scroll(function() {
+        var $win = $(window);
+        var $nav = $('.col-md-3');
+        var $bar = $('.bs-docs-sidebar > .nav');
+
+        var $header = $('header');
+        var scrolled = 'scrolled';
+        var scrollTop = $win.scrollTop();
+        if (scrollTop > 0) {
+            if (!$header.hasClass(scrolled)) {
+                $header.addClass(scrolled);
+            }
+        } else {
+            $header.removeClass(scrolled);
+        }
+
+        if ($nav.css('display') !== 'none') {
+            {
+                var footerTop = footer.offsetTop;
+                var pageHeight = scrollTop + $win.height();
+                if (footerTop >= scrollTop && footerTop < (pageHeight)) {
+                    var footViewHeight = pageHeight - footerTop;
+                    $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
                 } else {
-                    settings['data'] = params;
+                    var htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
+                    if ($bar.css(heightProperty) !== htmlViewHeight) {
+                        $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
+                    }
                 }
             }
 
-            var responseData = response.find('pre');
-            var start = new Date().getTime();
-            $btn.attr('disabled', 'disabled');
-            $btn.addClass('disabled');
-            $.ajax(settings).done(function(result) {
-                var html = timeLog(start);
-                if (isBlank(result)) {
-                    html += '<span class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</span>';
-                } else {
-                    html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
-                }
-                responseData.css('white-space', '');
-                responseData.html(html);
-                response.show();
-                $btn.removeAttr('disabled');
-                $btn.removeClass('disabled');
-            }).fail(function(error) {
-                var html = timeLog(start);
-                if (isBlank(error)) {
-                    html += '<span class="red">' + method + ' 请求(' + url + ')失败</span>';
-                } else {
-                    html += '<span class="red">响应码: ' + error.status + '</span>';
-                    var json = error.responseJSON;
-                    if (isNotBlank(json)) {
-                        html += '\n\n' + escapeHtml(JSON.stringify(json, null, 2));
-                    } else {
-                        var text = error.responseText;
-                        if (isNotBlank(text)) {
-                            html += '\n<span class="red wrap">响应文本: ' + escapeHtml(text) + '</span>';
-                        } else {
-                            html += '\n<span class="red">响应为空</span>';
+            {
+                var navHash = $nav.find('.active > a:last').attr('href');
+                if (navHash !== location.hash) {
+                    if (isBlank(navHash)) {
+                        if ($header.hasClass(scrolled) !== true) {
+                            history.replaceState({api: 'index'}, '', location.pathname + location.search);
                         }
+                    } else {
+                        history.replaceState({api: navHash}, '', location.pathname + location.search + navHash);
                     }
                 }
-                responseData.css('white-space', 'pre-wrap');
-                responseData.html(html);
-                response.show();
-                $btn.removeAttr('disabled');
-                $btn.removeClass('disabled');
-            });
+            }
         }
     });
 });

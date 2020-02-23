@@ -23,13 +23,20 @@
             z-index: 999;
             transition: all .3s ease-in-out;
             background-color: transparent;
-            border-bottom: 1px solid transparent;
+            border-bottom: 1px solid #f7f8f8;
             display: flex;
         }
         header.scrolled {
-            background-color: #fff;
-            border-bottom: 1px solid #f7f8f8;
             box-shadow: 0 0 10px -2px #333;
+            background: rgba(255,255,255,0.94);
+        }
+        .anchor {
+            display: block;
+            position: relative;
+            top: -51px;
+            visibility: hidden;
+            width: 0;
+            height: 0;
         }
         pre {
             font-size: 14px;
@@ -263,16 +270,25 @@
     </style>
 </head>
 <body>
+<header class="print-nil">
+    <div class="header container">
+        <div class="header-content"></div>
+    </div>
+</header>
 <main class="container">
     <div class="row">
         <div id="url-info" class="col-md-9"></div>
         <script id="url-render" type="text/x-dot-template">
             {{~ it.moduleList  :module:index}}
             <div class="{{= index + 1 === it.moduleList.length ? 'module-last' : 'module'}}">
-                <h2 id="{{= module.name}}" class="module-name"><span>{{= index + 1}}</span> {{= module.info || ''}}</h2>
+                <span id="{{= module.name}}" class="anchor"></span>
+                <h2 class="module-name">
+                    <span>{{= index + 1}}</span> {{= module.info || ''}}
+                </h2>
                 {{~ module.urlList  :url:urlIndex}}
                 <div class="module-api">
-                    <h3 id="{{= module.name}}-{{= url.id}}" class="module-api-index">
+                    <span id="{{= module.name}}-{{= url.id}}" class="anchor"></span>
+                    <h3 class="module-api-index">
                         <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                     </h3>
                     <div class="module-api-info">
@@ -569,6 +585,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/dot/1.1.2/doT.min.js"></script>
+
 <script type="text/javascript">
 function isBlank(str) {
     return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
@@ -599,10 +616,7 @@ $.get('/api/project').done(function(data) {
     if (isNotBlank(data)) {
         var projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
         if (isNotBlank(projectInfo)) {
-            var projectHtml = '<header class="print-nil">';
-            projectHtml += '<div class="header container">';
-            projectHtml += '<div class="header-content"></div>';
-            projectHtml += '<div class="header-text">Choose project:</div>';
+            var projectHtml = '<div class="header-text">Choose project:</div>';
             projectHtml += '<div class="header-select">';
             projectHtml += '<select class="project-choose form-control" name="p">';
             projectHtml += '<option value="">Current</option>';
@@ -628,13 +642,18 @@ $.get('/api/project').done(function(data) {
 
             projectHtml += '</select>';
             projectHtml += '</div>';
-            projectHtml += '</div>';
-            projectHtml += '</header>';
-            $("body").prepend(projectHtml);
+            $(".header").append(projectHtml);
+
+            $('.project-choose').on("change", function() {
+                var projectUrl = $(this).find('option:selected').data('url');
+                var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
+                history.replaceState({api: $(this).val()}, '', location.pathname + hash);
+                location.reload();
+            });
         }
     }
     loadData();
-}).fail(function () {
+}).fail(function() {
     loadData();
 });
 
@@ -658,7 +677,7 @@ function loadData() {
 
     var requestData = {
         type: 'GET',
-        url: projectDomain + '/api/info',
+        url: projectDomain + '/api/info'
     };
     var locationDomain = location.protocol + '//' + location.host;
     if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
@@ -671,7 +690,7 @@ function loadData() {
     $urlInfo.html('');
     $urlNavInfo.html('');
 
-    $.ajax(requestData).done(function (data) {
+    $.ajax(requestData).done(function(data) {
         if (isNotBlank(data)) {
             var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
 
@@ -697,7 +716,7 @@ function loadData() {
                 $urlInfo.html(urlRenderTemplate(doc));
                 $urlNavInfo.html(navRenderTemplate(doc));
 
-                $('pre[class="src src-json"]').each(function () {
+                $('pre[class="src src-json"]').each(function() {
                     var $html = escapeHtml($(this).html());
                     var html;
                     if (isNotBlank($html)) {
@@ -727,35 +746,21 @@ function loadData() {
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }
-    }).fail(function () {
+    }).fail(function() {
         $urlInfo.html('<span class="red">Request error</span>');
     });
 }
 
 $(function() {
-    $('.project-choose').on("change", function() {
-        var projectUrl = $(this).find('option:selected').data('url');
-        var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
-        history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        location.reload();
-    });
-
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
 
-    var headerHeight = isBlank($('header').html()) ? 0 : 50;
-    var topBottomHeight = 30;
-    var heightProperty = 'max-height';
+    $(window).scroll(function() {
+        var $win = $(window);
+        var $nav = $('.col-md-3');
+        var $bar = $('.bs-docs-sidebar > .nav');
 
-    var html = document.getElementsByTagName('html')[0];
-    var footer = document.getElementsByTagName('footer')[0];
-
-    var $win = $(window);
-    var $nav = $('.col-md-3');
-    var $bar = $('.bs-docs-sidebar > .nav');
-
-    $win.scroll(function() {
-        var scrolled = 'scrolled';
         var $header = $('header');
+        var scrolled = 'scrolled';
         if ($win.scrollTop() > 0) {
             if (!$header.hasClass(scrolled)) {
                 $header.addClass(scrolled);
@@ -765,14 +770,20 @@ $(function() {
         }
 
         if ($nav.css('display') !== 'none') {
-            {
+            { /* 如果在页脚切换项目, 这时的 footerTop 还会是之前的, 这会导致 nav 无法显示, 再滚动一下就好了, 切换项目用 location.reload() 可以解决 */
+                var footer = document.getElementsByTagName('footer')[0];
                 var footerTop = footer.offsetTop;
                 var scrollTop = $win.scrollTop();
                 var pageHeight = scrollTop + $win.height();
-                if (footerTop >= scrollTop && footerTop < (pageHeight)) {
+
+                var headerHeight = isBlank($header.html()) ? 0 : 50;
+                var topBottomHeight = 30;
+                var heightProperty = 'max-height';
+                if (footerTop >= scrollTop && footerTop < pageHeight) {
                     var footViewHeight = pageHeight - footerTop;
                     $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
                 } else {
+                    var html = document.getElementsByTagName('html')[0];
                     var htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
                     if ($bar.css(heightProperty) !== htmlViewHeight) {
                         $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
@@ -784,7 +795,9 @@ $(function() {
                 var navHash = $nav.find('.active > a:last').attr('href');
                 if (navHash !== location.hash) {
                     if (isBlank(navHash)) {
-                        history.replaceState({api: 'index'}, '', location.pathname + location.search);
+                        if ($header.hasClass(scrolled) !== true) {
+                            history.replaceState({api: 'index'}, '', location.pathname + location.search);
+                        }
                     } else {
                         history.replaceState({api: navHash}, '', location.pathname + location.search + navHash);
                     }
