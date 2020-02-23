@@ -37,11 +37,11 @@ public class Recursive {
      *
      * OR
      *
-     * public class A { ... private List&lt;A> x; }
+     * public class A { ... private List&lt;A&gt; x; }
      *
      * OR
      *
-     * public class A { ... private Map&lt;String, A> x; }
+     * public class A { ... private Map&lt;String, A&gt; x; }
      *
      * OR
      *
@@ -51,8 +51,8 @@ public class Recursive {
      * OR
      *
      * public class A { ... private B x; }
-     * public class B { ... private List&lt;C> xx; }
-     * public class C { ... private Map&lt;String, A> xxx; }
+     * public class B { ... private List&lt;C&gt; xx; }
+     * public class C { ... private Map&lt;String, A&gt; xxx; }
      *
      * will return <span style="color:green">true</span>
      * </pre>
@@ -83,8 +83,8 @@ public class Recursive {
      *
      *
      * public class A { ... private B x; }
-     * public class B { ... private List&lt;C> xx; }
-     * public class C { ... private Map&lt;String, A> xxx; }
+     * public class B { ... private List&lt;C&gt; xx; }
+     * public class C { ... private Map&lt;String, A&gt; xxx; }
      * will return <span style="color:green">"A --> B x --> C xx --> A xxx --> B x"</span>
      * </pre>
      */
