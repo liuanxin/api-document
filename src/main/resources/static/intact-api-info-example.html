@@ -102,17 +102,14 @@
             overflow: hidden;
             white-space: nowrap;
         }
-        .header-text {
+        .header-select, .header-text {
             display: flex;
             align-items: center;
             flex-grow: 0;
+        }
+        .header-text {
             white-space: nowrap;
             padding: 0 5px 0 20px;
-        }
-        .header-select {
-            display: flex;
-            align-items: center;
-            flex-grow: 0;
         }
         .project-choose {
             min-width: 200px;
@@ -315,6 +312,19 @@
         <div class="header-content"></div>
     </div>
 </header>
+<script id="choose-project" type="text/x-dot-template">
+    <div class="header-text">选择项目:</div>
+    <div class="header-select">
+        <select class="project-choose form-control" name="p">
+            <option value="">当前</option>
+            {{ var cp = it.project; }}
+            {{~ it.projects  :p}}
+            {{ var s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
+            <option value="{{= p[0]}}" data-url="{{= p[2]}}"{{= s}}>{{= p[1]}}</option>
+            {{~}}
+        </select>
+    </div>
+</script>
 <main class="container-fluid">
     <div class="row">
         <div id="url-info" class="col-md-9"></div>
@@ -796,15 +806,15 @@ function formatDate(date) {
     return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + ' ' + S;
 }
 
+var chooseProjectTemplate = doT.template($('#choose-project').html());
+var copyrightTemplate = doT.template($('#copyright').html());
+var urlRenderTemplate = doT.template($('#url-render').html());
+var navRenderTemplate = doT.template($('#url-nav-render').html());
+
 $.get('/api/project').done(function(data) {
     if (isNotBlank(data)) {
         var projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
         if (isNotBlank(projectInfo)) {
-            var projectHtml = '<div class="header-text">选择项目:</div>';
-            projectHtml += '<div class="header-select">';
-            projectHtml += '<select class="project-choose form-control" name="p">';
-            projectHtml += '<option value="">当前</option>';
-
             var project = location.search;
             var param = 'p=', append = '&';
             if (project.includes(param)) {
@@ -813,20 +823,7 @@ $.get('/api/project').done(function(data) {
                     project = project.substring(0, project.indexOf(append));
                 }
             }
-            for (var index in projectInfo) {
-                var arr = projectInfo[index];
-                if (arr.length === 3) {
-                    projectHtml += '<option value="' + arr[0] + '" data-url="' + arr[2] + '"';
-                    if (project.toLowerCase() === arr[0].toLowerCase() || project === arr[1]) {
-                        projectHtml += ' selected';
-                    }
-                    projectHtml += '>' + arr[1] + '</option>';
-                }
-            }
-
-            projectHtml += '</select>';
-            projectHtml += '</div>';
-            $(".header").append(projectHtml);
+            $(".header").append(chooseProjectTemplate({ "project" : project, "projects" : projectInfo }));
 
             $('.project-choose').change(function() {
                 var projectUrl = $(this).find('option:selected').data('url');
@@ -845,10 +842,6 @@ $.get('/api/project').done(function(data) {
 }).fail(function() {
     loadData();
 });
-
-var copyrightTemplate = doT.template($('#copyright').html());
-var urlRenderTemplate = doT.template($('#url-render').html());
-var navRenderTemplate = doT.template($('#url-nav-render').html());
 
 function loadData() {
     var projectDomain = getProjectDomain();
