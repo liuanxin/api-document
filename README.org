@@ -10,7 +10,7 @@ English Readme | [[README-CN.org][中文说明]]
 [[https://liuanxin.github.io/api-info-en-example.html][Document example for Front-Back-end interaction]]
 
 
-** comment
+** Comment
 
 People who have maintained the project should have experience.
 If the api documentation is written separately (org-mode, markdown, rap or even word),
@@ -19,7 +19,7 @@ as the project cycle progresses, the gap between the interface document and the 
 This document collection application has appeared because some of the details based on swagger are not so good
 (such as unable to process map, swagger-ui view response instructions need to be cut).
 
-** usage
+** Usage
 
 add maven
 #+BEGIN_SRC xml
