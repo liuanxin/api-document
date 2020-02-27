@@ -814,11 +814,12 @@ $(function() {
         copyElement.setAttribute('class', 'copy-impl');
         $(copyElement).html(copyValue); /* copyElement.value = copyValue; // not active */
 
-        document.body.appendChild(copyElement);
+        var $parent = $this.parent()[0];
+        $parent.appendChild(copyElement);
         copyElement.setSelectionRange(0, copyValue.length);
         copyElement.select();
         var flag = document.execCommand('copy');
-        document.body.removeChild(copyElement);
+        $parent.removeChild(copyElement);
 
         var $copyStatus = $this.prev();
         $copyStatus.text('Copy ' + (flag ? 'Success' : 'Fail'));
