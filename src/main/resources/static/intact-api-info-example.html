@@ -190,6 +190,31 @@
         .red {
             color: red !important;
         }
+        .copy-status {
+            right: 0;
+            position: absolute;
+            color: rgba(255, 0, 0, .8);
+            margin: 7px 14px 0 0;
+            padding-right: 65px;
+        }
+        .copy {
+            right: 0;
+            position: absolute;
+            cursor: pointer;
+            color: rgba(140, 140, 140, .8);
+            margin: 7px 14px 0 0;
+            padding-right: 14px;
+            transition: color .1s;
+        }
+        .copy:hover {
+            color: rgb(100, 100, 100);
+            font-weight: bold;
+        }
+        .copy-impl {
+             opacity: 0;
+             width: 0 !important;
+             height: 0 !important;
+         }
 
         .bs-docs-sidebar {
             width: inherit;
@@ -368,6 +393,8 @@
 
                         <div class="module-api-info-return">
                             <p>响应示例及说明如下</p>
+                            <div class='copy-status'></div>
+                            <div class='copy'>复制</div>
                             <pre class="src src-json">{{= url.commentJson || ''}}</pre>
 
                             {{? url.returnList && url.returnList.length > 0}}
@@ -458,6 +485,8 @@
                                         </h4>
                                     </div>
                                     <div class="modal-body">
+                                        <div class='copy-status'></div>
+                                        <div class='copy'>复制</div>
                                         <pre class="src src-json">{{= response.comment || ''}}</pre>
 
                                         {{? response.returnList && response.returnList.length > 0}}
@@ -556,10 +585,10 @@
                                         {{? dataType === 'file'}}
                                         <div class="input-group">
                                             <label class="input-group-btn">
-                                                        <span class="btn btn-default{{? hasMust}} bold{{?}}">
-                                                            选择文件
-                                                            <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
-                                                        </span>
+                                                <span class="btn btn-default{{? hasMust}} bold{{?}}">
+                                                    选择文件
+                                                    <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
+                                                </span>
                                             </label>
                                             <input type="text" class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                         </div>
@@ -610,8 +639,16 @@
                                 {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
                                 <input class="form-submit btn" type="button" value="请求此接口"{{? String(url.requestBody) === '1'}} requestBody="1"{{?}}/>
                             </p>
-                            <div class="curl"><pre class="src src-json"></pre></div>
-                            <div class="response"><pre class="src src-json"></pre></div>
+                            <div class="curl">
+                                <div class='copy-status'></div>
+                                <div class='copy'>复制</div>
+                                <pre class="src src-json"></pre>
+                            </div>
+                            <div class="response">
+                                <div class='copy-status'></div>
+                                <div class='copy'>复制</div>
+                                <pre class="src src-json"></pre>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -634,6 +671,8 @@
                         </h4>
                     </div>
                     <div class="modal-body">
+                        <div class='copy-status'></div>
+                        <div class='copy'>复制</div>
                         <pre class="src src-json">{{= response.comment || ''}}</pre>
 
                         {{? response.returnList && response.returnList.length > 0}}
@@ -748,7 +787,6 @@ function showInScreen(ele) {
 
     return (eleBottom <= winBottom) && (eleTop >= winTop);
 }
-
 function getProjectDomain() {
     var projectDomain = $('.project-choose').find('option:selected').data('url');
     return isBlank(projectDomain) ? (location.protocol + '//' + location.host) : projectDomain;
@@ -824,18 +862,6 @@ $.get('/api/project').done(function(data) {
                 }
             }
             $(".header").append(chooseProjectTemplate({ "project" : project, "projects" : projectInfo }));
-
-            $('.project-choose').change(function() {
-                var projectUrl = $(this).find('option:selected').data('url');
-                var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
-                history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-
-                if (showInScreen('footer')) {
-                    location.reload();
-                } else {
-                    loadData();
-                }
-            });
         }
     }
     loadData();
@@ -925,234 +951,6 @@ function loadData() {
                     showClear: true,
                     showClose: true
                 });
-
-                $('.form-file').change(function() {
-                    var $this = $(this);
-                    $this.parents('.input-group').find(':text').val($this.val());
-                });
-
-                $('.has-token').change(function() {
-                    var $this = $(this);
-                    var name = $this.attr('name');
-                    var value = $this.val();
-                    localStorage.setItem(name, value);
-                    $('[name="' + name + '"]').val(value);
-                });
-
-                $('.form-submit').click(function() {
-                    var $btn = $(this);
-                    var $form = $btn.parents('form');
-                    var curl = $form.find('.curl');
-                    var response = $form.find('.response');
-                    curl.hide();
-                    response.hide();
-
-                    $.validationEngine.defaults.scroll = false;
-                    var flag = $form.validationEngine('validate', { scroll: false });
-                    if (!flag) {
-                        return;
-                    }
-
-                    var projectDomain = getProjectDomain();
-                    var method = $form.attr('method');
-                    var url = $form.attr('action');
-                    var hasRequestBody = String($btn.attr('requestBody')) === '1';
-
-                    var map = objectifyForm($form);
-                    var params = map[0];
-                    var headers = map[1];
-                    var files = map[2];
-
-                    if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
-                        if (!url.startsWith('/')) {
-                            url = '/' + url;
-                        }
-                        url = projectDomain + url;
-                    }
-
-                    var placeRegex = /{(.*?)}/;
-                    while (placeRegex.test(url)) {
-                        var group = RegExp.$1;
-                        var value = params[group];
-                        // url 由 </user/{id}> 改成 </user/123>, 参数由 <name=xyz&id=123&gender=1> 改成 <name=xyz&gender=1>
-                        url = url.replace(placeRegex, value);
-                        delete params[group];
-                    }
-
-
-                    {
-                        var tmpUrl = url;
-                        var line = ' \\\n';
-                        var curlHtml = 'curl -i -X ' + method + line;
-                        curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
-                        if (isNotBlank(document.cookie)) {
-                            curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
-                        }
-                        if (Object.getOwnPropertyNames(headers).length > 0) {
-                            $.each(headers, function(key, value) {
-                                if (isNotBlank(key) && isNotBlank(value)) {
-                                    curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
-                                }
-                            });
-                        }
-                        if (hasRequestBody) {
-                            curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
-                            curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
-                        }
-                        if (files.length > 0) {
-                            if (Object.getOwnPropertyNames(params).length > 0) {
-                                $.each(params, function(key, value) {
-                                    if (isNotBlank(key) && isNotBlank(value)) {
-                                        curlHtml += "&nbsp; -F '" + (key + '=' + value) + "'" + line;
-                                    }
-                                });
-                            }
-                            $.each(files, function(i, file) {
-                                var fileName = file.name;
-                                var filePath = file.value;
-                                if (isNotBlank(fileName) && isNotBlank(filePath)) {
-                                    filePath = filePath.replace('C:\\fakepath\\', '/$替换真实路径$/');
-                                    curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
-                                }
-                            });
-                        } else {
-                            if (Object.getOwnPropertyNames(params).length > 0) {
-                                if (hasRequestBody) {
-                                    curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
-                                } else {
-                                    if ('GET' === method.toUpperCase()) {
-                                        var paramArr = [];
-                                        $.each(params, function(key, value) {
-                                            if (isNotBlank(key) && isNotBlank(value)) {
-                                                paramArr.push(key + '=' + value);
-                                            }
-                                        });
-                                        var paramStr = paramArr.join('&');
-                                        if (paramStr.length > 0) {
-                                            tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
-                                        }
-                                    } else {
-                                        $.each(params, function(key, value) {
-                                            if (isNotBlank(key) && isNotBlank(value)) {
-                                                curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
-                                            }
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                        curlHtml += "&nbsp; --url '" + (tmpUrl.startsWith('//') ? (location.protocol + tmpUrl) : tmpUrl) + "'";
-                        curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
-                        if (curlHtml.length <= 100) {
-                            curlHtml = curlHtml.replace(new RegExp(line.replace('\\', '\\\\'), 'g'), '');
-                            if (!curlHtml.includes('\\')) {
-                                curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
-                            }
-                        }
-                        curl.find('pre').html(curlHtml);
-                        curl.show();
-                    }
-
-
-                    {
-                        var settings = {
-                            url: url,
-                            method: method,
-                            beforeSend: function(request) {
-                                if (Object.getOwnPropertyNames(headers).length > 0) {
-                                    $.each(headers, function(key, value) {
-                                        if (isNotBlank(key) && isNotBlank(value)) {
-                                            request.setRequestHeader(key, value);
-                                        }
-                                    });
-                                }
-                            }
-                        };
-
-                        var locationDomain = location.protocol + '//' + location.host;
-                        if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
-                            settings.crossDomain = true;
-                            settings.xhrFields = { withCredentials: true };
-                        }
-                        if (files.length > 0) {
-                            if ('POST' !== method.toUpperCase()) {
-                                response.find('pre').html("<span class='red'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
-                                response.show();
-                                return;
-                            }
-
-                            var formData = new FormData();
-                            $.each(params, function(key, value) {
-                                if (isNotBlank(key) && isNotBlank(value)) {
-                                    formData.append(key, value);
-                                }
-                            });
-                            $.each(files, function(i, f) {
-                                formData.append(f.name, f.files[0]);
-                            });
-
-                            settings['data'] = formData;
-                            settings['cache'] = false;
-                            settings['processData'] = false;
-                            settings['contentType'] = false;
-                        } else {
-                            if (hasRequestBody) {
-                                if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
-                                    response.find('pre').html("<span class='red'>浏览器不能通过 GET 请求发送 RequestBody 参数" +
-                                        "(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
-                                    response.show();
-                                    return;
-                                }
-                                settings['contentType'] = 'application/json';
-                                settings['dataType'] = 'json';
-                                settings['data'] = JSON.stringify(params);
-                            } else {
-                                settings['data'] = params;
-                            }
-                        }
-
-                        var responseData = response.find('pre');
-                        var start = new Date().getTime();
-                        $btn.attr('disabled', 'disabled');
-                        $btn.addClass('disabled');
-                        $.ajax(settings).done(function(result) {
-                            var html = timeLog(start);
-                            if (isBlank(result)) {
-                                html += '<span class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</span>';
-                            } else {
-                                html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
-                            }
-                            responseData.css('white-space', '');
-                            responseData.html(html);
-                            response.show();
-                            $btn.removeAttr('disabled');
-                            $btn.removeClass('disabled');
-                        }).fail(function(error) {
-                            var html = timeLog(start);
-                            if (isBlank(error)) {
-                                html += '<span class="red">' + method + ' 请求(' + url + ')失败</span>';
-                            } else {
-                                html += '<span class="red">响应码: ' + error.status + '</span>';
-                                var json = error.responseJSON;
-                                if (isNotBlank(json)) {
-                                    html += '\n\n' + escapeHtml(JSON.stringify(json, null, 2));
-                                } else {
-                                    var text = error.responseText;
-                                    if (isNotBlank(text)) {
-                                        html += '\n<span class="red wrap">响应文本: ' + escapeHtml(text) + '</span>';
-                                    } else {
-                                        html += '\n<span class="red">响应为空</span>';
-                                    }
-                                }
-                            }
-                            responseData.css('white-space', 'pre-wrap');
-                            responseData.html(html);
-                            response.show();
-                            $btn.removeAttr('disabled');
-                            $btn.removeClass('disabled');
-                        });
-                    }
-                });
             }
         } else {
             $urlInfo.html('<span class="red">无接口信息</span>');
@@ -1165,20 +963,284 @@ function loadData() {
 $(function() {
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
 
-    var headerHeight = isBlank($('header').html()) ? 0 : 50;
-    var topBottomHeight = 30;
-    var heightProperty = 'max-height';
+    $(document).on('change', '.project-choose', function() {
+        var projectUrl = $(this).find('option:selected').data('url');
+        var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
+        history.replaceState({api: $(this).val()}, '', location.pathname + hash);
 
-    var html = document.getElementsByTagName('html')[0];
-    var footer = document.getElementsByTagName('footer')[0];
+        if (showInScreen('footer')) {
+            location.reload();
+        } else {
+            loadData();
+        }
+    });
+
+    $(document).on('change', '.form-file', function() {
+        var $this = $(this);
+        $this.parents('.input-group').find(':text').val($this.val());
+    });
+
+    $(document).on('change', '.has-token', function() {
+        var $this = $(this);
+        var name = $this.attr('name');
+        var value = $this.val();
+        localStorage.setItem(name, value);
+        $('[name="' + name + '"]').val(value);
+    });
+
+    $(document).on('click', '.form-submit', function() {
+        var $btn = $(this);
+        var $form = $btn.parents('form');
+        var curl = $form.find('.curl');
+        var response = $form.find('.response');
+        curl.hide();
+        response.hide();
+
+        $.validationEngine.defaults.scroll = false;
+        var flag = $form.validationEngine('validate', { scroll: false });
+        if (!flag) {
+            return;
+        }
+
+        var projectDomain = getProjectDomain();
+        var method = $form.attr('method');
+        var url = $form.attr('action');
+        var hasRequestBody = String($btn.attr('requestBody')) === '1';
+
+        var map = objectifyForm($form);
+        var params = map[0];
+        var headers = map[1];
+        var files = map[2];
+
+        if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
+            if (!url.startsWith('/')) {
+                url = '/' + url;
+            }
+            url = projectDomain + url;
+        }
+
+        var placeRegex = /{(.*?)}/;
+        while (placeRegex.test(url)) {
+            var group = RegExp.$1;
+            var value = params[group];
+            // url 由 </user/{id}> 改成 </user/123>, 参数由 <name=xyz&id=123&gender=1> 改成 <name=xyz&gender=1>
+            url = url.replace(placeRegex, value);
+            delete params[group];
+        }
+
+
+        {
+            var tmpUrl = url;
+            var line = ' \\\n';
+            var curlHtml = 'curl -i -X ' + method + line;
+            curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
+            if (isNotBlank(document.cookie)) {
+                curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
+            }
+            if (Object.getOwnPropertyNames(headers).length > 0) {
+                $.each(headers, function(key, value) {
+                    if (isNotBlank(key) && isNotBlank(value)) {
+                        curlHtml += "&nbsp; -H '" + (key + ': ' + value) + "'" + line;
+                    }
+                });
+            }
+            if (hasRequestBody) {
+                curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
+                curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
+            }
+            if (files.length > 0) {
+                if (Object.getOwnPropertyNames(params).length > 0) {
+                    $.each(params, function(key, value) {
+                        if (isNotBlank(key) && isNotBlank(value)) {
+                            curlHtml += "&nbsp; -F '" + (key + '=' + value) + "'" + line;
+                        }
+                    });
+                }
+                $.each(files, function(i, file) {
+                    var fileName = file.name;
+                    var filePath = file.value;
+                    if (isNotBlank(fileName) && isNotBlank(filePath)) {
+                        filePath = filePath.replace('C:\\fakepath\\', '/$替换真实路径$/');
+                        curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
+                    }
+                });
+            } else {
+                if (Object.getOwnPropertyNames(params).length > 0) {
+                    if (hasRequestBody) {
+                        curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
+                    } else {
+                        if ('GET' === method.toUpperCase()) {
+                            var paramArr = [];
+                            $.each(params, function(key, value) {
+                                if (isNotBlank(key) && isNotBlank(value)) {
+                                    paramArr.push(key + '=' + value);
+                                }
+                            });
+                            var paramStr = paramArr.join('&');
+                            if (paramStr.length > 0) {
+                                tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
+                            }
+                        } else {
+                            $.each(params, function(key, value) {
+                                if (isNotBlank(key) && isNotBlank(value)) {
+                                    curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            curlHtml += "&nbsp; --url '" + (tmpUrl.startsWith('//') ? (location.protocol + tmpUrl) : tmpUrl) + "'";
+            curlHtml = curlHtml.replace(/&nbsp;/g, ' ');
+            if (curlHtml.length <= 100) {
+                curlHtml = curlHtml.replace(new RegExp(line.replace('\\', '\\\\'), 'g'), '');
+                if (!curlHtml.includes('\\')) {
+                    curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
+                }
+            }
+            curl.find('pre').html(addLine(curlHtml));
+            curl.show();
+        }
+
+
+        {
+            var settings = {
+                url: url,
+                method: method,
+                beforeSend: function(request) {
+                    if (Object.getOwnPropertyNames(headers).length > 0) {
+                        $.each(headers, function(key, value) {
+                            if (isNotBlank(key) && isNotBlank(value)) {
+                                request.setRequestHeader(key, value);
+                            }
+                        });
+                    }
+                }
+            };
+
+            var locationDomain = location.protocol + '//' + location.host;
+            if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
+                settings.crossDomain = true;
+                settings.xhrFields = { withCredentials: true };
+            }
+            if (files.length > 0) {
+                if ('POST' !== method.toUpperCase()) {
+                    response.find('pre').html("<span class='red'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
+                    response.show();
+                    return;
+                }
+
+                var formData = new FormData();
+                $.each(params, function(key, value) {
+                    if (isNotBlank(key) && isNotBlank(value)) {
+                        formData.append(key, value);
+                    }
+                });
+                $.each(files, function(i, f) {
+                    formData.append(f.name, f.files[0]);
+                });
+
+                settings['data'] = formData;
+                settings['cache'] = false;
+                settings['processData'] = false;
+                settings['contentType'] = false;
+            } else {
+                if (hasRequestBody) {
+                    if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
+                        response.find('pre').html("<span class='red'>浏览器不能通过 GET 请求发送 RequestBody 参数" +
+                            "(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
+                        response.show();
+                        return;
+                    }
+                    settings['contentType'] = 'application/json';
+                    settings['dataType'] = 'json';
+                    settings['data'] = JSON.stringify(params);
+                } else {
+                    settings['data'] = params;
+                }
+            }
+
+            var responseData = response.find('pre');
+            var start = new Date().getTime();
+            $btn.attr('disabled', 'disabled');
+            $btn.addClass('disabled');
+            $.ajax(settings).done(function(result) {
+                var html = timeLog(start);
+                if (isBlank(result)) {
+                    html += '<span class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</span>';
+                } else {
+                    html += addLine(escapeHtml(JSON.stringify(result, null, 2)));
+                }
+                responseData.css('white-space', '');
+                responseData.html(html);
+                response.show();
+                $btn.removeAttr('disabled');
+                $btn.removeClass('disabled');
+            }).fail(function(error) {
+                var html = timeLog(start);
+                if (isBlank(error)) {
+                    html += '<span class="red">' + method + ' 请求(' + url + ')失败</span>';
+                } else {
+                    html += '<span class="red">响应码: ' + error.status + '</span>';
+                    var json = error.responseJSON;
+                    if (isNotBlank(json)) {
+                        html += '\n\n' + escapeHtml(JSON.stringify(json, null, 2));
+                    } else {
+                        var text = error.responseText;
+                        if (isNotBlank(text)) {
+                            html += '\n<span class="red wrap">响应文本: ' + escapeHtml(text) + '</span>';
+                        } else {
+                            html += '\n<span class="red">响应为空</span>';
+                        }
+                    }
+                }
+                responseData.css('white-space', 'pre-wrap');
+                responseData.html(html);
+                response.show();
+                $btn.removeAttr('disabled');
+                $btn.removeClass('disabled');
+            });
+        }
+    });
+
+    $(document).on('click', '.copy', function() {
+        var $this = $(this);
+        var copyValue = $this.next().html();
+        /* 去掉行号和注释用到的标签 */
+        var firstEnd = '</span>';
+        copyValue = copyValue.substring(copyValue.indexOf(firstEnd) + firstEnd.length);
+        copyValue =  copyValue.replace(/<span class=".*">|<\/span>/g, '');
+
+        var copyElement = document.createElement('textarea');
+        copyElement.setAttribute('readonly', 'readonly');
+        copyElement.setAttribute('class', 'copy-impl');
+        $(copyElement).html(copyValue); /* copyElement.value = copyValue; // 没生效, 不知道为什么 */
+
+        document.body.appendChild(copyElement);
+        copyElement.setSelectionRange(0, copyValue.length);
+        copyElement.select();
+        var flag = document.execCommand('copy');
+        document.body.removeChild(copyElement);
+
+        var $copyStatus = $this.prev();
+        $copyStatus.text('复制' + (flag ? '成功' : '失败'));
+        setTimeout(function() { $copyStatus.text(''); }, 2000);
+    });
 
     $(window).scroll(function() {
+        var headerHeight = 51;
+        var topBottomHeight = 30;
+        var scrolled = 'scrolled';
+        var heightProperty = 'max-height';
+
+        var html = document.getElementsByTagName('html')[0];
+        var footer = document.getElementsByTagName('footer')[0];
+
         var $win = $(window);
         var $nav = $('.col-md-3');
         var $bar = $('.bs-docs-sidebar > .nav');
 
         var $header = $('header');
-        var scrolled = 'scrolled';
         var scrollTop = $win.scrollTop();
         if (scrollTop > 0) {
             if (!$header.hasClass(scrolled)) {

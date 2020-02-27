@@ -145,6 +145,31 @@
         .red {
             color: red !important;
         }
+        .copy-status {
+            right: 0;
+            position: absolute;
+            color: rgba(255, 0, 0, .8);
+            margin: 7px 14px 0 0;
+            padding-right: 65px;
+        }
+        .copy {
+            right: 0;
+            position: absolute;
+            cursor: pointer;
+            color: rgba(140, 140, 140, .8);
+            margin: 7px 14px 0 0;
+            padding-right: 14px;
+            transition: color .1s;
+        }
+        .copy:hover {
+            color: rgb(100, 100, 100);
+            font-weight: bold;
+        }
+        .copy-impl {
+            opacity: 0; /* 不能设置 display:none, 否则无法选择文本 */
+            width: 0 !important;
+            height: 0 !important;
+        }
 
         .bs-docs-sidebar {
             width: inherit;
@@ -377,6 +402,8 @@
 
                         <div class="module-api-info-return">
                             <p>响应示例及说明如下</p>
+                            <div class='copy-status'></div>
+                            <div class='copy'>复制</div>
                             <pre class="src src-json">{{= url.commentJson || ''}}</pre>
 
                             {{? url.returnList && url.returnList.length > 0}}
@@ -469,6 +496,8 @@
                                         </h4>
                                     </div>
                                     <div class="modal-body">
+                                        <div class='copy-status'></div>
+                                        <div class='copy'>复制</div>
                                         <pre class="src src-json">{{= response.comment || ''}}</pre>
 
                                         {{? response.returnList && response.returnList.length > 0}}
@@ -527,6 +556,8 @@
                         </h4>
                     </div>
                     <div class="modal-body">
+                        <div class='copy-status'></div>
+                        <div class='copy'>复制</div>
                         <pre class="src src-json">{{= response.comment || ''}}</pre>
 
                         {{? response.returnList && response.returnList.length > 0}}
@@ -639,7 +670,6 @@ function showInScreen(ele) {
 
     return (eleBottom <= winBottom) && (eleTop >= winTop);
 }
-
 function getProjectDomain() {
     var projectDomain = $('.project-choose').find('option:selected').data('url');
     return isBlank(projectDomain) ? (location.protocol + '//' + location.host) : projectDomain;
@@ -663,19 +693,6 @@ $.get('/api/project').done(function(data) {
                 }
             }
             $(".header").append(chooseProjectTemplate({ "project" : project, "projects" : projectInfo }));
-
-            $('.project-choose').change(function() {
-                var projectUrl = $(this).find('option:selected').data('url');
-                var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
-                history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-                /* 如果在页脚切换项目, 这时的 footerTop 还是之前的, 将会导致 nav 无法显示(滚动一下就好了),
-                切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用) */
-                if (showInScreen('footer')) {
-                    location.reload();
-                } else {
-                    loadData();
-                }
-            });
         }
     }
     loadData();
@@ -771,14 +788,59 @@ function loadData() {
 $(function() {
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
 
+    $(document).on('change', '.project-choose', function() {
+        var projectUrl = $(this).find('option:selected').data('url');
+        var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
+        history.replaceState({api: $(this).val()}, '', location.pathname + hash);
+        /* 如果在页脚切换项目, 这时的 footerTop 还是之前的, 将会导致 nav 无法显示(滚动一下就好了),
+        切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用) */
+        if (showInScreen('footer')) {
+            location.reload();
+        } else {
+            loadData();
+        }
+    });
+
+    $(document).on('click', '.copy', function() {
+        var $this = $(this);
+        var copyValue = $this.next().html();
+        /* 去掉行号和注释用到的标签 */
+        var firstEnd = '</span>';
+        copyValue = copyValue.substring(copyValue.indexOf(firstEnd) + firstEnd.length);
+        copyValue =  copyValue.replace(/<span class=".*">|<\/span>/g, '');
+
+        var copyElement = document.createElement('textarea');
+        copyElement.setAttribute('readonly', 'readonly');
+        copyElement.setAttribute('class', 'copy-impl');
+        $(copyElement).html(copyValue); /* copyElement.value = copyValue; // 没生效, 不知道为什么 */
+
+        document.body.appendChild(copyElement);
+        copyElement.setSelectionRange(0, copyValue.length);
+        copyElement.select();
+        var flag = document.execCommand('copy');
+        document.body.removeChild(copyElement);
+
+        var $copyStatus = $this.prev();
+        $copyStatus.text('复制' + (flag ? '成功' : '失败'));
+        setTimeout(function() { $copyStatus.text(''); }, 2000);
+    });
+
     $(window).scroll(function() {
+        var headerHeight = 51;
+        var topBottomHeight = 30;
+        var scrolled = 'scrolled';
+        var heightProperty = 'max-height';
+
+        var html = document.getElementsByTagName('html')[0];
+        var footer = document.getElementsByTagName('footer')[0];
+
         var $win = $(window);
         var $nav = $('.col-md-3');
         var $bar = $('.bs-docs-sidebar > .nav');
 
         var $header = $('header');
-        var scrolled = 'scrolled';
-        if ($win.scrollTop() > 0) {
+        var scrollTop = $win.scrollTop();
+        if (scrollTop > 0) {
             if (!$header.hasClass(scrolled)) {
                 $header.addClass(scrolled);
             }
@@ -788,19 +850,12 @@ $(function() {
 
         if ($nav.css('display') !== 'none') {
             {
-                var footer = document.getElementsByTagName('footer')[0];
                 var footerTop = footer.offsetTop;
-                var scrollTop = $win.scrollTop();
                 var pageHeight = scrollTop + $win.height();
-
-                var headerHeight = isBlank($header.html()) ? 0 : 50;
-                var topBottomHeight = 30;
-                var heightProperty = 'max-height';
-                if (footerTop >= scrollTop && footerTop < pageHeight) {
+                if (footerTop >= scrollTop && footerTop < (pageHeight)) {
                     var footViewHeight = pageHeight - footerTop;
                     $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
                 } else {
-                    var html = document.getElementsByTagName('html')[0];
                     var htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
                     if ($bar.css(heightProperty) !== htmlViewHeight) {
                         $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
