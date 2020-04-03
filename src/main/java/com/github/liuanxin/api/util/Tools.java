@@ -342,8 +342,8 @@ public class Tools {
                         if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
                             return em;
                         }
-                        code = getMethod(em, "getValue");
-                        if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
+                        Object value = getMethod(em, "getValue");
+                        if (isNotBlank(value) && source.equalsIgnoreCase(value.toString().trim())) {
                             return em;
                         }
                         /*
@@ -527,7 +527,7 @@ public class Tools {
             return isEmpty(example) ? defaultObj.toString() : example;
         }
         else if (clazz == boolean.class || clazz == Boolean.class) {
-            return TRUE_LIST.contains(example.toUpperCase());
+            return TRUE_LIST.contains(example.toLowerCase());
         }
         else if (clazz == byte.class || clazz == Byte.class) {
             try {
@@ -604,9 +604,9 @@ public class Tools {
         }
 
         else if (clazz == boolean[].class) {
-            return new boolean[] { TRUE_LIST.contains(example) };
+            return new boolean[] { TRUE_LIST.contains(example.toLowerCase()) };
         } else if (clazz == Boolean[].class) {
-            return new Boolean[] { TRUE_LIST.contains(example) };
+            return new Boolean[] { TRUE_LIST.contains(example.toLowerCase()) };
         }
 
         else if (clazz == byte[].class) {
