@@ -171,8 +171,8 @@ public class DemoVo {
 #+END_SRC
 
 
-annotation for this
-#+BEGIN_EXAMPLE
+*** annotation description
+#+BEGIN_SRC java
 @ApiGroup --> in class or method. use the method if all of that
   value     --> module info, must set
   index     --> can not be set, more forward when smaller("index" first, "module info" second -> with sort), if set multi module and different index, use the smaller
@@ -289,7 +289,7 @@ for example:
   textarea    --> can not be set, param will show with textarea(in example page), default is false
   datePattern --> can not be set, is param type has Date, for example: MM/DD/YYYY HH:mm:ss
   style       --> can not be set. html style with param on page, for example: color:green;height:35px;
-#+END_EXAMPLE
+#+END_SRC
 
 if not spring boot project, add this config
 #+BEGIN_SRC xml
