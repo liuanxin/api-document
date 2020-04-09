@@ -531,7 +531,7 @@ public class Tools {
         }
         else if (clazz == byte.class || clazz == Byte.class) {
             try {
-                return Byte.valueOf(example);
+                return isHexNumber(example) ? Byte.decode(example) : Byte.valueOf(example);
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -545,21 +545,21 @@ public class Tools {
         }
         else if (clazz == short.class || clazz == Short.class) {
             try {
-                return Short.valueOf(example);
+                return isHexNumber(example) ? Short.decode(example) : Short.valueOf(example);
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
         }
         else if (clazz == int.class || clazz == Integer.class) {
             try {
-                return Integer.valueOf(example);
+                return isHexNumber(example) ? Integer.decode(example) : Integer.valueOf(example);
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
         }
         else if (clazz == long.class || clazz == Long.class) {
             try {
-                return Long.valueOf(example);
+                return isHexNumber(example) ? Long.decode(example) : Long.valueOf(example);
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -583,7 +583,7 @@ public class Tools {
         }
         else if (clazz == BigInteger.class) {
             try {
-                return new BigInteger(example);
+                return isHexNumber(example) ? decodeBigInteger(example) : new BigInteger(example);
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -611,13 +611,13 @@ public class Tools {
 
         else if (clazz == byte[].class) {
             try {
-                return new byte[] { Byte.parseByte(example) };
+                return new byte[] { isHexNumber(example) ? Byte.decode(example) : Byte.valueOf(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
         } else if (clazz == Byte[].class) {
             try {
-                return new Byte[] { Byte.valueOf(example) };
+                return new Byte[] { isHexNumber(example) ? Byte.decode(example) : Byte.valueOf(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -639,13 +639,13 @@ public class Tools {
 
         else if (clazz == short[].class) {
             try {
-                return new short[] { Short.parseShort(example) };
+                return new short[] { isHexNumber(example) ? Short.decode(example) : Short.valueOf(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
         } else if (clazz == Short[].class) {
             try {
-                return new Short[] { Short.valueOf(example) };
+                return new Short[] { isHexNumber(example) ? Short.decode(example) : Short.valueOf(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -653,13 +653,13 @@ public class Tools {
 
         else if (clazz == int[].class) {
             try {
-                return new int[] { Integer.parseInt(example) };
+                return new int[] { isHexNumber(example) ? Integer.decode(example) : Integer.valueOf(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
         } else if (clazz == Integer[].class) {
             try {
-                return new Integer[] { Integer.valueOf(example) };
+                return new Integer[] { isHexNumber(example) ? Integer.decode(example) : Integer.valueOf(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -667,13 +667,13 @@ public class Tools {
 
         else if (clazz == long[].class) {
             try {
-                return new long[] { Long.parseLong(example) };
+                return new long[] { isHexNumber(example) ? Long.decode(example) : Long.valueOf(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
         } else if (clazz == Long[].class) {
             try {
-                return new Long[] { Long.valueOf(example) };
+                return new Long[] { isHexNumber(example) ? Long.decode(example) : Long.valueOf(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -713,14 +713,14 @@ public class Tools {
 
         else if (clazz == BigInteger[].class) {
             try {
-                return new BigInteger(example);
+                return new BigInteger[] { isHexNumber(example) ? decodeBigInteger(example) : new BigInteger(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
         }
         else if (clazz == BigDecimal[].class) {
             try {
-                return new BigDecimal(example);
+                return new BigDecimal[] { new BigDecimal(example) };
             } catch (NumberFormatException e) {
                 return defaultObj;
             }
@@ -729,5 +729,37 @@ public class Tools {
         else {
             return defaultObj;
         }
+    }
+
+    private static boolean isHexNumber(String value) {
+        int index = value.startsWith("-") ? 1 : 0;
+        return value.startsWith("0x", index) || value.startsWith("0X", index) || value.startsWith("#", index);
+    }
+    private static BigInteger decodeBigInteger(String value) {
+        int radix;
+        int index = 0;
+
+        boolean negative;
+        if (value.startsWith("-")) {
+            negative = true;
+            index++;
+        } else {
+            negative = false;
+        }
+
+        if (value.startsWith("0x", index) || value.startsWith("0X", index)) {
+            index += 2;
+            radix = 16;
+        } else if (value.startsWith("#", index)) {
+            index++;
+            radix = 16;
+        } else if (value.startsWith("0", index) && value.length() > 1 + index) {
+            index++;
+            radix = 8;
+        } else {
+            radix = 10;
+        }
+        BigInteger result = new BigInteger(value.substring(index), radix);
+        return (negative ? result.negate() : result);
     }
 }
