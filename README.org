@@ -116,6 +116,17 @@ public class ExampleController {
 }
 
 @Data
+public class Page {
+    @ApiParam("current page")
+    private Integer page;
+
+    @ApiParam("page limit")
+    private Integer limit;
+
+    ...
+}
+
+@Data
 public class JsonResult<T> {
     @ApiReturn("return code")
     private JsonCode code;
@@ -130,13 +141,20 @@ public class JsonResult<T> {
     ...
 }
 
-@Data
-public class Page {
-    @ApiParam("current page")
-    private Integer page;
+public enum JsonCode {
 
-    @ApiParam("page limit")
-    private Integer limit;
+    SUCCESS(200, "success"),
+
+    NOT_LOGIN(401, "need login"),
+
+    FAIL(500, "internal error or service exception")
+
+    int code;
+    String value;
+    JsonCode(int code, String value) {
+        this.code = code;
+        this.value = value;
+    }
 
     ...
 }

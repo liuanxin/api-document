@@ -108,6 +108,17 @@ public class ExampleController {
 }
 
 @Data
+public class Page {
+    @ApiParam("当前页数")
+    private Integer page;
+
+    @ApiParam("每页条数")
+    private Integer limit;
+
+    ...
+}
+
+@Data
 public class JsonResult<T> {
     @ApiReturn("返回码")
     private JsonCode code;
@@ -122,13 +133,20 @@ public class JsonResult<T> {
     ...
 }
 
-@Data
-public class Page {
-    @ApiParam("当前页数")
-    private Integer page;
+public enum JsonCode {
 
-    @ApiParam("每页条数")
-    private Integer limit;
+    SUCCESS(200, "成功"),
+
+    NOT_LOGIN(401, "未登录"),
+
+    FAIL(500, "内部错误或业务异常");
+
+    int code;
+    String value;
+    JsonCode(int code, String value) {
+        this.code = code;
+        this.value = value;
+    }
 
     ...
 }
