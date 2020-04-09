@@ -136,9 +136,7 @@ public class JsonResult<T> {
 public enum JsonCode {
 
     SUCCESS(200, "成功"),
-
     NOT_LOGIN(401, "未登录"),
-
     FAIL(500, "内部错误或业务异常");
 
     int code;

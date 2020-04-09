@@ -144,9 +144,7 @@ public class JsonResult<T> {
 public enum JsonCode {
 
     SUCCESS(200, "success"),
-
     NOT_LOGIN(401, "need login"),
-
     FAIL(500, "internal error or service exception")
 
     int code;
