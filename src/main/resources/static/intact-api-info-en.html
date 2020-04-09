@@ -701,20 +701,23 @@ $.get('/api/project').done(function(data) {
 });
 
 function loadData() {
-    var projectDomain = getProjectDomain();
-
     var $title = $('title');
     var $headerContent = $('.header-content');
     var $footer = $('footer');
     var $urlInfo = $('#url-info');
     var $urlNavInfo = $('#url-nav-info');
+    var apiInfo = '/api/info';
+
+    var projectDomain = getProjectDomain();
+    var requestUrl = projectDomain.endsWith(apiInfo) ? projectDomain
+        : ((projectDomain.endsWith('/') ? projectDomain.substring(0, projectDomain.length - 1) : projectDomain) + apiInfo);
 
     var requestData = {
         type: 'GET',
-        url: projectDomain + '/api/info'
+        url: requestUrl
     };
     var locationDomain = location.protocol + '//' + location.host;
-    if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
+    if (!projectDomain.startsWith(locationDomain)) {
         requestData.crossDomain = true;
     }
 
@@ -792,7 +795,7 @@ $(function() {
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        /* If switch items in the footer, the footerTop is still the same as before, which will cause the nav to not be displayed
+        /* When switch items, the footerTop is still the same as before, which will cause the nav to not be displayed
         (just scroll it). Can use location.reload () when switching items(but this will cause an additional interface call) */
         if (showInScreen('footer')) {
             location.reload();
