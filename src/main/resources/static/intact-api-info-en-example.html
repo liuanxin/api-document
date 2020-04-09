@@ -875,20 +875,6 @@ function loadData() {
     var $footer = $('footer');
     var $urlInfo = $('#url-info');
     var $urlNavInfo = $('#url-nav-info');
-    var apiInfo = '/api/info';
-
-    var projectDomain = getProjectDomain();
-    var requestUrl = projectDomain.endsWith(apiInfo) ? projectDomain
-        : ((projectDomain.endsWith('/') ? projectDomain.substring(0, projectDomain.length - 1) : projectDomain) + apiInfo);
-
-    var requestData = {
-        type: 'GET',
-        url: requestUrl
-    };
-    var locationDomain = location.protocol + '//' + location.host;
-    if (!projectDomain.startsWith(locationDomain)) {
-        requestData.crossDomain = true;
-    }
 
     $title.html('');
     $headerContent.html('');
@@ -896,7 +882,17 @@ function loadData() {
     $urlInfo.html('');
     $urlNavInfo.html('');
 
-    $.ajax(requestData).done(function(data) {
+    var method = 'GET';
+    var apiInfo = '/api/info';
+    var projectDomain = getProjectDomain();
+    var requestUrl = projectDomain.endsWith(apiInfo) ? projectDomain
+        : ((projectDomain.endsWith('/') ? projectDomain.substring(0, projectDomain.length - 1) : projectDomain) + apiInfo);
+
+    $.ajax({
+        method: method,
+        url: requestUrl,
+        crossDomain: true
+    }).done(function(data) {
         if (isNotBlank(data)) {
             var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
 
@@ -958,8 +954,9 @@ function loadData() {
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }
-    }).fail(function() {
-        $urlInfo.html('<span class="red">Request error</span>');
+    }).fail(function(error) {
+        console.error(method + ' ' + requestUrl + ' error: ' + JSON.stringify(error));
+        $urlInfo.html('<span class="red">Request error, Incorrect network or cross-domain error</span>');
     });
 }
 
