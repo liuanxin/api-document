@@ -527,7 +527,7 @@ public class Tools {
             return isEmpty(example) ? defaultObj.toString() : example;
         }
         else if (clazz == boolean.class || clazz == Boolean.class) {
-            return TRUE_LIST.contains(example.toLowerCase());
+            return TRUE_LIST.contains(example.trim().toLowerCase());
         }
         else if (clazz == byte.class || clazz == Byte.class) {
             try {
@@ -604,9 +604,9 @@ public class Tools {
         }
 
         else if (clazz == boolean[].class) {
-            return new boolean[] { TRUE_LIST.contains(example.toLowerCase()) };
+            return new boolean[] { TRUE_LIST.contains(example.trim().toLowerCase()) };
         } else if (clazz == Boolean[].class) {
-            return new Boolean[] { TRUE_LIST.contains(example.toLowerCase()) };
+            return new Boolean[] { TRUE_LIST.contains(example.trim().toLowerCase()) };
         }
 
         else if (clazz == byte[].class) {
