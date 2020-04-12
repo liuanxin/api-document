@@ -5,9 +5,7 @@ English Readme | [[README-CN.org][中文说明]]
 
 [[https://github.com/liuanxin/api-document-example-en][Example project(spring boot 2)]]
 
-[[https://liuanxin.github.io/api-info-en.html][Document example]]
-
-[[https://liuanxin.github.io/api-info-en-example.html][Document example for Front-Back-end interaction]]
+[[https://liuanxin.github.io/api-info-en.html][Document example]] | [[https://liuanxin.github.io/api-info-en-example.html][Document example for Front-Back-end interaction]]
 
 
 ** Comment
