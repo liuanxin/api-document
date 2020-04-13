@@ -53,16 +53,16 @@ public class ApiInfoConfig {
 
                 // // if class or method has @ApiResponses, use that
                 // .setGlobalResponse(Arrays.asList(
-                //         new DocumentResponse(400, "param error"),
-                //         new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
+                //     new DocumentResponse(400, "param error"),
+                //     new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
                 // ))
 
                 // // current config will be generated in the parameters of each api,
                 // // if only want to use on a specific api, or set this global config but want to ignore on a specific api,
                 // // use @ApiTokens annotation
                 // .setGlobalTokens(Arrays.asList(
-                //         DocumentParam.buildToken("x-token", "oauth info", "abc-xyz", ParamType.Header).setHasTextarea("1"),
-                //         DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
+                //     DocumentParam.buildToken("x-token", "oauth info", "abc", ParamType.Header).setHasTextarea("1"),
+                //     DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
                 // ))
 
                 // // field comment is output in the return example. default is true. set to false will be listed separately.
@@ -70,9 +70,11 @@ public class ApiInfoConfig {
 
 
                 // // used in multi-document collection, merged items and output, default is false
-                // //   If true, please ensure that the global response description and global token of all items are consistent.
+                // //   If true, please ensure that the global response description
+                // //      and global token of all items are consistent.
                 // //      Duplication and appending together (current practice) will cause documentation errors.
-                // //   If false, multiple documents will be requested on the page, please ensure that all projects have cors turned on,
+                // //   If false, multiple documents will be requested on the page, 
+                // //     please ensure that all projects have cors turned on,
                 // //     otherwise it will be inaccessible due to cross-domain issues
                 // .setProjectMerge(true)
 
@@ -171,10 +173,12 @@ public class DemoVo {
 #+BEGIN_SRC java
 @ApiGroup --> in class or method. use the method if all of that
   value     --> module info, must set
-  index     --> can not be set, more forward when smaller("index" first, "module info" second -> with sort), if set multi module and different index, use the smaller
+  index     --> can not be set, more forward when smaller("index" first, 
+                "module info" second -> with sort), if set multi module and different index, use the smaller
 
 
-@ApiResponses --> in class or method
+@ApiResponses --> in class or method. marked on class or method will return the specified response,
+                  otherwise it will take the global response configuration.
   value         --> @ApiResponse[], must set
 
   @ApiResponse  --> nested annotation
@@ -183,7 +187,7 @@ public class DemoVo {
     type          --> nested annotation: @ApiReturnType[], can not be set
 
 for example:
-@ApiResponses({ // marked on class or method will return the specified response, otherwise it will take the global response configuration.
+@ApiResponses({
     @ApiResponse(code = 400, msg = "param error", type = { @ApiReturnType(XXX.class }),
     @ApiResponse(code = 500, msg = "request error")
 })
@@ -198,28 +202,62 @@ for example:
 for example:
    XXX ==> @ApiReturnType(XXX.class)
 
-   List<XXX>        ==> @ApiReturnType(value = List.class, generic = XXX.class)
-   Set<XXX>         ==> @ApiReturnType(value = Set.class,  generic = XXX.class)
+   List<XXX> ==> @ApiReturnType(value = List.class, generic = XXX.class)
+   Set<XXX> ==> @ApiReturnType(value = Set.class,  generic = XXX.class)
    Map<String, XXX> ==> @ApiReturnType(value = Map.class,  generic = { String.class, XXX.class })
    JsonResult<XXX>  ==> @ApiReturnType(value = JsonResult.class, generic = XXX.class)
 
-   JsonResult<List<XXX>>        ==> @ApiReturnType(value = JsonResult.class, genericParent = List.class, generic = XXX.class)
-   JsonResult<Set<XXX>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = Set.class,  generic = XXX.class)
-   JsonResult<Map<String, XXX>> ==> @ApiReturnType(value = JsonResult.class, genericParent = Map.class,  generic = { String.class, XXX.class })
-   JsonResult<YYY<XXX>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class,  generic = XXX.class)
+   JsonResult<List<XXX>> ==> @ApiReturnType(
+                                 value = JsonResult.class,
+                                 genericParent = List.class,
+                                 generic = XXX.class
+                             )
+   JsonResult<Set<XXX>> ==> @ApiReturnType(
+                                value = JsonResult.class,
+                                genericParent = Set.class,
+                                generic = XXX.class
+                            )
+   JsonResult<Map<String, XXX>> ==> @ApiReturnType(
+                                        value = JsonResult.class,
+                                        genericParent = Map.class,
+                                        generic = { String.class, XXX.class }
+                                    )
+   JsonResult<YYY<XXX>> ==> @ApiReturnType(
+                                value = JsonResult.class,
+                                genericParent = YYY.class,
+                                generic = XXX.class
+                            )
 
-   JsonResult<YYY<List<XXX>>>        ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = List.class, genericChild = XXX.class)
-   JsonResult<YYY<Set<XXX>>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = Set.class,  genericChild = XXX.class)
-   JsonResult<YYY<Map<String, XXX>>> ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = Map.class,  genericChild = { String.class, XXX.class })
+   JsonResult<YYY<List<XXX>>> ==> @ApiReturnType(
+                                      value = JsonResult.class,
+                                      genericParent = YYY.class,
+                                      generic = List.class,
+                                      genericChild = XXX.class
+                                  )
+   JsonResult<YYY<Set<XXX>>> ==> @ApiReturnType(
+                                     value = JsonResult.class,
+                                     genericParent = YYY.class,
+                                     generic = Set.class,
+                                     genericChild = XXX.class
+                                 )
+   JsonResult<YYY<Map<String, XXX>>> ==> @ApiReturnType(
+                                             value = JsonResult.class,
+                                             genericParent = YYY.class,
+                                             generic = Map.class,
+                                             genericChild = { String.class, XXX.class }
+                                         )
 
 
 @ApiMethod --> in method
   value      --> method title, must set
   develop    --> can not be set
   desc       --> description, can not be set
-  index      --> more forward when smaller, can not be set("index" first, "developer" second, "title" third -> with sort)
-  commentInReturnExample --> if false, comment will show with display separately, if not set, the global setting shall prevail
-  returnType --> nested annotation: @ApiReturnType[]. customize return type, if set will ignore 「the return type」 on method
+  index      --> more forward when smaller, can not be set("index" first,
+                 "developer" second, "title" third -> with sort)
+  commentInReturnExample --> if false, comment will show with display separately,
+                             if not set, the global setting shall prevail
+  returnType --> nested annotation: @ApiReturnType[]. customize return type,
+                 if set will ignore 「the return type」 on method
 
 @ApiIgnore --> in class or method. want to ignore some api, use it
   value      --> false will ignore
@@ -228,7 +266,8 @@ for example:
 @ApiParam --> in param or field
   value       --> param comment, can not be set
   name        --> if set, can not be set, will ignore param name or field name
-  dataType    --> if type was custom can use, can not be set(for example: enum, but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
+  dataType    --> if type was custom can use, can not be set(for example: enum,
+                  but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
   example     --> used in api examples, can not be set
   paramType   --> can not be set, Header or Query, default is Query
   must        --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
@@ -243,7 +282,8 @@ for example:
   value      --> can not be set
   name       --> return name, can not be set, if set will ignore field name(when use @JsonProperty)
   type       --> if type was custom can use, can not be set(for example: enum, but return type was be int)
-  example    --> return example, can not be set, only if the field is a string or underlying data type(including BigInteger and BigDecimal)
+  example    --> return example, can not be set, only if the field is a string or
+                 underlying data type(including BigInteger and BigDecimal)
 
 @ApiReturnIgnore --> in field, use with @JsonIgnore is also
 
@@ -272,13 +312,16 @@ for example:
 })
 
 
-@ApiModel --> Combined with the annotations of the @ApiParam and @ApiReturn, Please do not abuse. You should try to use the first two.
+@ApiModel --> Combined with the annotations of the @ApiParam and @ApiReturn,
+              Please do not abuse. You should try to use the first two.
   value     --> (return type or param name)'s comment, can not be set
   name      --> (return type or param name)'s name, can not be set
-  dataType  --> (return type or param name)'s type, can not be set, use with customize: int、long、float、double、date、phone、email、url、ipv4
+  dataType  --> (return type or param name)'s type, can not be set,
+                use with customize: int、long、float、double、date、phone、email、url、ipv4
   example   --> (return type or param name)'s example, can not be set
 
-  -- The above attributes apply to both the request parameter and the return field. The following attributes are only used on the request parameters.
+  // The above attributes apply to both the request parameter and the return field.
+  // The following attributes are only used on the request parameters.
 
   paramType   --> param type, can not be set. Header or Query, default is Query
   must        --> param required, can not be set, if has @RequestParam(required = true) etc... will ignore this setting
