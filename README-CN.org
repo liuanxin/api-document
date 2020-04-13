@@ -50,23 +50,28 @@ public class ApiInfoConfig {
 
                 // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
                 // .setGlobalResponse(Arrays.asList(
-                //         new DocumentResponse(400, "参数有误"),
-                //         new DocumentResponse(500, "请求异常").setResponse(XXX.class) // 见 @ApiReturnType 示例说明
+                //     new DocumentResponse(400, "参数有误"),
+                //     new DocumentResponse(500, "请求异常").setResponse(XXX.class) // 见 @ApiReturnType 示例说明
                 // ))
 
-                // // 全局 token, 这个配置会生成在每个接口的参数中, 如果只想在具体的接口上设置或者设置了此项但是想在具体的接口上忽略, 请使用 @ApiTokens 注解
+                // // 全局 token, 这个配置会生成在每个接口的参数中, 
+                // // 如果想在具体的接口上忽略这些配置 或者 设置不同的参数 请使用 @ApiTokens 注解
                 // .setGlobalTokens(Arrays.asList(
-                //         DocumentParam.buildToken("x-token", "认证数据", "abc-xyz", ParamType.Header).setHasTextarea("1"),
-                //         DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
+                //     DocumentParam.buildToken("x-token", "认证数据", "abc", ParamType.Header).setHasTextarea("1"),
+                //     DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
                 // ))
 
-                // // 字段说明是否输出在返回示例中, 不设置则默认是 true, 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
+                // // 字段说明是否输出在返回示例中, 不设置则默认是 true, 
+                // // 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
                 // .setCommentInReturnExample(false)
 
 
                 // // 用在多文档收集, 是否将项目合并后输出, 默认是 false
-                // //   如果为 true, 请务必保证所有项目的全局响应说明和全局 token 是一致的, 附加在一起并去重(当前做法)可能会导致文档错误
-                // //   如果是 false, 将在页面上选择项目进行请求, 请务必保证设置的项目都开启了 cors, 否则将会因为跨域问题导致无法访问
+                // //   如果为 true, 请务必保证所有项目的全局响应说明和全局 token 是一致的,
+                // //   附加在一起并去重(当前做法)可能会导致文档错误;
+                // //   -----
+                // //   如果是 false, 将在页面上选择项目进行请求, 请务必保证设置的项目都开启了 cors,
+                // //   否则将会因为跨域问题导致无法访问
                 // .setProjectMerge(true)
 
                 // // 收集其他项目的文档
@@ -163,8 +168,10 @@ public class DemoVo {
 
 #+BEGIN_SRC java
 @ApiGroup --> 标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
-  value     --> 模块说明. 必须设置, 示例(名称-说明, 如: user-用户, 名称用来生成锚点, 说明用来显示, 以 英文中横线 - 隔开, 说明如果为空则显示成名称)
-  index     --> 索引, 可以不设置, 越小越靠前. 可以不设置(索引如果一致会使用 说明 排序, 说明如果也一致会使用 名称 排序), 同一模块在不同的地方标注且索引不同时, 以小的索引为主
+  value     --> 模块说明. 必须设置, 示例(名称-说明, 如: user-用户, 名称用来生成锚点, 
+                说明用来显示, 以 英文中横线 - 隔开, 说明如果为空则显示成名称)
+  index     --> 索引, 可以不设置, 越小越靠前. 可以不设置(索引如果一致会使用 说明 排序,
+                说明如果也一致会使用 名称 排序), 同一模块在不同的地方标注且索引不同时, 以小的索引为主
 
 
 @ApiResponses --> 标注在类或方法上. 用来标注接口的响应码或描述
@@ -196,22 +203,56 @@ public class DemoVo {
    Map<String, XXX> ==> @ApiReturnType(value = Map.class,  generic = { String.class, XXX.class })
    JsonResult<XXX>  ==> @ApiReturnType(value = JsonResult.class, generic = XXX.class)
 
-   JsonResult<List<XXX>>        ==> @ApiReturnType(value = JsonResult.class, genericParent = List.class, generic = XXX.class)
-   JsonResult<Set<XXX>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = Set.class,  generic = XXX.class)
-   JsonResult<Map<String, XXX>> ==> @ApiReturnType(value = JsonResult.class, genericParent = Map.class,  generic = { String.class, XXX.class })
-   JsonResult<YYY<XXX>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class,  generic = XXX.class)
+   JsonResult<List<XXX>> ==> @ApiReturnType(
+                                 value = JsonResult.class, 
+                                 genericParent = List.class,
+                                 generic = XXX.class
+                             )
+   JsonResult<Set<XXX>> ==> @ApiReturnType(
+                                value = JsonResult.class,
+                                genericParent = Set.class,
+                                generic = XXX.class
+                            )
+   JsonResult<Map<String, XXX>> ==> @ApiReturnType(
+                                        value = JsonResult.class,
+                                        genericParent = Map.class,
+                                        generic = { String.class, XXX.class }
+                                    )
+   JsonResult<YYY<XXX>> ==> @ApiReturnType(
+                                value = JsonResult.class,
+                                genericParent = YYY.class,
+                                generic = XXX.class
+                            )
 
-   JsonResult<YYY<List<XXX>>>        ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = List.class, genericChild = XXX.class)
-   JsonResult<YYY<Set<XXX>>>         ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = Set.class,  genericChild = XXX.class)
-   JsonResult<YYY<Map<String, XXX>>> ==> @ApiReturnType(value = JsonResult.class, genericParent = YYY.class, generic = Map.class,  genericChild = { String.class, XXX.class })
+   JsonResult<YYY<List<XXX>>> ==> @ApiReturnType(
+                                      value = JsonResult.class,
+                                      genericParent = YYY.class,
+                                      generic = List.class,
+                                      genericChild = XXX.class
+                                  )
+   JsonResult<YYY<Set<XXX>>> ==> @ApiReturnType(
+                                     value = JsonResult.class,
+                                     genericParent = YYY.class,
+                                     generic = Set.class,
+                                     genericChild = XXX.class
+                                 )
+   JsonResult<YYY<Map<String, XXX>>> ==> @ApiReturnType(
+                                             value = JsonResult.class,
+                                             genericParent = YYY.class,
+                                             generic = Map.class,
+                                             genericChild = { String.class, XXX.class }
+                                         )
 
 
 @ApiMethod --> 标注在方法上
   value      --> 接口标题, 必须设置
   develop    --> 开发者信息, 可以不设置
   desc       --> 接口详细说明. 可以不设置
-  index      --> 索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序, 开发者信息 如果也一致会使用 接口标题 排序)
-  commentInReturnExample --> 返回字段说明是否写在返回示例中, 可以不设置, 如果设置为 false 所有的字段说明将会在返回示例的下面单独罗列. 不设置则以全局设置为准
+  index      --> 索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序,
+                 开发者信息 如果也一致会使用 接口标题 排序)
+  commentInReturnExample --> 返回字段说明是否写在返回示例中, 可以不设置,
+                             如果设置为 false 所有的字段说明将会在返回示例的下面单独罗列.
+                             不设置则以全局设置为准
   returnType --> 嵌套注解 @ApiReturnType[] 自定义返回类型, 可以不设置, 如果设置将忽略方法上的返回类型
 
 @ApiIgnore --> 标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
@@ -221,7 +262,8 @@ public class DemoVo {
 @ApiParam --> 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
   value       --> 参数说明, 可以不设置
   name        --> 参数名, 可以不设置, 如果设置了将会无视参数名或字段名
-  dataType    --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举, 但是显示在文档上时可以传 int 时)有用: int、long、float、double、date、phone、email、url、ipv4
+  dataType    --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举, 
+                  但是显示在文档上时可以传 int 时)有用: int、long、float、double、date、phone、email、url、ipv4
   example     --> 参数示例. 用在接口示例时有用, 可以不设置
   paramType   --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query
   must        --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
@@ -264,7 +306,8 @@ public class DemoVo {
 })
 
 
-@ApiModel --> 结合了 @ApiParam 和 @ApiReturn 两个注解的注解, 可以同时说明请求参数和返回字段, 请不要滥用, 应该尽量用前两者
+@ApiModel --> 结合了 @ApiParam 和 @ApiReturn 两个注解的注解,
+              可以同时说明请求参数和返回字段, 请不要滥用, 应该尽量用前两者
   value     --> 返回或参数说明, 可以不设置
   name      --> 返回或参数名, 可以不设置, 如果设置了将会无视参数名或字段名
   dataType  --> 返回或参数的数据类型. 可以不设置, 自定义时有用: int、long、float、double、date、phone、email、url、ipv4
