@@ -57,15 +57,16 @@ public class ApiInfoConfig {
                 //     new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
                 // ))
 
-                // // current config will be generated in the parameters of each api,
-                // // if only want to use on a specific api, or set this global config but want to ignore on a specific api,
+                // // current config will be generated in the parameters of each api, if only want to use 
+                // // on a specific api, or set this global config but want to ignore on a specific api,
                 // // use @ApiTokens annotation
                 // .setGlobalTokens(Arrays.asList(
                 //     DocumentParam.buildToken("x-token", "oauth info", "abc", ParamType.Header).setHasTextarea("1"),
                 //     DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
                 // ))
 
-                // // field comment is output in the return example. default is true. set to false will be listed separately.
+                // // field comment is output in the return example.
+                // // default is true. set to false will be listed separately.
                 // .setCommentInReturnExample(false)
 
 
@@ -324,7 +325,8 @@ for example:
   // The following attributes are only used on the request parameters.
 
   paramType   --> param type, can not be set. Header or Query, default is Query
-  must        --> param required, can not be set, if has @RequestParam(required = true) etc... will ignore this setting
+  must        --> param required, can not be set, 
+                  if has @RequestParam(required = true) etc... will ignore this setting
   textarea    --> can not be set, param will show with textarea(in example page), default is false
   datePattern --> can not be set, is param type has Date, for example: MM/DD/YYYY HH:mm:ss
   style       --> can not be set. html style with param on page, for example: color:green;height:35px;
