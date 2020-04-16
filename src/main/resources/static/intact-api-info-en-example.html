@@ -1007,9 +1007,8 @@ function hasExampleWithLevel(trsInTable) {
 }
 function returnCommentWithParentLevel($trs) {
     var paramCommentRelation = {};
-    var i, lines = comment.split('\n');
+    var i;
     for (i = 0; i < $trs.length; i++) {
-
         var $tds = $($trs[i]).find('td');
         if ($tds.length > 2) {
             var comment = $($tds[2]).text().trim();
