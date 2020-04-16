@@ -1423,7 +1423,7 @@ $(function() {
         /* remove line-num and comment */
         var firstEnd = '</span>';
         copyValue = copyValue.substring(copyValue.indexOf(firstEnd) + firstEnd.length);
-        var removeComment = String($pre.attr('data-remove-comment')).toLowerCase() === '1';
+        var removeComment = String($pre.attr('data-remove-comment')) === '1';
         copyValue = copyValue.replace((removeComment ? /[ ]{2}<span class=".*">.*?<\/span>/g : /<span class=".*">|<\/span>/g), '');
 
         var copyElement = document.createElement('textarea');
