@@ -807,7 +807,7 @@ $(function() {
         /* remove line-num and comment */
         var firstEnd = '</span>';
         copyValue = copyValue.substring(copyValue.indexOf(firstEnd) + firstEnd.length);
-        copyValue =  copyValue.replace(/<span class=".*">|<\/span>/g, '');
+        copyValue = copyValue.replace(/<span class=".*">|<\/span>/g, '');
 
         var copyElement = document.createElement('textarea');
         copyElement.setAttribute('readonly', 'readonly');
