@@ -29,7 +29,7 @@ public @interface ApiMethod {
     boolean[] commentInReturnExample() default {};
 
     /**
-     * true  : the hierarchical relationship corresponding to the field will be used to process the comment, Generics be sure to use certain types.
+     * true  : the hierarchical relationship corresponding to the field will be used to process the comment, Generics be sure to use determined types.
      * false : will use index corresponding to the field to process the comment, when use @JsonPropertyOrder to change field sort, there will be problems.
      * @return use default
      */

@@ -80,18 +80,11 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     }
 
     public List<DocumentReturn> getReturnList() {
-        if (commentInReturnExample) {
-            return Collections.emptyList();
-        }
-        return Tools.isNotEmpty(returnList)
-                ? returnList
-                : returnList(commentInReturnExample, returnRecordLevel, returnList);
+        return returnList(commentInReturnExample, returnRecordLevel, returnList);
     }
 
     public String getCommentJson() {
-        return Tools.isNotEmpty(commentJson)
-                ? commentJson
-                : commentJson(returnJson, commentInReturnExample, commentInReturnExampleWithLevel, returnList);
+        return commentJson(returnJson, commentInReturnExample, commentInReturnExampleWithLevel, returnList);
     }
 
 
