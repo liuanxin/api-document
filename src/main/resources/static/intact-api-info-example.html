@@ -975,7 +975,7 @@ function addComment(json, element) {
         }
         returnJson += '\n';
     }
-    return returnJson;
+    return returnJson.trim();
 }
 function handleFieldCommentRelation(element) {
     var relation = relationByComment(element.find('[data-flag="module-api-info-return-comment"]'));
