@@ -726,54 +726,50 @@ function loadData() {
     }).done(function(data) {
         if (isNotBlank(data)) {
             var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
-
-            {
-                var copyright = documentInfo.copyright;
-                if (isBlank(copyright)) {
-                    return;
-                }
-
-                var title = copyright.title;
-                if (isNotBlank(title)) {
-                    $title.html(title);
-                    $headerContent.html(title);
-                }
-                $footer.html(copyrightTemplate(copyright));
+            var copyright = documentInfo.copyright;
+            if (isBlank(copyright)) {
+                return;
             }
 
-            {
-                var doc = documentInfo.document;
-                if (isBlank(doc)) {
-                    return;
+            var title = copyright.title;
+            if (isNotBlank(title)) {
+                $title.html(title);
+                $headerContent.html(title);
+            }
+            $footer.html(copyrightTemplate(copyright));
+
+
+            var doc = documentInfo.document;
+            if (isBlank(doc)) {
+                return;
+            }
+            $urlInfo.html(urlRenderTemplate(doc));
+            $urlNavInfo.html(navRenderTemplate(doc));
+
+            $('pre[class="src src-json"]').each(function() {
+                var $html = escapeHtml($(this).html());
+                var html;
+                if (isNotBlank($html)) {
+                    html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+
+                    var recursiveRegex = /(!!!RECURSIVE OBJECT!!!)/;
+                    if (recursiveRegex.test($html)) {
+                        html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">$1</span>');
+                    }
+                } else {
+                    html = '<span class="red">Return null or Can not analyze return type</span>';
                 }
-                $urlInfo.html(urlRenderTemplate(doc));
-                $urlNavInfo.html(navRenderTemplate(doc));
+                $(this).html(addLine(html));
+            });
 
-                $('pre[class="src src-json"]').each(function() {
-                    var $html = escapeHtml($(this).html());
-                    var html;
-                    if (isNotBlank($html)) {
-                        html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
-
-                        var recursiveRegex = /(!!!RECURSIVE OBJECT!!!)/;
-                        if (recursiveRegex.test($html)) {
-                            html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">$1</span>');
-                        }
-                    } else {
-                        html = '<span class="red">Return null or Can not analyze return type</span>';
-                    }
-                    $(this).html(addLine(html));
-                });
-
-                var hash = location.hash;
-                if (isNotBlank(hash)) {
-                    var $anchor = $(hash);
-                    if ($anchor.length > 0) {
-                        var $li = $('a[href="' + hash + '"]').parents('li');
-                        $li.addClass('active');
-                        $li.parents('li').addClass('active');
-                        $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
-                    }
+            var hash = location.hash;
+            if (isNotBlank(hash)) {
+                var $anchor = $(hash);
+                if ($anchor.length > 0) {
+                    var $li = $('a[href="' + hash + '"]').parents('li');
+                    $li.addClass('active');
+                    $li.parents('li').addClass('active');
+                    $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
                 }
             }
         } else {
@@ -850,30 +846,26 @@ $(function() {
         }
 
         if ($nav.css('display') !== 'none') {
-            {
-                var footerTop = footer.offsetTop;
-                var pageHeight = scrollTop + $win.height();
-                if (footerTop >= scrollTop && footerTop < (pageHeight)) {
-                    var footViewHeight = pageHeight - footerTop;
-                    $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
-                } else {
-                    var htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
-                    if ($bar.css(heightProperty) !== htmlViewHeight) {
-                        $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
-                    }
+            var footerTop = footer.offsetTop;
+            var pageHeight = scrollTop + $win.height();
+            if (footerTop >= scrollTop && footerTop < (pageHeight)) {
+                var footViewHeight = pageHeight - footerTop;
+                $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
+            } else {
+                var htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
+                if ($bar.css(heightProperty) !== htmlViewHeight) {
+                    $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
                 }
             }
 
-            {
-                var navHash = $nav.find('.active > a:last').attr('href');
-                if (navHash !== location.hash) {
-                    if (isBlank(navHash)) {
-                        if ($header.hasClass(scrolled) !== true) {
-                            history.replaceState({api: 'index'}, '', location.pathname + location.search);
-                        }
-                    } else {
-                        history.replaceState({api: navHash}, '', location.pathname + location.search + navHash);
+            var navHash = $nav.find('.active > a:last').attr('href');
+            if (navHash !== location.hash) {
+                if (isBlank(navHash)) {
+                    if ($header.hasClass(scrolled) !== true) {
+                        history.replaceState({api: 'index'}, '', location.pathname + location.search);
                     }
+                } else {
+                    history.replaceState({api: navHash}, '', location.pathname + location.search + navHash);
                 }
             }
         }
