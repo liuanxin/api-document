@@ -971,7 +971,7 @@ function addComment(json, element) {
         returnJson += lines[i];
         var comment = getComment(lineFieldRelation, fieldCommentRelation, i.toString());
         if (isNotBlank(comment)) {
-            returnJson += '  <span class="comment">/* ' + comment + ' */</span>';
+            returnJson += ' '.repeat(2) + '<span class="comment">/* ' + comment + ' */</span>';
         }
         returnJson += '\n';
     }
@@ -1423,8 +1423,11 @@ $(function() {
         /* 删除行号及注释 */
         var firstEnd = '</span>';
         copyValue = copyValue.substring(copyValue.indexOf(firstEnd) + firstEnd.length);
+        console.log('copy: ' + copyValue);
         var removeComment = String($pre.attr('data-remove-comment')) === '1';
+        console.log('remove: ' + removeComment);
         copyValue = copyValue.replace((removeComment ? /[ ]{2}<span class=".*?">.*?<\/span>/g : /<span class=".*?">|<\/span>/g), '');
+        console.log('copy: ' + copyValue);
 
         var copyElement = document.createElement('textarea');
         copyElement.setAttribute('readonly', 'readonly');
