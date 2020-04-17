@@ -15,7 +15,13 @@ If the api documentation is written separately (org-mode, markdown, rap or even 
 as the project cycle progresses, the gap between the interface document and the real code will come the farther away.
 
 This document collection application has appeared because some of the details based on swagger are not so good
-(such as unable to process map, swagger-ui view response instructions need to be cut).
+(such as unable to process map, swagger-ui view response instructions need to be swtich.
+Think of your branis as a computer, and your eyes as input devices, When you see the returned json,
+the eyeball will parse itself into the corresponding object. At this time,
+you can’t determine the description of each partition. You have to switch the screen to know,
+and the brain will find a way to associate it. However, only one can be seen at the same time,
+so you can only switch to switch, it will increase the mental burden during the merger).
+
 
 ** Usage
 
