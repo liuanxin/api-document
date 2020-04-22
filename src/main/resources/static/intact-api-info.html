@@ -658,18 +658,6 @@ function addLine(html) {
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
-function showInScreen(ele) {
-    var $ele = $(ele);
-    var $win = $(window);
-
-    var winTop = $win.scrollTop();
-    var winBottom = winTop + $win.height();
-
-    var eleTop = $ele.offset().top;
-    var eleBottom = eleTop + $ele.height();
-
-    return (eleBottom <= winBottom) && (eleTop >= winTop);
-}
 function getProjectDomain() {
     var projectDomain = $('.project-choose').find('option:selected').data('url');
     return isBlank(projectDomain) ? (location.protocol + '//' + location.host) : projectDomain;
@@ -788,13 +776,7 @@ $(function() {
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        /* 切换项目时 footerTop 还是之前的, 将会导致 nav 无法显示(滚动一下就好了),
-        切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用) */
-        if (showInScreen('footer')) {
-            location.reload();
-        } else {
-            loadData();
-        }
+        location.reload();
     });
 
     $(document).on('click', '.copy', function() {

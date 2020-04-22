@@ -658,18 +658,6 @@ function addLine(html) {
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
-function showInScreen(ele) {
-    var $ele = $(ele);
-    var $win = $(window);
-
-    var winTop = $win.scrollTop();
-    var winBottom = winTop + $win.height();
-
-    var eleTop = $ele.offset().top;
-    var eleBottom = eleTop + $ele.height();
-
-    return (eleBottom <= winBottom) && (eleTop >= winTop);
-}
 function getProjectDomain() {
     var projectDomain = $('.project-choose').find('option:selected').data('url');
     return isBlank(projectDomain) ? (location.protocol + '//' + location.host) : projectDomain;
@@ -788,13 +776,7 @@ $(function() {
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        /* When switch items, the footerTop is still the same as before, which will cause the nav to not be displayed
-        (just scroll it). Can use location.reload () when switching items(but this will cause an additional interface call) */
-        if (showInScreen('footer')) {
-            location.reload();
-        } else {
-            loadData();
-        }
+        location.reload();
     });
 
     $(document).on('click', '.copy', function() {
