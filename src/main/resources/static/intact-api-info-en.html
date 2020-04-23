@@ -776,7 +776,13 @@ $(function() {
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        location.reload();
+        /* When switch items, the footerTop is still the same as before, which will cause the nav to not be displayed
+        (just scroll it). Can use location.reload () when switching items(but this will cause an additional interface call) */
+        if ($('.col-md-3').find('.active').length > 0) {
+            location.reload();
+        } else {
+            loadData();
+        }
     });
 
     $(document).on('click', '.copy', function() {

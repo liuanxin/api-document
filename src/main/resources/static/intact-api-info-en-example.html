@@ -1169,7 +1169,11 @@ $(function() {
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        location.reload();
+        if ($('.col-md-3').find('.active').length > 0) {
+            location.reload();
+        } else {
+            loadData();
+        }
     });
 
     $(document).on('change', '.form-file', function() {

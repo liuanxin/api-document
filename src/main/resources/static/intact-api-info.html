@@ -776,7 +776,13 @@ $(function() {
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        location.reload();
+        /* 切换项目时 footerTop 还是之前的, 将会导致 nav 无法显示(滚动一下就好了),
+        切换项目时用 location.reload() 可以解决(但这会导致多一次接口调用) */
+        if ($('.col-md-3').find('.active').length > 0) {
+            location.reload();
+        } else {
+            loadData();
+        }
     });
 
     $(document).on('click', '.copy', function() {
