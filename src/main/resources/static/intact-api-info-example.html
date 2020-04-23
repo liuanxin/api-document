@@ -223,7 +223,7 @@
         }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
-            max-height: calc(100vh - 50px - 15px - 15px); /* 100vh - header - top - bottom */
+            max-height: calc(100vh - 51px - 15px - 15px); /* 100vh - header - top - bottom */
         }
         .bs-docs-sidebar .nav > li > a {
             display: block;
@@ -899,7 +899,7 @@ function loadData() {
             }
             $urlInfo.html(urlRenderTemplate(doc));
             $urlNavInfo.html(navRenderTemplate(doc));
-            $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
+            $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)');
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
@@ -1162,11 +1162,6 @@ function getComment(lineFieldRelation, fieldCommentRelation, key) {
     }
     return null;
 }
-
-var headerHeight = 51;
-var topBottomHeight = 30;
-var heightProperty = 'max-height';
-var $bar = $('.bs-docs-sidebar > .nav');
 
 $(function() {
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
@@ -1433,13 +1428,17 @@ $(function() {
     });
 
     $(window).scroll(function() {
+        var headerHeight = 51;
+        var topBottomHeight = 30;
         var scrolled = 'scrolled';
+        var heightProperty = 'max-height';
 
         var html = document.getElementsByTagName('html')[0];
         var footer = document.getElementsByTagName('footer')[0];
 
         var $win = $(window);
         var $nav = $('.col-md-3');
+        var $bar = $('.bs-docs-sidebar > .nav');
 
         var $header = $('header');
         var scrollTop = $win.scrollTop();
