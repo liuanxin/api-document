@@ -733,6 +733,7 @@ function loadData() {
             }
             $urlInfo.html(urlRenderTemplate(doc));
             $urlNavInfo.html(navRenderTemplate(doc));
+            $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
@@ -769,6 +770,11 @@ function loadData() {
     });
 }
 
+var headerHeight = 51;
+var topBottomHeight = 30;
+var heightProperty = 'max-height';
+var $bar = $('.bs-docs-sidebar > .nav');
+
 $(function() {
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
 
@@ -776,13 +782,7 @@ $(function() {
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
-        /* When switch items, the footerTop is still the same as before, which will cause the nav to not be displayed
-        (just scroll it). Can use location.reload () when switching items(but this will cause an additional interface call) */
-        if ($('.col-md-3').find('.active').length > 0) {
-            location.reload();
-        } else {
-            loadData();
-        }
+        loadData();
     });
 
     $(document).on('click', '.copy', function() {
@@ -811,17 +811,13 @@ $(function() {
     });
 
     $(window).scroll(function() {
-        var headerHeight = 51;
-        var topBottomHeight = 30;
         var scrolled = 'scrolled';
-        var heightProperty = 'max-height';
 
         var html = document.getElementsByTagName('html')[0];
         var footer = document.getElementsByTagName('footer')[0];
 
         var $win = $(window);
         var $nav = $('.col-md-3');
-        var $bar = $('.bs-docs-sidebar > .nav');
 
         var $header = $('header');
         var scrollTop = $win.scrollTop();
@@ -836,7 +832,7 @@ $(function() {
         if ($nav.css('display') !== 'none') {
             var footerTop = footer.offsetTop;
             var pageHeight = scrollTop + $win.height();
-            if (footerTop >= scrollTop && footerTop < (pageHeight)) {
+            if (footerTop >= scrollTop && footerTop < pageHeight) {
                 var footViewHeight = pageHeight - footerTop;
                 $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
             } else {
