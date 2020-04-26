@@ -200,7 +200,7 @@ for example:
 })
 
 
-@ApiReturnType --> nested annotation, use on @ApiResponse and @ApiMethod
+@ApiReturnType --> nested annotation, use on @ApiResponse or @ApiMethod
   value          --> return class, must set
   generic        --> return type of generic type, can not be set
   genericParent  --> returns the parent level of the generic type in the type, can not be set
