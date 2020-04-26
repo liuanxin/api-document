@@ -193,7 +193,7 @@ public class DemoVo {
 })
 
 
-@ApiReturnType --> 嵌套注解, 用在 @ApiResponse 和 @ApiMethod 中
+@ApiReturnType --> 嵌套注解, 用在 @ApiResponse 或 @ApiMethod 中
   value          --> 返回类型, 必须设置
   generic        --> 返回类型的泛型类型, 可以不设置
   genericParent  --> 返回类型中泛型类型的父层级, 可以不设置
