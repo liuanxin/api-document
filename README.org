@@ -334,7 +334,7 @@ for example:
   must        --> param required, can not be set, 
                   if has @RequestParam(required = true) etc... will ignore this setting
   textarea    --> can not be set, param will show with textarea(in example page), default is false
-  datePattern --> can not be set, is param type has Date, for example: MM/DD/YYYY HH:mm:ss
+  datePattern --> can not be set, is param type has Date, for example: MM/dd/yyyy HH:mm:ss
   style       --> can not be set. html style with param on page, for example: color:green;height:35px;
 #+END_SRC
 
