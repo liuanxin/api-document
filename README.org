@@ -279,7 +279,7 @@ for example:
   paramType   --> can not be set, Header or Query, default is Query
   must        --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
   textarea    --> can not be set, param will show with textarea(in example page), default is false
-  datePattern --> can not be set, is param type has Date, for example: MM/DD/YYYY HH:mm:ss
+  datePattern --> can not be set, is param type has Date, for example: MM/DD/yyyy HH:mm:ss
   style       --> can not be set. html style with param on page, for example: color:green;height:35px;
 
 @ApiParamIgnore --> in param or field
