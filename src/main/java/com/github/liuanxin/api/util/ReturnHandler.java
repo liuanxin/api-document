@@ -252,7 +252,8 @@ public final class ReturnHandler {
         if (Tools.isEmpty(type) || "void".equals(type)) {
             return null;
         }
-        if (type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")) {
+        if (type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
+                || type.equals(DEFERRED_RESULT) || type.startsWith(DEFERRED_RESULT + "<")) {
             if (type.contains("<") && type.contains(">")) {
                 type = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             } else {
