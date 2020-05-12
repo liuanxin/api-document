@@ -15,6 +15,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.Callable;
 
 @SuppressWarnings("DuplicatedCode")
 public final class ReturnHandler {
@@ -23,6 +24,7 @@ public final class ReturnHandler {
     public static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
     public static final String LEVEL_APPEND = " -> ";
 
+    private static final String CALLABLE = Callable.class.getName();
     private static final String RESPONSE_ENTITY = ResponseEntity .class.getName();
     private static final String DEFERRED_RESULT = DeferredResult.class.getName();
 
@@ -40,7 +42,8 @@ public final class ReturnHandler {
         if (Tools.isEmpty(type) || "void".equals(type)) {
             return;
         }
-        if (type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
+        if (type.equals(CALLABLE) || type.startsWith(CALLABLE + "<")
+                || type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
                 || type.equals(DEFERRED_RESULT) || type.startsWith(DEFERRED_RESULT + "<")) {
             if (type.contains("<") && type.contains(">")) {
                 type = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
@@ -252,7 +255,8 @@ public final class ReturnHandler {
         if (Tools.isEmpty(type) || "void".equals(type)) {
             return null;
         }
-        if (type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
+        if (type.equals(CALLABLE) || type.startsWith(CALLABLE + "<")
+                || type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
                 || type.equals(DEFERRED_RESULT) || type.startsWith(DEFERRED_RESULT + "<")) {
             if (type.contains("<") && type.contains(">")) {
                 type = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
