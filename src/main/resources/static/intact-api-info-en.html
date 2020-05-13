@@ -40,9 +40,9 @@
         }
         pre {
             font-size: 14px;
-            overflow: auto;
             margin: 0 0 14px;
             padding: 7px 14px;
+            overflow: auto;
         }
         pre .line-number {
             color: #2B91AF;
@@ -52,6 +52,8 @@
             border-right: 1px solid;
             text-align: right;
             padding: 0 7px 0 14px;
+        }
+        pre .source {
         }
         pre .comment {
             color: #998;
@@ -645,15 +647,13 @@ function addLine(html) {
         return '';
     }
 
-    var lineNum = html.split(/\n/).length;
-    var lineHtml = '<span class="line-number">';
-    var i;
-    for (i = 0; i < lineNum; i++) {
-        lineHtml += (i + 1) + '\n';
+    var lineHtml = '<div class="line-number">';
+    var i, lineNum = html.split(/\n/).length;
+    for (i = 1; i <= lineNum; i++) {
+        lineHtml += (i + (i !== lineNum ? '\n' : ''));
     }
-    lineHtml = lineHtml.trim();
-    lineHtml += '</span>';
-    return lineHtml + html;
+    lineHtml += '</div>';
+    return lineHtml + '<div class="source">' + html + '</div>';
 }
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
