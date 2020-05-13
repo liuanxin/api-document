@@ -844,24 +844,23 @@ $(function() {
             }
 
             var navHash = $nav.find('.active > a:last').attr('href');
-            if (navHash !== location.hash) {
+            var currentHash = location.hash;
+            if (navHash !== currentHash) {
                 if (isBlank(navHash)) {
                     if ($header.hasClass(scrolled) !== true) {
                         history.replaceState({api: 'index'}, '', location.pathname + location.search);
                     }
+                    if (isNotBlank(currentHash)) {
+                        var $anchor = $(currentHash);
+                        if ($anchor.length > 0) {
+                            var $li = $('a[href="' + currentHash + '"]').parents('li');
+                            if (!$li.hasClass('active')) {
+                                $li.addClass('active');
+                            }
+                        }
+                    }
                 } else {
                     history.replaceState({api: navHash}, '', location.pathname + location.search + navHash);
-                }
-            }
-
-            var hash = location.hash;
-            if (isNotBlank(hash)) {
-                var $anchor = $(hash);
-                if ($anchor.length > 0) {
-                    var $li = $('a[href="' + hash + '"]').parents('li');
-                    if (!$li.hasClass('active')) {
-                        $li.addClass('active');
-                    }
                 }
             }
         }
