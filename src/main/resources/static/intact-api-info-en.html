@@ -751,14 +751,16 @@ function loadData() {
                 $(this).html(addLine(html));
             });
 
-            var hash = location.hash;
-            if (isNotBlank(hash)) {
-                var $anchor = $(hash);
-                if ($anchor.length > 0) {
-                    var $li = $('a[href="' + hash + '"]').parents('li');
-                    $li.addClass('active');
-                    $li.parents('li').addClass('active');
-                    $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
+            if ($('.col-md-3').css('display') !== 'none') {
+                var hash = location.hash;
+                if (isNotBlank(hash)) {
+                    var $anchor = $(hash);
+                    if ($anchor.length > 0) {
+                        var $li = $('a[href="' + hash + '"]').parents('li');
+                        $li.addClass('active');
+                        $li.parents('li').addClass('active');
+                        $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
+                    }
                 }
             }
         } else {
@@ -849,6 +851,17 @@ $(function() {
                     }
                 } else {
                     history.replaceState({api: navHash}, '', location.pathname + location.search + navHash);
+                }
+            }
+
+            var hash = location.hash;
+            if (isNotBlank(hash)) {
+                var $anchor = $(hash);
+                if ($anchor.length > 0) {
+                    var $li = $('a[href="' + hash + '"]').parents('li');
+                    if (!$li.hasClass('active')) {
+                        $li.addClass('active');
+                    }
                 }
             }
         }

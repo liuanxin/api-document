@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
+import org.springframework.web.context.request.async.WebAsyncTask;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -24,9 +25,10 @@ public final class ReturnHandler {
     public static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
     public static final String LEVEL_APPEND = " -> ";
 
-    private static final String CALLABLE = Callable.class.getName();
     private static final String RESPONSE_ENTITY = ResponseEntity .class.getName();
+    private static final String CALLABLE = Callable.class.getName();
     private static final String DEFERRED_RESULT = DeferredResult.class.getName();
+    private static final String WEB_ASYNC_TASK = WebAsyncTask.class.getName();
 
     private static final List<String> GENERIC_CLASS_NAME = new ArrayList<>(Arrays.asList("T", "E", "A", "K", "V"));
 
@@ -42,9 +44,10 @@ public final class ReturnHandler {
         if (Tools.isEmpty(type) || "void".equals(type)) {
             return;
         }
-        if (type.equals(CALLABLE) || type.startsWith(CALLABLE + "<")
-                || type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
-                || type.equals(DEFERRED_RESULT) || type.startsWith(DEFERRED_RESULT + "<")) {
+        if (type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
+                || type.equals(CALLABLE) || type.startsWith(CALLABLE + "<")
+                || type.equals(DEFERRED_RESULT) || type.startsWith(DEFERRED_RESULT + "<")
+                || type.equals(WEB_ASYNC_TASK) || type.startsWith(WEB_ASYNC_TASK + "<")) {
             if (type.contains("<") && type.contains(">")) {
                 type = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             } else {
@@ -255,9 +258,10 @@ public final class ReturnHandler {
         if (Tools.isEmpty(type) || "void".equals(type)) {
             return null;
         }
-        if (type.equals(CALLABLE) || type.startsWith(CALLABLE + "<")
-                || type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
-                || type.equals(DEFERRED_RESULT) || type.startsWith(DEFERRED_RESULT + "<")) {
+        if (type.equals(RESPONSE_ENTITY) || type.startsWith(RESPONSE_ENTITY + "<")
+                || type.equals(CALLABLE) || type.startsWith(CALLABLE + "<")
+                || type.equals(DEFERRED_RESULT) || type.startsWith(DEFERRED_RESULT + "<")
+                || type.equals(WEB_ASYNC_TASK) || type.startsWith(WEB_ASYNC_TASK + "<")) {
             if (type.contains("<") && type.contains(">")) {
                 type = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
             } else {
