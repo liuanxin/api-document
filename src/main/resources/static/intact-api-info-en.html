@@ -846,21 +846,13 @@ $(function() {
             var navHash = $nav.find('.active > a:last').attr('href');
             var currentHash = location.hash;
             if (navHash !== currentHash) {
+                var url = location.pathname + location.search;
                 if (isBlank(navHash)) {
                     if ($header.hasClass(scrolled) !== true) {
-                        history.replaceState({api: 'index'}, '', location.pathname + location.search);
+                        history.replaceState({api: 'index'}, '', url);
                     }
                 } else {
-                    history.replaceState({api: navHash}, '', location.pathname + location.search + navHash);
-                    if (isNotBlank(navHash)) {
-                        var $anchor = $(navHash);
-                        if ($anchor.length > 0) {
-                            var $li = $('a[href="' + navHash + '"]').parents('li');
-                            if (!$li.hasClass('active')) {
-                                $li.addClass('active');
-                            }
-                        }
-                    }
+                    history.replaceState({api: navHash}, '', url + navHash);
                 }
             }
         }
