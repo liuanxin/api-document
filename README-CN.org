@@ -25,7 +25,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.6.9</version>
+    <version>0.7.0</version>
 </dependency>
 #+END_SRC
 
@@ -58,14 +58,14 @@ public class ApiInfoConfig {
                 //     new DocumentResponse(500, "请求异常").setResponse(XXX.class) // 见 @ApiReturnType 示例说明
                 // ))
 
-                // // 全局 token, 这个配置会生成在每个接口的参数中, 
+                // // 全局 token, 这个配置会生成在每个接口的参数中,
                 // // 如果想在具体的接口上忽略这些配置 或者 设置不同的参数 请使用 @ApiTokens 注解
                 // .setGlobalTokens(Arrays.asList(
                 //     DocumentParam.buildToken("x-token", "认证数据", "abc", ParamType.Header).setHasTextarea("1"),
                 //     DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
                 // ))
 
-                // // 字段说明是否输出在返回示例中, 不设置则默认是 true, 
+                // // 字段说明是否输出在返回示例中, 不设置则默认是 true,
                 // // 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
                 // .setCommentInReturnExample(false)
 
@@ -91,7 +91,7 @@ public class ApiInfoConfig {
 
 而后在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
 如果方法上的返回类型是 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理),
-ResponseEntity 会处理其定义的泛型类型(不设置将无法解析)
+~ResponseEntity~ 或 ~Callable~ 或 ~DeferredResult~ 或 ~WebAsyncTask~ 会处理其定义的泛型类型(不设置将无法解析)
 
 PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]] 的全局处理.
 泛型请务必使用确切的类型, 如 <String> <User> 等, 如果使用 <T> <Object> 这样的类型将会无法解析.
@@ -172,7 +172,7 @@ public class DemoVo {
 
 #+BEGIN_SRC java
 @ApiGroup --> 标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
-  value     --> 模块说明. 必须设置, 示例(名称-说明, 如: user-用户, 名称用来生成锚点, 
+  value     --> 模块说明. 必须设置, 示例(名称-说明, 如: user-用户, 名称用来生成锚点,
                 说明用来显示, 以 英文中横线 - 隔开, 说明如果为空则显示成名称)
   index     --> 索引, 可以不设置, 越小越靠前. 可以不设置(索引如果一致会使用 说明 排序,
                 说明如果也一致会使用 名称 排序), 同一模块在不同的地方标注且索引不同时, 以小的索引为主
@@ -208,7 +208,7 @@ public class DemoVo {
    JsonResult<XXX>  ==> @ApiReturnType(value = JsonResult.class, generic = XXX.class)
 
    JsonResult<List<XXX>> ==> @ApiReturnType(
-                                 value = JsonResult.class, 
+                                 value = JsonResult.class,
                                  genericParent = List.class,
                                  generic = XXX.class
                              )
@@ -266,7 +266,7 @@ public class DemoVo {
 @ApiParam --> 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
   value       --> 参数说明, 可以不设置
   name        --> 参数名, 可以不设置, 如果设置了将会无视参数名或字段名
-  dataType    --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举, 
+  dataType    --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举,
                   但是显示在文档上时可以传 int 时)有用: int、long、float、double、date、phone、email、url、ipv4
   example     --> 参数示例. 用在接口示例时有用, 可以不设置
   paramType   --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query

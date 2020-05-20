@@ -30,7 +30,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.6.9</version>
+    <version>0.7.0</version>
 </dependency>
 #+END_SRC
 
@@ -63,7 +63,7 @@ public class ApiInfoConfig {
                 //     new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
                 // ))
 
-                // // current config will be generated in the parameters of each api, if only want to use 
+                // // current config will be generated in the parameters of each api, if only want to use
                 // // on a specific api, or set this global config but want to ignore on a specific api,
                 // // use @ApiTokens annotation
                 // .setGlobalTokens(Arrays.asList(
@@ -80,7 +80,7 @@ public class ApiInfoConfig {
                 // //   If true, please ensure that the global response description
                 // //      and global token of all items are consistent.
                 // //      Duplication and appending together (current practice) will cause documentation errors.
-                // //   If false, multiple documents will be requested on the page, 
+                // //   If false, multiple documents will be requested on the page,
                 // //     please ensure that all projects have cors turned on,
                 // //     otherwise it will be inaccessible due to cross-domain issues
                 // .setProjectMerge(true)
@@ -99,7 +99,8 @@ public class ApiInfoConfig {
 Then mark the corresponding annotations in the corresponding controller layer(only collect the documents related to
 @RestController or @ResponseBody related classes and interfaces, If the result of the method is List,
 Set or Map will be processed by ArrayList, HashSet and HashMap),
-ResponseEntity will handle the generic type it defines (it will not be resolved without setting).
+~ResponseEntity~ or ~Callable~ or ~DeferredResult~ or ~WebAsyncTask~ will handle the generic type it defines
+(it will not be resolved without setting).
 
 PS: You can refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example project(spring boot 2)]].
 For generics, be sure to use certain types, such as <String> <User> etc. If use a type like <T> <Object> will not be able to parse
@@ -180,7 +181,7 @@ public class DemoVo {
 #+BEGIN_SRC java
 @ApiGroup --> in class or method. use the method if all of that
   value     --> module info, must set
-  index     --> can not be set, more forward when smaller("index" first, 
+  index     --> can not be set, more forward when smaller("index" first,
                 "module info" second -> with sort), if set multi module and different index, use the smaller
 
 
@@ -331,7 +332,7 @@ for example:
   // The following attributes are only used on the request parameters.
 
   paramType   --> param type, can not be set. Header or Query, default is Query
-  must        --> param required, can not be set, 
+  must        --> param required, can not be set,
                   if has @RequestParam(required = true) etc... will ignore this setting
   textarea    --> can not be set, param will show with textarea(in example page), default is false
   datePattern --> can not be set, is param type has Date, for example: MM/dd/yyyy HH:mm:ss
