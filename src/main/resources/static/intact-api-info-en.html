@@ -806,6 +806,7 @@ $(function() {
         setTimeout(function() { $copyStatus.text(''); }, 2000);
     });
 
+    var firstLink = true;
     $(window).scroll(function() {
         var headerHeight = 51;
         var topBottomHeight = 30;
@@ -849,6 +850,16 @@ $(function() {
                 if (isBlank(navHash)) {
                     if ($header.hasClass(scrolled) !== true) {
                         history.replaceState({api: 'index'}, '', url);
+                    }
+                    if (firstLink) {
+                        firstLink = false;
+                        var $anchor = $(currentHash);
+                        if ($anchor.length > 0) {
+                            var $li = $('a[href="' + currentHash + '"]').parents('li');
+                            if (!$li.hasClass('active')) {
+                                $li.addClass('active');
+                            }
+                        }
                     }
                 } else {
                     history.replaceState({api: navHash}, '', url + navHash);
