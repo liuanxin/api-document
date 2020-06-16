@@ -41,8 +41,15 @@ public class DocumentController {
 
     @PostMapping(value = ApiConst.URL_CLEAR, produces = ApiConst.PRODUCES)
     public int clear() {
-        return_info_cache = null;
-        url_map_cache = null;
+        if (Tools.isNotBlank(return_info_cache) && Tools.isNotBlank(url_map_cache)) {
+            LOCK.lock();
+            try {
+                return_info_cache = null;
+                url_map_cache = null;
+            } finally {
+                LOCK.unlock();
+            }
+        }
         return 1;
     }
 
