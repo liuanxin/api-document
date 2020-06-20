@@ -649,7 +649,7 @@ function addLine(html) {
     var lineHtml = '<div class="line-number">';
     var i, lineNum = html.split(/\n/).length;
     for (i = 1; i <= lineNum; i++) {
-        lineHtml += (i + (i !== lineNum ? '\n' : ''));
+        lineHtml += '<div>' + i + '</div>';
     }
     lineHtml += '</div>';
     return lineHtml + '<div class="source">' + html + '</div>';
@@ -783,7 +783,7 @@ $(function() {
 
     $(document).on('click', '.copy', function() {
         var $this = $(this);
-        var copyValue = $this.next().html();
+        var copyValue = $this.next().find('.source').html();
         /* remove line-num and comment */
         var firstEnd = '</span>';
         copyValue = copyValue.substring(copyValue.indexOf(firstEnd) + firstEnd.length);

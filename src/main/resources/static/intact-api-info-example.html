@@ -766,7 +766,7 @@ function addLine(html) {
     var lineHtml = '<div class="line-number">';
     var i, lineNum = html.split(/\n/).length;
     for (i = 1; i <= lineNum; i++) {
-        lineHtml += (i + (i !== lineNum ? '\n' : ''));
+        lineHtml += '<div>' + i + '</div>';
     }
     lineHtml += '</div>';
     return lineHtml + '<div class="source">' + html + '</div>';
@@ -1404,7 +1404,7 @@ $(function() {
     $(document).on('click', '.copy', function() {
         var $this = $(this);
         var $pre = $this.next();
-        var copyValue = $pre.html();
+        var copyValue = $pre.find('.source').html();
         /* 删除行号及注释 */
         var firstEnd = '</span>';
         copyValue = copyValue.substring(copyValue.indexOf(firstEnd) + firstEnd.length);
