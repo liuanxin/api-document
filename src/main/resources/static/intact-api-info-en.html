@@ -783,11 +783,7 @@ $(function() {
 
     $(document).on('click', '.copy', function() {
         var $this = $(this);
-        var copyValue = $this.next().find('.source').html();
-        /* remove line-num and comment */
-        var firstEnd = '</span>';
-        copyValue = copyValue.substring(copyValue.indexOf(firstEnd) + firstEnd.length);
-        copyValue = copyValue.replace(/<span class=".*">|<\/span>/g, '');
+        var copyValue = $this.next().find('.source').html().replace(/<span class=".*?">|<\/span>/g, '');
 
         var copyElement = document.createElement('textarea');
         copyElement.setAttribute('readonly', 'readonly');
