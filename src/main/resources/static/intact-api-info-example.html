@@ -72,6 +72,7 @@
             margin: 0 0 14px;
             padding: 7px 14px;
             overflow: auto;
+            max-height: 546px;
         }
         pre .line-number {
             color: #2B91AF;
@@ -80,6 +81,14 @@
             border-right: 1px solid;
             text-align: right;
             padding: 0 7px 0 14px;
+        }
+        pre .use-time {
+            position: sticky;
+            top: 0;
+            padding: 7px 0;
+            margin-bottom: 7px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
         }
         pre .source {
         }
@@ -196,7 +205,8 @@
             position: absolute;
             color: rgba(255, 0, 0, .8);
             margin: 7px 14px 0 0;
-            padding-right: 65px;
+            padding-right: 70px;
+            z-index: 2;
         }
         .copy {
             right: 0;
@@ -204,8 +214,9 @@
             cursor: pointer;
             color: rgba(140, 140, 140, .8);
             margin: 7px 14px 0 0;
-            padding-right: 14px;
+            padding-right: 20px;
             transition: color .1s;
+            z-index: 2;
         }
         .copy:hover {
             color: rgb(100, 100, 100);
@@ -780,7 +791,8 @@ function getProjectDomain() {
 }
 function timeLog(start) {
     var end = new Date().getTime();
-    return '请求时长: ' + (end - start) + 'ms\n' + formatDate(start) + ' -> ' + formatDate(end) + '\n\n';
+    return '<div class="use-time"><div>use time: ' + (end - start) + 'ms</div>' +
+        '<div>' + formatDate(start) + ' -> ' + formatDate(end) + '</div></div>';
 }
 function objectifyForm(form) {
     var headers = {};
@@ -1369,6 +1381,7 @@ $(function() {
                 html += addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent));
             }
             responseData.attr('data-remove-comment', '1');
+            responseData.css('padding-top', '0');
             responseData.css('white-space', '');
             responseData.html(html);
             response.show();
@@ -1393,6 +1406,7 @@ $(function() {
                 }
             }
             responseData.removeAttr('data-remove-comment');
+            responseData.css('padding-top', 'unset');
             responseData.css('white-space', 'pre-wrap');
             responseData.html(html);
             response.show();
