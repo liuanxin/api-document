@@ -233,16 +233,18 @@
         .right-arrow {
             position: fixed;
             top: calc(50px + 1px + 15px);
+            right: 0;
             border-radius: 26px 0 0 26px;
             box-shadow: -1px 0 6px rgba(0,0,0,.2);
             width: 26px;
             height: 26px;
-            transition: right .5s ease;
             cursor: pointer;
             background: #fff;
             z-index: 2;
         }
         .right-arrow .img {
+            width: 26px;
+            height: 26px;
             transition: transform .5s ease;
         }
 
@@ -352,17 +354,11 @@
                 padding-left: 10px;
                 width: calc(25% - 10px - 10px);
             }
-            .right-arrow {
-                right: calc(25% - 20px);
-            }
         }
         @media (min-width: 1201px) {
             .bs-docs-sidebar {
                 padding-left: 20px;
                 width: calc(25% - 20px - 10px);
-            }
-            .right-arrow {
-                right: calc(25% - 30px);
             }
         }
     </style>
@@ -742,10 +738,10 @@
             {{?}}
             {{~}}
         </script>
+        <div class="right-arrow print-nil">
+            <svg viewBox="0 0 24 24" class="img"><path d="M0 0h24v24H0z" fill="none"></path><path d="M8.59,16.59L13.17,12L8.59,7.41L10,6l6,6l-6,6L8.59,16.59z"></path></svg>
+        </div>
         <div class="col-md-3">
-            <div class="right-arrow print-nil">
-                <svg viewBox="0 0 24 24" class="img"><path d="M0 0h24v24H0z" fill="none"></path><path d="M8.59,16.59L13.17,12L8.59,7.41L10,6l6,6l-6,6L8.59,16.59z"></path></svg>
-            </div>
             <div class="bs-docs-sidebar">
                 <ul id="url-nav-info" class="nav"></ul>
                 <script id="url-nav-render" type="text/x-dot-template">
@@ -1446,15 +1442,12 @@ $(function() {
         var $nav = $('.col-md-3');
         var $content = $('.col-md-9');
 
-        let $this = $(this);
-        var $img = $this.find('.img');
+        var $img = $(this).find('.img');
         if (String($img.attr('style')).includes('rotate(180deg)')) {
-            $this.css('right', '');
             $img.css('transform', '');
             $nav.css('width', '');
             $content.css('width', '');
         } else {
-            $this.css('right', '0');
             $img.css('transform', 'rotate(180deg)');
             $nav.css('width', '0');
             $content.css('width', '100%');
