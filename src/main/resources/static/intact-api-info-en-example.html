@@ -1200,9 +1200,14 @@ function getComment(lineFieldRelation, fieldCommentRelation, key) {
 }
 
 $(function() {
+    var firstLink = true;
+
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
 
     $(document).on('change', '.project-choose', function() {
+        if (!firstLink) {
+            firstLink = true;
+        }
         var projectUrl = $(this).find('option:selected').data('url');
         var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
@@ -1478,7 +1483,6 @@ $(function() {
         setTimeout(function() { $copyStatus.text(''); }, 2000);
     });
 
-    var firstLink = true;
     $(window).scroll(function() {
         var headerHeight = 51;
         var topBottomHeight = 30;
