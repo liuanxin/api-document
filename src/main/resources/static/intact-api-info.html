@@ -101,7 +101,7 @@
         .panel {
             overflow: auto;
         }
-        .module {}
+        .module, .module-last {}
         .module-name {
             border-bottom: 5px solid #eee;
             margin-bottom: -5px;
@@ -110,7 +110,7 @@
             border-bottom: 1px solid #eee;
             padding-bottom: 5px;
         }
-        .module:last-of-type > .module-api:last-child {
+        .module-last > .module-api:last-child {
             border-bottom: none;
         }
         .module-api-index {}
@@ -337,7 +337,7 @@
         <div id="url-info" class="col-md-9"></div>
         <script id="url-render" type="text/x-dot-template">
             {{~ it.moduleList  :module:index}}
-            <div class="module">
+            <div class="{{= index + 1 === it.moduleList.length ? 'module-last' : 'module'}}">
                 <span id="{{= module.name}}" class="anchor"></span>
                 <h2 class="module-name">
                     <span>{{= index + 1}}</span> {{= module.info || ''}}
