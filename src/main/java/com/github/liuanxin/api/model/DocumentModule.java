@@ -27,10 +27,10 @@ public class DocumentModule implements Comparable<DocumentModule> {
     }
     public void fillNameAndInfo(String groupName) {
         if (Tools.isNotEmpty(groupName)) {
-            String[] split = groupName.split(ApiConst.HORIZON);
-            if (split.length > 1) {
-                this.name = split[0];
-                this.info = split[1];
+            if (groupName.contains(ApiConst.HORIZON)) {
+                int index = groupName.indexOf(ApiConst.HORIZON);
+                this.name = groupName.substring(0, index);
+                this.info = groupName.substring(index + 1);
             } else {
                 this.name = this.info = groupName;
             }

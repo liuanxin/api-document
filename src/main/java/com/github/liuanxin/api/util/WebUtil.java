@@ -159,24 +159,28 @@ public final class WebUtil {
                         document.setResponseList(methodResponse(handlerMethod, commentInReturn, recordLevel));
 
                         documentMap.put(id, document);
+
                         // add DocumentUrl to DocumentModule
                         ApiGroup apiGroup = getAnnotation(handlerMethod, ApiGroup.class);
-                        if (Tools.isBlank(apiGroup)) {
-                            // if no annotation on class, use ClassName(if className include Controller then remove)
-                            String className = handlerMethod.getBeanType().getSimpleName();
-                            String info = className;
 
-                            String classSuffix = "controller";
-                            String lowerClassName = className.toLowerCase();
-                            if (lowerClassName.endsWith(classSuffix)) {
-                                info = className.substring(0, lowerClassName.indexOf(classSuffix));
-                            }
+                        // ClassName(if className include Controller then remove)
+                        String className = handlerMethod.getBeanType().getSimpleName();
+                        String info = className;
+
+                        String classSuffix = "controller";
+                        String lowerClassName = className.toLowerCase();
+                        if (lowerClassName.endsWith(classSuffix)) {
+                            info = className.substring(0, lowerClassName.indexOf(classSuffix));
+                        }
+                        if (Tools.isBlank(apiGroup)) {
                             addGroup(moduleMap, 0, info + ApiConst.HORIZON + className, document);
                         } else {
                             int index = apiGroup.index();
                             for (String group : apiGroup.value()) {
                                 if (Tools.isNotBlank(group)) {
-                                    addGroup(moduleMap, index, group, document);
+                                    String groupName = group.contains(ApiConst.HORIZON)
+                                            ? group : (info + ApiConst.HORIZON + group);
+                                    addGroup(moduleMap, index, groupName, document);
                                 }
                             }
                         }
