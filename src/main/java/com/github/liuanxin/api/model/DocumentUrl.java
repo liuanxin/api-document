@@ -42,6 +42,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
 
     private String useGlobalParam = ApiConst.EMPTY;
     private String requestBody = ApiConst.EMPTY;
+    private String basicParamRequestBody = ApiConst.EMPTY;
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;

@@ -122,6 +122,7 @@ public final class WebUtil {
                             }
                         }
                         document.setRequestBody(hasRequestBody(handlerMethod) ? "1" : ApiConst.EMPTY);
+                        document.setBasicParamRequestBody(hasBasicParamRequestBody(handlerMethod) ? "1" : ApiConst.EMPTY);
                         document.setParamList(paramList);
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
@@ -325,13 +326,25 @@ public final class WebUtil {
     }
 
     private static boolean hasRequestBody(HandlerMethod handlerMethod) {
-        for (MethodParameter parameter : handlerMethod.getMethodParameters()) {
-            RequestBody body = parameter.getParameterAnnotation(RequestBody.class);
-            if (Tools.isNotBlank(body)) {
-                return true;
-            }
+        MethodParameter[] parameters = handlerMethod.getMethodParameters();
+        if (parameters.length > 1) {
+            return false;
         }
-        return false;
+
+        MethodParameter parameter = parameters[0];
+        RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
+        return Tools.isNotBlank(requestBody);
+    }
+
+    private static boolean hasBasicParamRequestBody(HandlerMethod handlerMethod) {
+        MethodParameter[] parameters = handlerMethod.getMethodParameters();
+        if (parameters.length > 1) {
+            return false;
+        }
+
+        MethodParameter parameter = parameters[0];
+        RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
+        return Tools.isNotBlank(requestBody) && Tools.basicType(parameter.getParameterType());
     }
 
     private static String getExampleUrl(String param) {

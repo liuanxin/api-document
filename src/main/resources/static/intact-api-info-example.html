@@ -571,6 +571,8 @@
                         var textNum = 0;
                         }}
                         <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}
+                              {{? String(url.requestBody) === '1'}} requestBody="1"{{?}}
+                              {{? String(url.basicParamRequestBody) === '1'}} basicParamRequestBody="1"{{?}}
                               {{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
                             {{? paramList && paramList.length > 0}}
                             <div class="bottom-table panel panel-default">
@@ -669,7 +671,7 @@
                             <p>
                                 /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
                                 {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
-                                <input class="form-submit btn" type="button" value="请求此接口"{{? String(url.requestBody) === '1'}} requestBody="1"{{?}}/>
+                                <input class="form-submit btn" type="button" value="请求此接口"/>
                             </p>
                             <div class="curl">
                                 <div class="copy-status print-nil"></div>
@@ -1246,10 +1248,11 @@ $(function() {
         if (isBlank(url)) {
             url = '';
         }
-        var hasRequestBody = String($btn.attr('requestBody')) === '1';
+        var hasRequestBody = String($form.attr('requestBody')) === '1';
         if (isBlank(method)) {
             method = hasRequestBody ? 'POST' : 'GET';
         }
+        var hasBasicParamRequestBody = String($form.attr('basicParamRequestBody')) === '1';
 
         var map = objectifyForm($form);
         var params = map[0];
@@ -1310,7 +1313,7 @@ $(function() {
         } else {
             if (Object.getOwnPropertyNames(params).length > 0) {
                 if (hasRequestBody) {
-                    curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
+                    curlHtml += "&nbsp; -d '" + (hasBasicParamRequestBody ? params[Object.keys(params)[0]] : JSON.stringify(params)) + "'" + line;
                 } else {
                     if ('GET' === method.toUpperCase()) {
                         var paramArr = [];
