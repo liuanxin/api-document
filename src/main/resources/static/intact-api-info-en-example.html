@@ -1242,6 +1242,9 @@ $(function() {
 
         var projectDomain = getProjectDomain();
         var method = $form.attr('method');
+        if (isBlank(method)) {
+            method = 'GET';
+        }
         var url = $form.attr('action');
         var hasRequestBody = String($btn.attr('requestBody')) === '1';
 
