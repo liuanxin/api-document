@@ -24,14 +24,14 @@ public @interface ApiMethod {
      *
      * true  : output in the return example.
      * false : listed separately.
-     * @return return whether the sample contains a comment
+     * @return return whether the example contains comment
      */
     boolean[] commentInReturnExample() default {};
 
     /**
      * true  : the hierarchical relationship corresponding to the field will be used to process the comment, Generics be sure to use determined types.
      * false : will use index corresponding to the field to process the comment, when use @JsonPropertyOrder to change field sort, there will be problems.
-     * @return use default
+     * @return return whether the comment is displayed in a hierarchy
      */
     boolean commentInReturnExampleWithLevel() default true;
 
