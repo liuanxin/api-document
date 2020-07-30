@@ -1242,14 +1242,14 @@ $(function() {
 
         var projectDomain = getProjectDomain();
         var method = $form.attr('method');
-        if (isBlank(method)) {
-            method = 'GET';
-        }
         var url = $form.attr('action');
         if (isBlank(url)) {
             url = '';
         }
         var hasRequestBody = String($btn.attr('requestBody')) === '1';
+        if (isBlank(method)) {
+            method = hasRequestBody ? 'POST' : 'GET';
+        }
 
         var map = objectifyForm($form);
         var params = map[0];
