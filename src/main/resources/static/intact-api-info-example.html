@@ -1246,6 +1246,9 @@ $(function() {
             method = 'GET';
         }
         var url = $form.attr('action');
+        if (isBlank(url)) {
+            url = '';
+        }
         var hasRequestBody = String($btn.attr('requestBody')) === '1';
 
         var map = objectifyForm($form);
