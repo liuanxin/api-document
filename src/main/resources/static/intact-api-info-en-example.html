@@ -571,8 +571,8 @@
                         var textNum = 0;
                         }}
                         <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}
-                              {{? String(url.requestBody) === '1'}} requestBody="1"{{?}}
-                              {{? String(url.basicParamRequestBody) === '1'}} basicParamRequestBody="1"{{?}}
+                              {{? String(url.requestBody) === '1'}} request-body="1"{{?}}
+                              {{? String(url.basicParamRequestBody) === '1'}} basic-param-request-body="1"{{?}}
                               {{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
                             {{? paramList && paramList.length > 0}}
                             <div class="bottom-table panel panel-default">
@@ -1248,11 +1248,11 @@ $(function() {
         if (isBlank(url)) {
             url = '';
         }
-        var hasRequestBody = String($form.attr('requestBody')) === '1';
+        var hasRequestBody = String($form.attr('request-body')) === '1';
         if (isBlank(method)) {
             method = hasRequestBody ? 'POST' : 'GET';
         }
-        var hasBasicParamRequestBody = String($form.attr('basicParamRequestBody')) === '1';
+        var hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
         var map = objectifyForm($form);
         var params = map[0];
