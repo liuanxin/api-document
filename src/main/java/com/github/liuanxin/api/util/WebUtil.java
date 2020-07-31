@@ -338,13 +338,13 @@ public final class WebUtil {
 
     private static boolean hasBasicParamRequestBody(HandlerMethod handlerMethod) {
         MethodParameter[] parameters = handlerMethod.getMethodParameters();
-        if (parameters.length > 1) {
+        if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
+            MethodParameter parameter = parameters[0];
+            RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
+            return Tools.isNotBlank(requestBody) && Tools.basicType(parameter.getParameterType());
+        } else {
             return false;
         }
-
-        MethodParameter parameter = parameters[0];
-        RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-        return Tools.isNotBlank(requestBody) && Tools.basicType(parameter.getParameterType());
     }
 
     private static String getExampleUrl(String param) {
