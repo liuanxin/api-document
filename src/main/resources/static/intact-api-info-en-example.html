@@ -1398,7 +1398,7 @@ $(function() {
                 }
                 settings['contentType'] = 'application/json';
                 settings['dataType'] = 'json';
-                settings['data'] = JSON.stringify(params);
+                settings['data'] = (hasBasicParamRequestBody ? params[Object.keys(params)[0]] : JSON.stringify(params));
             } else {
                 settings['data'] = params;
             }
