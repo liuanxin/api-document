@@ -25,7 +25,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.7.5</version>
+    <version>0.7.6</version>
 </dependency>
 #+END_SRC
 
@@ -43,14 +43,14 @@ public class ApiInfoConfig {
     private boolean online;
 
     @Bean
-    public DocumentCopyright apiCopyright() {
+    public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("标题", "团队", "版本号", "版权")
 
                 // // true 则不进行文档收集, 默认是 false
                 // .setOnline(online)
 
                 // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
-                // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+                // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
 
                 // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
                 // .setGlobalResponse(Arrays.asList(
@@ -265,7 +265,7 @@ public class DemoVo {
 
 @ApiParam --> 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
   value       --> 参数说明, 可以不设置
-  name        --> 参数名, 可以不设置, 如果设置了将会无视参数名或字段名
+  name        --> 参数名, 可以不设置, 如果设置了将会无视参数名或字段名
   dataType    --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举,
                   但是显示在文档上时可以传 int 时)有用: int、long、float、double、date、phone、email、url、ipv4
   example     --> 参数示例. 用在接口示例时有用, 可以不设置
@@ -313,7 +313,7 @@ public class DemoVo {
 @ApiModel --> 结合了 @ApiParam 和 @ApiReturn 两个注解的注解,
               可以同时说明请求参数和返回字段, 请不要滥用, 应该尽量用前两者
   value     --> 返回或参数说明, 可以不设置
-  name      --> 返回或参数名, 可以不设置, 如果设置了将会无视参数名或字段名
+  name      --> 返回或参数名, 可以不设置, 如果设置了将会无视参数名或字段名
   dataType  --> 返回或参数的数据类型. 可以不设置, 自定义时有用: int、long、float、double、date、phone、email、url、ipv4
   example   --> 返回或参数的示例. 用在接口示例时有用, 可以不设置
 

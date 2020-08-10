@@ -30,7 +30,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.7.5</version>
+    <version>0.7.6</version>
 </dependency>
 #+END_SRC
 
@@ -48,14 +48,14 @@ public class ApiInfoConfig {
     private boolean online;
 
     @Bean
-    public DocumentCopyright apiCopyright() {
+    public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
 
                 // // not collect if true, default is false.
                 // .setOnline(online)
 
                 // // if some api can't use @ApiIgnore, set this(url|method, method can be ignore)
-                // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+                // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
 
                 // // if class or method has @ApiResponses, use that
                 // .setGlobalResponse(Arrays.asList(
@@ -273,7 +273,7 @@ for example:
 
 @ApiParam --> in param or field
   value       --> param comment, can not be set
-  name        --> if set, can not be set, will ignore param name or field name
+  name        --> if set, can not be set, will ignore param name or field name
   dataType    --> if type was custom can use, can not be set(for example: enum,
                   but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
   example     --> used in api examples, can not be set
@@ -323,7 +323,7 @@ for example:
 @ApiModel --> Combined with the annotations of the @ApiParam and @ApiReturn,
               Please do not abuse. You should try to use the first two.
   value     --> (return type or param name)'s comment, can not be set
-  name      --> (return type or param name)'s name, can not be set
+  name      --> (return type or param name)'s name, can not be set
   dataType  --> (return type or param name)'s type, can not be set,
                 use with customize: int、long、float、double、date、phone、email、url、ipv4
   example   --> (return type or param name)'s example, can not be set
