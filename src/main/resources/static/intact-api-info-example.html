@@ -1398,7 +1398,7 @@ $(function() {
                 }
                 settings['contentType'] = 'application/json';
                 settings['dataType'] = 'json';
-                settings['data'] = (hasBasicParamRequestBody ? params[Object.keys(params)[0]] : JSON.stringify(params));
+                settings['data'] = (hasBasicParamRequestBody ? (Object.getOwnPropertyNames(params).length > 0 ? params[Object.keys(params)[0]] : '') : JSON.stringify(params));
             } else {
                 settings['data'] = params;
             }
