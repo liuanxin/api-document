@@ -645,7 +645,7 @@
                                                 <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                                 <input type="text" name="{{= param.name || ''}}"{{= header}}
                                                        class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
-                                                       {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY')}}"{{?}}/>
+                                                       {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
                                             </div>
                                             {{??}}
                                             {{ textNum++; }}
