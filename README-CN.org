@@ -299,7 +299,7 @@ public class DemoVo {
     paramType   --> 参数类型. 可以不设置. Header 或 Query 两种, 默认是 Header
     must        --> 参数是否必须. 可以不设置, 默认是 false
     textarea    --> 参数是否显示成文本域, 用在接口示例时有用, 可以不设置, 默认是 false
-    datePattern --> 参数类型是 date 时的时间格式. 可以不设置, 如: YYYY-MM-DD HH:mm:ss
+    datePattern --> 参数类型是 date 时的时间格式. 可以不设置, 如: yyyy-MM-dd HH:mm:ss
     style       --> 参数在页面上 的样式, 可以不设置
 
 示例如下:
