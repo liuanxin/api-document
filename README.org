@@ -88,8 +88,8 @@ public class ApiInfoConfig {
                 // // Collecting document for other projects
                 // .setProjectMap(new LinkedHashMap<String, String>() {{
                 //         // key: name, value: project address
-                //         put("user", "http://ip:port/user");
-                //         put("product", "http://ip:port/product");
+                //         put("user", "http://ip:port2");
+                //         put("product", "http://ip:port3");
                 // }})
                 ;
     }
