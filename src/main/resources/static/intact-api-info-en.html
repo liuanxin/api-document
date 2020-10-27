@@ -687,6 +687,37 @@ function isBlank(str) {
 function isNotBlank(str) {
     return !isBlank(str);
 }
+function hasEnter(event) {
+    if (event.defaultPrevented) {
+        return;
+    }
+
+    var handled;
+    if (event.key !== undefined) {
+        handled = event.key.toUpperCase() === 'ENTER';
+    } else if (event.keyIdentifier !== undefined) {
+        handled = event.keyIdentifier.toUpperCase() === 'ENTER';
+    } else if (event.keyCode !== undefined) {
+        handled = event.keyCode === 13 || event.keyCode === '13';
+    } else {
+        handled = false;
+    }
+    if (handled) {
+        event.preventDefault();
+    }
+    return handled;
+}
+function newRequest() {
+    var url = $('#prefix-url').val();
+    if (isNotBlank(url)) {
+        if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
+            url = location.protocol + '//' + url;
+        }
+        localStorage.setItem('prefix-url', url);
+        $('#config-prefix').modal('hide');
+        loadMulti();
+    }
+}
 function addLine(html) {
     if (isBlank(html)) {
         return '';
@@ -862,16 +893,13 @@ $(function() {
         }
     });
 
-    $(document).on('click', '.config-btn', function() {
-        var url = $('#prefix-url').val();
-        if (isNotBlank(url)) {
-            if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
-                url = location.protocol + '//' + url;
-            }
-            localStorage.setItem('prefix-url', url);
-            $('#config-prefix').modal('hide');
-            loadMulti();
+    $(document).on('keydown', '#prefix-url', function(e) {
+        if (hasEnter(e)) {
+            newRequest();
         }
+    });
+    $(document).on('click', '.config-btn', function() {
+        newRequest();
     });
 
     $(document).on('click', '.copy', function() {
