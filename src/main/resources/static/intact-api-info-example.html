@@ -135,6 +135,13 @@
             margin: 5px 0;
             text-align: center;
         }
+        .config {
+          margin-top: 10px;
+        }
+        .config .config-prefix {
+          color: #5f9ea0;
+          cursor: pointer;
+        }
 
         .panel {
             overflow: auto;
@@ -364,6 +371,21 @@
     </style>
 </head>
 <body>
+<div id="config-prefix" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">配置请求地址(当使用二级目录时)</h4>
+        </div>
+        <div class="modal-body">
+            <input id="prefix-url" class="form-control" placeholder="如: http://www.example.com/context"/>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="config-btn btn btn-info">提交</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        </div>
+    </div>
+</div>
 <header class="print-nil">
     <div class="header container-fluid">
         <div class="header-content"></div>
@@ -810,7 +832,15 @@ function addLine(html) {
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+function getDomain() {
+    var url = localStorage.getItem('prefix-url');
+    return isBlank(url) ? (location.protocol + '//' + location.host) : url;
+}
 function getProjectDomain() {
+    var url = localStorage.getItem('prefix-url');
+    if (isNotBlank(url)) {
+        return url;
+    }
     var projectDomain = $('.project-choose').find('option:selected').data('url');
     return isBlank(projectDomain) ? (location.protocol + '//' + location.host) : projectDomain;
 }
@@ -873,25 +903,29 @@ var copyrightTemplate = doT.template($('#copyright').html());
 var urlRenderTemplate = doT.template($('#url-render').html());
 var navRenderTemplate = doT.template($('#url-nav-render').html());
 
-$.get('/api/project').done(function(data) {
-    if (isNotBlank(data)) {
-        var projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
-        if (isNotBlank(projectInfo)) {
-            var project = location.search;
-            var param = 'p=', append = '&';
-            if (project.includes(param)) {
-                project = project.substring(project.indexOf(param) + param.length);
-                if (project.includes(append)) {
-                    project = project.substring(0, project.indexOf(append));
+loadMulti();
+
+function loadMulti() {
+    $.get(getDomain() + '/api/project').done(function (data) {
+        if (isNotBlank(data)) {
+            var projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+            if (isNotBlank(projectInfo)) {
+                var project = location.search;
+                var param = 'p=', append = '&';
+                if (project.includes(param)) {
+                    project = project.substring(project.indexOf(param) + param.length);
+                    if (project.includes(append)) {
+                        project = project.substring(0, project.indexOf(append));
+                    }
                 }
+                $(".header").append(chooseProjectTemplate({"project": project, "projects": projectInfo}));
             }
-            $(".header").append(chooseProjectTemplate({ "project" : project, "projects" : projectInfo }));
         }
-    }
-    loadData();
-}).fail(function() {
-    loadData();
-});
+        loadData();
+    }).fail(function () {
+        loadData();
+    });
+}
 
 function loadData() {
     var $title = $('title');
@@ -936,6 +970,7 @@ function loadData() {
             $urlInfo.html(urlRenderTemplate(doc));
             $urlNavInfo.html(navRenderTemplate(doc));
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)');
+            $('.right-arrow').css('display', 'unset');
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
@@ -977,7 +1012,10 @@ function loadData() {
         }
     }).fail(function(error) {
         console.error(method + ' ' + requestUrl + ' 错误: ' + JSON.stringify(error));
-        $urlInfo.html('<span class="red">接口无法请求, 网络有误 或 有跨域问题</span>');
+        $('.right-arrow').css('display', 'none');
+        $urlInfo.html('<div class="config red">接口无法请求, 网络有误 或 有跨域问题</div>' +
+            '<div class="config">请求的前缀不对? <span class="config-prefix" data-toggle="modal" ' +
+            'data-target="#config-prefix">重新配置</span></div>');
     });
 }
 
@@ -1463,6 +1501,18 @@ $(function() {
             $img.css('transform', 'rotate(180deg)');
             $nav.css('width', '0');
             $content.css('width', '100%');
+        }
+    });
+
+    $(document).on('click', '.config-btn', function() {
+        var url = $('#prefix-url').val();
+        if (isNotBlank(url)) {
+            if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
+                url = location.protocol + '//' + url;
+            }
+            localStorage.setItem('prefix-url', url);
+            $('#config-prefix').modal('hide');
+            loadMulti();
         }
     });
 
