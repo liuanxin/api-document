@@ -348,7 +348,7 @@
                 width: 100%;
             }
             .right-arrow, .col-md-3 {
-                display: none !important;
+                display: none;
             }
         }
         @media (max-width: 992px) {
@@ -1001,7 +1001,7 @@ function loadData() {
             $urlInfo.html(urlRenderTemplate(doc));
             $urlNavInfo.html(navRenderTemplate(doc));
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)');
-            $('.right-arrow').css('display', 'unset');
+            $('.right-arrow').css('display', '');
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
