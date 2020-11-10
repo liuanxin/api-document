@@ -900,7 +900,7 @@ $(function() {
     });
 
     $('#config-prefix-url').on('show.bs.modal', function () {
-        $('prefix-url').val(localStorage.getItem(localServerPathItem));
+        $('#prefix-url').val(localStorage.getItem(localServerPathItem));
     })
     $(document).on('click', '#delete-prefix', function() {
         localStorage.removeItem(localServerPathItem);
