@@ -138,7 +138,7 @@
             color: #23527c;
             text-decoration: underline;
         }
-        #config-prefix .modal-dialog {
+        #config-prefix-url .modal-dialog {
             top: 85px;
         }
         .modal-dialog {
@@ -715,7 +715,7 @@ function newRequest() {
             url = location.protocol + '//' + url;
         }
         localStorage.setItem(localServerPathItem, url);
-        $('#config-prefix').modal('hide');
+        $('#config-prefix-url').modal('hide');
         loadMulti();
     }
 }
@@ -866,10 +866,8 @@ function loadData() {
 function handleError($arrow, $ele, info) {
     $arrow.css('display', 'none');
     $ele.html('<div class="config red">' + info + '</div>' +
-        '<div class="config">' +
-        '请求的前缀不对? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix">配置</span> ' +
-        '配置有误? <span id="delete-prefix" class="config-prefix">删除配置</span>' +
-        '</div>');
+        '<div class="config">请求的前缀不对? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">配置</span></div>' +
+        '<div class="config">配置有误? <span id="delete-prefix" class="config-prefix">删除配置</span></div>');
 }
 
 $(function() {
@@ -901,9 +899,12 @@ $(function() {
         }
     });
 
+    $('#config-prefix-url').on('show.bs.modal', function () {
+        $('prefix-url').val(localStorage.getItem(localServerPathItem););
+    })
     $(document).on('click', '#delete-prefix', function() {
         localStorage.removeItem(localServerPathItem);
-        newRequest();
+        loadMulti();
     });
     $(document).on('keydown', '#prefix-url', function(e) {
         if (hasEnter(e)) {
