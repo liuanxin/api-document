@@ -183,6 +183,9 @@
             color: #23527c;
             text-decoration: underline;
         }
+        #config-prefix .modal-dialog {
+            top: 85px;
+        }
         .modal-dialog {
             width: 75%;
         }
@@ -646,10 +649,12 @@
                                                     <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
                                                 </span>
                                             </label>
-                                            <input type="text" class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}" readonly="readonly">
+                                            <input type="text"{{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                                   class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                         </div>
                                         {{?? hasTextarea}}
-                                        <textarea class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                        <textarea {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                                  class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                         {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
                                         <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                             <option></option>
@@ -666,12 +671,14 @@
                                         <div class="input-group date form-datetime">
                                             <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                             <input type="text" name="{{= param.name || ''}}"{{= header}}
+                                                   {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
                                                    class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
                                                    {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
                                         </div>
                                         {{??}}
                                         {{ textNum++; }}
-                                        <input class="form-control{{= validateClass}}{{= tokenClass}}"
+                                        <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                               class="form-control{{= validateClass}}{{= tokenClass}}"
                                                type="{{= (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
                                                name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                         {{?}}

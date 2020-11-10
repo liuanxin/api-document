@@ -24,7 +24,13 @@ public class Recursive {
     private Class<?> self;
 
 
-    /** use with field: new Recursive(parent, fieldName, field.getGenericType().toString()) */
+    /**
+     * use with field: new Recursive(parent, fieldName, field.getGenericType().toString())
+     *
+     * @param parent parent
+     * @param fieldName field name
+     * @param genericType generic type
+     */
     public Recursive(Recursive parent, String fieldName, String genericType) {
         this.parent = parent;
         this.fieldName = fieldName;
@@ -56,6 +62,7 @@ public class Recursive {
      *
      * will return <span style="color:green">true</span>
      * </pre>
+     * @return recursive return true
      */
     public boolean checkRecursive() {
         return check(self, parent);
@@ -87,6 +94,8 @@ public class Recursive {
      * public class C { ... private Map&lt;String, A&gt; xxx; }
      * will return <span style="color:green">"A --&gt; B x --&gt; C xx --&gt; A xxx --&gt; B x"</span>
      * </pre>
+     *
+     * @return orbit
      */
     public String getOrbit() {
         StringBuilder sbd = new StringBuilder();

@@ -40,11 +40,13 @@ public @interface ApiMethod {
      * regardless of this value when commentInReturnExample is true.
      *
      * forget this. It's a bad ide
+     * @return comment print record level
      */
     boolean[] returnRecordLevel() default {};
 
     /**
      * customize return type, if set will ignore 「the return type」 on method
+     * @return customize return type
      */
     ApiReturnType[] returnType() default {};
 }

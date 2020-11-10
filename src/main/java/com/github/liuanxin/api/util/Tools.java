@@ -420,9 +420,15 @@ public class Tools {
     }
 
     static boolean hasInDepth(String showDataType, Class<?> parameterType) {
+        if (!notShowByBasicType(showDataType)) {
+            return false;
+        }
+        if (basicType(parameterType)) {
+            return false;
+        }
         return !MultipartFile.class.isAssignableFrom(parameterType)
-                && notBasicType(parameterType)
-                && notShowByBasicType(showDataType);
+                    && !Collection.class.isAssignableFrom(parameterType)
+                    && !Map.class.isAssignableFrom(parameterType);
     }
     private static boolean notShowByBasicType(String dataType) {
         if (isNotEmpty(dataType)) {
