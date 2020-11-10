@@ -100,10 +100,6 @@
         .config {
             margin-top: 10px;
         }
-        .config .config-prefix {
-            color: #5f9ea0;
-            cursor: pointer;
-        }
 
         .panel {
             overflow: auto;
@@ -132,13 +128,13 @@
         .text-left {
             vertical-align: middle !important;
         }
-        .response-example {
+        .config .config-prefix, .response-example {
             color: #337ab7;
             text-decoration: none;
             background-color: transparent;
             cursor: pointer;
         }
-        .response-example:focus, .response-example:hover {
+        .config .config-prefix:hover, .response-example:hover {
             color: #23527c;
             text-decoration: underline;
         }
@@ -870,9 +866,10 @@ function loadData() {
 function handleError($arrow, $ele, info) {
     $arrow.css('display', 'none');
     $ele.html('<div class="config red">' + info + '</div>' +
-        '<div class="config">context-path error? ' +
-        '<span class="config-prefix" data-toggle="modal" data-target="#config-prefix">config</span> ' +
-        '<span id="delete-prefix" class="config-prefix">delete config</span></div>');
+        '<div class="config">' +
+        'context-path error? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix">config</span> ' +
+        'config error? <span id="delete-prefix" class="config-prefix">delete</span>' +
+        '</div>');
 }
 
 $(function() {
@@ -906,6 +903,7 @@ $(function() {
 
     $(document).on('click', '#delete-prefix', function() {
         localStorage.removeItem(localServerPathItem);
+        newRequest();
     });
     $(document).on('keydown', '#prefix-url', function(e) {
         if (hasEnter(e)) {
