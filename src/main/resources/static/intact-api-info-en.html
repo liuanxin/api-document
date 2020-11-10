@@ -714,8 +714,8 @@ function newRequest() {
         if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
             url = location.protocol + '//' + url;
         }
-        localStorage.setItem(localServerPathItem, url);
     }
+    localStorage.setItem(localServerPathItem, url);
     $('#config-prefix-url').modal('hide');
     loadMulti();
 }
