@@ -715,9 +715,9 @@ function newRequest() {
             url = location.protocol + '//' + url;
         }
         localStorage.setItem(localServerPathItem, url);
-        $('#config-prefix-url').modal('hide');
-        loadMulti();
     }
+    $('#config-prefix-url').modal('hide');
+    loadMulti();
 }
 function addLine(html) {
     if (isBlank(html)) {
