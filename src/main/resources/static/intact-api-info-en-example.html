@@ -844,13 +844,15 @@ function hasEnter(event) {
     }
     return handled;
 }
+
+var localServerPathItem = 'prefix-url';
 function newRequest() {
     var url = $('#prefix-url').val();
     if (isNotBlank(url)) {
         if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
             url = location.protocol + '//' + url;
         }
-        localStorage.setItem('prefix-url', url);
+        localStorage.setItem(localServerPathItem, url);
         $('#config-prefix').modal('hide');
         loadMulti();
     }
@@ -872,11 +874,11 @@ function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 function getDomain() {
-    var url = localStorage.getItem('prefix-url');
+    var url = localStorage.getItem(localServerPathItem);
     return isBlank(url) ? (location.protocol + '//' + location.host) : url;
 }
 function getProjectDomain() {
-    var url = localStorage.getItem('prefix-url');
+    var url = localStorage.getItem(localServerPathItem);
     if (isNotBlank(url)) {
         return url;
     }
@@ -972,6 +974,7 @@ function loadData() {
     var $footer = $('footer');
     var $urlInfo = $('#url-info');
     var $urlNavInfo = $('#url-nav-info');
+    var $rightArrow = $('.right-arrow');
 
     $title.html('');
     $headerContent.html('');
@@ -994,6 +997,7 @@ function loadData() {
             var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
             var copyright = documentInfo.copyright;
             if (isBlank(copyright)) {
+                handleError($urlInfo, $rightArrow, 'Return data error!');
                 return;
             }
 
@@ -1009,7 +1013,7 @@ function loadData() {
             $urlInfo.html(urlRenderTemplate(doc));
             $urlNavInfo.html(navRenderTemplate(doc));
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)');
-            $('.right-arrow').css('display', '');
+            $rightArrow.css('display', '');
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
@@ -1051,11 +1055,15 @@ function loadData() {
         }
     }).fail(function(error) {
         console.error(method + ' ' + requestUrl + ' error: ' + JSON.stringify(error));
-        $('.right-arrow').css('display', 'none');
-        $urlInfo.html('<div class="config red">Request error, Incorrect network or cross-domain error</div>' +
-            '<div class="config">context-path error? <span class="config-prefix" data-toggle="modal" ' +
-            'data-target="#config-prefix">config</span></div>');
+        handleError($urlInfo, $rightArrow, 'Request error, Incorrect network or cross-domain error!');
     });
+}
+function handleError($ele, $arrow, info) {
+    $arrow.css('display', 'none');
+    $urlInfo.html('<div class="config red">' + info + '</div>' +
+        '<div class="config">context-path error? ' +
+        '<span class="config-prefix" data-toggle="modal" data-target="#config-prefix">config</span> ' +
+        '<span id="delete-prefix" class="config-prefix">delete config</span></div>');
 }
 
 function addComment(json, element) {
@@ -1543,6 +1551,9 @@ $(function() {
         }
     });
 
+    $(document).on('click', '#delete-prefix', function() {
+        localStorage.removeItem(localServerPathItem);
+    });
     $(document).on('keydown', '#prefix-url', function(e) {
         if (hasEnter(e)) {
             newRequest();

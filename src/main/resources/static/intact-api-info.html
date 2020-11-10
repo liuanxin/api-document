@@ -710,13 +710,15 @@ function hasEnter(event) {
     }
     return handled;
 }
+
+var localServerPathItem = 'prefix-url';
 function newRequest() {
     var url = $('#prefix-url').val();
     if (isNotBlank(url)) {
         if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
             url = location.protocol + '//' + url;
         }
-        localStorage.setItem('prefix-url', url);
+        localStorage.setItem(localServerPathItem, url);
         $('#config-prefix').modal('hide');
         loadMulti();
     }
@@ -738,11 +740,11 @@ function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 function getDomain() {
-    var url = localStorage.getItem('prefix-url');
+    var url = localStorage.getItem(localServerPathItem);
     return isBlank(url) ? (location.protocol + '//' + location.host) : url;
 }
 function getProjectDomain() {
-    var url = localStorage.getItem('prefix-url');
+    var url = localStorage.getItem(localServerPathItem);
     if (isNotBlank(url)) {
         return url;
     }
@@ -785,6 +787,7 @@ function loadData() {
     var $footer = $('footer');
     var $urlInfo = $('#url-info');
     var $urlNavInfo = $('#url-nav-info');
+    var $rightArrow = $('.right-arrow');
 
     $title.html('');
     $headerContent.html('');
@@ -807,6 +810,7 @@ function loadData() {
             var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
             var copyright = documentInfo.copyright;
             if (isBlank(copyright)) {
+                handleError($urlInfo, $rightArrow, '接口返回数据有误!');
                 return;
             }
 
@@ -825,7 +829,7 @@ function loadData() {
             $urlInfo.html(urlRenderTemplate(doc));
             $urlNavInfo.html(navRenderTemplate(doc));
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)'); /* 避免切换项目时导航为显示 */
-            $('.right-arrow').css('display', '');
+            $rightArrow.css('display', '');
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
@@ -860,11 +864,15 @@ function loadData() {
         }
     }).fail(function(error) {
         console.error(method + ' ' + requestUrl + ' 错误: ' + JSON.stringify(error));
-        $('.right-arrow').css('display', 'none');
-        $urlInfo.html('<div class="config red">接口无法请求, 网络有误 或 有跨域问题</div>' +
-          '<div class="config">请求的前缀不对? <span class="config-prefix" data-toggle="modal" ' +
-          'data-target="#config-prefix">重新配置</span></div>');
+        handleError($urlInfo, $rightArrow, '接口无法请求, 网络有误 或 有跨域问题!');
     });
+}
+function handleError($ele, $arrow, info) {
+    $arrow.css('display', 'none');
+    $urlInfo.html('<div class="config red">' + info + '</div>' +
+        '<div class="config">请求的前缀不对? ' +
+        '<span class="config-prefix" data-toggle="modal" data-target="#config-prefix">配置</span> ' +
+        '<span id="delete-prefix" class="config-prefix">删除配置</span></div>');
 }
 
 $(function() {
@@ -896,6 +904,9 @@ $(function() {
         }
     });
 
+    $(document).on('click', '#delete-prefix', function() {
+        localStorage.removeItem(localServerPathItem);
+    });
     $(document).on('keydown', '#prefix-url', function(e) {
         if (hasEnter(e)) {
             newRequest();
