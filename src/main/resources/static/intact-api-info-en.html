@@ -714,8 +714,10 @@ function newRequest() {
         if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
             url = location.protocol + '//' + url;
         }
+        localStorage.setItem(localServerPathItem, url);
+    } else {
+        localStorage.removeItem(localServerPathItem);
     }
-    localStorage.setItem(localServerPathItem, url);
     $('#config-prefix-url').modal('hide');
     loadMulti();
 }
