@@ -810,7 +810,7 @@ function loadData() {
             var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
             var copyright = documentInfo.copyright;
             if (isBlank(copyright)) {
-                handleError($urlInfo, $rightArrow, '接口返回数据有误!');
+                handleError($rightArrow, $urlInfo, '接口返回数据有误!');
                 return;
             }
 
@@ -864,12 +864,12 @@ function loadData() {
         }
     }).fail(function(error) {
         console.error(method + ' ' + requestUrl + ' 错误: ' + JSON.stringify(error));
-        handleError($urlInfo, $rightArrow, '接口无法请求, 网络有误 或 有跨域问题!');
+        handleError($rightArrow, $urlInfo, '接口无法请求, 网络有误 或 有跨域问题!');
     });
 }
-function handleError($ele, $arrow, info) {
+function handleError($arrow, $ele, info) {
     $arrow.css('display', 'none');
-    $urlInfo.html('<div class="config red">' + info + '</div>' +
+    $ele.html('<div class="config red">' + info + '</div>' +
         '<div class="config">请求的前缀不对? ' +
         '<span class="config-prefix" data-toggle="modal" data-target="#config-prefix">配置</span> ' +
         '<span id="delete-prefix" class="config-prefix">删除配置</span></div>');

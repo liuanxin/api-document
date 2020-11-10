@@ -869,7 +869,7 @@ function loadData() {
 }
 function handleError($arrow, $ele, info) {
     $arrow.css('display', 'none');
-    $urlInfo.html('<div class="config red">' + info + '</div>' +
+    $ele.html('<div class="config red">' + info + '</div>' +
         '<div class="config">context-path error? ' +
         '<span class="config-prefix" data-toggle="modal" data-target="#config-prefix">config</span> ' +
         '<span id="delete-prefix" class="config-prefix">delete config</span></div>');
