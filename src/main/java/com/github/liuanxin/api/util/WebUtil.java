@@ -82,8 +82,9 @@ public final class WebUtil {
         return copyright;
     }
 
+    @SuppressWarnings("ConstantConditions")
     public static DocumentInfoAndUrlMap infoAndUrlMap(RequestMappingHandlerMapping mapping,
-                                                       DocumentCopyright copyright) {
+                                                      DocumentCopyright copyright) {
         Map<String, DocumentModule> moduleMap = Tools.newLinkedHashMap();
         Map<String, DocumentUrl> documentMap = Tools.newLinkedHashMap();
 
@@ -102,7 +103,7 @@ public final class WebUtil {
                     Set<String> urlArray = Tools.isBlank(patternsCondition) ? new HashSet<String>() : patternsCondition.getPatterns();
 
                     RequestMethodsRequestCondition methodsCondition = requestMapping.getMethodsCondition();
-                    Set<RequestMethod> methodArray = methodsCondition.getMethods();
+                    Set<RequestMethod> methodArray = Tools.isBlank(methodsCondition) ? new HashSet<RequestMethod>() : methodsCondition.getMethods();
 
                     if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
                         DocumentUrl document = new DocumentUrl();
