@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
@@ -96,8 +98,12 @@ public final class WebUtil {
             if (Tools.isNotBlank(requestMapping) && Tools.isNotBlank(handlerMethod) && wasJsonApi(handlerMethod)) {
                 ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
                 if (Tools.isBlank(ignore) || !ignore.value()) {
-                    Set<String> urlArray = requestMapping.getPatternsCondition().getPatterns();
-                    Set<RequestMethod> methodArray = requestMapping.getMethodsCondition().getMethods();
+                    PatternsRequestCondition patternsCondition = requestMapping.getPatternsCondition();
+                    Set<String> urlArray = Tools.isBlank(patternsCondition) ? new HashSet<String>() : patternsCondition.getPatterns();
+
+                    RequestMethodsRequestCondition methodsCondition = requestMapping.getMethodsCondition();
+                    Set<RequestMethod> methodArray = methodsCondition.getMethods();
+
                     if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
                         DocumentUrl document = new DocumentUrl();
                         // url
@@ -288,6 +294,9 @@ public final class WebUtil {
     private static List<DocumentResponse> globalResponse(List<DocumentResponse> globalResponse,
                                                          boolean globalCommentInReturn,
                                                          boolean globalRecordLevel) {
+        if (Tools.isEmpty(globalResponse)) {
+            return Collections.emptyList();
+        }
         for (DocumentResponse response : globalResponse) {
             String type = getReturnTypeByResponse(response);
             if (Tools.isNotBlank(type)) {

@@ -2,9 +2,9 @@ package com.github.liuanxin.api.util;
 
 public enum DateType {
 
-    YYYY_MM_DD_HH_MM_SS_SSS("yyyy-MM-dd HH:mm:ss SSS"),
+    YYYY_MM_DD_HH_MM_SS_SSS("yyyy-MM-dd HH:mm:ss.SSS"),
     YYYY_MM_DD_HH_MM_SS("yyyy-MM-dd HH:mm:ss"),
-    MM_DD_YYYY_HH_MM_SS_SSS("MM/dd/yyyy HH:mm:ss SSS"),
+    MM_DD_YYYY_HH_MM_SS_SSS("MM/dd/yyyy HH:mm:ss.SSS"),
 
     MM_DD_YYYY_HH_MM_SS("MM/dd/yyyy HH:mm:ss"),
     YYYY_MM_DD("yyyy-MM-dd"),
