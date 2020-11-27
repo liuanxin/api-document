@@ -26,9 +26,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <lombok.version>1.18.10</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <slf4j.version>1.7.30</slf4j.version>
-        <jackson.version>2.10.1</jackson.version>
+        <jackson.version>2.11.3</jackson.version>
 
         <spring-webmvc.version>[5.2.3,)</spring-webmvc.version>
         <servlet-api.version>2.5</servlet-api.version>
