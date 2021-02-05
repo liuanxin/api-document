@@ -1,31 +1,26 @@
 
-English Readme | [[README-CN.org][中文说明]]
+中文说明 | [[README-EN.org][English Readme]]
 
 -----
 
-[[https://github.com/liuanxin/api-document-example-en][Example project(spring boot 2)]]
+[[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]]
 
-[[https://liuanxin.github.io/api-info-en.html][Document example]] | [[https://liuanxin.github.io/api-info-en-example.html][Document example for Front-Back-end interaction]]
-
-
-** Comment
-
-People who have maintained the project should have experience.
-If the api documentation is written separately (org-mode, markdown, rap or even word),
-as the project cycle progresses, the gap between the interface document and the real code will come the farther away.
-
-This document collection application has appeared because some of the details based on swagger are not so good
-(such as unable to process map, swagger-ui view response instructions need to be swtich.
-Think of your branis as a computer, and your eyes as input devices, When you see the returned json,
-the eyeball will parse itself into the corresponding object. At this time,
-you can’t determine the description of each partition. You have to switch the screen to know,
-and the brain will find a way to associate it. However, only one can be seen at the same time,
-so you can only switch to switch, it will increase the mental burden during the merger).
+[[https://liuanxin.github.io/api-info.html][示例效果]] | [[https://liuanxin.github.io/api-info-example.html][前后端交互示例]]
 
 
-** Usage
+** 说明
 
-add maven
+维护过项目的人应该都有体会, 如果接口文档是单独编写的(org-mode、markdown、rap 甚至是 word 等),
+随着项目周期的推进, 接口文档和真实代码之间的差距会越来越远.
+
+基于 swagger 的一些细节不那么让人如意(比如无法处理 map, swagger-ui 中查看响应说明需要切屏, 把脑袋理解成是一台计算机, 眼睛是输入设备,
+在看到返回的 json 时, 眼球会自己 parse 成对应的对象, 这时候你还无法确定各个字段的说明, 得切屏才能知道, 脑子会想办法把两者关联起来,
+但是同一时间只能看到一个, 且切屏后的说明跟原来的排列并不一致, 于是只能不停的切, 这会加重将两者关联起来的心智负担)而出现了此文档收集应用.
+
+
+** 使用
+
+添加引用
 #+BEGIN_SRC xml
 <dependency>
     <groupId>com.github.liuanxin</groupId>
@@ -34,13 +29,13 @@ add maven
 </dependency>
 #+END_SRC
 
-add config for this
+添加配置
 #+BEGIN_SRC java
 @Configuration
 @EnableApiInfo
 public class ApiInfoConfig {
 
-    // can be set in different profile, such as:
+    // 可以在不同的 profile 中设置不同的值, 如:
     // application.yml      => online: false
     // application-test.yml => online: false
     // application-prod.yml => online: true
@@ -49,61 +44,57 @@ public class ApiInfoConfig {
 
     @Bean
     public DocumentCopyright apiCopyright() {
-        return new DocumentCopyright("title", "team", "version", "copyright")
+        return new DocumentCopyright("标题", "团队", "版本号", "版权")
 
-                // // not collect if true, default is false.
+                // // true 则不进行文档收集, 默认是 false
                 // .setOnline(online)
 
-                // // if some api can't use @ApiIgnore, set this(url|method, method can be ignore)
+                // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
                 // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
 
-                // // if class or method has @ApiResponses, use that
+                // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
                 // .setGlobalResponse(Arrays.asList(
-                //     new DocumentResponse(400, "param error"),
-                //     new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
+                //     new DocumentResponse(400, "参数有误"),
+                //     new DocumentResponse(500, "请求异常").setResponse(XXX.class) // 见 @ApiReturnType 示例说明
                 // ))
 
-                // // current config will be generated in the parameters of each api, if only want to use
-                // // on a specific api, or set this global config but want to ignore on a specific api,
-                // // use @ApiTokens annotation
+                // // 全局 token, 这个配置会生成在每个接口的参数中,
+                // // 如果想在具体的接口上忽略这些配置 或者 设置不同的参数 请使用 @ApiTokens 注解
                 // .setGlobalTokens(Arrays.asList(
-                //     DocumentParam.buildToken("x-token", "oauth info", "abc", ParamType.Header).setHasTextarea("1"),
-                //     DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
+                //     DocumentParam.buildToken("x-token", "认证数据", "abc", ParamType.Header).setHasTextarea("1"),
+                //     DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
                 // ))
 
-                // // field comment is output in the return example.
-                // // default is true. set to false will be listed separately.
+                // // 字段说明是否输出在返回示例中, 不设置则默认是 true,
+                // // 设置为 false 将会单独罗列, 方法上标了则以方法上的为准
                 // .setCommentInReturnExample(false)
 
 
-                // // used in multi-document collection, merged items and output, default is false
-                // //   If true, please ensure that the global response description
-                // //      and global token of all items are consistent.
-                // //      Duplication and appending together (current practice) will cause documentation errors.
-                // //   If false, multiple documents will be requested on the page,
-                // //     please ensure that all projects have cors turned on,
-                // //     otherwise it will be inaccessible due to cross-domain issues
+                // // 用在多文档收集, 是否将项目合并后输出, 默认是 false
+                // //   如果为 true, 请务必保证所有项目的全局响应说明和全局 token 是一致的,
+                // //   附加在一起并去重(当前做法)可能会导致文档错误;
+                // //   -----
+                // //   如果是 false, 将在页面上选择项目进行请求, 请务必保证设置的项目都开启了 cors,
+                // //   否则将会因为跨域问题导致无法访问
                 // .setProjectMerge(true)
 
-                // // Collecting document for other projects
+                // // 收集其他项目的文档
                 // .setProjectMap(new LinkedHashMap<String, String>() {{
-                //         // key: name, value: project address
-                //         put("user", "http://ip:port/user");
-                //         put("product", "http://ip:port/product");
+                //         // key 格式: 名称-说明, 如: user-用户. value 是项目地址, 如: http://ip:port
+                //         put("user-用户", "http://ip:port/user");
+                //         put("product-商品", "http://ip:port/product");
                 // }})
                 ;
     }
 }
 #+END_SRC
 
-Then mark the corresponding annotations in the corresponding controller layer(only collect the documents related to
-@RestController or @ResponseBody related classes and interfaces, If the result of the method is List,
-Set or Map will be processed by ArrayList, HashSet and HashMap),
-~ResponseEntity~ or ~Callable~ or ~DeferredResult~ or ~WebAsyncTask~ will handle the generic type it defines
-(it will not be resolved without setting).
+而后在对应的 controller 层标注相应的注解(只对 @RestController 或 @ResponseBody 相关的类及接口进行文档收集,
+如果方法上的返回类型是 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理),
+~ResponseEntity~ 或 ~Callable~ 或 ~DeferredResult~ 或 ~WebAsyncTask~ 会处理其定义的泛型类型(不设置将无法解析)
 
-PS: You can refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example project(spring boot 2)]].
-For generics, be sure to use certain types, such as <String> <User> etc. If use a type like <T> <Object> will not be able to parse
+PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项目(spring boot 2)]] 的全局处理.
+泛型请务必使用确切的类型, 如 <String> <User> 等, 如果使用 <T> <Object> 这样的类型将会无法解析.
 
 #+BEGIN_SRC java
 @SpringBootApplication
@@ -113,22 +104,22 @@ public class ExampleApplication {
     }
 }
 
-@ApiGroup("example")
+@ApiGroup("example-示例")
 @RestController
 public class ExampleController {
-    @ApiMethod("user list")
+    @ApiMethod("用户列表")
     @GetMapping("/example")
-    public JsonResult<DemoVo> example(@ApiParam("user type") String type, Page page) {
-        return JsonResult.success("example api", new DemoVo());
+    public JsonResult<List<DemoVo>> example(@ApiParam("类型") String type, Page page) {
+        return JsonResult.success("示例接口", Arrays.asList(new DemoVo()));
     }
 }
 
 @Data
 public class Page {
-    @ApiParam("current page")
+    @ApiParam("当前页数")
     private Integer page;
 
-    @ApiParam("page limit")
+    @ApiParam("每页条数")
     private Integer limit;
 
     ...
@@ -136,13 +127,13 @@ public class Page {
 
 @Data
 public class JsonResult<T> {
-    @ApiReturn("return code")
+    @ApiReturn("返回码")
     private JsonCode code;
 
-    @ApiReturn("return message")
+    @ApiReturn("返回说明")
     private String msg;
 
-    @ApiReturn("return data")
+    @ApiReturn("返回数据")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
@@ -151,9 +142,9 @@ public class JsonResult<T> {
 
 public enum JsonCode {
 
-    SUCCESS(200, "success"),
-    NOT_LOGIN(401, "need login"),
-    FAIL(500, "internal error or service exception")
+    SUCCESS(200, "成功"),
+    NOT_LOGIN(401, "未登录"),
+    FAIL(500, "内部错误或业务异常");
 
     int code;
     String value;
@@ -177,41 +168,42 @@ public class DemoVo {
 #+END_SRC
 
 
-*** annotation description
+*** 注解说明
+
 #+BEGIN_SRC java
-@ApiGroup --> in class or method. use the method if all of that
-  value     --> module info, must set
-  index     --> can not be set, more forward when smaller("index" first,
-                "module info" second -> with sort), if set multi module and different index, use the smaller
+@ApiGroup --> 标注在类或方法上. 表示当前接口隶属哪个模块. 如果类上和方法上都标了则以方法上的为准
+  value     --> 模块说明. 必须设置, 示例(名称-说明, 如: user-用户, 名称用来生成锚点,
+                说明用来显示, 以 英文中横线 - 隔开, 说明如果为空则显示成名称)
+  index     --> 索引, 可以不设置, 越小越靠前. 可以不设置(索引如果一致会使用 说明 排序,
+                说明如果也一致会使用 名称 排序), 同一模块在不同的地方标注且索引不同时, 以小的索引为主
 
 
-@ApiResponses --> in class or method. marked on class or method will return the specified response,
-                  otherwise it will take the global response configuration.
-  value         --> @ApiResponse[], must set
+@ApiResponses --> 标注在类或方法上. 用来标注接口的响应码或描述
+  value         --> @ApiResponse[], 必须设置
 
-  @ApiResponse  --> nested annotation
-    code          --> must set, for example: 400
-    msg           --> must set, for example: param error
-    type          --> nested annotation: @ApiReturnType[], can not be set
+  @ApiResponse --> 嵌套注解
+    code         --> 响应码, 必须设置, 如 400
+    msg          --> 响应说明, 必须设置, 如 参数不正确
+    type         --> 嵌套注解 @ApiReturnType[] 定义返回类型, 可以不设置
 
-for example:
-@ApiResponses({
-    @ApiResponse(code = 400, msg = "param error", type = { @ApiReturnType(XXX.class }),
-    @ApiResponse(code = 500, msg = "request error")
+示例如下:
+@ApiResponses({  // 标注在类或接口上表示相关的接口会返回指定的响应, 否则会走全局的响应配置
+    @ApiResponse(code = 400, msg = "参数有误", type = { @ApiReturnType(XXX.class }),
+    @ApiResponse(code = 500, msg = "请求异常")
 })
 
 
-@ApiReturnType --> nested annotation, use on @ApiResponse or @ApiMethod
-  value          --> return class, must set
-  generic        --> return type of generic type, can not be set
-  genericParent  --> returns the parent level of the generic type in the type, can not be set
-  genericChild   --> returns the sub-level of the generic type of the type, can not be set
+@ApiReturnType --> 嵌套注解, 用在 @ApiResponse 或 @ApiMethod 中
+  value          --> 返回类型, 必须设置
+  generic        --> 返回类型的泛型类型, 可以不设置
+  genericParent  --> 返回类型中泛型类型的父层级, 可以不设置
+  genericChild   --> 返回类型的泛型类型的子层级, 可以不设置
 
-for example:
+示例如下:
    XXX ==> @ApiReturnType(XXX.class)
 
-   List<XXX> ==> @ApiReturnType(value = List.class, generic = XXX.class)
-   Set<XXX> ==> @ApiReturnType(value = Set.class,  generic = XXX.class)
+   List<XXX>        ==> @ApiReturnType(value = List.class, generic = XXX.class)
+   Set<XXX>         ==> @ApiReturnType(value = Set.class,  generic = XXX.class)
    Map<String, XXX> ==> @ApiReturnType(value = Map.class,  generic = { String.class, XXX.class })
    JsonResult<XXX>  ==> @ApiReturnType(value = JsonResult.class, generic = XXX.class)
 
@@ -256,102 +248,96 @@ for example:
                                          )
 
 
-@ApiMethod --> in method
-  value      --> method title, must set
-  develop    --> can not be set
-  desc       --> description, can not be set
-  index      --> more forward when smaller, can not be set("index" first,
-                 "developer" second, "title" third -> with sort)
-  commentInReturnExample --> if false, comment will show with display separately,
-                             if not set, the global setting shall prevail
-  returnType --> nested annotation: @ApiReturnType[]. customize return type,
-                 if set will ignore 「the return type」 on method
+@ApiMethod --> 标注在方法上
+  value      --> 接口标题, 必须设置
+  develop    --> 开发者信息, 可以不设置
+  desc       --> 接口详细说明. 可以不设置
+  index      --> 索引, 越小越靠前. 可以不设置(索引如果一致会使用 开发者信息 排序,
+                 开发者信息 如果也一致会使用 接口标题 排序)
+  commentInReturnExample --> 返回字段说明是否写在返回示例中, 可以不设置,
+                             如果设置为 false 所有的字段说明将会在返回示例的下面单独罗列.
+                             不设置则以全局设置为准
+  returnType --> 嵌套注解 @ApiReturnType[] 自定义返回类型, 可以不设置, 如果设置将忽略方法上的返回类型
 
-@ApiIgnore --> in class or method. want to ignore some api, use it
-  value      --> false will ignore
-
-
-@ApiParam --> in param or field
-  value       --> param comment, can not be set
-  name        --> if set, can not be set, will ignore param name or field name
-  dataType    --> if type was custom can use, can not be set(for example: enum,
-                  but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
-  example     --> used in api examples, can not be set
-  paramType   --> can not be set, Header or Query, default is Query
-  must        --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
-  textarea    --> can not be set, param will show with textarea(in example page), default is false
-  datePattern --> can not be set, is param type has Date, for example: MM/dd/yyyy HH:mm:ss
-  style       --> can not be set. html style with param on page, for example: color:green;height:35px;
-
-@ApiParamIgnore --> in param or field
+@ApiIgnore --> 标注在类或方法上. 当想要在某个类或接口上忽略收集时, 使用此注释
+  value      --> 值如果是 false 则表示不忽略. 类上和方法上都标了则以方法上的为准
 
 
-@ApiReturn --> in field
-  value      --> can not be set
-  name       --> return name, can not be set, if set will ignore field name(when use @JsonProperty)
-  type       --> if type was custom can use, can not be set(for example: enum, but return type was be int)
-  example    --> return example, can not be set, only if the field is a string or
-                 underlying data type(including BigInteger and BigDecimal)
+@ApiParam --> 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注)
+  value       --> 参数说明, 可以不设置
+  name        --> 参数名, 可以不设置, 如果设置了将会无视参数名或字段名
+  dataType    --> 数据类型. 可以不设置, 自定义时(比如参数类型是枚举,
+                  但是显示在文档上时可以传 int 时)有用: int、long、float、double、date、phone、email、url、ipv4
+  example     --> 参数示例. 用在接口示例时有用, 可以不设置
+  paramType   --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query
+  must        --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
+  textarea    --> 参数是否显示成文本域, 可以不设置, 默认是 false
+  datePattern --> 时间格式. 可以不设置, 如: yyyy-MM-dd HH:mm:ss
+  style       --> 参数在页面上的样式, 可以不设置, 如: color:green;height:35px;
 
-@ApiReturnIgnore --> in field, use with @JsonIgnore is also
+@ApiParamIgnore --> 标注在参数上(如果参数是由实体注入的, 则在实体的字段上标注). 如果不希望参数出现在文档中, 使用此注解
 
 
-@ApiTokens --> in class or method
-  useGlobal  --> whether to use global token, cant not be set, default is false
-  value      --> @ApiToken[]
+@ApiReturn --> 标注在字段上. 用来说明返回结果
+  value      --> 返回说明, 可以不设置
+  name       --> 返回名称, 可以不设置, 如果设置了将忽略字段名, 如果有用到 @JsonProperty 则使用其设置的值
+  type       --> 返回类型, 可以不设置, 自定义(比如字段类型是枚举, 但是显示在文档上时是 int 时)用到
+  example    --> 返回示例, 可以不设置, 只用在字段是 String 或基础数据类型(包括 BigInteger 和 BigDecimal)上
 
-  @ApiToken  --> nested annotation
-    name        --> must set
-    desc        --> can not be set
-    example     --> can not be set
-    dataType    --> data type. for example: int、long、float、double、date、phone、email、url、ipv4
-    paramType   --> can not be set, Header or Query, default is Header
-    must        --> default false
-    textarea    --> default false
-    datePattern --> parameter type is date format of the date, can not be set. for example: MM/DD/YYYY HH:mm:ss
-    style       --> can not be set. html style with param on page, for example: color:green;height:35px;
+@ApiReturnIgnore --> 标注在字段上. 如果不希望返回字段出现在结果文档中, 使用此注解, 在字段上标注 @JsonIgnore 也是一样的
 
-for example:
-@ApiTokens // marked on class or method will not generate global token information.
 
-@ApiTokens(token = {
-    @ApiToken(name = "x-token", desc = "oauth info", example = "abc-xyz", textarea = true),
-    @ApiToken(name = "x-version", desc = "api version", example = "1.0", paramType = ParamType.Query, must = true)
+@ApiTokens --> 标注在类或方法上
+  useGlobal  --> 是否使用全局 token, 可以不设置, 默认是 false
+  value      --> @ApiToken[], 可以不设置, 表示当前接口需要传递的 token 信息
+
+  @ApiToken --> 嵌套注解
+    name        --> 参数名. 必须设置
+    desc        --> 参数说明. 可以不设置
+    example     --> 参数示例. 用在接口示例时有用, 可以不设置
+    dataType    --> 参数类型. 可以不设置. 如: int、long、float、double、date、phone、email、url、ipv4
+    paramType   --> 参数类型. 可以不设置. Header 或 Query 两种, 默认是 Header
+    must        --> 参数是否必须. 可以不设置, 默认是 false
+    textarea    --> 参数是否显示成文本域, 用在接口示例时有用, 可以不设置, 默认是 false
+    datePattern --> 参数类型是 date 时的时间格式. 可以不设置, 如: yyyy-MM-dd HH:mm:ss
+    style       --> 参数在页面上 的样式, 可以不设置
+
+示例如下:
+@ApiTokens    // 标注在类或接口上表示相关的接口将不会生成全局的 token 信息
+@ApiTokens({  // 标注在类或接口上表示相关的接口将会使用参数中指定的 token 信息
+    @ApiToken(name = "x-token", desc = "认证数据", example = "abc-xyz", textarea = true),
+    @ApiToken(name = "x-version", desc = "接口版本", example = "1.0", paramType = ParamType.Query, must = true)
 })
 
 
-@ApiModel --> Combined with the annotations of the @ApiParam and @ApiReturn,
-              Please do not abuse. You should try to use the first two.
-  value     --> (return type or param name)'s comment, can not be set
-  name      --> (return type or param name)'s name, can not be set
-  dataType  --> (return type or param name)'s type, can not be set,
-                use with customize: int、long、float、double、date、phone、email、url、ipv4
-  example   --> (return type or param name)'s example, can not be set
+@ApiModel --> 结合了 @ApiParam 和 @ApiReturn 两个注解的注解,
+              可以同时说明请求参数和返回字段, 请不要滥用, 应该尽量用前两者
+  value     --> 返回或参数说明, 可以不设置
+  name      --> 返回或参数名, 可以不设置, 如果设置了将会无视参数名或字段名
+  dataType  --> 返回或参数的数据类型. 可以不设置, 自定义时有用: int、long、float、double、date、phone、email、url、ipv4
+  example   --> 返回或参数的示例. 用在接口示例时有用, 可以不设置
 
-  // The above attributes apply to both the request parameter and the return field.
-  // The following attributes are only used on the request parameters.
+  -- 上面的属性同时作用在 请求参数 和 返回字段 上, 下面的属性只用在 请求参数 上
 
-  paramType   --> param type, can not be set. Header or Query, default is Query
-  must        --> param required, can not be set,
-                  if has @RequestParam(required = true) etc... will ignore this setting
-  textarea    --> can not be set, param will show with textarea(in example page), default is false
-  datePattern --> can not be set, is param type has Date, for example: MM/dd/yyyy HH:mm:ss
-  style       --> can not be set. html style with param on page, for example: color:green;height:35px;
+  paramType   --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query
+  must        --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
+  textarea    --> 参数是否显示成文本域, 可以不设置, 默认是 false
+  datePattern --> 时间格式. 可以不设置, 如: YYYY-MM-DD HH:mm:ss
+  style       --> 参数在页面上的样式, 可以不设置, 如: color:green;height:35px;
 #+END_SRC
 
-if not spring boot project, add this config
+如果是非 spring boot 项目, 添加如下配置
 #+BEGIN_SRC xml
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
+运行项目, 访问页面 ~http://ip:port/static/api-info.html~ (spring boot 则不需要 /static 二级目录)
 
-Run and request ~http://ip:port/static/api-info-en.html~ (spring boot don't need /static second directory)
-
-test backend url, request ~http://ip:port/static/api-info-en-example.html~
+页面 ~http://ip:port/static/api-info-example.html~ 直接请求后台接口
 
 -----
 
-Final document collect for this: https://liuanxin.github.io/api-info-en.html
+最终效果如下: https://liuanxin.github.io/api-info.html
 
-[[https://raw.githubusercontent.com/liuanxin/image/master/api-en.png]]
--
-[[https://raw.githubusercontent.com/liuanxin/image/master/api-en2.png]]
+[[https://raw.githubusercontent.com/liuanxin/image/master/api.png]]
+字段说明不显示在返回示例中, 单独罗列
+[[https://raw.githubusercontent.com/liuanxin/image/master/api2.png]]

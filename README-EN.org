@@ -1,0 +1,357 @@
+
+[[README.org][中文说明]] | English Readme
+
+-----
+
+[[https://github.com/liuanxin/api-document-example-en][Example project(spring boot 2)]]
+
+[[https://liuanxin.github.io/api-info-en.html][Document example]] | [[https://liuanxin.github.io/api-info-en-example.html][Document example for Front-Back-end interaction]]
+
+
+** Comment
+
+People who have maintained the project should have experience.
+If the api documentation is written separately (org-mode, markdown, rap or even word),
+as the project cycle progresses, the gap between the interface document and the real code will come the farther away.
+
+This document collection application has appeared because some of the details based on swagger are not so good
+(such as unable to process map, swagger-ui view response instructions need to be swtich.
+Think of your branis as a computer, and your eyes as input devices, When you see the returned json,
+the eyeball will parse itself into the corresponding object. At this time,
+you can’t determine the description of each partition. You have to switch the screen to know,
+and the brain will find a way to associate it. However, only one can be seen at the same time,
+so you can only switch to switch, it will increase the mental burden during the merger).
+
+
+** Usage
+
+add maven
+#+BEGIN_SRC xml
+<dependency>
+    <groupId>com.github.liuanxin</groupId>
+    <artifactId>api-document</artifactId>
+    <version>0.8.1</version>
+</dependency>
+#+END_SRC
+
+add config for this
+#+BEGIN_SRC java
+@Configuration
+@EnableApiInfo
+public class ApiInfoConfig {
+
+    // can be set in different profile, such as:
+    // application.yml      => online: false
+    // application-test.yml => online: false
+    // application-prod.yml => online: true
+    @Value("${online:false}")
+    private boolean online;
+
+    @Bean
+    public DocumentCopyright apiCopyright() {
+        return new DocumentCopyright("title", "team", "version", "copyright")
+
+                // // not collect if true, default is false.
+                // .setOnline(online)
+
+                // // if some api can't use @ApiIgnore, set this(url|method, method can be ignore)
+                // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
+
+                // // if class or method has @ApiResponses, use that
+                // .setGlobalResponse(Arrays.asList(
+                //     new DocumentResponse(400, "param error"),
+                //     new DocumentResponse(500, "request error").setResponse(XXX.class) // see @ApiReturnType
+                // ))
+
+                // // current config will be generated in the parameters of each api, if only want to use
+                // // on a specific api, or set this global config but want to ignore on a specific api,
+                // // use @ApiTokens annotation
+                // .setGlobalTokens(Arrays.asList(
+                //     DocumentParam.buildToken("x-token", "oauth info", "abc", ParamType.Header).setHasTextarea("1"),
+                //     DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
+                // ))
+
+                // // field comment is output in the return example.
+                // // default is true. set to false will be listed separately.
+                // .setCommentInReturnExample(false)
+
+
+                // // used in multi-document collection, merged items and output, default is false
+                // //   If true, please ensure that the global response description
+                // //      and global token of all items are consistent.
+                // //      Duplication and appending together (current practice) will cause documentation errors.
+                // //   If false, multiple documents will be requested on the page,
+                // //     please ensure that all projects have cors turned on,
+                // //     otherwise it will be inaccessible due to cross-domain issues
+                // .setProjectMerge(true)
+
+                // // Collecting document for other projects
+                // .setProjectMap(new LinkedHashMap<String, String>() {{
+                //         // key: name, value: project address
+                //         put("user", "http://ip:port/user");
+                //         put("product", "http://ip:port/product");
+                // }})
+                ;
+    }
+}
+#+END_SRC
+
+Then mark the corresponding annotations in the corresponding controller layer(only collect the documents related to
+@RestController or @ResponseBody related classes and interfaces, If the result of the method is List,
+Set or Map will be processed by ArrayList, HashSet and HashMap),
+~ResponseEntity~ or ~Callable~ or ~DeferredResult~ or ~WebAsyncTask~ will handle the generic type it defines
+(it will not be resolved without setting).
+
+PS: You can refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example project(spring boot 2)]].
+For generics, be sure to use certain types, such as <String> <User> etc. If use a type like <T> <Object> will not be able to parse
+
+#+BEGIN_SRC java
+@SpringBootApplication
+public class ExampleApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ExampleApplication.class, args);
+    }
+}
+
+@ApiGroup("example")
+@RestController
+public class ExampleController {
+    @ApiMethod("user list")
+    @GetMapping("/example")
+    public JsonResult<DemoVo> example(@ApiParam("user type") String type, Page page) {
+        return JsonResult.success("example api", new DemoVo());
+    }
+}
+
+@Data
+public class Page {
+    @ApiParam("current page")
+    private Integer page;
+
+    @ApiParam("page limit")
+    private Integer limit;
+
+    ...
+}
+
+@Data
+public class JsonResult<T> {
+    @ApiReturn("return code")
+    private JsonCode code;
+
+    @ApiReturn("return message")
+    private String msg;
+
+    @ApiReturn("return data")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private T data;
+
+    ...
+}
+
+public enum JsonCode {
+
+    SUCCESS(200, "success"),
+    NOT_LOGIN(401, "need login"),
+    FAIL(500, "internal error or service exception")
+
+    int code;
+    String value;
+    JsonCode(int code, String value) {
+        this.code = code;
+        this.value = value;
+    }
+
+    ...
+}
+
+@Data
+public class DemoVo {
+    private Long id;
+
+    @ApiReturn("名称")
+    private String name;
+
+    ...
+}
+#+END_SRC
+
+
+*** annotation description
+#+BEGIN_SRC java
+@ApiGroup --> in class or method. use the method if all of that
+  value     --> module info, must set
+  index     --> can not be set, more forward when smaller("index" first,
+                "module info" second -> with sort), if set multi module and different index, use the smaller
+
+
+@ApiResponses --> in class or method. marked on class or method will return the specified response,
+                  otherwise it will take the global response configuration.
+  value         --> @ApiResponse[], must set
+
+  @ApiResponse  --> nested annotation
+    code          --> must set, for example: 400
+    msg           --> must set, for example: param error
+    type          --> nested annotation: @ApiReturnType[], can not be set
+
+for example:
+@ApiResponses({
+    @ApiResponse(code = 400, msg = "param error", type = { @ApiReturnType(XXX.class }),
+    @ApiResponse(code = 500, msg = "request error")
+})
+
+
+@ApiReturnType --> nested annotation, use on @ApiResponse or @ApiMethod
+  value          --> return class, must set
+  generic        --> return type of generic type, can not be set
+  genericParent  --> returns the parent level of the generic type in the type, can not be set
+  genericChild   --> returns the sub-level of the generic type of the type, can not be set
+
+for example:
+   XXX ==> @ApiReturnType(XXX.class)
+
+   List<XXX> ==> @ApiReturnType(value = List.class, generic = XXX.class)
+   Set<XXX> ==> @ApiReturnType(value = Set.class,  generic = XXX.class)
+   Map<String, XXX> ==> @ApiReturnType(value = Map.class,  generic = { String.class, XXX.class })
+   JsonResult<XXX>  ==> @ApiReturnType(value = JsonResult.class, generic = XXX.class)
+
+   JsonResult<List<XXX>> ==> @ApiReturnType(
+                                 value = JsonResult.class,
+                                 genericParent = List.class,
+                                 generic = XXX.class
+                             )
+   JsonResult<Set<XXX>> ==> @ApiReturnType(
+                                value = JsonResult.class,
+                                genericParent = Set.class,
+                                generic = XXX.class
+                            )
+   JsonResult<Map<String, XXX>> ==> @ApiReturnType(
+                                        value = JsonResult.class,
+                                        genericParent = Map.class,
+                                        generic = { String.class, XXX.class }
+                                    )
+   JsonResult<YYY<XXX>> ==> @ApiReturnType(
+                                value = JsonResult.class,
+                                genericParent = YYY.class,
+                                generic = XXX.class
+                            )
+
+   JsonResult<YYY<List<XXX>>> ==> @ApiReturnType(
+                                      value = JsonResult.class,
+                                      genericParent = YYY.class,
+                                      generic = List.class,
+                                      genericChild = XXX.class
+                                  )
+   JsonResult<YYY<Set<XXX>>> ==> @ApiReturnType(
+                                     value = JsonResult.class,
+                                     genericParent = YYY.class,
+                                     generic = Set.class,
+                                     genericChild = XXX.class
+                                 )
+   JsonResult<YYY<Map<String, XXX>>> ==> @ApiReturnType(
+                                             value = JsonResult.class,
+                                             genericParent = YYY.class,
+                                             generic = Map.class,
+                                             genericChild = { String.class, XXX.class }
+                                         )
+
+
+@ApiMethod --> in method
+  value      --> method title, must set
+  develop    --> can not be set
+  desc       --> description, can not be set
+  index      --> more forward when smaller, can not be set("index" first,
+                 "developer" second, "title" third -> with sort)
+  commentInReturnExample --> if false, comment will show with display separately,
+                             if not set, the global setting shall prevail
+  returnType --> nested annotation: @ApiReturnType[]. customize return type,
+                 if set will ignore 「the return type」 on method
+
+@ApiIgnore --> in class or method. want to ignore some api, use it
+  value      --> false will ignore
+
+
+@ApiParam --> in param or field
+  value       --> param comment, can not be set
+  name        --> if set, can not be set, will ignore param name or field name
+  dataType    --> if type was custom can use, can not be set(for example: enum,
+                  but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
+  example     --> used in api examples, can not be set
+  paramType   --> can not be set, Header or Query, default is Query
+  must        --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
+  textarea    --> can not be set, param will show with textarea(in example page), default is false
+  datePattern --> can not be set, is param type has Date, for example: MM/dd/yyyy HH:mm:ss
+  style       --> can not be set. html style with param on page, for example: color:green;height:35px;
+
+@ApiParamIgnore --> in param or field
+
+
+@ApiReturn --> in field
+  value      --> can not be set
+  name       --> return name, can not be set, if set will ignore field name(when use @JsonProperty)
+  type       --> if type was custom can use, can not be set(for example: enum, but return type was be int)
+  example    --> return example, can not be set, only if the field is a string or
+                 underlying data type(including BigInteger and BigDecimal)
+
+@ApiReturnIgnore --> in field, use with @JsonIgnore is also
+
+
+@ApiTokens --> in class or method
+  useGlobal  --> whether to use global token, cant not be set, default is false
+  value      --> @ApiToken[]
+
+  @ApiToken  --> nested annotation
+    name        --> must set
+    desc        --> can not be set
+    example     --> can not be set
+    dataType    --> data type. for example: int、long、float、double、date、phone、email、url、ipv4
+    paramType   --> can not be set, Header or Query, default is Header
+    must        --> default false
+    textarea    --> default false
+    datePattern --> parameter type is date format of the date, can not be set. for example: MM/DD/YYYY HH:mm:ss
+    style       --> can not be set. html style with param on page, for example: color:green;height:35px;
+
+for example:
+@ApiTokens // marked on class or method will not generate global token information.
+
+@ApiTokens(token = {
+    @ApiToken(name = "x-token", desc = "oauth info", example = "abc-xyz", textarea = true),
+    @ApiToken(name = "x-version", desc = "api version", example = "1.0", paramType = ParamType.Query, must = true)
+})
+
+
+@ApiModel --> Combined with the annotations of the @ApiParam and @ApiReturn,
+              Please do not abuse. You should try to use the first two.
+  value     --> (return type or param name)'s comment, can not be set
+  name      --> (return type or param name)'s name, can not be set
+  dataType  --> (return type or param name)'s type, can not be set,
+                use with customize: int、long、float、double、date、phone、email、url、ipv4
+  example   --> (return type or param name)'s example, can not be set
+
+  // The above attributes apply to both the request parameter and the return field.
+  // The following attributes are only used on the request parameters.
+
+  paramType   --> param type, can not be set. Header or Query, default is Query
+  must        --> param required, can not be set,
+                  if has @RequestParam(required = true) etc... will ignore this setting
+  textarea    --> can not be set, param will show with textarea(in example page), default is false
+  datePattern --> can not be set, is param type has Date, for example: MM/dd/yyyy HH:mm:ss
+  style       --> can not be set. html style with param on page, for example: color:green;height:35px;
+#+END_SRC
+
+if not spring boot project, add this config
+#+BEGIN_SRC xml
+<mvc:resources mapping="/static/**" location="classpath:/static/" />
+#+END_SRC
+
+Run and request ~http://ip:port/static/api-info-en.html~ (spring boot don't need /static second directory)
+
+test backend url, request ~http://ip:port/static/api-info-en-example.html~
+
+-----
+
+Final document collect for this: https://liuanxin.github.io/api-info-en.html
+
+[[https://raw.githubusercontent.com/liuanxin/image/master/api-en.png]]
+-
+[[https://raw.githubusercontent.com/liuanxin/image/master/api-en2.png]]
