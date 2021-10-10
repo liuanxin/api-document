@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.min.css">
-    <style type="text/css">
+    <style>
         html {
             position: relative;
             min-height: 100%;
@@ -70,27 +70,38 @@
         pre {
             font-size: 14px;
             margin: 0 0 14px;
-            padding: 7px 14px;
-            overflow: auto;
-            max-height: 546px;
-        }
-        pre .line-number {
-            color: #2B91AF;
-            float: left;
-            margin: 0 14px 0 -14px;
-            border-right: 1px solid;
-            text-align: right;
-            padding: 0 7px 0 14px;
+            padding: 7px 0 7px 14px;
+            overflow: hidden;
         }
         pre .use-time {
             position: sticky;
             top: 0;
             padding: 7px 0;
-            margin-bottom: 7px;
-            background: #f5f5f5;
+            margin: 0 14px 7px 0;
             border-bottom: 1px solid #ddd;
+            min-height: 28px;
         }
-        pre .source {
+        pre .source-code {
+            overflow: auto;
+            max-height: 546px;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+        }
+        pre .source-code .line-number {
+            color: #2B91AF;
+            text-align: right;
+            margin: 0 14px 0 -14px;
+            border-right: 1px solid;
+            padding: 0 7px 0 14px;
+            display: flex;
+            position: sticky;
+            background: #f5f5f5;
+            left: -10px;
+            flex-direction: column;
+        }
+        pre .source-code .source {
+            margin: 0 7px;
         }
         pre .comment {
             color: #998;
@@ -217,6 +228,7 @@
         .copy {
             right: 0;
             position: absolute;
+            z-index: 2;
             cursor: pointer;
             color: rgba(140, 140, 140, .8);
             margin: 7px 14px 0 0;
@@ -859,14 +871,13 @@ function addLine(html) {
     if (isBlank(html)) {
         return '';
     }
-
-    var lineHtml = '<div class="line-number">';
+    var lineHtml = '<div class="source-code"><div class="line-number">';
     var i, lineNum = html.split(/\n/).length;
     for (i = 1; i <= lineNum; i++) {
         lineHtml += '<div>' + i + '</div>';
     }
     lineHtml += '</div>';
-    return lineHtml + '<div class="source">' + html + '</div>';
+    return lineHtml + '<div class="source">' + html + '</div></div>';
 }
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1015,18 +1026,16 @@ function loadData() {
 
             $('pre[class="src src-json"]').each(function() {
                 var $html = escapeHtml($(this).html());
-                var html;
+                var html, flag;
                 if (isNotBlank($html)) {
                     html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
-
-                    var recursiveRegex = /(!!!RECURSIVE OBJECT!!!)/;
-                    if (recursiveRegex.test($html)) {
-                        html = html.replace(new RegExp(recursiveRegex, 'g'), '<span class="bold red">!!!递归实体!!!</span>');
-                    }
+                    html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!递归实体!!!</span>');
+                    flag = true;
                 } else {
                     html = '<span class="red">响应为空 或 无法解析返回类型</span>';
+                    flag = false;
                 }
-                $(this).html(addLine(html));
+                $(this).html((flag ? '<div class="use-time"></div>' : '') + addLine(html));
             });
 
             if ($('.col-md-3').css('display') !== 'none') {
@@ -1497,7 +1506,6 @@ $(function() {
             } else {
                 html += addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent));
             }
-            responseData.attr('data-remove-comment', '1');
             responseData.css('padding-top', '0');
             responseData.css('white-space', '');
             responseData.html(html);
@@ -1522,7 +1530,6 @@ $(function() {
                     }
                 }
             }
-            responseData.removeAttr('data-remove-comment');
             responseData.css('padding-top', 'unset');
             responseData.css('white-space', 'pre-wrap');
             responseData.html(html);
@@ -1567,9 +1574,7 @@ $(function() {
     $(document).on('click', '.copy', function() {
         var $this = $(this);
         var $pre = $this.next();
-        var removeComment = String($pre.attr('data-remove-comment')) === '1';
-        var replaceRegex = (removeComment ? /[ ]{2}<span class=".*?">.*?<\/span>/g : /<span class=".*?">|<\/span>/g);
-        var copyValue = $pre.find('.source').html().replace(replaceRegex, '');
+        var copyValue = $pre.find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
 
         var copyElement = document.createElement('textarea');
         copyElement.setAttribute('readonly', 'readonly');
