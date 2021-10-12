@@ -1,5 +1,5 @@
 
-[[README-cn.org][中文说明]] | English Readme
+English Readme | [[README-cn.org][中文说明]]
 
 -----
 
