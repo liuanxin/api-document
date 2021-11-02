@@ -9,13 +9,11 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.min.css">
+    <style> @import url('//fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap'); </style>
     <style>
         html {
             position: relative;
             min-height: 100%;
-        }
-        body {
-            font-size: 16px;
         }
         header {
             top: 0;
@@ -76,7 +74,6 @@
         pre .use-time {
             position: sticky;
             top: 0;
-            padding: 7px 0;
             margin: 0 14px 7px 0;
             border-bottom: 1px solid #ddd;
             min-height: 28px;
@@ -457,7 +454,6 @@
                         <pre class="module-api-info-desc{{= printNil}}">{{= moduleDesc}}</pre>
 
                         <div class="module-api-info-return">
-                            <p>响应示例及说明如下</p>
                             <div class="copy-status print-nil"></div>
                             <div class="copy print-nil">复制</div>
                             <pre class="src src-json" data-flag="module-api-info-return-src">{{= url.commentJson || ''}}</pre>
@@ -896,7 +892,7 @@ function getProjectDomain() {
 }
 function timeLog(start) {
     var end = new Date().getTime();
-    return '<div class="use-time"><div>use time: ' + (end - start) + 'ms</div>' +
+    return '<div class="use-time"><div>用时: ' + (end - start) + 'ms</div>' +
         '<div>' + formatDate(start) + ' -> ' + formatDate(end) + '</div></div>';
 }
 function objectifyForm(form) {
@@ -1035,7 +1031,7 @@ function loadData() {
                     html = '<span class="red">响应为空 或 无法解析返回类型</span>';
                     flag = false;
                 }
-                $(this).html((flag ? '<div class="use-time"></div>' : '') + addLine(html));
+                $(this).html((flag ? '<div class="use-time">响应示例</div>' : '') + addLine(html));
             });
 
             if ($('.col-md-3').css('display') !== 'none') {

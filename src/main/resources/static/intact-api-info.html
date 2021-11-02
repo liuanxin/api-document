@@ -7,13 +7,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgo=">
     <link rel="stylesheet" href="//cdn.bootcss.com/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    <style> @import url('//fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap'); </style>
     <style>
         html {
             position: relative;
             min-height: 100%;
-        }
-        body {
-            font-size: 16px;
         }
         header {
             position: sticky;
@@ -464,7 +462,6 @@
                         {{?}}
 
                         <div class="module-api-info-return">
-                            <p>响应示例及说明如下</p>
                             <div class="copy-status print-nil"></div>
                             <div class="copy print-nil">复制</div>
                             <pre class="src src-json">{{= url.commentJson || ''}}</pre>
@@ -859,7 +856,7 @@ function loadData() {
                     html = '<span class="red">响应为空 或 无法解析返回类型</span>';
                     flag = false;
                 }
-                $(this).html((flag ? '<div class="use-time"></div>' : '') + addLine(html));
+                $(this).html((flag ? '<div class="use-time">响应示例</div>' : '') + addLine(html));
             });
 
             if ($('.col-md-3').css('display') !== 'none') {
