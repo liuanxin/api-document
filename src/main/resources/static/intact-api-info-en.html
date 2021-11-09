@@ -298,7 +298,7 @@
             font-weight: 500;
         }
         @media print {
-            pre .line-number, .print-nil {
+            .print-nil {
                 display: none;
             }
             pre, .text-left, .panel {
@@ -306,6 +306,9 @@
             }
             pre, .text-left {
                 white-space: pre-wrap;
+            }
+            pre .source-code {
+                max-height: none;
             }
         }
         @media (max-width: 992px), print {
@@ -745,7 +748,7 @@ function addLine(html) {
     if (isBlank(html)) {
         return '';
     }
-    var lineHtml = '<div class="source-code"><div class="line-number">';
+    var lineHtml = '<div class="source-code"><div class="line-number print-nil">';
     var i, lineNum = html.split(/\n/).length;
     for (i = 1; i <= lineNum; i++) {
         lineHtml += '<div>' + i + '</div>';
@@ -859,7 +862,7 @@ function loadData() {
                     html = '<span class="red">Return null or Can not analyze return type</span>';
                     flag = false;
                 }
-                $(this).html((flag ? '<div class="use-time">Return example</div>' : '') + addLine(html));
+                $(this).html((flag ? '<div class="use-time print-nil">Return example</div>' : '') + addLine(html));
             });
 
             if ($('.col-md-3').css('display') !== 'none') {
