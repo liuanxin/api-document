@@ -3,16 +3,11 @@ package com.github.liuanxin.api.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.util.Tools;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
-@Data
-@NoArgsConstructor
-@Accessors(chain = true)
 public class DocumentModule implements Comparable<DocumentModule> {
 
     @JsonIgnore
@@ -22,9 +17,45 @@ public class DocumentModule implements Comparable<DocumentModule> {
     private String info;
     private List<DocumentUrl> urlList;
 
+    public DocumentModule() {
+    }
+
     public DocumentModule(String groupName) {
         fillNameAndInfo(groupName);
     }
+
+    public int getIndex() {
+        return index;
+    }
+    public DocumentModule setIndex(int index) {
+        this.index = index;
+        return this;
+    }
+
+    public String getName() {
+        return name;
+    }
+    public DocumentModule setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+    public DocumentModule setInfo(String info) {
+        this.info = info;
+        return this;
+    }
+
+    public List<DocumentUrl> getUrlList() {
+        return urlList;
+    }
+    public DocumentModule setUrlList(List<DocumentUrl> urlList) {
+        this.urlList = urlList;
+        return this;
+    }
+
     public void fillNameAndInfo(String groupName) {
         if (Tools.isNotEmpty(groupName)) {
             if (groupName.contains(ApiConst.HORIZON)) {
@@ -69,7 +100,20 @@ public class DocumentModule implements Comparable<DocumentModule> {
         urlList.add(url);
     }
 
-
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DocumentModule that = (DocumentModule) o;
+        return Objects.equals(index, that.index) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(info, that.info) &&
+                Objects.equals(urlList, that.urlList);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(index, name, info, urlList);
+    }
     @Override
     public int compareTo(DocumentModule module) {
         if (Tools.isBlank(module)) {

@@ -5,18 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.util.ReturnHandler;
 import com.github.liuanxin.api.util.Tools;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentUrl implements Comparable<DocumentUrl> {
 
@@ -75,9 +67,147 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             return url.startsWith(ApiConst.HORIZON) ? url.substring(1) : url;
         }
     }
+    public DocumentUrl setId(String id) {
+        this.id = id;
+        return this;
+    }
 
     public String getTitle() {
         return Tools.isEmpty(title) ? getId() : title;
+    }
+    public DocumentUrl setTitle(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+    public DocumentUrl setDesc(String desc) {
+        this.desc = desc;
+        return this;
+    }
+
+    public String getDevelop() {
+        return develop;
+    }
+    public DocumentUrl setDevelop(String develop) {
+        this.develop = develop;
+        return this;
+    }
+
+    public String getExampleUrl() {
+        return exampleUrl;
+    }
+    public DocumentUrl setExampleUrl(String exampleUrl) {
+        this.exampleUrl = exampleUrl;
+        return this;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+    public DocumentUrl setMethod(String method) {
+        this.method = method;
+        return this;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+    public DocumentUrl setUrl(String url) {
+        this.url = url;
+        return this;
+    }
+
+    public String getUseGlobalParam() {
+        return useGlobalParam;
+    }
+    public DocumentUrl setUseGlobalParam(String useGlobalParam) {
+        this.useGlobalParam = useGlobalParam;
+        return this;
+    }
+
+    public String getRequestBody() {
+        return requestBody;
+    }
+    public DocumentUrl setRequestBody(String requestBody) {
+        this.requestBody = requestBody;
+        return this;
+    }
+
+    public String getBasicParamRequestBody() {
+        return basicParamRequestBody;
+    }
+    public DocumentUrl setBasicParamRequestBody(String basicParamRequestBody) {
+        this.basicParamRequestBody = basicParamRequestBody;
+        return this;
+    }
+
+    public List<DocumentParam> getParamList() {
+        return paramList;
+    }
+    public DocumentUrl setParamList(List<DocumentParam> paramList) {
+        this.paramList = paramList;
+        return this;
+    }
+
+    public List<DocumentResponse> getResponseList() {
+        return responseList;
+    }
+    public DocumentUrl setResponseList(List<DocumentResponse> responseList) {
+        this.responseList = responseList;
+        return this;
+    }
+
+    public DocumentUrl setReturnList(List<DocumentReturn> returnList) {
+        this.returnList = returnList;
+        return this;
+    }
+
+    public DocumentUrl setCommentJson(String commentJson) {
+        this.commentJson = commentJson;
+        return this;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+    public DocumentUrl setIndex(int index) {
+        this.index = index;
+        return this;
+    }
+
+    public boolean isReturnRecordLevel() {
+        return returnRecordLevel;
+    }
+    public DocumentUrl setReturnRecordLevel(boolean returnRecordLevel) {
+        this.returnRecordLevel = returnRecordLevel;
+        return this;
+    }
+
+    public boolean isCommentInReturnExampleWithLevel() {
+        return commentInReturnExampleWithLevel;
+    }
+    public DocumentUrl setCommentInReturnExampleWithLevel(boolean commentInReturnExampleWithLevel) {
+        this.commentInReturnExampleWithLevel = commentInReturnExampleWithLevel;
+        return this;
+    }
+
+    public boolean isCommentInReturnExample() {
+        return commentInReturnExample;
+    }
+    public DocumentUrl setCommentInReturnExample(boolean commentInReturnExample) {
+        this.commentInReturnExample = commentInReturnExample;
+        return this;
+    }
+
+    public String getReturnJson() {
+        return returnJson;
+    }
+    public DocumentUrl setReturnJson(String returnJson) {
+        this.returnJson = returnJson;
+        return this;
     }
 
     public List<DocumentReturn> getReturnList() {

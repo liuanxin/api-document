@@ -2,20 +2,10 @@ package com.github.liuanxin.api.model;
 
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.util.Tools;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.util.Collection;
 import java.util.Map;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Accessors(chain = true)
 public class Recursive {
 
     private Recursive parent;
@@ -24,6 +14,13 @@ public class Recursive {
     private Class<?> self;
 
 
+    public Recursive() {
+    }
+    public Recursive(Recursive parent, String fieldName, Class<?> self) {
+        this.parent = parent;
+        this.fieldName = fieldName;
+        this.self = self;
+    }
     /**
      * use with field: new Recursive(parent, fieldName, field.getGenericType().toString())
      *
@@ -36,6 +33,32 @@ public class Recursive {
         this.fieldName = fieldName;
         this.self = getGenericType(genericType);
     }
+
+
+    public Recursive getParent() {
+        return parent;
+    }
+    public Recursive setParent(Recursive parent) {
+        this.parent = parent;
+        return this;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+    public Recursive setFieldName(String fieldName) {
+        this.fieldName = fieldName;
+        return this;
+    }
+
+    public Class<?> getSelf() {
+        return self;
+    }
+    public Recursive setSelf(Class<?> self) {
+        this.self = self;
+        return this;
+    }
+
 
     /**
      * <pre>

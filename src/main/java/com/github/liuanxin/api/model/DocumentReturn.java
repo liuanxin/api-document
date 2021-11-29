@@ -1,22 +1,48 @@
 package com.github.liuanxin.api.model;
 
 import com.github.liuanxin.api.constant.ApiConst;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import java.util.Objects;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Accessors(chain = true)
 public class DocumentReturn {
 
     private String name;
     private String type;
     private String desc = ApiConst.EMPTY;
+
+
+    public DocumentReturn() {
+    }
+    public DocumentReturn(String name, String type, String desc) {
+        this.name = name;
+        this.type = type;
+        this.desc = desc;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+    public DocumentReturn setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getType() {
+        return type;
+    }
+    public DocumentReturn setType(String type) {
+        this.type = type;
+        return this;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+    public DocumentReturn setDesc(String desc) {
+        this.desc = desc;
+        return this;
+    }
 
 
     @Override

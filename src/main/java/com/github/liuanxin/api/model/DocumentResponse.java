@@ -4,16 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ApiResponse;
 import com.github.liuanxin.api.util.Tools;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.Objects;
 
-@Data
-@NoArgsConstructor
-@Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentResponse implements Comparable<DocumentResponse> {
 
@@ -34,6 +28,8 @@ public class DocumentResponse implements Comparable<DocumentResponse> {
     private Class<?>[] genericChild;
 
 
+    public DocumentResponse() {
+    }
     public DocumentResponse(int code, String msg) {
         this.code = code;
         this.msg = msg;
@@ -42,6 +38,72 @@ public class DocumentResponse implements Comparable<DocumentResponse> {
         this.code = response.code();
         this.msg = response.msg();
     }
+
+
+    public int getCode() {
+        return code;
+    }
+    public DocumentResponse setCode(int code) {
+        this.code = code;
+        return this;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+    public DocumentResponse setMsg(String msg) {
+        this.msg = msg;
+        return this;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+    public DocumentResponse setComment(String comment) {
+        this.comment = comment;
+        return this;
+    }
+
+    public List<DocumentReturn> getReturnList() {
+        return returnList;
+    }
+    public DocumentResponse setReturnList(List<DocumentReturn> returnList) {
+        this.returnList = returnList;
+        return this;
+    }
+
+    public Class<?> getResponse() {
+        return response;
+    }
+    public DocumentResponse setResponse(Class<?> response) {
+        this.response = response;
+        return this;
+    }
+
+    public Class<?> getGenericParent() {
+        return genericParent;
+    }
+    public DocumentResponse setGenericParent(Class<?> genericParent) {
+        this.genericParent = genericParent;
+        return this;
+    }
+
+    public Class<?>[] getGeneric() {
+        return generic;
+    }
+    public DocumentResponse setGeneric(Class<?>[] generic) {
+        this.generic = generic;
+        return this;
+    }
+
+    public Class<?>[] getGenericChild() {
+        return genericChild;
+    }
+    public DocumentResponse setGenericChild(Class<?>[] genericChild) {
+        this.genericChild = genericChild;
+        return this;
+    }
+
 
     public DocumentResponse setResponse(Class<?> response, Class<?>[] generic) {
         this.response = response;

@@ -2,17 +2,9 @@ package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.util.Tools;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.util.*;
 
-@Setter
-@Getter
-@NoArgsConstructor
-@Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentInfo {
 
@@ -49,6 +41,39 @@ public class DocumentInfo {
      */
     private Map<String, Object> enumInfo;
     private List<DocumentModule> moduleList;
+
+
+    public List<DocumentParam> getTokenList() {
+        return tokenList;
+    }
+    public DocumentInfo setTokenList(List<DocumentParam> tokenList) {
+        this.tokenList = tokenList;
+        return this;
+    }
+
+    public List<DocumentResponse> getResponseList() {
+        return responseList;
+    }
+    public DocumentInfo setResponseList(List<DocumentResponse> responseList) {
+        this.responseList = responseList;
+        return this;
+    }
+
+    public Map<String, Object> getEnumInfo() {
+        return enumInfo;
+    }
+    public DocumentInfo setEnumInfo(Map<String, Object> enumInfo) {
+        this.enumInfo = enumInfo;
+        return this;
+    }
+
+    public List<DocumentModule> getModuleList() {
+        return moduleList;
+    }
+    public DocumentInfo setModuleList(List<DocumentModule> moduleList) {
+        this.moduleList = moduleList;
+        return this;
+    }
 
 
     public void append(List<DocumentInfo> projects) {

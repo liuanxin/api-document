@@ -3,15 +3,9 @@ package com.github.liuanxin.api.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.github.liuanxin.api.annotation.ApiToken;
 import com.github.liuanxin.api.constant.ApiConst;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.Accessors;
 
 import java.util.Objects;
 
-@Data
-@NoArgsConstructor
-@Accessors(chain = true)
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class DocumentParam {
 
@@ -27,6 +21,103 @@ public class DocumentParam {
     private String hasFile;
     private String hasToken;
     private String style;
+
+    public String getName() {
+        return name;
+    }
+    public DocumentParam setName(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+    public DocumentParam setDataType(String dataType) {
+        this.dataType = dataType;
+        return this;
+    }
+
+    public String getShowDataType() {
+        return showDataType;
+    }
+    public DocumentParam setShowDataType(String showDataType) {
+        this.showDataType = showDataType;
+        return this;
+    }
+
+    public String getParamType() {
+        return paramType;
+    }
+    public DocumentParam setParamType(String paramType) {
+        this.paramType = paramType;
+        return this;
+    }
+
+    public String getHasMust() {
+        return hasMust;
+    }
+    public DocumentParam setHasMust(String hasMust) {
+        this.hasMust = hasMust;
+        return this;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+    public DocumentParam setDesc(String desc) {
+        this.desc = desc;
+        return this;
+    }
+
+    public String getExample() {
+        return example;
+    }
+    public DocumentParam setExample(String example) {
+        this.example = example;
+        return this;
+    }
+
+    public String getHasTextarea() {
+        return hasTextarea;
+    }
+    public DocumentParam setHasTextarea(String hasTextarea) {
+        this.hasTextarea = hasTextarea;
+        return this;
+    }
+
+    public String getDatePattern() {
+        return datePattern;
+    }
+    public DocumentParam setDatePattern(String datePattern) {
+        this.datePattern = datePattern;
+        return this;
+    }
+
+    public String getHasFile() {
+        return hasFile;
+    }
+    public DocumentParam setHasFile(String hasFile) {
+        this.hasFile = hasFile;
+        return this;
+    }
+
+    public String getHasToken() {
+        return hasToken;
+    }
+    public DocumentParam setHasToken(String hasToken) {
+        this.hasToken = hasToken;
+        return this;
+    }
+
+    public String getStyle() {
+        return style;
+    }
+    public DocumentParam setStyle(String style) {
+        this.style = style;
+        return this;
+    }
+
 
     public static DocumentParam buildToken(String name, String desc, String example, boolean textarea) {
         return new DocumentParam().setDataType("String").setHasToken("1").setParamType("1")
