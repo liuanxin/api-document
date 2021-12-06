@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.WebAsyncTask;
 
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.Callable;
@@ -61,7 +62,7 @@ public final class ReturnHandler {
             return;
         }
         Class<?> outClass = getClass(className);
-        if (Tools.isEmpty(outClass)) {
+        if (Tools.isBlank(outClass)) {
             return;
         }
 
@@ -95,7 +96,7 @@ public final class ReturnHandler {
                     }
 
                     DocumentReturn mapKey = new DocumentReturn();
-                    mapKey.setName(space + key.toString() + parent).setType(Tools.getInputType(keyClazz));
+                    mapKey.setName(space + key + parent).setType(Tools.getInputType(keyClazz));
                     if (keyClazz.isEnum()) {
                         mapKey.setDesc(Tools.descInfo(keyClazz, "enum"));
                     }
@@ -103,7 +104,7 @@ public final class ReturnHandler {
                     returnList.add(mapKey);
 
                     // handle value
-                    String innerParent = (LEVEL_APPEND + key.toString() + parent);
+                    String innerParent = (LEVEL_APPEND + key + parent);
                     handlerReturn(parentRecursive, fieldName, space + TAB, innerParent, method, keyValue[1].trim(), returnList);
                 }
             }
@@ -556,9 +557,19 @@ public final class ReturnHandler {
     }
 
     private static void setField(Field field, Object obj, Object value) {
+        /*
         try {
             field.setAccessible(true);
             field.set(obj, value);
+        } catch (Exception e) {
+            if (LOGGER.isWarnEnabled()) {
+                LOGGER.warn(String.format("Cannot assignment field %s to %s with %s", field, value, obj), e);
+            }
+        }
+        */
+
+        try {
+            new PropertyDescriptor(field.getName(), obj.getClass()).getWriteMethod().invoke(obj, value);
         } catch (Exception e) {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn(String.format("Cannot assignment field %s to %s with %s", field, value, obj), e);
