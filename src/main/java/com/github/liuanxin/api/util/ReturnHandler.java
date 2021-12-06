@@ -568,11 +568,12 @@ public final class ReturnHandler {
         }
         */
 
+        String fieldName = field.getName();
         try {
-            new PropertyDescriptor(field.getName(), obj.getClass()).getWriteMethod().invoke(obj, value);
+            new PropertyDescriptor(fieldName, obj.getClass()).getWriteMethod().invoke(obj, value);
         } catch (Exception e) {
             if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn(String.format("Cannot assignment field %s to %s with %s", field, value, obj), e);
+                LOGGER.warn(String.format("Cannot set value(%s) to field(%s) with %s", value, fieldName, obj), e);
             }
         }
     }
