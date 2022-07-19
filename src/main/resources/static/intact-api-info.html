@@ -731,6 +731,23 @@ function hasEnter(event) {
 }
 
 var localServerPathItem = 'prefix-url';
+function handleContextPath() {
+    var param = 'context-path=', append = '&';
+    var search = location.search;
+    if (search.includes(param)) {
+        var path = search.substring(search.indexOf(param) + param.length);
+        if (path.includes(append)) {
+            path = path.substring(0, path.indexOf(append));
+        }
+        var uri = path.toLowerCase();
+        if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
+            path = location.protocol + '//' + location.host + (path.startsWith('/') ? '' : '/') + path;
+        }
+        localStorage.setItem(localServerPathItem, path);
+    }
+}
+handleContextPath();
+
 function newRequest() {
     var url = $('#prefix-url').val();
     if (isNotBlank(url)) {
@@ -764,7 +781,7 @@ function getDomain() {
     return isBlank(url) ? (location.protocol + '//' + location.host) : url;
 }
 function getProjectDomain() {
-    var url = localStorage.getItem(localServerPathItem);
+    var url = getDomain();
     if (isNotBlank(url)) {
         return url;
     }
