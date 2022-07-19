@@ -858,7 +858,7 @@ function hasEnter(event) {
 var localServerPathItem = 'prefix-url';
 function handleContextPath() {
     var param = 'context-path=', append = '&';
-    var search = location.search;
+    var search = location.search.trim();
     if (search.includes(param)) {
         var path = search.substring(search.indexOf(param) + param.length);
         if (path.includes(append)) {
