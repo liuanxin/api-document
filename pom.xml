@@ -28,7 +28,7 @@
         <slf4j.version>1.7.32</slf4j.version>
         <jackson.version>2.13.0</jackson.version>
 
-        <spring-webmvc.version>5.3.13</spring-webmvc.version>
+        <spring-webmvc.version>5.3.18</spring-webmvc.version>
         <servlet-api.version>2.5</servlet-api.version>
     </properties>
 
