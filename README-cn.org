@@ -114,7 +114,6 @@ public class ExampleController {
     }
 }
 
-@Data
 public class Page {
     @ApiParam("当前页数")
     private Integer page;
@@ -123,9 +122,10 @@ public class Page {
     private Integer limit;
 
     ...
+
+    setter/getter
 }
 
-@Data
 public class JsonResult<T> {
     @ApiReturn("返回码")
     private JsonCode code;
@@ -138,6 +138,8 @@ public class JsonResult<T> {
     private T data;
 
     ...
+
+    setter/getter
 }
 
 public enum JsonCode {
@@ -156,7 +158,6 @@ public enum JsonCode {
     ...
 }
 
-@Data
 public class DemoVo {
     private Long id;
 
@@ -164,6 +165,8 @@ public class DemoVo {
     private String name;
 
     ...
+
+    setter/getter
 }
 #+END_SRC
 
