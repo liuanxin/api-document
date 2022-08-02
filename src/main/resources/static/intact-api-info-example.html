@@ -627,9 +627,9 @@
                                     {{
                                     var hasTextarea = String(param.hasTextarea) === '1';
                                     var arr = [];
-                                    var hasMust;
-                                    if (String(param.hasMust) === '1') { hasMust = true; arr.push('required'); }
-                                    else { hasMust = false; }
+                                    var required;
+                                    if (String(param.required) === '1') { required = true; arr.push('required'); }
+                                    else { required = false; }
 
                                     var dataType = (param.dataType || '').toLowerCase();
                                     if (dataType === 'int' || dataType === 'long') { arr.push('custom[integer]'); }
@@ -648,19 +648,19 @@
                                     var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
                                     var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                     }}
-                                    <tr{{? hasMust}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
+                                    <tr{{? required}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                     <td class="text-left">{{= param.name || ''}}</td>
                                     <td class="text-left" style="height: inherit;">
                                         {{? dataType === 'file'}}
                                         <div class="input-group">
                                             <label class="input-group-btn">
-                                                <span class="btn btn-default{{? hasMust}} bold{{?}}">
+                                                <span class="btn btn-default{{? required}} bold{{?}}">
                                                     选择文件
                                                     <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
                                                 </span>
                                             </label>
                                             <input type="text"{{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
-                                                   class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}" readonly="readonly">
+                                                   class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                         </div>
                                         {{?? hasTextarea}}
                                         <textarea {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
@@ -683,7 +683,7 @@
                                             <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                             <input type="text" name="{{= param.name || ''}}"{{= header}}
                                                    {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
-                                                   class="form-control{{? hasMust}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
+                                                   class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
                                                    {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
                                         </div>
                                         {{??}}
@@ -694,7 +694,7 @@
                                                name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                         {{?}}
                                     </td>
-                                    <td class="text-left">{{= hasMust ? 'Yes' : 'No'}}</td>
+                                    <td class="text-left">{{= required ? 'Yes' : 'No'}}</td>
                                     <td class="text-left">{{=
                                         param.showDataType && param.showDataType !== ''
                                         ? param.showDataType
@@ -1591,25 +1591,33 @@ $(function() {
     });
 
     $(document).on('click', '.copy', function() {
-        var $this = $(this);
-        var $pre = $this.next();
-        var copyValue = $pre.find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
+        let $this = $(this);
+        let $copyStatus = $this.prev();
+        let copyValue = $this.next().find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
+        navigator.clipboard.writeText(copyValue).then(
+            function() {
+                $copyStatus.text('复制成功');
+                setTimeout(function() { $copyStatus.text(''); }, 3000);
+            },
+            function() {
+                /* 上面的方法复制不成功, 再用这个不建议的做法操作一次 */
+                /* $copyStatus.text('复制失败, 浏览器不支持'); */
+                let copyElement = document.createElement('textarea');
+                copyElement.setAttribute('readonly', 'readonly');
+                copyElement.setAttribute('class', 'copy-impl');
+                $(copyElement).html(copyValue); /* copyElement.value = copyValue; // 没生效, 不知道为什么 */
 
-        var copyElement = document.createElement('textarea');
-        copyElement.setAttribute('readonly', 'readonly');
-        copyElement.setAttribute('class', 'copy-impl');
-        $(copyElement).html(copyValue); /* copyElement.value = copyValue; // 不会生效 */
+                let $parent = $this.parent()[0];
+                $parent.appendChild(copyElement);
+                copyElement.setSelectionRange(0, copyValue.length);
+                copyElement.select();
+                let flag = document.execCommand('copy');
+                $parent.removeChild(copyElement);
 
-        var $parent = $this.parent()[0];
-        $parent.appendChild(copyElement);
-        copyElement.setSelectionRange(0, copyValue.length);
-        copyElement.select();
-        var flag = document.execCommand('copy');
-        $parent.removeChild(copyElement);
-
-        var $copyStatus = $this.prev();
-        $copyStatus.text('复制' + (flag ? '成功' : '失败'));
-        setTimeout(function() { $copyStatus.text(''); }, 3000);
+                $copyStatus.text('复制' + (flag ? '成功' : '失败'));
+                setTimeout(function() { $copyStatus.text(''); }, 3000);
+            }
+        )
     });
 
     $(window).scroll(function() {

@@ -68,7 +68,7 @@ public class ApiInfoConfig {
                 // // use @ApiTokens annotation
                 // .setGlobalTokens(Arrays.asList(
                 //     DocumentParam.buildToken("x-token", "oauth info", "abc", ParamType.Header).setHasTextarea("1"),
-                //     DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setMust("1")
+                //     DocumentParam.buildToken("x-version", "api version", "1.0.0", ParamType.Query).setRequired("1")
                 // ))
 
                 // // field comment is output in the return example.
@@ -183,18 +183,18 @@ public class DemoVo {
 *** annotation description
 #+BEGIN_SRC java
 @ApiGroup --> in class or method. use the method if all of that
-  value     --> module info, must set
+  value     --> module info, required
   index     --> can not be set, more forward when smaller("index" first,
                 "module info" second -> with sort), if set multi module and different index, use the smaller
 
 
 @ApiResponses --> in class or method. marked on class or method will return the specified response,
                   otherwise it will take the global response configuration.
-  value         --> @ApiResponse[], must set
+  value         --> @ApiResponse[], required
 
   @ApiResponse  --> nested annotation
-    code          --> must set, for example: 400
-    msg           --> must set, for example: param error
+    code          --> required, for example: 400
+    msg           --> required, for example: param error
     type          --> nested annotation: @ApiReturnType[], can not be set
 
 for example:
@@ -205,7 +205,7 @@ for example:
 
 
 @ApiReturnType --> nested annotation, use on @ApiResponse or @ApiMethod
-  value          --> return class, must set
+  value          --> return class, required
   generic        --> return type of generic type, can not be set
   genericParent  --> returns the parent level of the generic type in the type, can not be set
   genericChild   --> returns the sub-level of the generic type of the type, can not be set
@@ -260,7 +260,7 @@ for example:
 
 
 @ApiMethod --> in method
-  value      --> method title, must set
+  value      --> method title, required
   develop    --> can not be set
   desc       --> description, can not be set
   index      --> more forward when smaller, can not be set("index" first,
@@ -281,7 +281,7 @@ for example:
                   but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4
   example     --> used in api examples, can not be set
   paramType   --> can not be set, Header or Query, default is Query
-  must        --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
+  required    --> can not be set, if param annotation @RequestParam(required = true) etc... will ignore this config
   textarea    --> can not be set, param will show with textarea(in example page), default is false
   datePattern --> can not be set, is param type has Date, for example: MM/dd/yyyy HH:mm:ss
   style       --> can not be set. html style with param on page, for example: color:green;height:35px;
@@ -304,12 +304,12 @@ for example:
   value      --> @ApiToken[]
 
   @ApiToken  --> nested annotation
-    name        --> must set
+    name        --> required
     desc        --> can not be set
     example     --> can not be set
     dataType    --> data type. for example: int、long、float、double、date、phone、email、url、ipv4
     paramType   --> can not be set, Header or Query, default is Header
-    must        --> default false
+    required    --> default false
     textarea    --> default false
     datePattern --> parameter type is date format of the date, can not be set. for example: MM/DD/YYYY HH:mm:ss
     style       --> can not be set. html style with param on page, for example: color:green;height:35px;
@@ -319,7 +319,7 @@ for example:
 
 @ApiTokens(token = {
     @ApiToken(name = "x-token", desc = "oauth info", example = "abc-xyz", textarea = true),
-    @ApiToken(name = "x-version", desc = "api version", example = "1.0", paramType = ParamType.Query, must = true)
+    @ApiToken(name = "x-version", desc = "api version", example = "1.0", paramType = ParamType.Query, required = true)
 })
 
 
@@ -335,7 +335,7 @@ for example:
   // The following attributes are only used on the request parameters.
 
   paramType   --> param type, can not be set. Header or Query, default is Query
-  must        --> param required, can not be set,
+  required    --> param required, can not be set,
                   if has @RequestParam(required = true) etc... will ignore this setting
   textarea    --> can not be set, param will show with textarea(in example page), default is false
   datePattern --> can not be set, is param type has Date, for example: MM/dd/yyyy HH:mm:ss

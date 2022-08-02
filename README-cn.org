@@ -62,7 +62,7 @@ public class ApiInfoConfig {
                 // // 如果想在具体的接口上忽略这些配置 或者 设置不同的参数 请使用 @ApiTokens 注解
                 // .setGlobalTokens(Arrays.asList(
                 //     DocumentParam.buildToken("x-token", "认证数据", "abc", ParamType.Header).setHasTextarea("1"),
-                //     DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setMust("1")
+                //     DocumentParam.buildToken("x-version", "接口版本", "1.0.0", ParamType.Query).setRequired("1")
                 // ))
 
                 // // 字段说明是否输出在返回示例中, 不设置则默认是 true,
@@ -273,7 +273,7 @@ public class DemoVo {
                   但是显示在文档上时可以传 int 时)有用: int、long、float、double、date、phone、email、url、ipv4
   example     --> 参数示例. 用在接口示例时有用, 可以不设置
   paramType   --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query
-  must        --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
+  required    --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
   textarea    --> 参数是否显示成文本域, 可以不设置, 默认是 false
   datePattern --> 时间格式. 可以不设置, 如: yyyy-MM-dd HH:mm:ss
   style       --> 参数在页面上的样式, 可以不设置, 如: color:green;height:35px;
@@ -300,7 +300,7 @@ public class DemoVo {
     example     --> 参数示例. 用在接口示例时有用, 可以不设置
     dataType    --> 参数类型. 可以不设置. 如: int、long、float、double、date、phone、email、url、ipv4
     paramType   --> 参数类型. 可以不设置. Header 或 Query 两种, 默认是 Header
-    must        --> 参数是否必须. 可以不设置, 默认是 false
+    required    --> 参数是否必须. 可以不设置, 默认是 false
     textarea    --> 参数是否显示成文本域, 用在接口示例时有用, 可以不设置, 默认是 false
     datePattern --> 参数类型是 date 时的时间格式. 可以不设置, 如: yyyy-MM-dd HH:mm:ss
     style       --> 参数在页面上 的样式, 可以不设置
@@ -309,7 +309,7 @@ public class DemoVo {
 @ApiTokens    // 标注在类或接口上表示相关的接口将不会生成全局的 token 信息
 @ApiTokens({  // 标注在类或接口上表示相关的接口将会使用参数中指定的 token 信息
     @ApiToken(name = "x-token", desc = "认证数据", example = "abc-xyz", textarea = true),
-    @ApiToken(name = "x-version", desc = "接口版本", example = "1.0", paramType = ParamType.Query, must = true)
+    @ApiToken(name = "x-version", desc = "接口版本", example = "1.0", paramType = ParamType.Query, required = true)
 })
 
 
@@ -323,7 +323,7 @@ public class DemoVo {
   -- 上面的属性同时作用在 请求参数 和 返回字段 上, 下面的属性只用在 请求参数 上
 
   paramType   --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query
-  must        --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
+  required    --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
   textarea    --> 参数是否显示成文本域, 可以不设置, 默认是 false
   datePattern --> 时间格式. 可以不设置, 如: YYYY-MM-DD HH:mm:ss
   style       --> 参数在页面上的样式, 可以不设置, 如: color:green;height:35px;

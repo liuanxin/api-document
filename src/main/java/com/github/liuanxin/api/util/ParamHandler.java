@@ -58,7 +58,7 @@ public final class ParamHandler {
                         if (Tools.isNotBlank(parameterNames) && parameterNames.length > i) {
                             // if param was required, use it.
                             params.add(paramInfo(getParamName(parameter, parameterNames[i]), parameterType,
-                                    apiParam, apiModel, paramHasMust(parameter)));
+                                    apiParam, apiModel, paramRequired(parameter)));
                         }
                     }
                 }
@@ -110,7 +110,7 @@ public final class ParamHandler {
         return paramName;
     }
 
-    private static boolean paramHasMust(MethodParameter parameter) {
+    private static boolean paramRequired(MethodParameter parameter) {
         RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
         if (Tools.isNotBlank(requestParam) && requestParam.required()) {
             return true;
@@ -157,7 +157,7 @@ public final class ParamHandler {
 
     /** collect param info */
     private static DocumentParam paramInfo(String name, Class<?> type, ApiParam apiParam,
-                                           ApiModel apiModel, boolean must) {
+                                           ApiModel apiModel, boolean required) {
         DocumentParam param = new DocumentParam();
         param.setName(name);
 
@@ -223,10 +223,10 @@ public final class ParamHandler {
         }
 
         // if param has no @RequestParam(required = true) etc..., use custom value
-        param.setHasMust(
-                must
-                || (Tools.isNotEmpty(apiParam) && apiParam.must())
-                || (Tools.isNotEmpty(apiModel) && apiModel.must()) ? "1" : ApiConst.EMPTY
+        param.setRequired(
+                required
+                || (Tools.isNotEmpty(apiParam) && apiParam.required())
+                || (Tools.isNotEmpty(apiModel) && apiModel.required()) ? "1" : ApiConst.EMPTY
         );
         param.setDesc(Tools.descInfo(type, desc));
         return param;

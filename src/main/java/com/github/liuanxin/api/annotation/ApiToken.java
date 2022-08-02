@@ -23,7 +23,7 @@ public @interface ApiToken {
     ParamType paramType() default ParamType.Header;
 
     /** @return if param has @RequestParam(required = true) etc..., this set will ignore */
-    boolean must() default false;
+    boolean required() default false;
 
     /** @return in html, true will be textarea, default was input. */
     boolean textarea() default false;

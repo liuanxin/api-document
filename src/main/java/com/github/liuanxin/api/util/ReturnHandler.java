@@ -77,7 +77,7 @@ public final class ReturnHandler {
                 String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
                 String[] keyValue = keyAndValue.split(",");
                 if (keyValue.length == 2) {
-                    // key must has basic type or enum
+                    // key must be basic type or enum
                     Class<?> keyClazz;
                     try {
                         keyClazz = Class.forName(keyValue[0].trim());
@@ -421,7 +421,7 @@ public final class ReturnHandler {
             String keyAndValue = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">"));
             String[] keyValue = keyAndValue.split(",");
             if (keyValue.length == 2) {
-                // key must has basic type or enum
+                // key must be basic type or enum
                 Class<?> keyClazz;
                 try {
                     keyClazz = Class.forName(keyValue[0].trim());

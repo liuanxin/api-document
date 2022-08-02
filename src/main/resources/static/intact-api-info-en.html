@@ -369,9 +369,9 @@
     <div class="header-select">
         <select class="project-choose form-control" name="p">
             <option value="">Current</option>
-            {{ var cp = it.project; }}
+            {{ let cp = it.project; }}
             {{~ it.projects  :p}}
-            {{ var s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
+            {{ let s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
             <option value="{{= p[0]}}" data-url="{{= p[2]}}"{{= s}}>{{= p[1]}}</option>
             {{~}}
         </select>
@@ -396,7 +396,7 @@
                     <div class="module-api-info">
                         <p class="module-api-info-basic">request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                         {{
-                        var moduleDesc = '';
+                        let moduleDesc = '';
                         if (url.develop && url.develop !== '') {
                             moduleDesc += 'Develop: ' + url.develop;
                         }
@@ -405,9 +405,9 @@
                             moduleDesc += 'Comment: ' + url.desc;
                         }
 
-                        var printNil = '';
+                        let printNil = '';
                         if (url.exampleUrl && url.exampleUrl != '') {
-                            var example = '<a target="_blank" href="' + url.exampleUrl + '">Result example</a>';
+                            let example = '<a target="_blank" href="' + url.exampleUrl + '">Result example</a>';
                             if (moduleDesc !== '') {
                                 moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
                             } else {
@@ -419,16 +419,16 @@
                         <pre class="module-api-info-desc{{= printNil}}">{{= moduleDesc}}</pre>
 
                         {{
-                        var globalParamList = it.tokenList || [];
-                        var urlParamList = url.paramList || [];
-                        var paramList = String(url.useGlobalParam) === '1' ? globalParamList.concat(urlParamList) : urlParamList;
+                        let globalParamList = it.tokenList || [];
+                        let urlParamList = url.paramList || [];
+                        let paramList = String(url.useGlobalParam) === '1' ? globalParamList.concat(urlParamList) : urlParamList;
 
-                        var hasDesc = false, hasExample = false, hasHeader = false;
-                        for (var i = 0; i < paramList.length; i++) {
-                            var paramDesc = paramList[i].desc;
+                        let hasDesc = false, hasExample = false, hasHeader = false;
+                        for (let i = 0; i < paramList.length; i++) {
+                            let paramDesc = paramList[i].desc;
                             if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
 
-                            var urlExample = paramList[i].example;
+                            let urlExample = paramList[i].example;
                             if (urlExample !== undefined && urlExample !== null && urlExample !== '') { hasExample = true; }
 
                             if (String(paramList[i].paramType) === '1') { hasHeader = true; }
@@ -449,14 +449,14 @@
                                 </thead>
                                 <tbody>
                                 {{~ paramList  :param}}
-                                <tr{{? String(param.hasMust) === '1'}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
+                                <tr{{? String(param.required) === '1'}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                 <td class="text-left">{{= param.name || ''}}</td>
                                 <td class="text-left">{{=
                                     param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
                                     ? param.showDataType
                                     : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                     }}</td>
-                                <td class="text-left">{{= String(param.hasMust) === '1' ? 'Yes' : 'No'}}</td>
+                                <td class="text-left">{{= String(param.required) === '1' ? 'Yes' : 'No'}}</td>
                                 {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                 {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
                                 {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
@@ -498,8 +498,8 @@
                             {{?}}
 
                             {{
-                            var hasSelfResponse = false;
-                            var responseList;
+                            let hasSelfResponse = false;
+                            let responseList;
                             if (url.responseList && url.responseList.length > 0) {
                                 hasSelfResponse = true;
                                 responseList = url.responseList;
@@ -507,9 +507,9 @@
                                 responseList = it.responseList;
                             } else { responseList = []; }
 
-                            var hasAction = false;
-                            for (var i = 0; i < responseList.length; i++) {
-                            var comment = responseList[i].comment;
+                            let hasAction = false;
+                            for (let i = 0; i < responseList.length; i++) {
+                            let comment = responseList[i].comment;
                             if (comment !== undefined && comment !== null && comment !== '') { hasAction = true; }
                             }
                             }}
@@ -529,8 +529,8 @@
                                         <td class="text-left">{{= response.code || ''}}</td>
                                         <td class="text-left">{{= response.msg || ''}}</td>
                                         {{
-                                        var comment = response.comment;
-                                        var targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
+                                        let comment = response.comment;
+                                        let targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
                                         }}
                                         {{? comment !== undefined && comment !== null && comment !== ''}}
                                         <td class="text-left print-nil">
@@ -548,7 +548,7 @@
 
                             {{? hasSelfResponse}}
                             {{~ responseList  :response}}
-                            {{ var comment = response.comment; }}
+                            {{ let comment = response.comment; }}
                             {{? comment !== undefined && comment !== null && comment !== ''}}
                             <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade" tabindex="-1"
                                  aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -608,7 +608,7 @@
             {{~}}
 
             {{~ it.responseList  :response}}
-            {{ var comment = response.comment; }}
+            {{ let comment = response.comment; }}
             {{? comment !== undefined && comment !== null && comment !== ''}}
             <div id="global-{{= response.code}}" class="modal fade" tabindex="-1"
                  aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -714,7 +714,7 @@ function hasEnter(event) {
         return;
     }
 
-    var handled;
+    let handled;
     if (event.key !== undefined) {
         handled = event.key.toUpperCase() === 'ENTER';
     } else if (event.keyIdentifier !== undefined) {
@@ -730,16 +730,16 @@ function hasEnter(event) {
     return handled;
 }
 
-var localServerPathItem = 'prefix-url';
+let localServerPathItem = 'prefix-url';
 function handleContextPath() {
-    var param = 'context-path=', append = '&';
-    var search = location.search.trim();
+    let param = 'context-path=', append = '&';
+    let search = location.search.trim();
     if (search.includes(param)) {
-        var path = search.substring(search.indexOf(param) + param.length);
+        let path = search.substring(search.indexOf(param) + param.length);
         if (path.includes(append)) {
             path = path.substring(0, path.indexOf(append));
         }
-        var uri = path.toLowerCase();
+        let uri = path.toLowerCase();
         if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
             path = location.protocol + '//' + location.host + (path.startsWith('/') ? '' : '/') + path;
         }
@@ -749,7 +749,7 @@ function handleContextPath() {
 handleContextPath();
 
 function newRequest() {
-    var url = $('#prefix-url').val();
+    let url = $('#prefix-url').val();
     if (isNotBlank(url)) {
         if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
             url = location.protocol + '//' + url;
@@ -765,8 +765,8 @@ function addLine(html) {
     if (isBlank(html)) {
         return '';
     }
-    var lineHtml = '<div class="source-code"><div class="line-number print-nil">';
-    var i, lineNum = html.split(/\n/).length;
+    let lineHtml = '<div class="source-code"><div class="line-number print-nil">';
+    let i, lineNum = html.split(/\n/).length;
     for (i = 1; i <= lineNum; i++) {
         lineHtml += '<div>' + i + '</div>';
     }
@@ -777,32 +777,32 @@ function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 function getDomain() {
-    var url = localStorage.getItem(localServerPathItem);
+    let url = localStorage.getItem(localServerPathItem);
     return isBlank(url) ? (location.protocol + '//' + location.host) : url;
 }
 function getProjectDomain() {
-    var url = localStorage.getItem(localServerPathItem);
+    let url = localStorage.getItem(localServerPathItem);
     if (isNotBlank(url)) {
         return url;
     }
-    var projectDomain = $('.project-choose').find('option:selected').data('url');
+    let projectDomain = $('.project-choose').find('option:selected').data('url');
     return isBlank(projectDomain) ? (location.protocol + '//' + location.host) : projectDomain;
 }
 
-var chooseProjectTemplate = doT.template($('#choose-project').html());
-var copyrightTemplate = doT.template($('#copyright').html());
-var urlRenderTemplate = doT.template($('#url-render').html());
-var navRenderTemplate = doT.template($('#url-nav-render').html());
+let chooseProjectTemplate = doT.template($('#choose-project').html());
+let copyrightTemplate = doT.template($('#copyright').html());
+let urlRenderTemplate = doT.template($('#url-render').html());
+let navRenderTemplate = doT.template($('#url-nav-render').html());
 
 loadMulti();
 
 function loadMulti() {
     $.get(getDomain() + '/api/project').done(function (data) {
         if (isNotBlank(data)) {
-            var projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+            let projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
             if (isNotBlank(projectInfo)) {
-                var project = location.search;
-                var param = 'p=', append = '&';
+                let project = location.search;
+                let param = 'p=', append = '&';
                 if (project.includes(param)) {
                     project = project.substring(project.indexOf(param) + param.length);
                     if (project.includes(append)) {
@@ -819,12 +819,12 @@ function loadMulti() {
 }
 
 function loadData() {
-    var $title = $('title');
-    var $headerContent = $('.header-content');
-    var $footer = $('footer');
-    var $urlInfo = $('#url-info');
-    var $urlNavInfo = $('#url-nav-info');
-    var $rightArrow = $('.right-arrow');
+    let $title = $('title');
+    let $headerContent = $('.header-content');
+    let $footer = $('footer');
+    let $urlInfo = $('#url-info');
+    let $urlNavInfo = $('#url-nav-info');
+    let $rightArrow = $('.right-arrow');
 
     $title.html('');
     $headerContent.html('');
@@ -832,10 +832,10 @@ function loadData() {
     $urlInfo.html('');
     $urlNavInfo.html('');
 
-    var method = 'GET';
-    var apiInfo = '/api/info';
-    var projectDomain = getProjectDomain();
-    var requestUrl = projectDomain.endsWith(apiInfo) ? projectDomain
+    let method = 'GET';
+    let apiInfo = '/api/info';
+    let projectDomain = getProjectDomain();
+    let requestUrl = projectDomain.endsWith(apiInfo) ? projectDomain
         : ((projectDomain.endsWith('/') ? projectDomain.substring(0, projectDomain.length - 1) : projectDomain) + apiInfo);
 
     $.ajax({
@@ -844,14 +844,14 @@ function loadData() {
         crossDomain: true
     }).done(function(data) {
         if (isNotBlank(data)) {
-            var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
-            var copyright = documentInfo.copyright;
+            let documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+            let copyright = documentInfo.copyright;
             if (isBlank(copyright)) {
                 handleError($rightArrow, $urlInfo, 'Return data error!');
                 return;
             }
 
-            var title = copyright.title;
+            let title = copyright.title;
             if (isNotBlank(title)) {
                 $title.html(title);
                 $headerContent.html(title);
@@ -859,7 +859,7 @@ function loadData() {
             $footer.html(copyrightTemplate(copyright));
 
 
-            var doc = documentInfo.document;
+            let doc = documentInfo.document;
             if (isBlank(doc)) {
                 return;
             }
@@ -869,8 +869,8 @@ function loadData() {
             $rightArrow.css('display', '');
 
             $('pre[class="src src-json"]').each(function() {
-                var $html = escapeHtml($(this).html());
-                var html, flag;
+                let $html = escapeHtml($(this).html());
+                let html, flag;
                 if (isNotBlank($html)) {
                     html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
@@ -883,11 +883,11 @@ function loadData() {
             });
 
             if ($('.col-md-3').css('display') !== 'none') {
-                var hash = location.hash;
+                let hash = location.hash;
                 if (isNotBlank(hash)) {
-                    var $anchor = $(hash);
+                    let $anchor = $(hash);
                     if ($anchor.length > 0) {
-                        var $li = $('a[href="' + hash + '"]').parents('li');
+                        let $li = $('a[href="' + hash + '"]').parents('li');
                         $li.addClass('active');
                         $li.parents('li').addClass('active');
                         $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
@@ -910,23 +910,23 @@ function handleError($arrow, $ele, info) {
 }
 
 $(function() {
-    var linked = 1; /** init 1, change proejct: 2, all trigger scroll, 1 at scroll change active, 2 at scroll just set to 1 */
+    let linked = 1; /** init 1, change proejct: 2, all trigger scroll, 1 at scroll change active, 2 at scroll just set to 1 */
 
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
 
     $(document).on('change', '.project-choose', function() {
         linked = 2;
-        var projectUrl = $(this).find('option:selected').data('url');
-        var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
+        let projectUrl = $(this).find('option:selected').data('url');
+        let hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
         loadData();
     });
 
     $(document).on('click', '.right-arrow', function() {
-        var $nav = $('.col-md-3');
-        var $content = $('.col-md-9');
+        let $nav = $('.col-md-3');
+        let $content = $('.col-md-9');
 
-        var $img = $(this).find('.img');
+        let $img = $(this).find('.img');
         if (String($img.attr('style')).includes('rotate(180deg)')) {
             $img.css('transform', '');
             $nav.css('width', '');
@@ -955,41 +955,49 @@ $(function() {
     });
 
     $(document).on('click', '.copy', function() {
-        var $this = $(this);
-        var copyValue = $this.next().find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
+        let $this = $(this);
+        let $copyStatus = $this.prev();
+        let copyValue = $this.next().find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
+        navigator.clipboard.writeText(copyValue).then(
+            function() {
+                $copyStatus.text('Copy Success');
+                setTimeout(function() { $copyStatus.text(''); }, 3000);
+            },
+            function() {
+                /* $copyStatus.text('Opps! Your browser does not support the Clipboard API'); */
+                let copyElement = document.createElement('textarea');
+                copyElement.setAttribute('readonly', 'readonly');
+                copyElement.setAttribute('class', 'copy-impl');
+                $(copyElement).html(copyValue); /* copyElement.value = copyValue; // not active */
 
-        var copyElement = document.createElement('textarea');
-        copyElement.setAttribute('readonly', 'readonly');
-        copyElement.setAttribute('class', 'copy-impl');
-        $(copyElement).html(copyValue); /* copyElement.value = copyValue; // not active */
+                let $parent = $this.parent()[0];
+                $parent.appendChild(copyElement);
+                copyElement.setSelectionRange(0, copyValue.length);
+                copyElement.select();
+                let flag = document.execCommand('copy');
+                $parent.removeChild(copyElement);
 
-        var $parent = $this.parent()[0];
-        $parent.appendChild(copyElement);
-        copyElement.setSelectionRange(0, copyValue.length);
-        copyElement.select();
-        var flag = document.execCommand('copy');
-        $parent.removeChild(copyElement);
-
-        var $copyStatus = $this.prev();
-        $copyStatus.text('Copy ' + (flag ? 'Success' : 'Fail'));
-        setTimeout(function() { $copyStatus.text(''); }, 3000);
+                $copyStatus.text('Copy ' + (flag ? 'Success' : 'Fail'));
+                setTimeout(function() { $copyStatus.text(''); }, 3000);
+            }
+        )
     });
 
     $(window).scroll(function() {
-        var headerHeight = 51;
-        var topBottomHeight = 30;
-        var scrolled = 'scrolled';
-        var heightProperty = 'max-height';
+        let headerHeight = 51;
+        let topBottomHeight = 30;
+        let scrolled = 'scrolled';
+        let heightProperty = 'max-height';
 
-        var html = document.getElementsByTagName('html')[0];
-        var footer = document.getElementsByTagName('footer')[0];
+        let html = document.getElementsByTagName('html')[0];
+        let footer = document.getElementsByTagName('footer')[0];
 
-        var $win = $(window);
-        var $nav = $('.col-md-3');
-        var $bar = $('.bs-docs-sidebar > .nav');
+        let $win = $(window);
+        let $nav = $('.col-md-3');
+        let $bar = $('.bs-docs-sidebar > .nav');
 
-        var $header = $('header');
-        var scrollTop = $win.scrollTop();
+        let $header = $('header');
+        let scrollTop = $win.scrollTop();
         if (scrollTop > 0) {
             if (!$header.hasClass(scrolled)) {
                 $header.addClass(scrolled);
@@ -999,31 +1007,31 @@ $(function() {
         }
 
         if ($nav.css('display') !== 'none') {
-            var footerTop = footer.offsetTop;
-            var pageHeight = scrollTop + $win.height();
+            let footerTop = footer.offsetTop;
+            let pageHeight = scrollTop + $win.height();
             if (footerTop >= scrollTop && footerTop < pageHeight) {
-                var footViewHeight = pageHeight - footerTop;
+                let footViewHeight = pageHeight - footerTop;
                 $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
             } else {
-                var htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
+                let htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
                 if ($bar.css(heightProperty) !== htmlViewHeight) {
                     $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
                 }
             }
 
-            var navHash = $nav.find('.active > a:last').attr('href');
-            var currentHash = location.hash;
+            let navHash = $nav.find('.active > a:last').attr('href');
+            let currentHash = location.hash;
             if (navHash !== currentHash) {
-                var url = location.pathname + location.search;
+                let url = location.pathname + location.search;
                 if (isBlank(navHash)) {
                     if ($header.hasClass(scrolled) !== true) {
                         history.replaceState({api: 'index'}, '', url);
                     }
                     if (linked === 1) {
                         linked = 0;
-                        var $anchor = $(currentHash);
+                        let $anchor = $(currentHash);
                         if ($anchor.length > 0) {
-                            var $li = $('a[href="' + currentHash + '"]').parents('li');
+                            let $li = $('a[href="' + currentHash + '"]').parents('li');
                             if (!$li.hasClass('active')) {
                                 $li.addClass('active');
                             }

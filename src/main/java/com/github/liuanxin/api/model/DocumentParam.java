@@ -13,7 +13,7 @@ public class DocumentParam {
     private String dataType;
     private String showDataType;
     private String paramType;
-    private String hasMust;
+    private String required;
     private String desc;
     private String example;
     private String hasTextarea;
@@ -54,11 +54,11 @@ public class DocumentParam {
         return this;
     }
 
-    public String getHasMust() {
-        return hasMust;
+    public String getRequired() {
+        return required;
     }
-    public DocumentParam setHasMust(String hasMust) {
-        this.hasMust = hasMust;
+    public DocumentParam setRequired(String required) {
+        this.required = required;
         return this;
     }
 
@@ -132,7 +132,7 @@ public class DocumentParam {
         param.setExample(token.example());
         param.setHasToken("1");
         param.setParamType(token.paramType().hasHeader() ? "1" : ApiConst.EMPTY);
-        param.setHasMust(token.must() ? "1" : ApiConst.EMPTY);
+        param.setRequired(token.required() ? "1" : ApiConst.EMPTY);
         param.setHasTextarea(token.textarea() ? "1" : ApiConst.EMPTY);
         param.setStyle(token.style());
         return param;
@@ -148,7 +148,7 @@ public class DocumentParam {
                 Objects.equals(dataType, that.dataType) &&
                 Objects.equals(showDataType, that.showDataType) &&
                 Objects.equals(paramType, that.paramType) &&
-                Objects.equals(hasMust, that.hasMust) &&
+                Objects.equals(required, that.required) &&
                 Objects.equals(desc, that.desc) &&
                 Objects.equals(example, that.example) &&
                 Objects.equals(hasTextarea, that.hasTextarea) &&
@@ -160,7 +160,7 @@ public class DocumentParam {
     @Override
     public int hashCode() {
         return Objects.hash(
-                name, dataType, showDataType, paramType, hasMust, desc,
+                name, dataType, showDataType, paramType, required, desc,
                 example, hasTextarea, datePattern, hasFile, hasToken, style
         );
     }
