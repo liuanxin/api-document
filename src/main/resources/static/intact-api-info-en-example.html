@@ -663,9 +663,7 @@
                                                        class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                             </div>
                                             {{?? hasTextarea}}
-                                            <textarea {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                      class="form-control{{= validateClass}}{{= tokenClass}}"
-                                                      name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                            <textarea {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}} class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                             {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
                                             <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                                 <option></option>
@@ -1592,32 +1590,39 @@ $(function() {
 
     $(document).on('click', '.copy', function() {
         let $this = $(this);
-        let $copyStatus = $this.prev();
         let copyValue = $this.next().find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
-        navigator.clipboard.writeText(copyValue).then(
-            function() {
-                $copyStatus.text('Copy Success');
-                setTimeout(function() { $copyStatus.text(''); }, 3000);
-            },
-            function() {
-                /* $copyStatus.text('Opps! Your browser does not support the Clipboard API'); */
-                let copyElement = document.createElement('textarea');
-                copyElement.setAttribute('readonly', 'readonly');
-                copyElement.setAttribute('class', 'copy-impl');
-                $(copyElement).html(copyValue); /* copyElement.value = copyValue; // not active */
-
-                let $parent = $this.parent()[0];
-                $parent.appendChild(copyElement);
-                copyElement.setSelectionRange(0, copyValue.length);
-                copyElement.select();
-                let flag = document.execCommand('copy');
-                $parent.removeChild(copyElement);
-
-                $copyStatus.text('Copy ' + (flag ? 'Success' : 'Fail'));
-                setTimeout(function() { $copyStatus.text(''); }, 3000);
-            }
-        )
+        let $copyStatus = $this.prev();
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(copyValue).then(
+                function () {
+                    $copyStatus.text('Copy Success');
+                    setTimeout(function () { $copyStatus.text(''); }, 3000);
+                },
+                function () {
+                    /* $copyStatus.text('Opps! Your browser does not support the Clipboard API'); */
+                    commandCopy($this, copyValue, $copyStatus);
+                }
+            );
+        } else {
+            commandCopy($this, copyValue, $copyStatus);
+        }
     });
+    function commandCopy($ele, copyValue, $copyStatus) {
+        let copyElement = document.createElement('textarea');
+        copyElement.setAttribute('readonly', 'readonly');
+        copyElement.setAttribute('class', 'copy-impl');
+        $(copyElement).html(copyValue); /* copyElement.value = copyValue; // not active */
+
+        let $parent = $ele.parent()[0];
+        $parent.appendChild(copyElement);
+        copyElement.setSelectionRange(0, copyValue.length);
+        copyElement.select();
+        let flag = document.execCommand('copy');
+        $parent.removeChild(copyElement);
+
+        $copyStatus.text('Copy ' + (flag ? 'Success' : 'Fail'));
+        setTimeout(function() { $copyStatus.text(''); }, 3000);
+    }
 
     $(window).scroll(function() {
         let headerHeight = 51;
