@@ -1594,7 +1594,7 @@ $(function() {
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(copyValue).then(
                 function () {
-                    $copyStatus.text('Copy Success');
+                    $copyStatus.text('复制成功.');
                     setTimeout(function () { $copyStatus.text(''); }, 3000);
                 },
                 function () {
