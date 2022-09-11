@@ -1,6 +1,6 @@
 package com.github.liuanxin.api.annotation;
 
-import com.github.liuanxin.api.configuration.ApiInfoConfiguration;
+import com.github.liuanxin.api.web.DocumentController;
 import org.springframework.context.annotation.Import;
 
 import java.lang.annotation.*;
@@ -11,6 +11,6 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import({ApiInfoConfiguration.class})
+@Import({DocumentController.class})
 public @interface EnableApiInfo {
 }

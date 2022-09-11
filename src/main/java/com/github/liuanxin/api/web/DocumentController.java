@@ -25,8 +25,8 @@ public class DocumentController {
     private static final Lock LOCK = new ReentrantLock();
 
     // local cache
-    private static String return_info_cache = null;
-    private static Map<String, DocumentUrl> url_map_cache = null;
+    private static volatile String return_info_cache = null;
+    private static volatile Map<String, DocumentUrl> url_map_cache = null;
     // local cache
 
 
@@ -104,7 +104,7 @@ public class DocumentController {
     }
 
     @GetMapping(value = ApiConst.URL_INFO, produces = ApiConst.PRODUCES)
-    public String url(String p) {
+    public String url() {
         if (Tools.isBlank(copyright) || copyright.isOnline()) {
             return ApiConst.EMPTY;
         } else {
