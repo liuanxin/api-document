@@ -1500,7 +1500,7 @@ $(function() {
             settings['contentType'] = false;
         } else {
             if (hasRequestBody) {
-                if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
+                if ('GET' === method.toUpperCase()) { /* https://stackoverflow.com/questions/978061/http-get-with-request-body */
                     response.find('pre').html("<span class='red'>浏览器不能通过 GET 请求发送 RequestBody 参数" +
                         "(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
                     response.show();

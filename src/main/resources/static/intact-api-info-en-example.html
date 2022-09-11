@@ -1500,7 +1500,7 @@ $(function() {
             settings['contentType'] = false;
         } else {
             if (hasRequestBody) {
-                if ('GET' === method.toUpperCase()) { // https://stackoverflow.com/questions/978061/http-get-with-request-body
+                if ('GET' === method.toUpperCase()) { /* https://stackoverflow.com/questions/978061/http-get-with-request-body */
                     response.find('pre').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request" +
                         "(It's possible to use the above cURL), please contact the backend change to POST!</span>");
                     response.show();
