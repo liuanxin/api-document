@@ -1380,7 +1380,7 @@ $(function() {
         while (placeRegex.test(url)) {
             let group = RegExp.$1;
             let value = params[group];
-            // url </user/{id}> change to </user/123>, params <name=xyz&id=&gender=1> change to <name=xyz&gender=1>
+            /* url /user/{id} change to /user/123, params <name=xyz&id=&gender=1> change to <name=xyz&gender=1> */
             url = url.replace(placeRegex, value);
             delete params[group];
         }
