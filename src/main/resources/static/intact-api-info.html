@@ -462,7 +462,7 @@
                                         ? param.showDataType
                                         : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                     }}</td>
-                                    <td class="text-left">{{= String(param.required) === '1' ? '✓️' : '✗'}}</td>
+                                    <td class="text-left">{{= String(param.required) === '1' ? '✓' : '✗'}}</td>
                                     {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                     {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
                                     {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
