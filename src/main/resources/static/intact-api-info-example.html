@@ -447,6 +447,8 @@
                             if (moduleDesc !== '') { moduleDesc += '<br>'; }
                             moduleDesc += '说明: ' + url.desc;
                         }
+                        if (moduleDesc !== '') { moduleDesc += '<br>'; }
+                        moduleDesc += 'Content-Type: ' + url.contentType;
 
                         var printNil = '';
                         if (url.exampleUrl && url.exampleUrl != '') {

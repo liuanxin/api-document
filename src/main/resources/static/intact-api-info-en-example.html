@@ -447,6 +447,8 @@
                             if (moduleDesc !== '') { moduleDesc += '<br>'; }
                             moduleDesc += 'Comment: ' + url.desc;
                         }
+                        if (moduleDesc !== '') { moduleDesc += '<br>'; }
+                        moduleDesc += 'Content-Type: ' + url.contentType;
 
                         let printNil = '';
                         if (url.exampleUrl && url.exampleUrl != '') {
