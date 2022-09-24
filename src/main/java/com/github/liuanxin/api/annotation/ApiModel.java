@@ -13,7 +13,7 @@ public @interface ApiModel {
     /** @return name, if set will ignore param name or file name */
     String name() default "";
 
-    /** @return when customize type(for example: enum, but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4 */
+    /** @return if type was custom. can be: int、long、float、double、date、phone、email、url、ipv4 */
     String dataType() default "";
 
     /** @return return example, only if the field is a string or underlying data type(including BigInteger and BigDecimal) */
