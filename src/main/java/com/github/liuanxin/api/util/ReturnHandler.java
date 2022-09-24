@@ -557,23 +557,22 @@ public final class ReturnHandler {
     }
 
     private static void setField(Field field, Object obj, Object value) {
-        /*
-        try {
-            field.setAccessible(true);
-            field.set(obj, value);
-        } catch (Exception e) {
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn(String.format("Cannot assignment field %s to %s with %s", field, value, obj), e);
-            }
-        }
-        */
-
         String fieldName = field.getName();
         try {
             new PropertyDescriptor(fieldName, obj.getClass()).getWriteMethod().invoke(obj, value);
         } catch (Exception e) {
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn(String.format("Cannot set value(%s) to field(%s) with %s", value, fieldName, obj), e);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(String.format("Cannot set value(%s) to field(%s) with %s, may be set method has return type",
+                        value, fieldName, obj), e);
+            }
+
+            try {
+                field.setAccessible(true);
+                field.set(obj, value);
+            } catch (Exception ex) {
+                if (LOGGER.isWarnEnabled()) {
+                    LOGGER.warn(String.format("Cannot assignment field %s to %s with %s", field, value, obj), ex);
+                }
             }
         }
     }
