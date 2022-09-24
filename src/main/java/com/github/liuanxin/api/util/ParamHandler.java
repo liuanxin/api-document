@@ -50,7 +50,7 @@ public final class ParamHandler {
                     }
                 } else {
                     // The variable name is erased when compiled by jvm, parameter.parameterName() is null
-                    // if use java 8 and open options in javac -parameters, parameter.parameterName() can be get
+                    // When use java 8 and open options in javac -parameters, parameter.parameterName() can be get
                     // String paramName = parameter.getParameterName();
                     Method method = parameter.getMethod();
                     if (Tools.isNotBlank(method)) {

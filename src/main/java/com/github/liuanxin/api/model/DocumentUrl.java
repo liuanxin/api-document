@@ -123,16 +123,10 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     public String getContentType() {
         if ("1".equals(requestBody)) {
             return "application/json";
-        } else {
-            if (paramList != null && !paramList.isEmpty()) {
-                boolean file = false;
-                for (DocumentParam param : paramList) {
-                    if (ApiConst.FILE_TYPE.equalsIgnoreCase(param.getDataType())) {
-                        file = true;
-                        break;
-                    }
-                }
-                if (file) {
+        }
+        if (paramList != null && !paramList.isEmpty()) {
+            for (DocumentParam param : paramList) {
+                if (ApiConst.FILE_TYPE.equalsIgnoreCase(param.getDataType())) {
                     return "multipart/form-data";
                 }
             }

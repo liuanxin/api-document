@@ -16,7 +16,7 @@ public @interface ApiToken {
     /** @return param example */
     String example() default "";
 
-    /** @return if type was custom can use(for example: enum, but param type was be int). can be: int、long、float、double、date、phone、email、url、ipv4 */
+    /** @return if type was custom. can be: int、long、float、double、date、phone、email、url、ipv4 */
     String dataType() default "";
 
     /** @return Header or Query */

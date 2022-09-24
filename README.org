@@ -51,8 +51,8 @@ public class ApiInfoConfig {
     public DocumentCopyright apiCopyright() {
         return new DocumentCopyright("title", "team", "version", "copyright")
 
-                // // not collect if true, default is false.
-                // .setOnline(online)
+                // not collect if true, default is false.
+                .setOnline(online)
 
                 // // if some api can't use @ApiIgnore, set this(url|method, method can be ignore)
                 // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
