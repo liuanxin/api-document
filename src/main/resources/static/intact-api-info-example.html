@@ -412,9 +412,9 @@
     <div class="header-select">
         <select class="project-choose form-control" name="p">
             <option value="">当前</option>
-            {{ var cp = it.project; }}
+            {{ let cp = it.project; }}
             {{~ it.projects  :p}}
-            {{ var s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
+            {{ let s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
             <option value="{{= p[0]}}" data-url="{{= p[2]}}"{{= s}}>{{= p[1]}}</option>
             {{~}}
         </select>
@@ -439,7 +439,7 @@
                     <div class="module-api-info">
                         <p class="module-api-info-basic">接口地址 <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
                         {{
-                        var moduleDesc = '';
+                        let moduleDesc = '';
                         if (url.develop && url.develop !== '') {
                             moduleDesc += '开发: ' + url.develop;
                         }
@@ -450,9 +450,9 @@
                         if (moduleDesc !== '') { moduleDesc += '<br><br>'; }
                         moduleDesc += 'Content-Type: ' + url.contentType;
 
-                        var printNil = '';
+                        let printNil = '';
                         if (url.exampleUrl && url.exampleUrl != '') {
-                            var example = '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a>';
+                            let example = '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a>';
                             if (moduleDesc !== '') {
                                 moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
                             } else {
@@ -492,8 +492,8 @@
                             {{?}}
 
                             {{
-                            var hasSelfResponse = false;
-                            var responseList;
+                            let hasSelfResponse = false;
+                            let responseList;
                             if (url.responseList && url.responseList.length > 0) {
                                 hasSelfResponse = true;
                                 responseList = url.responseList;
@@ -501,9 +501,9 @@
                                 responseList = it.responseList;
                             } else { responseList = []; }
 
-                            var hasAction = false;
-                            for (var i = 0; i < responseList.length; i++) {
-                                var comment = responseList[i].comment;
+                            let hasAction = false;
+                            for (let i = 0; i < responseList.length; i++) {
+                                let comment = responseList[i].comment;
                                 if (comment !== undefined && comment !== null && comment !== '') { hasAction = true; }
                             }
                             }}
@@ -523,8 +523,8 @@
                                         <td class="text-left">{{= response.code || ''}}</td>
                                         <td class="text-left">{{= response.msg || ''}}</td>
                                         {{
-                                        var comment = response.comment;
-                                        var targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
+                                        let comment = response.comment;
+                                        let targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
                                         }}
                                         {{? comment !== undefined && comment !== null && comment !== ''}}
                                         <td class="text-left print-nil">
@@ -542,7 +542,7 @@
 
                             {{? hasSelfResponse}}
                             {{~ responseList  :response}}
-                            {{ var comment = response.comment; }}
+                            {{ let comment = response.comment; }}
                             {{? comment !== undefined && comment !== null && comment !== ''}}
                             <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
                                  tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -593,19 +593,19 @@
                         </div>
 
                         {{
-                        var globalParamList = it.tokenList || [];
-                        var urlParamList = url.paramList || [];
-                        var paramList = String(url.useGlobalParam) === '1' ? globalParamList.concat(urlParamList) : urlParamList;
+                        let globalParamList = it.tokenList || [];
+                        let urlParamList = url.paramList || [];
+                        let paramList = String(url.useGlobalParam) === '1' ? globalParamList.concat(urlParamList) : urlParamList;
 
-                        var hasDesc = false, hasFile = false, hasHeader = false;
-                        for (var i = 0; i < paramList.length; i++) {
-                            var paramDesc = paramList[i].desc;
+                        let hasDesc = false, hasFile = false, hasHeader = false;
+                        for (let i = 0; i < paramList.length; i++) {
+                            let paramDesc = paramList[i].desc;
                             if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
 
                             if (String(paramList[i].hasFile) === '1') { hasFile = true; }
                             if (String(paramList[i].paramType) === '1') { hasHeader = true; }
                         }
-                        var textNum = 0;
+                        let textNum = 0;
                         }}
                         <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}
                               {{? String(url.requestBody) === '1'}} request-body="1"{{?}}
@@ -627,28 +627,28 @@
                                     <tbody>
                                     {{~ paramList  :param:paramIndex}}
                                     {{
-                                    var hasTextarea = String(param.hasTextarea) === '1';
-                                    var arr = [];
-                                    var required;
+                                    let hasTextarea = String(param.hasTextarea) === '1';
+                                    let arr = [];
+                                    let required;
                                     if (String(param.required) === '1') { required = true; arr.push('required'); }
                                     else { required = false; }
 
-                                    var dataType = (param.dataType || '').toLowerCase();
+                                    let dataType = (param.dataType || '').toLowerCase();
                                     if (dataType === 'int' || dataType === 'long') { arr.push('custom[integer]'); }
                                     else if (dataType === 'float' || dataType === 'double') { arr.push('custom[number]'); }
                                     else if (dataType === 'email') { arr.push('custom[email]'); }
                                     else if (dataType === 'url') { arr.push('custom[url]'); }
                                     else if (dataType === 'ipv4') { arr.push('custom[ipv4]'); }
 
-                                    var arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
+                                    let arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
-                                    var validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
-                                    var tokenClass = String(param.hasToken) === '1' ? ' has-token' : '';
-                                    var header = String(param.paramType) === '1' ? ' header="1"' : '';
-                                    var example = localStorage.getItem(param.name) || param.example || '';
+                                    let validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
+                                    let tokenClass = String(param.hasToken) === '1' ? ' has-token' : '';
+                                    let header = String(param.paramType) === '1' ? ' header="1"' : '';
+                                    let example = localStorage.getItem(param.name) || param.example || '';
 
-                                    var enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
-                                    var enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
+                                    let enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
+                                    let enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                     }}
                                     <tr{{? required}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                     <td class="text-left">{{= param.name || ''}}</td>
@@ -672,13 +672,13 @@
                                             {{? Array.isArray(enumInfo) }}
                                             {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
                                             {{??}}
-                                            {{ var k; for(k in enumInfo) { }}
+                                            {{ let k; for(k in enumInfo) { }}
                                             <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected="selected"{{?}}>{{= enumInfo[k]}}</option>
                                             {{ } }}
                                             {{?}}
                                         </select>
                                         {{?? (param.showDataType || '').toLowerCase() === 'date' || dataType === 'date'}}
-                                        {{ var hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
+                                        {{ let hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
                                         <div class="input-group date form-datetime">
                                             <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                             <input type="text" name="{{= param.name || ''}}"{{= header}}
@@ -731,7 +731,7 @@
             {{~}}
 
             {{~ it.responseList  :response}}
-            {{ var comment = response.comment; }}
+            {{ let comment = response.comment; }}
             {{? comment !== undefined && comment !== null && comment !== ''}}
             <div id="global-{{= response.code}}" class="modal fade" tabindex="-1"
                  aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -837,7 +837,7 @@ function hasEnter(event) {
         return;
     }
 
-    var handled;
+    let handled;
     if (event.key !== undefined) {
         handled = event.key.toUpperCase() === 'ENTER';
     } else if (event.keyIdentifier !== undefined) {
@@ -853,16 +853,16 @@ function hasEnter(event) {
     return handled;
 }
 
-var localServerPathItem = 'prefix-url';
+let localServerPathItem = 'prefix-url';
 function handleContextPath() {
-    var param = 'context-path=', append = '&';
-    var search = location.search.trim();
+    let param = 'context-path=', append = '&';
+    let search = location.search.trim();
     if (search.includes(param)) {
-        var path = search.substring(search.indexOf(param) + param.length);
+        let path = search.substring(search.indexOf(param) + param.length);
         if (path.includes(append)) {
             path = path.substring(0, path.indexOf(append));
         }
-        var uri = path.toLowerCase();
+        let uri = path.toLowerCase();
         if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
             path = location.protocol + '//' + location.host + (path.startsWith('/') ? '' : '/') + path;
         }
@@ -872,7 +872,7 @@ function handleContextPath() {
 handleContextPath();
 
 function newRequest() {
-    var url = $('#prefix-url').val();
+    let url = $('#prefix-url').val();
     if (isNotBlank(url)) {
         if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
             url = location.protocol + '//' + url;
@@ -888,8 +888,8 @@ function addLine(html) {
     if (isBlank(html)) {
         return '';
     }
-    var lineHtml = '<div class="source-code"><div class="line-number print-nil">';
-    var i, lineNum = html.split(/\n/).length;
+    let lineHtml = '<div class="source-code"><div class="line-number print-nil">';
+    let i, lineNum = html.split(/\n/).length;
     for (i = 1; i <= lineNum; i++) {
         lineHtml += '<div>' + i + '</div>';
     }
@@ -900,30 +900,30 @@ function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 function getDomain() {
-    var url = localStorage.getItem(localServerPathItem);
+    let url = localStorage.getItem(localServerPathItem);
     return isBlank(url) ? (location.protocol + '//' + location.host) : url;
 }
 function getProjectDomain() {
-    var url = localStorage.getItem(localServerPathItem);
+    let url = localStorage.getItem(localServerPathItem);
     if (isNotBlank(url)) {
         return url;
     }
-    var projectDomain = $('.project-choose').find('option:selected').data('url');
+    let projectDomain = $('.project-choose').find('option:selected').data('url');
     return isBlank(projectDomain) ? (location.protocol + '//' + location.host) : projectDomain;
 }
 function timeLog(start) {
-    var end = new Date().getTime();
+    let end = new Date().getTime();
     return '<div class="use-time print-nil"><div>用时: ' + (end - start) + 'ms</div>' +
         '<div>' + formatDate(start) + ' -> ' + formatDate(end) + '</div></div>';
 }
 function objectifyForm(form) {
-    var headers = {};
-    var params = {};
+    let headers = {};
+    let params = {};
     $.each(form.serializeArray(), function(i, field) {
-        var name = field.name;
-        var value = field.value;
+        let name = field.name;
+        let value = field.value;
 
-        var header = form.find('[name="' + name + '"]').attr('header');
+        let header = form.find('[name="' + name + '"]').attr('header');
         if (String(header) === '1') {
             headers[name] = value;
         } else {
@@ -933,30 +933,30 @@ function objectifyForm(form) {
     return [params, headers, form.find('input[type="file"]')];
 }
 function formatDate(date) {
-    var d = new Date(date);
+    let d = new Date(date);
 
-    var y = d.getFullYear().toString();
-    var m = (d.getMonth() + 1).toString();
+    let y = d.getFullYear().toString();
+    let m = (d.getMonth() + 1).toString();
     if (m.length === 1) {
         m = '0' + m;
     }
-    var dy = d.getDate().toString();
+    let dy = d.getDate().toString();
     if (dy.length === 1) {
         dy = '0' + dy;
     }
-    var h = d.getHours().toString();
+    let h = d.getHours().toString();
     if (h.length === 1) {
         h = '0' + h;
     }
-    var mt = d.getMinutes().toString();
+    let mt = d.getMinutes().toString();
     if (mt.length === 1) {
         mt = '0' + mt;
     }
-    var s = d.getSeconds().toString();
+    let s = d.getSeconds().toString();
     if (s.length === 1) {
         s = '0' + s;
     }
-    var S = d.getMilliseconds().toString();
+    let S = d.getMilliseconds().toString();
     if (S.length === 1) {
         S = '00' + S;
     } else if (S.length === 2) {
@@ -965,20 +965,20 @@ function formatDate(date) {
     return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + ' ' + S;
 }
 
-var chooseProjectTemplate = doT.template($('#choose-project').html());
-var copyrightTemplate = doT.template($('#copyright').html());
-var urlRenderTemplate = doT.template($('#url-render').html());
-var navRenderTemplate = doT.template($('#url-nav-render').html());
+let chooseProjectTemplate = doT.template($('#choose-project').html());
+let copyrightTemplate = doT.template($('#copyright').html());
+let urlRenderTemplate = doT.template($('#url-render').html());
+let navRenderTemplate = doT.template($('#url-nav-render').html());
 
 loadMulti();
 
 function loadMulti() {
     $.get(getDomain() + '/api/project').done(function (data) {
         if (isNotBlank(data)) {
-            var projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+            let projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
             if (isNotBlank(projectInfo)) {
-                var project = location.search;
-                var param = 'p=', append = '&';
+                let project = location.search;
+                let param = 'p=', append = '&';
                 if (project.includes(param)) {
                     project = project.substring(project.indexOf(param) + param.length);
                     if (project.includes(append)) {
@@ -995,12 +995,12 @@ function loadMulti() {
 }
 
 function loadData() {
-    var $title = $('title');
-    var $headerContent = $('.header-content');
-    var $footer = $('footer');
-    var $urlInfo = $('#url-info');
-    var $urlNavInfo = $('#url-nav-info');
-    var $rightArrow = $('.right-arrow');
+    let $title = $('title');
+    let $headerContent = $('.header-content');
+    let $footer = $('footer');
+    let $urlInfo = $('#url-info');
+    let $urlNavInfo = $('#url-nav-info');
+    let $rightArrow = $('.right-arrow');
 
     $title.html('');
     $headerContent.html('');
@@ -1008,10 +1008,10 @@ function loadData() {
     $urlInfo.html('');
     $urlNavInfo.html('');
 
-    var method = 'GET';
-    var apiInfo = '/api/info';
-    var projectDomain = getProjectDomain();
-    var requestUrl = projectDomain.endsWith(apiInfo) ? projectDomain
+    let method = 'GET';
+    let apiInfo = '/api/info';
+    let projectDomain = getProjectDomain();
+    let requestUrl = projectDomain.endsWith(apiInfo) ? projectDomain
         : ((projectDomain.endsWith('/') ? projectDomain.substring(0, projectDomain.length - 1) : projectDomain) + apiInfo);
 
     $.ajax({
@@ -1020,19 +1020,19 @@ function loadData() {
         crossDomain: true
     }).done(function(data) {
         if (isNotBlank(data)) {
-            var documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
-            var copyright = documentInfo.copyright;
+            let documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+            let copyright = documentInfo.copyright;
             if (isBlank(copyright)) {
                 handleError($rightArrow, $urlInfo, '接口返回数据有误!');
                 return;
             }
 
-            var title = (isNotBlank(copyright.title) ? (copyright.title + ' - ') : '') + '前后端交互';
+            let title = (isNotBlank(copyright.title) ? (copyright.title + ' - ') : '') + '前后端交互';
             $title.html(title);
             $headerContent.html(title);
             $footer.html(copyrightTemplate(copyright));
 
-            var doc = documentInfo.document;
+            let doc = documentInfo.document;
             if (isBlank(doc)) {
                 return;
             }
@@ -1042,8 +1042,8 @@ function loadData() {
             $rightArrow.css('display', '');
 
             $('pre[class="src src-json"]').each(function() {
-                var $html = escapeHtml($(this).html());
-                var html, flag;
+                let $html = escapeHtml($(this).html());
+                let html, flag;
                 if (isNotBlank($html)) {
                     html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!递归实体!!!</span>');
@@ -1056,11 +1056,11 @@ function loadData() {
             });
 
             if ($('.col-md-3').css('display') !== 'none') {
-                var hash = location.hash;
+                let hash = location.hash;
                 if (isNotBlank(hash)) {
-                    var $anchor = $(hash);
+                    let $anchor = $(hash);
                     if ($anchor.length > 0) {
-                        var $li = $('a[href="' + hash + '"]').parents('li');
+                        let $li = $('a[href="' + hash + '"]').parents('li');
                         $li.addClass('active');
                         $li.parents('li').addClass('active');
                         $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
@@ -1090,21 +1090,21 @@ function handleError($arrow, $ele, info) {
 }
 
 function addComment(json, element) {
-    var fieldCommentRelation = handleFieldCommentRelation(element);
+    let fieldCommentRelation = handleFieldCommentRelation(element);
     if (isBlank(fieldCommentRelation)) {
         return json;
     }
 
-    var lineFieldRelation = handleLineFieldRelation(json);
+    let lineFieldRelation = handleLineFieldRelation(json);
     if (isBlank(lineFieldRelation)) {
         return json;
     }
 
-    var returnJson = '';
-    var i, lines = json.split('\n');
+    let returnJson = '';
+    let i, lines = json.split('\n');
     for (i = 0; i < lines.length; i++) {
         returnJson += lines[i];
-        var comment = getComment(lineFieldRelation, fieldCommentRelation, i.toString());
+        let comment = getComment(lineFieldRelation, fieldCommentRelation, i.toString());
         if (isNotBlank(comment)) {
             returnJson += ' '.repeat(2) + '<span class="comment">/* ' + comment + ' */</span>';
         }
@@ -1113,14 +1113,14 @@ function addComment(json, element) {
     return returnJson.trim();
 }
 function handleFieldCommentRelation(element) {
-    var relation = relationByComment(element.find('[data-flag="module-api-info-return-comment"]'));
+    let relation = relationByComment(element.find('[data-flag="module-api-info-return-comment"]'));
     return isNotBlank(relation) ? relation : relationBySource(element.find('[data-flag="module-api-info-return-src"]'));
 }
 function relationByComment(allComment) {
     if (isBlank(allComment.html())) {
         return null;
     }
-    var $trs = allComment.find('table > tbody > tr');
+    let $trs = allComment.find('table > tbody > tr');
     if (hasExampleWithLevel($trs)) {
         return returnCommentWithParentLevel($trs);
     } else {
@@ -1128,11 +1128,11 @@ function relationByComment(allComment) {
     }
 }
 function hasExampleWithLevel(trsInTable) {
-    var i;
+    let i;
     for (i = 0; i < trsInTable.length; i++) {
-        var tds = $(trsInTable[i]).find('td');
+        let tds = $(trsInTable[i]).find('td');
         if (tds.length > 2) {
-            var name = $(tds[0]).text();
+            let name = $(tds[0]).text();
             if (name.includes(' -> ')) {
                 return true;
             }
@@ -1141,14 +1141,14 @@ function hasExampleWithLevel(trsInTable) {
     return false;
 }
 function returnCommentWithParentLevel($trs) {
-    var paramCommentRelation = {};
-    var i;
+    let paramCommentRelation = {};
+    let i;
     for (i = 0; i < $trs.length; i++) {
-        var $tds = $($trs[i]).find('td');
+        let $tds = $($trs[i]).find('td');
         if ($tds.length > 2) {
-            var comment = $($tds[2]).text().trim();
+            let comment = $($tds[2]).text().trim();
             if (isNotBlank(comment)) {
-                var name = $($tds[0]).text().trim();
+                let name = $($tds[0]).text().trim();
                 paramCommentRelation[name.split(' -> ').reverse().join('.')] = comment;
             }
         }
@@ -1156,18 +1156,18 @@ function returnCommentWithParentLevel($trs) {
     return paramCommentRelation;
 }
 function returnCommentWithLevel($trs) {
-    var relation = {};
-    var tabLen = 4;
-    var tmpArr = [];
+    let relation = {};
+    let tabLen = 4;
+    let tmpArr = [];
     $trs.each(function() {
-        var $tds = $(this).find('td');
+        let $tds = $(this).find('td');
         if ($tds.length > 2) {
-            var name = $($tds[0]).text();
-            var comment = $($tds[2]).text().trim();
+            let name = $($tds[0]).text();
+            let comment = $($tds[2]).text().trim();
 
-            var currentLevel = ((name.length - name.trimLeft().length) / tabLen) + 1;
-            var parent = getParent(tmpArr, currentLevel);
-            var currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
+            let currentLevel = ((name.length - name.trimLeft().length) / tabLen) + 1;
+            let parent = getParent(tmpArr, currentLevel);
+            let currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
             tmpArr.push({ level: currentLevel, name: currentName, value: comment });
         }
     });
@@ -1181,9 +1181,9 @@ function returnCommentWithLevel($trs) {
 function getParent(arr, currentLevel) {
     if (arr.length === 0 || currentLevel === 1) { return null; }
 
-    var i;
+    let i;
     for (i = arr.length; i > 0; i--) {
-        var ele = arr[i - 1];
+        let ele = arr[i - 1];
         if (isNotBlank(ele) && ele.level === currentLevel - 1) {
             return ele;
         }
@@ -1191,33 +1191,33 @@ function getParent(arr, currentLevel) {
     return null;
 }
 function relationBySource(sourceComment) {
-    var comment = sourceComment.html();
+    let comment = sourceComment.html();
     if (isBlank(comment)) {
         return null;
     }
-    var firstEnd = '</span>';
+    let firstEnd = '</span>';
     comment = comment.substring(comment.indexOf(firstEnd) + firstEnd.length);
     comment = comment.replace(/<span class=".*">|<\/span>/g, '');
 
-    var relation = {};
-    var tabLen = 2;
-    var tmpArr = [];
-    var i, lines = comment.split('\n');
+    let relation = {};
+    let tabLen = 2;
+    let tmpArr = [];
+    let i, lines = comment.split('\n');
     for (i = 0; i < lines.length; i++) {
-        var line = lines[i];
-        var lineTrim = line.trim();
+        let line = lines[i];
+        let lineTrim = line.trim();
         if (/".*?" : .*?/.test(lineTrim)) {
-            var name = lineTrim.substring(1, lineTrim.indexOf('" : '));
-            var start = ' /* ', end = ' */', strStart = '" : "', strEnd = '"';
-            var paramComment = / \/\* .*? \*\/$/.test(lineTrim)
+            let name = lineTrim.substring(1, lineTrim.indexOf('" : '));
+            let start = ' /* ', end = ' */', strStart = '" : "', strEnd = '"';
+            let paramComment = / \/\* .*? \*\/$/.test(lineTrim)
                 ? lineTrim.substring(lineTrim.lastIndexOf(start) + start.length, lineTrim.length - end.length)
                 : (/^".*?" : ".*?"/.test(lineTrim)
                     ? lineTrim.substring(lineTrim.indexOf(strStart) + strStart.length, lineTrim.lastIndexOf(strEnd))
                     : '');
 
-            var currentLevel = (line.length - line.trimLeft().length) / tabLen;
-            var parent = getParent(tmpArr, currentLevel);
-            var currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
+            let currentLevel = (line.length - line.trimLeft().length) / tabLen;
+            let parent = getParent(tmpArr, currentLevel);
+            let currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
             tmpArr.push({ level: currentLevel, name: currentName, value: paramComment });
         }
     }
@@ -1232,18 +1232,18 @@ function handleLineFieldRelation(json) {
     if (isBlank(json)) {
         return null;
     } else {
-        var relation = {};
-        var tabLen = 2;
-        var tmpArr = [];
-        var i, lines = json.split('\n');
+        let relation = {};
+        let tabLen = 2;
+        let tmpArr = [];
+        let i, lines = json.split('\n');
         for (i = 0; i < lines.length; i++) {
-            var line = lines[i];
-            var lineTrim = line.trim();
+            let line = lines[i];
+            let lineTrim = line.trim();
             if (/".*?": .*?/.test(lineTrim)) {
-                var name = lineTrim.substring(1, lineTrim.indexOf('": '));
-                var currentLevel = (line.length - line.trimLeft().length) / tabLen;
-                var parent = getSourceParent(tmpArr, currentLevel);
-                var currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
+                let name = lineTrim.substring(1, lineTrim.indexOf('": '));
+                let currentLevel = (line.length - line.trimLeft().length) / tabLen;
+                let parent = getSourceParent(tmpArr, currentLevel);
+                let currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
                 tmpArr.push({ level: currentLevel, name: currentName, array: lineTrim.endsWith('": [') });
                 relation[i.toString()] = currentName;
             }
@@ -1254,9 +1254,9 @@ function handleLineFieldRelation(json) {
 function getSourceParent(arr, currentLevel) {
     if (arr.length === 0 || currentLevel === 1) { return null; }
 
-    var i;
+    let i;
     for (i = arr.length; i > 0; i--) {
-        var ele = arr[i - 1];
+        let ele = arr[i - 1];
         if (isNotBlank(ele) && (ele.level === currentLevel - 1 || (ele.array === true && ele.level === currentLevel - 2))) {
             return ele;
         }
@@ -1264,39 +1264,39 @@ function getSourceParent(arr, currentLevel) {
     return null;
 }
 function getComment(lineFieldRelation, fieldCommentRelation, key) {
-    var field = lineFieldRelation[key];
+    let field = lineFieldRelation[key];
     if (isBlank(field)) {
         return null;
     }
-    var comment = fieldCommentRelation[field];
+    let comment = fieldCommentRelation[field];
     if (isNotBlank(comment)) {
         return comment;
     }
 
-    var strAndIntKey = [];
+    let strAndIntKey = [];
     $.each(fieldCommentRelation, function(key) {
-        var arr = key.split('.');
-        var strArr = [];
-        for (var i = 0; i < arr.length; i++) {
+        let arr = key.split('.');
+        let strArr = [];
+        for (let i = 0; i < arr.length; i++) {
             if (arr[i] === '?') {
                 strArr.push(i + ',?');
             } else if (arr[i] === '0') {
                 strArr.push(i + ',0');
             }
         }
-        var str = strArr.join('-');
+        let str = strArr.join('-');
         if (strAndIntKey.indexOf(str) === -1) {
             strAndIntKey.push(str);
         }
     });
 
-    var fieldArr = field.split('.');
-    var i;
+    let fieldArr = field.split('.');
+    let i;
     for (i = 0; i < strAndIntKey.length; i++) {
-        var strAndInt = strAndIntKey[i];
-        var arr = fieldArr.slice(0);
+        let strAndInt = strAndIntKey[i];
+        let arr = fieldArr.slice(0);
         strAndInt.split('-').forEach(function(e) {
-            var split = e.split(',');
+            let split = e.split(',');
             if (split.length === 2) {
                 arr[split[0]] = split[1];
             }
@@ -1310,62 +1310,62 @@ function getComment(lineFieldRelation, fieldCommentRelation, key) {
 }
 
 $(function() {
-    var linked = 1; /** 初始 1, 切换项目后 2, 两者都会触发 scroll, 1 在 scroll 时需要改变 active, 2 触发 scroll 时只改成 1 */
+    let linked = 1; /** 初始 1, 切换项目后 2, 两者都会触发 scroll, 1 在 scroll 时需要改变 active, 2 触发 scroll 时只改成 1 */
 
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
 
     $(document).on('change', '.project-choose', function() {
         linked = 2;
-        var projectUrl = $(this).find('option:selected').data('url');
-        var hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
+        let projectUrl = $(this).find('option:selected').data('url');
+        let hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
         loadData();
     });
 
     $(document).on('change', '.form-file', function() {
-        var $this = $(this);
+        let $this = $(this);
         $this.parents('.input-group').find(':text').val($this.val());
     });
 
     $(document).on('change', '.has-token', function() {
-        var $this = $(this);
-        var name = $this.attr('name');
-        var value = $this.val();
+        let $this = $(this);
+        let name = $this.attr('name');
+        let value = $this.val();
         localStorage.setItem(name, value);
         $('[name="' + name + '"]').val(value);
     });
 
     $(document).on('click', '.form-submit', function() {
-        var $btn = $(this);
-        var $form = $btn.parents('form');
-        var $formParent = $form.parents('.module-api-info');
-        var curl = $form.find('.curl');
-        var response = $form.find('.response');
+        let $btn = $(this);
+        let $form = $btn.parents('form');
+        let $formParent = $form.parents('.module-api-info');
+        let curl = $form.find('.curl');
+        let response = $form.find('.response');
         curl.hide();
         response.hide();
 
         $.validationEngine.defaults.scroll = false;
-        var flag = $form.validationEngine('validate', { scroll: false });
+        let flag = $form.validationEngine('validate', { scroll: false });
         if (!flag) {
             return;
         }
 
-        var projectDomain = getProjectDomain();
-        var method = $form.attr('method');
-        var url = $form.attr('action');
+        let projectDomain = getProjectDomain();
+        let method = $form.attr('method');
+        let url = $form.attr('action');
         if (isBlank(url)) {
             url = '';
         }
-        var hasRequestBody = String($form.attr('request-body')) === '1';
+        let hasRequestBody = String($form.attr('request-body')) === '1';
         if (isBlank(method)) {
             method = hasRequestBody ? 'POST' : 'GET';
         }
-        var hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
+        let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
-        var map = objectifyForm($form);
-        var params = map[0];
-        var headers = map[1];
-        var files = map[2];
+        let map = objectifyForm($form);
+        let params = map[0];
+        let headers = map[1];
+        let files = map[2];
 
         if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
             if (!url.startsWith('/')) {
@@ -1374,19 +1374,19 @@ $(function() {
             url = projectDomain + url;
         }
 
-        var placeRegex = /{(.*?)}/;
+        let placeRegex = /{(.*?)}/;
         while (placeRegex.test(url)) {
-            var group = RegExp.$1;
-            var value = params[group];
+            let group = RegExp.$1;
+            let value = params[group];
             /* url 由 /user/{id} 改成 /user/123, 参数由 <name=xyz&id=&gender=1> 改成 <name=xyz&gender=1> */
             url = url.replace(placeRegex, value);
             delete params[group];
         }
 
 
-        var tmpUrl = url;
-        var line = ' \\\n';
-        var curlHtml = 'curl -i -X ' + method + line;
+        let tmpUrl = url;
+        let line = ' \\\n';
+        let curlHtml = 'curl -i -X ' + method + line;
         curlHtml += "&nbsp; -A '" + navigator.userAgent + "'" + line;
         if (isNotBlank(document.cookie)) {
             curlHtml += "&nbsp; -b '" + document.cookie + "'" + line;
@@ -1411,8 +1411,8 @@ $(function() {
                 });
             }
             $.each(files, function(i, file) {
-                var fileName = file.name;
-                var filePath = file.value;
+                let fileName = file.name;
+                let filePath = file.value;
                 if (isNotBlank(fileName) && isNotBlank(filePath)) {
                     filePath = filePath.replace('C:\\fakepath\\', '/$替换真实路径$/');
                     curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
@@ -1424,13 +1424,13 @@ $(function() {
                     curlHtml += "&nbsp; -d '" + (hasBasicParamRequestBody ? params[Object.keys(params)[0]] : JSON.stringify(params)) + "'" + line;
                 } else {
                     if ('GET' === method.toUpperCase()) {
-                        var paramArr = [];
+                        let paramArr = [];
                         $.each(params, function(key, value) {
                             if (isNotBlank(key) && isNotBlank(value)) {
                                 paramArr.push(key + '=' + value);
                             }
                         });
-                        var paramStr = paramArr.join('&');
+                        let paramStr = paramArr.join('&');
                         if (paramStr.length > 0) {
                             tmpUrl += (url.includes('?') ? '&' : '?') + paramStr;
                         }
@@ -1456,7 +1456,7 @@ $(function() {
         curl.show();
 
 
-        var settings = {
+        let settings = {
             url: url,
             method: method,
             beforeSend: function(request) {
@@ -1470,7 +1470,7 @@ $(function() {
             }
         };
 
-        var locationDomain = location.protocol + '//' + location.host;
+        let locationDomain = location.protocol + '//' + location.host;
         if (isNotBlank(projectDomain) && locationDomain !== projectDomain && !projectDomain.startsWith(locationDomain + '/')) {
             settings.crossDomain = true;
             settings.xhrFields = { withCredentials: true };
@@ -1482,7 +1482,7 @@ $(function() {
                 return;
             }
 
-            var formData = new FormData();
+            let formData = new FormData();
             $.each(params, function(key, value) {
                 if (isNotBlank(key) && isNotBlank(value)) {
                     formData.append(key, value);
@@ -1512,12 +1512,12 @@ $(function() {
             }
         }
 
-        var responseData = response.find('pre');
-        var start = new Date().getTime();
+        let responseData = response.find('pre');
+        let start = new Date().getTime();
         $btn.attr('disabled', 'disabled');
         $btn.addClass('disabled');
         $.ajax(settings).done(function(result) {
-            var html = timeLog(start);
+            let html = timeLog(start);
             if (isBlank(result)) {
                 html += '<span class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</span>';
             } else {
@@ -1530,16 +1530,16 @@ $(function() {
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
         }).fail(function(error) {
-            var html = timeLog(start);
+            let html = timeLog(start);
             if (isBlank(error)) {
                 html += '<span class="red">' + method + ' 请求(' + url + ')失败</span>';
             } else {
                 html += '<span class="red">响应码: ' + error.status + '</span>';
-                var json = error.responseJSON;
+                let json = error.responseJSON;
                 if (isNotBlank(json)) {
                     html += '\n\n' + escapeHtml(JSON.stringify(json, null, 2));
                 } else {
-                    var text = error.responseText;
+                    let text = error.responseText;
                     if (isNotBlank(text)) {
                         html += '\n<span class="red wrap">响应文本: ' + escapeHtml(text) + '</span>';
                     } else {
@@ -1557,10 +1557,10 @@ $(function() {
     });
 
     $(document).on('click', '.right-arrow', function() {
-        var $nav = $('.col-md-3');
-        var $content = $('.col-md-9');
+        let $nav = $('.col-md-3');
+        let $content = $('.col-md-9');
 
-        var $img = $(this).find('.img');
+        let $img = $(this).find('.img');
         if (String($img.attr('style')).includes('rotate(180deg)')) {
             $img.css('transform', '');
             $nav.css('width', '');
@@ -1625,20 +1625,20 @@ $(function() {
     }
 
     $(window).scroll(function() {
-        var headerHeight = 51;
-        var topBottomHeight = 30;
-        var scrolled = 'scrolled';
-        var heightProperty = 'max-height';
+        let headerHeight = 51;
+        let topBottomHeight = 30;
+        let scrolled = 'scrolled';
+        let heightProperty = 'max-height';
 
-        var html = document.getElementsByTagName('html')[0];
-        var footer = document.getElementsByTagName('footer')[0];
+        let html = document.getElementsByTagName('html')[0];
+        let footer = document.getElementsByTagName('footer')[0];
 
-        var $win = $(window);
-        var $nav = $('.col-md-3');
-        var $bar = $('.bs-docs-sidebar > .nav');
+        let $win = $(window);
+        let $nav = $('.col-md-3');
+        let $bar = $('.bs-docs-sidebar > .nav');
 
-        var $header = $('header');
-        var scrollTop = $win.scrollTop();
+        let $header = $('header');
+        let scrollTop = $win.scrollTop();
         if (scrollTop > 0) {
             if (!$header.hasClass(scrolled)) {
                 $header.addClass(scrolled);
@@ -1648,31 +1648,31 @@ $(function() {
         }
 
         if ($nav.css('display') !== 'none') {
-            var footerTop = footer.offsetTop;
-            var pageHeight = scrollTop + $win.height();
+            let footerTop = footer.offsetTop;
+            let pageHeight = scrollTop + $win.height();
             if (footerTop >= scrollTop && footerTop < pageHeight) {
-                var footViewHeight = pageHeight - footerTop;
+                let footViewHeight = pageHeight - footerTop;
                 $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
             } else {
-                var htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
+                let htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
                 if ($bar.css(heightProperty) !== htmlViewHeight) {
                     $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
                 }
             }
 
-            var navHash = $nav.find('.active > a:last').attr('href');
-            var currentHash = location.hash;
+            let navHash = $nav.find('.active > a:last').attr('href');
+            let currentHash = location.hash;
             if (navHash !== currentHash) {
-                var url = location.pathname + location.search;
+                let url = location.pathname + location.search;
                 if (isBlank(navHash)) {
                     if ($header.hasClass(scrolled) !== true) {
                         history.replaceState({api: 'index'}, '', url);
                     }
                     if (linked === 1) {
                         linked = 0;
-                        var $anchor = $(currentHash);
+                        let $anchor = $(currentHash);
                         if ($anchor.length > 0) {
-                            var $li = $('a[href="' + currentHash + '"]').parents('li');
+                            let $li = $('a[href="' + currentHash + '"]').parents('li');
                             if (!$li.hasClass('active')) {
                                 $li.addClass('active');
                             }
