@@ -325,7 +325,7 @@ public class DemoVo {
   paramType   --> 参数类型. 可以不设置, Header 或 Query 两种, 默认是 Query
   required    --> 参数是否必须. 可以不设置, 如果标有 @RequestParam(required = true) etc... 则无视此设置
   textarea    --> 参数是否显示成文本域, 可以不设置, 默认是 false
-  datePattern --> 时间格式. 可以不设置, 如: YYYY-MM-DD HH:mm:ss
+  datePattern --> 时间格式. 可以不设置, 如: yyyy-MM-dd HH:mm:ss
   style       --> 参数在页面上的样式, 可以不设置, 如: color:green;height:35px;
 #+END_SRC
 

@@ -311,7 +311,7 @@ for example:
     paramType   --> can not be set, Header or Query, default is Header
     required    --> default false
     textarea    --> default false
-    datePattern --> parameter type is date format of the date, can not be set. for example: MM/DD/YYYY HH:mm:ss
+    datePattern --> parameter type is date format of the date, can not be set. for example: MM/dd/yyyy HH:mm:ss
     style       --> can not be set. html style with param on page, for example: color:green;height:35px;
 
 for example:
