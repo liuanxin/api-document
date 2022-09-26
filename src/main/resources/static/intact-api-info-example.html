@@ -1413,8 +1413,13 @@ $(function() {
 
         let requestBody = $form.find('textarea[name="(request-body)"]').val();
         if (isNotBlank(requestBody)) {
-            requestBody = requestBody.replace(/<span class=".*">|<\/span>/g, '').replace(/<div class=".*">|<\/div>/g, '');
-            requestBody = JSON.stringify(JSON.parse(requestBody));
+            requestBody = requestBody.replace(/\/\*.*\*\/\n/g, '');
+            try {
+                requestBody = JSON.stringify(JSON.parse(text1));
+            } catch (e) {
+                console.error('parse(' + requestBody + ') error', e);
+                return;
+            }
         }
 
         let map = objectifyForm($form);
