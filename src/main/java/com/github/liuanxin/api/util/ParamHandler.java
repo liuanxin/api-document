@@ -23,7 +23,7 @@ public final class ParamHandler {
     private static final LocalVariableTableParameterNameDiscoverer VARIABLE
             = new LocalVariableTableParameterNameDiscoverer();
 
-    public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
+    public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod, boolean innerRequestBody) {
         List<DocumentParam> params = new LinkedList<>();
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {

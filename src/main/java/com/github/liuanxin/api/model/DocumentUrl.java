@@ -35,10 +35,12 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private String useGlobalParam = ApiConst.EMPTY;
     private String requestBody = ApiConst.EMPTY;
     private String basicParamRequestBody = ApiConst.EMPTY;
+    private String innerParamRequestBody = ApiConst.EMPTY;
     private List<DocumentParam> paramList;
+    private List<DocumentReturn> requestBodyList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;
-    private String commentJson;
+//    private String commentJson;
 
 
     @JsonIgnore
@@ -158,6 +160,14 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         return this;
     }
 
+    public String getInnerParamRequestBody() {
+        return innerParamRequestBody;
+    }
+    public DocumentUrl setInnerParamRequestBody(String innerParamRequestBody) {
+        this.innerParamRequestBody = innerParamRequestBody;
+        return this;
+    }
+
     public List<DocumentParam> getParamList() {
         return paramList;
     }
@@ -179,10 +189,10 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         return this;
     }
 
-    public DocumentUrl setCommentJson(String commentJson) {
-        this.commentJson = commentJson;
-        return this;
-    }
+//    public DocumentUrl setCommentJson(String commentJson) {
+//        this.commentJson = commentJson;
+//        return this;
+//    }
 
     public int getIndex() {
         return index;

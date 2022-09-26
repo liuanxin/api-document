@@ -106,13 +106,14 @@ public final class WebUtil {
                     Set<RequestMethod> methodArray = Tools.isBlank(methodsCondition) ? new HashSet<RequestMethod>() : methodsCondition.getMethods();
 
                     if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
+                        boolean innerRequestBody = hasInnerParamRequestBody(handlerMethod);
                         DocumentUrl document = new DocumentUrl();
                         // url
                         document.setUrl(Tools.toStr(urlArray));
                         // method : get, post, put...
                         document.setMethod(Tools.toStr(methodArray));
                         // param
-                        List<DocumentParam> paramList = ParamHandler.handlerParam(handlerMethod);
+                        List<DocumentParam> paramList = ParamHandler.handlerParam(handlerMethod, innerRequestBody);
                         // no annotation: use global, annotation is false: not use, annotation is true: use self
                         ApiTokens apiTokens = getAnnotation(handlerMethod, ApiTokens.class);
                         if (Tools.isBlank(apiTokens)) {
@@ -130,6 +131,7 @@ public final class WebUtil {
                         }
                         document.setRequestBody(hasRequestBody(handlerMethod) ? "1" : ApiConst.EMPTY);
                         document.setBasicParamRequestBody(hasBasicParamRequestBody(handlerMethod) ? "1" : ApiConst.EMPTY);
+                        document.setInnerParamRequestBody(innerRequestBody ? "1" : ApiConst.EMPTY);
                         document.setParamList(paramList);
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
@@ -357,6 +359,16 @@ public final class WebUtil {
         }
     }
 
+    private static boolean hasInnerParamRequestBody(HandlerMethod handlerMethod) {
+        MethodParameter[] parameters = handlerMethod.getMethodParameters();
+        if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
+            MethodParameter parameter = parameters[0];
+            RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
+            return Tools.isNotBlank(requestBody) && Tools.innerType(parameter.getParameterType());
+        }
+        return false;
+    }
+
     private static String getExampleUrl(String param) {
         // return exampleUrl.replaceFirst("\\{.*?\\}", param);
         String url = ApiConst.URL_PREFIX + ApiConst.URL_EXAMPLE;
@@ -369,7 +381,7 @@ public final class WebUtil {
             module = new DocumentModule(group);
             module.setIndex(index);
         } else if (module.getIndex() > index) {
-            // if set multi module and different index, use the smaller
+            // if set multi-module and different index, use the smaller
             module.setIndex(index);
         }
         module.addUrl(url);

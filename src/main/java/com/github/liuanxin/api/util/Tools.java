@@ -8,7 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -456,6 +459,34 @@ public class Tools {
     }
     static boolean notBasicType(Class<?> clazz) {
         return !basicType(clazz);
+    }
+
+    static boolean innerType(Class<?> clazz) {
+        if (basicType(clazz)) {
+            return false;
+        }
+        List<Field> fieldList = new ArrayList<>();
+        fieldList.addAll(Arrays.asList(clazz.getFields()));
+        fieldList.addAll(Arrays.asList(clazz.getDeclaredFields()));
+        for (Field field : fieldList) {
+            Class<?> fieldType = field.getType();
+            if (notBasicType(fieldType)) {
+                if (Collection.class.isAssignableFrom(fieldType)) {
+                    if (notBasicType((Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0])) {
+                        return true;
+                    }
+                } else if (Map.class.isAssignableFrom(fieldType)) {
+                    Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+                    if (notBasicType((Class<?>) types[0])) {
+                        return true;
+                    }
+                    if (notBasicType((Class<?>) types[1])) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     static Object mapKeyDefault(Class<?> clazz) {
