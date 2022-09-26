@@ -1415,7 +1415,7 @@ $(function() {
         if (isNotBlank(requestBody)) {
             requestBody = requestBody.replace(/\/\*.*\*\/\n/g, '');
             try {
-                requestBody = JSON.stringify(JSON.parse(text1));
+                requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
                 console.error('parse(' + requestBody + ') error', e);
                 return;
