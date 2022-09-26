@@ -74,38 +74,38 @@
             padding: 7px 0 7px 14px;
             overflow: hidden;
         }
-        pre .use-time {
-            position: sticky;
-            top: 0;
-            margin: 0 14px 7px 0;
-            padding-top: 7px;
-            border-bottom: 1px solid #ddd;
-            min-height: 28px;
+        .use-time {
+          position: sticky;
+          top: 0;
+          margin: 0 14px 7px 0;
+          padding-top: 7px;
+          border-bottom: 1px solid #ddd;
+          min-height: 28px;
         }
-        pre .source-code {
-            overflow: auto;
-            max-height: 416px;
-            display: flex;
-            flex-direction: row;
-            align-items: flex-start;
+        .source-code {
+          overflow: auto;
+          max-height: 416px;
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
         }
-        pre .source-code .line-number {
-            color: #2B91AF;
-            text-align: right;
-            margin: 0 7px 0 -14px;
-            border-right: 1px solid;
-            padding: 0 7px 0 14px;
-            display: flex;
-            position: sticky;
-            left: -14px;
-            flex-direction: column;
+        .line-number {
+          color: #2B91AF;
+          text-align: right;
+          margin: 0 7px 0 -14px;
+          border-right: 1px solid;
+          padding: 0 7px 0 14px;
+          display: flex;
+          position: sticky;
+          left: -14px;
+          flex-direction: column;
         }
-        pre .source-code .source {
-            margin: 0 7px;
+        .source {
+          margin: 0 7px;
         }
-        pre .comment {
-            color: #998;
-            font-style: italic;
+        .comment {
+          color: #998;
+          font-style: italic;
         }
         table thead {
             background: rgba(51,51,51,.1);
@@ -729,6 +729,13 @@
                             </div>
                             {{?}}
 
+                            {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
+                            <div class="bottom-table panel panel-default">
+                                <div class="use-time print-nil">Request-Body</div>
+                                <textarea class="form-control data-info src src-json" style="min-height:416px" name="(request-body)">{{= localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':(request-body)')}}</textarea>
+                            </div>
+                            {{?}}
+
                             <p>
                                 /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
                                 {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
@@ -1075,7 +1082,7 @@ function loadData() {
                     let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
                     let flag = String($(this).attr('data-request-body')) === '1';
-                    $(this).html('<div class="use-time print-nil">' + (flag ? 'Request-Body' : 'Return example') + '</div>' + addLine(html));
+                    $(this).html('<div class="use-time print-nil">' + (flag ? 'Request-Body' : 'Return') + ' example</div>' + addLine(html));
                 } else {
                     $(this).html(addLine('<span class="red">Return null or Can not analyze return type</span>'));
                 }
@@ -1223,7 +1230,7 @@ function relationBySource(sourceComment) {
     }
     let firstEnd = '<div class="source">';
     comment = comment.substring(comment.indexOf(firstEnd) + firstEnd.length);
-    comment = comment.replace(/<span class=".*">|<\/span>/g, '').replace(/<\/div>/, '');
+    comment = comment.replace(/<span class=".*">|<\/span>/g, '').replace(/<\/div>/g, '');
 
     let relation = {};
     let tabLen = 2;
@@ -1404,6 +1411,12 @@ $(function() {
         }
         let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
+        let requestBody = $form.find('textarea[name="(request-body)"]').val();
+        if (isNotBlank(requestBody)) {
+            requestBody = requestBody.replace(/<span class=".*">|<\/span>/g, '').replace(/<div class=".*">|<\/div>/g, '');
+            requestBody = JSON.stringify(JSON.parse(requestBody));
+        }
+
         let map = objectifyForm($form);
         let params = map[0];
         let headers = map[1];
@@ -1461,9 +1474,15 @@ $(function() {
                 }
             });
         } else {
-            if (Object.getOwnPropertyNames(params).length > 0) {
+            if (isNotBlank(requestBody)) {
+                curlHtml += "&nbsp; -d '" + requestBody + "'" + line;
+            } else if (Object.getOwnPropertyNames(params).length > 0) {
                 if (hasRequestBody) {
-                    curlHtml += "&nbsp; -d '" + (hasBasicParamRequestBody ? params[Object.keys(params)[0]] : JSON.stringify(params)) + "'" + line;
+                    if (hasBasicParamRequestBody) {
+                        curlHtml += "&nbsp; -d '" + params[Object.keys(params)[0]] + "'" + line;
+                    } else {
+                        curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
+                    }
                 } else {
                     if ('GET' === method.toUpperCase()) {
                         let paramArr = [];
@@ -1494,7 +1513,7 @@ $(function() {
                 curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
             }
         }
-        curl.find('pre').html(addLine(curlHtml));
+        curl.find('pre').html('<div class="use-time print-nil">cURL</div>' + addLine(curlHtml));
         curl.show();
 
 
@@ -1548,7 +1567,13 @@ $(function() {
                 }
                 settings['contentType'] = 'application/json';
                 settings['dataType'] = 'json';
-                settings['data'] = (hasBasicParamRequestBody ? (Object.getOwnPropertyNames(params).length > 0 ? params[Object.keys(params)[0]] : '') : JSON.stringify(params));
+                if (isNotBlank(requestBody)) {
+                    settings['data'] = requestBody;
+                } else if (hasBasicParamRequestBody) {
+                    settings['data'] = Object.getOwnPropertyNames(params).length > 0 ? params[Object.keys(params)[0]] : '';
+                } else {
+                    settings['data'] = JSON.stringify(params);
+                }
             } else {
                 settings['data'] = params;
             }

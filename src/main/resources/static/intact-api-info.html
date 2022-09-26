@@ -45,7 +45,7 @@
             padding: 7px 0 7px 14px;
             overflow: hidden;
         }
-        pre .use-time {
+        .use-time {
             position: sticky;
             top: 0;
             margin: 0 14px 7px 0;
@@ -53,14 +53,14 @@
             border-bottom: 1px solid #ddd;
             min-height: 28px;
         }
-        pre .source-code {
+        .source-code {
             overflow: auto;
             max-height: 416px;
             display: flex;
             flex-direction: row;
             align-items: flex-start;
         }
-        pre .source-code .line-number {
+        .line-number {
             color: #2B91AF;
             text-align: right;
             margin: 0 7px 0 -14px;
@@ -71,10 +71,10 @@
             left: -14px;
             flex-direction: column;
         }
-        pre .source-code .source {
+        .source {
             margin: 0 7px;
         }
-        pre .comment {
+        .comment {
             color: #998;
             font-style: italic;
         }
@@ -899,7 +899,7 @@ function loadData() {
                     let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!递归实体!!!</span>');
                     let flag = String($(this).attr('data-request-body')) === '1';
-                    $(this).html('<div class="use-time print-nil">' + (flag ? '请求体' : '响应示例') + '</div>' + addLine(html));
+                    $(this).html('<div class="use-time print-nil">' + (flag ? '请求体' : '响应') + '示例</div>' + addLine(html));
                 } else {
                     $(this).html(addLine('<span class="red">响应为空 或 无法解析返回类型</span>'));
                 }
