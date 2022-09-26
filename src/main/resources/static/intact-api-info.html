@@ -908,7 +908,7 @@ function loadData() {
 function handleError($arrow, $ele, info) {
     $arrow.css('display', 'none');
     $ele.html('<div class="config red">' + info + '</div>' +
-        '<div class="config">请求的前缀不对? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">配置</span></div>' +
+        '<div class="config">请求的上下文路径不对? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">配置</span></div>' +
         '<div class="config">配置有误? <span id="delete-prefix" class="config-prefix">删除配置</span></div>');
 }
 
