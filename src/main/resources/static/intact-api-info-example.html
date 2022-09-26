@@ -1633,8 +1633,10 @@ $(function() {
         let source = $(this).parent().find('.source-code');
         if (source.css('max-height') === 'none') {
             source.css('max-height', '');
+            $(this).val('不滚动');
         } else {
             source.css('max-height', 'none');
+            $(this).val('滚动');
         }
     });
     $(document).on('click', '.copy', function() {
