@@ -78,6 +78,7 @@
             position: sticky;
             top: 0;
             margin: 0 14px 7px 0;
+            padding-top: 7px;
             border-bottom: 1px solid #ddd;
             min-height: 28px;
         }
@@ -97,7 +98,6 @@
             display: flex;
             position: sticky;
             left: -14px;
-            background: #f5f5f5;
             flex-direction: column;
         }
         pre .source-code .source {
@@ -227,7 +227,7 @@
             right: 0;
             position: absolute;
             color: rgba(255, 0, 0, .8);
-            margin: 7px 14px 0 0;
+            margin: 14px 14px 0 0;
             padding-right: 140px;
             z-index: 2;
         }
@@ -237,7 +237,7 @@
             z-index: 2;
             cursor: pointer;
             color: rgba(140, 140, 140, .8);
-            margin: 7px 14px 0 0;
+            margin: 14px 14px 0 0;
             transition: color .1s;
         }
         .copy {
@@ -728,6 +728,7 @@
                                 </table>
                             </div>
                             {{?}}
+
                             <p>
                                 /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
                                 {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
@@ -989,7 +990,7 @@ function formatDate(date) {
     } else if (S.length === 2) {
         S = '0' + S;
     }
-    return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + ' ' + S;
+    return y + '-' + m + '-' + dy + ' ' + h + ':' + mt + ':' + s + '.' + S;
 }
 
 let chooseProjectTemplate = doT.template($('#choose-project').html());
@@ -1220,9 +1221,9 @@ function relationBySource(sourceComment) {
     if (isBlank(comment)) {
         return null;
     }
-    let firstEnd = '</span>';
+    let firstEnd = '<div class="source">';
     comment = comment.substring(comment.indexOf(firstEnd) + firstEnd.length);
-    comment = comment.replace(/<span class=".*">|<\/span>/g, '');
+    comment = comment.replace(/<span class=".*">|<\/span>/g, '').replace(/<\/div>/, '');
 
     let relation = {};
     let tabLen = 2;
