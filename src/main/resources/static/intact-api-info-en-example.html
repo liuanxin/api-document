@@ -1633,10 +1633,10 @@ $(function() {
         let source = $(this).parent().find('.source-code');
         if (source.css('max-height') === 'none') {
             source.css('max-height', '');
-            $(this).val('No-Scroll');
+            $(this).html('No-Scroll');
         } else {
             source.css('max-height', 'none');
-            $(this).val('Scroll');
+            $(this).html('Scroll');
         }
     });
     $(document).on('click', '.copy', function() {
