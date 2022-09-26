@@ -610,7 +610,7 @@
                         <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}
                               {{? String(url.requestBody) === '1'}} request-body="1"{{?}}
                               {{? String(url.basicParamRequestBody) === '1'}} basic-param-request-body="1"{{?}}
-                              {{? url.url}} action="{{= url.url}}"{{?}}{{? hasFile}} enctype="multipart/form-data"{{?}}>
+                              action="{{= url.url}}"{{? hasFile}} enctype="multipart/form-data"{{?}}>
                             {{? paramList && paramList.length > 0}}
                             <div class="bottom-table panel panel-default">
                                 <table class="table table-striped table-bordered table-hover table-condensed">
@@ -645,7 +645,8 @@
                                     let validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
                                     let tokenClass = String(param.hasToken) === '1' ? ' has-token' : '';
                                     let header = String(param.paramType) === '1' ? ' header="1"' : '';
-                                    let example = localStorage.getItem(param.name) || param.example || '';
+                                    let dataKey = (url.method + url.url).toLowerCase().replace(/\//g, '+');
+                                    let example = localStorage.getItem(param.name) || localStorage.getItem(dataKey) || param.example || '';
 
                                     let enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
                                     let enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
@@ -665,9 +666,9 @@
                                                    class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                         </div>
                                         {{?? hasTextarea}}
-                                        <textarea {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}} class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                        <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}" {{?}}class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                         {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
-                                        <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
+                                        <select class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                             <option></option>
                                             {{? Array.isArray(enumInfo) }}
                                             {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
@@ -683,13 +684,13 @@
                                             <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                             <input type="text" name="{{= param.name || ''}}"{{= header}}
                                                    {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
-                                                   class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
+                                                   class="form-control data-info{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
                                                    {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
                                         </div>
                                         {{??}}
                                         {{ textNum++; }}
                                         <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
-                                               class="form-control{{= validateClass}}{{= tokenClass}}"
+                                               class="form-control data-info{{= validateClass}}{{= tokenClass}}"
                                                type="{{= (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
                                                name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                         {{?}}
@@ -859,14 +860,18 @@ function handleContextPath() {
     let search = location.search.trim();
     if (search.includes(param)) {
         let path = search.substring(search.indexOf(param) + param.length);
-        if (path.includes(append)) {
-            path = path.substring(0, path.indexOf(append));
+        if (isNotBlank(path)) {
+            if (path.includes(append)) {
+                path = path.substring(0, path.indexOf(append));
+            }
+            let uri = path.toLowerCase();
+            if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
+                path = location.protocol + '//' + location.host + (path.startsWith('/') ? '' : '/') + path;
+            }
+            localStorage.setItem(localServerPathItem, path);
+        } else {
+            localStorage.removeItem(localServerPathItem);
         }
-        let uri = path.toLowerCase();
-        if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
-            path = location.protocol + '//' + location.host + (path.startsWith('/') ? '' : '/') + path;
-        }
-        localStorage.setItem(localServerPathItem, path);
     }
 }
 handleContextPath();
@@ -1331,8 +1336,24 @@ $(function() {
         let $this = $(this);
         let name = $this.attr('name');
         let value = $this.val();
-        localStorage.setItem(name, value);
+        if (isNotBlank(value)) {
+            localStorage.setItem(name, value);
+        } else {
+            localStorage.removeItem(name);
+        }
         $('[name="' + name + '"]').val(value);
+    });
+
+    $(document).on('change', '.data-info', function() {
+        let $this = $(this);
+        let value = $this.val();
+        let $form = $this.parent('form');
+        let key = ($form.attr('method') + $form.attr('action')).toLowerCase().replace(/\//g, '+');
+        if (isNotBlank(value)) {
+            localStorage.setItem(key, value);
+        } else {
+            localStorage.removeItem(key);
+        }
     });
 
     $(document).on('click', '.form-submit', function() {

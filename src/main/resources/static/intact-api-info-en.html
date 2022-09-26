@@ -738,14 +738,18 @@ function handleContextPath() {
     let search = location.search.trim();
     if (search.includes(param)) {
         let path = search.substring(search.indexOf(param) + param.length);
-        if (path.includes(append)) {
-            path = path.substring(0, path.indexOf(append));
+        if (isNotBlank(path)) {
+            if (path.includes(append)) {
+                path = path.substring(0, path.indexOf(append));
+            }
+            let uri = path.toLowerCase();
+            if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
+                path = location.protocol + '//' + location.host + (path.startsWith('/') ? '' : '/') + path;
+            }
+            localStorage.setItem(localServerPathItem, path);
+        } else {
+            localStorage.removeItem(localServerPathItem);
         }
-        let uri = path.toLowerCase();
-        if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
-            path = location.protocol + '//' + location.host + (path.startsWith('/') ? '' : '/') + path;
-        }
-        localStorage.setItem(localServerPathItem, path);
     }
 }
 handleContextPath();
