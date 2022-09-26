@@ -983,7 +983,7 @@ $(function() {
     $(document).on('click', '.copy', function() {
         let $this = $(this);
         let $copyStatus = $this.prev();
-        let copyValue = $this.next().find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
+        let copyValue = $this.next('pre').find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(copyValue).then(
                 function () {
