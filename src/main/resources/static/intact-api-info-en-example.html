@@ -83,7 +83,7 @@
         }
         pre .source-code {
             overflow: auto;
-            max-height: 400px;
+            max-height: 416px;
             display: flex;
             flex-direction: row;
             align-items: flex-start;
@@ -173,9 +173,12 @@
         }
         .module-api-index {}
         .module-api-info {}
-        .module-api-info-basic {}
+        .module-api-info-basic {
+            margin: 7px 0;
+        }
         .module-api-info-desc {}
         .module-api-info-param {}
+        .module-api-info-request {}
         .module-api-info-return {}
         .bottom-table {
             margin-bottom: 10px;
@@ -225,20 +228,25 @@
             position: absolute;
             color: rgba(255, 0, 0, .8);
             margin: 7px 14px 0 0;
-            padding-right: 70px;
+            padding-right: 140px;
             z-index: 2;
         }
-        .copy {
+        .copy, .no-scroll {
             right: 0;
             position: absolute;
             z-index: 2;
             cursor: pointer;
             color: rgba(140, 140, 140, .8);
             margin: 7px 14px 0 0;
-            padding-right: 20px;
             transition: color .1s;
         }
-        .copy:hover {
+        .copy {
+            padding-right: 60px;
+        }
+        .no-scroll {
+            padding-right: 20px;
+        }
+        .copy:hover, .no-scroll:hover {
             color: rgb(100, 100, 100);
             font-weight: bold;
         }
@@ -437,18 +445,18 @@
                         <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
                     </h3>
                     <div class="module-api-info">
-                        <p class="module-api-info-basic">Request <code>{{= url.method || ''}} {{= url.url || ''}}</code></p>
+                        <div><code>{{= url.method || ''}} {{= url.url || ''}}</code></div>
+                        <div class="module-api-info-basic"><code>Content-Type: {{= url.contentType || ''}}</code></div>
                         {{
                         let moduleDesc = '';
-                        if (url.develop && url.develop !== '') {
+                        let hasDev = url.develop && url.develop !== '';
+                        if (hasDev) {
                             moduleDesc += 'Develop: ' + url.develop;
                         }
                         if (url.desc && url.desc !== '') {
-                            if (moduleDesc !== '') { moduleDesc += '<br>'; }
+                            if (hasDev) { moduleDesc += '<br>'; }
                             moduleDesc += 'Comment: ' + url.desc;
                         }
-                        if (moduleDesc !== '') { moduleDesc += '<br><br>'; }
-                        moduleDesc += 'Content-Type: ' + url.contentType;
 
                         let printNil = '';
                         if (url.exampleUrl && url.exampleUrl != '') {
@@ -463,9 +471,19 @@
                         }}
                         <pre class="module-api-info-desc{{= printNil}}">{{= moduleDesc}}</pre>
 
+                        {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
+                        <div class="module-api-info-request">
+                            <div class="copy-status print-nil"></div>
+                            <div class="copy print-nil">Copy</div>
+                            <div class="no-scroll print-nil">No-Scroll</div>
+                            <pre class="src src-json" data-request-body="1">{{= url.requestBodyJson || ''}}</pre>
+                        </div>
+                        {{?}}
+
                         <div class="module-api-info-return">
                             <div class="copy-status print-nil"></div>
                             <div class="copy print-nil">Copy</div>
+                            <div class="no-scroll print-nil">No-Scroll</div>
                             <pre class="src src-json" data-flag="module-api-info-return-src">{{= url.commentJson || ''}}</pre>
 
                             {{? url.returnList && url.returnList.length > 0}}
@@ -556,6 +574,7 @@
                                     <div class="modal-body">
                                         <div class="copy-status print-nil"></div>
                                         <div class="copy print-nil">Copy</div>
+                                        <div class="no-scroll print-nil">No-Scroll</div>
                                         <pre class="src src-json">{{= response.comment || ''}}</pre>
 
                                         {{? response.returnList && response.returnList.length > 0}}
@@ -717,11 +736,13 @@
                             <div class="curl">
                                 <div class="copy-status print-nil"></div>
                                 <div class="copy print-nil">Copy</div>
+                                <div class="no-scroll print-nil">No-Scroll</div>
                                 <pre class="src src-json"></pre>
                             </div>
                             <div class="response">
                                 <div class="copy-status print-nil"></div>
                                 <div class="copy print-nil">Copy</div>
+                                <div class="no-scroll print-nil">No-Scroll</div>
                                 <pre class="src src-json"></pre>
                             </div>
                         </form>
@@ -746,6 +767,7 @@
                     <div class="modal-body">
                         <div class="copy-status print-nil"></div>
                         <div class="copy print-nil">Copy</div>
+                        <div class="no-scroll print-nil">No-Scroll</div>
                         <pre class="src src-json">{{= response.comment || ''}}</pre>
 
                         {{? response.returnList && response.returnList.length > 0}}
@@ -1048,16 +1070,14 @@ function loadData() {
 
             $('pre[class="src src-json"]').each(function() {
                 let $html = escapeHtml($(this).html());
-                let html, flag;
                 if (isNotBlank($html)) {
-                    html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+                    let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
-                    flag = true;
+                    let flag = String($(this).attr('data-request-body')) === '1';
+                    $(this).html('<div class="use-time print-nil">' + (flag ? 'Request-Body' : 'Return example') + '</div>' + addLine(html));
                 } else {
-                    html = '<span class="red">Return null or Can not analyze return type</span>';
-                    flag = false;
+                    $(this).html(addLine('<span class="red">Return null or Can not analyze return type</span>'));
                 }
-                $(this).html((flag ? '<div class="use-time print-nil">Return example</div>' : '') + addLine(html));
             });
 
             if ($('.col-md-3').css('display') !== 'none') {
@@ -1609,6 +1629,9 @@ $(function() {
         newRequest();
     });
 
+    $(document).on('click', '.no-scroll', function() {
+        $(this).parent().find('.source-code').css('max-height', 'none');
+    });
     $(document).on('click', '.copy', function() {
         let $this = $(this);
         let copyValue = $this.next().find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');

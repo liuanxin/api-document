@@ -100,20 +100,30 @@ public final class WebUtil {
                 ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
                 if (Tools.isBlank(ignore) || !ignore.value()) {
                     PatternsRequestCondition patternsCondition = requestMapping.getPatternsCondition();
-                    Set<String> urlArray = Tools.isBlank(patternsCondition) ? new HashSet<String>() : patternsCondition.getPatterns();
+                    Set<String> urlArray = Tools.isBlank(patternsCondition) ? new HashSet<>() : patternsCondition.getPatterns();
 
                     RequestMethodsRequestCondition methodsCondition = requestMapping.getMethodsCondition();
-                    Set<RequestMethod> methodArray = Tools.isBlank(methodsCondition) ? new HashSet<RequestMethod>() : methodsCondition.getMethods();
+                    Set<RequestMethod> methodArray = Tools.isBlank(methodsCondition) ? new HashSet<>() : methodsCondition.getMethods();
 
                     if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
+                        String method = handlerMethod.toString();
                         boolean innerRequestBody = hasInnerParamRequestBody(handlerMethod);
                         DocumentUrl document = new DocumentUrl();
                         // url
                         document.setUrl(Tools.toStr(urlArray));
                         // method : get, post, put...
                         document.setMethod(Tools.toStr(methodArray));
-                        // todo param
-                        List<DocumentParam> paramList = ParamHandler.handlerParam(handlerMethod, innerRequestBody);
+                        // param
+                        List<DocumentParam> paramList;
+                        if (innerRequestBody) {
+                            String paramType = getRequestBodyParamTypeByMethod(handlerMethod);
+                            String requestBodyJson = ReturnHandler.handlerReturnJson(method, paramType);
+                            List<DocumentReturn> requestBodyParamList = ReturnHandler.handlerReturn(method, paramType);
+                            document.setRequestBodyJson(DocumentUrl.commentJson(requestBodyJson, true, true, requestBodyParamList));
+                            paramList = new ArrayList<>();
+                        } else {
+                            paramList = ParamHandler.handlerParam(handlerMethod);
+                        }
                         // no annotation: use global, annotation is false: not use, annotation is true: use self
                         ApiTokens apiTokens = getAnnotation(handlerMethod, ApiTokens.class);
                         if (Tools.isBlank(apiTokens)) {
@@ -136,7 +146,6 @@ public final class WebUtil {
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
                         String returnType = getReturnTypeByMethod(handlerMethod, apiMethod);
-                        String method = handlerMethod.toString();
                         // return param
                         document.setReturnList(ReturnHandler.handlerReturn(method, returnType));
                         // return json
@@ -216,6 +225,16 @@ public final class WebUtil {
         return new DocumentInfoAndUrlMap(documentInfo, documentMap);
     }
 
+    private static String getRequestBodyParamTypeByMethod(HandlerMethod handlerMethod) {
+        String paramType = handlerMethod.getMethod().getParameterTypes()[0].toString();
+        if (Tools.isNotBlank(paramType)) {
+            String prefix = "class ";
+            if (paramType.startsWith(prefix)) {
+                paramType = paramType.substring(prefix.length());
+            }
+        }
+        return paramType;
+    }
     private static String getReturnTypeByMethod(HandlerMethod handlerMethod, ApiMethod apiMethod) {
         String returnType;
         if (Tools.isNotBlank(apiMethod)) {

@@ -3,6 +3,7 @@ package com.github.liuanxin.api.util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.github.liuanxin.api.annotation.ApiModel;
+import com.github.liuanxin.api.annotation.ApiParam;
 import com.github.liuanxin.api.annotation.ApiReturn;
 import com.github.liuanxin.api.annotation.ApiReturnIgnore;
 import com.github.liuanxin.api.constant.ApiConst;
@@ -130,6 +131,11 @@ public final class ReturnHandler {
                                 ApiModel apiModel = field.getAnnotation(ApiModel.class);
                                 if (Tools.isNotBlank(apiModel)) {
                                     name = apiModel.name();
+                                } else {
+                                    ApiParam apiParam = field.getAnnotation(ApiParam.class);
+                                    if (Tools.isNotBlank(apiParam)) {
+                                        name = apiParam.name();
+                                    }
                                 }
                             }
                         }
@@ -171,7 +177,7 @@ public final class ReturnHandler {
             }
         }
         /*
-        // ignore basic type, if add, comment in example will error
+        // ignore basic type, comment in example will error if added
         else {
             String name = outClass.getSimpleName();
             returnList.add(new DocumentReturn(name, name, name));
@@ -216,6 +222,15 @@ public final class ReturnHandler {
                 String returnType = apiModel.dataType();
                 if (Tools.isNotEmpty(returnType)) {
                     documentReturn.setType(returnType);
+                }
+            } else {
+                ApiParam apiParam = field.getAnnotation(ApiParam.class);
+                if (Tools.isNotBlank(apiParam)) {
+                    desc = apiParam.value();
+                    String returnType = apiParam.dataType();
+                    if (Tools.isNotEmpty(returnType)) {
+                        documentReturn.setType(returnType);
+                    }
                 }
             }
         }
@@ -492,6 +507,12 @@ public final class ReturnHandler {
                         if (Tools.isNotBlank(apiModel)) {
                             example = apiModel.example();
                             basicTypeExample = Tools.isEmpty(example) ? apiModel.value() : example;
+                        } else {
+                            ApiParam apiParam = field.getAnnotation(ApiParam.class);
+                            if (Tools.isNotBlank(apiParam)) {
+                                example = apiParam.example();
+                                basicTypeExample = Tools.isEmpty(example) ? apiParam.value() : example;
+                            }
                         }
                     }
                     if (Tools.basicType(fieldType)) {
