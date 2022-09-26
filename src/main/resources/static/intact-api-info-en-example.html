@@ -1632,7 +1632,7 @@ $(function() {
     $(document).on('click', '.no-scroll', function() {
         let source = $(this).parent().find('.source-code');
         if (source.css('max-height') === 'none') {
-            source.css('max-height', 'unset');
+            source.css('max-height', '');
         } else {
             source.css('max-height', 'none');
         }
@@ -1644,7 +1644,7 @@ $(function() {
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(copyValue).then(
                 function () {
-                    $copyStatus.text('Copy Success');
+                    $copyStatus.text('Copy Success.');
                     setTimeout(function () { $copyStatus.text(''); }, 3000);
                 },
                 function () {
