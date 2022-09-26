@@ -645,7 +645,7 @@
                                     let validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
                                     let tokenClass = String(param.hasToken) === '1' ? ' has-token' : '';
                                     let header = String(param.paramType) === '1' ? ' header="1"' : '';
-                                    let dataKey = (url.method + url.url).toLowerCase().replace(/\//g, '+');
+                                    let dataKey = (url.method.toLowerCase() + ':' + url.url + ':' + param.name);
                                     let example = localStorage.getItem(param.name) || localStorage.getItem(dataKey) || param.example || '';
 
                                     let enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
@@ -1133,8 +1133,8 @@ function relationByComment(allComment) {
     }
 }
 function hasExampleWithLevel(trsInTable) {
-    let i;
-    for (i = 0; i < trsInTable.length; i++) {
+    let i, len = trsInTable.length;
+    for (i = 0; i < len; i++) {
         let tds = $(trsInTable[i]).find('td');
         if (tds.length > 2) {
             let name = $(tds[0]).text();
@@ -1147,8 +1147,8 @@ function hasExampleWithLevel(trsInTable) {
 }
 function returnCommentWithParentLevel($trs) {
     let paramCommentRelation = {};
-    let i;
-    for (i = 0; i < $trs.length; i++) {
+    let i, len = $trs.length;
+    for (i = 0; i < len; i++) {
         let $tds = $($trs[i]).find('td');
         if ($tds.length > 2) {
             let comment = $($tds[2]).text().trim();
@@ -1347,8 +1347,8 @@ $(function() {
     $(document).on('change', '.data-class', function() {
         let $this = $(this);
         let value = $this.val();
-        let $form = $this.parent('form');
-        let key = ($form.attr('method') + $form.attr('action')).toLowerCase().replace(/\//g, '+');
+        let $form = $this.closest('form');
+        let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $this.attr('name');
         if (isNotBlank(value)) {
             localStorage.setItem(key, value);
         } else {
