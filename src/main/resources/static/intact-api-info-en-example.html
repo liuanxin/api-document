@@ -188,7 +188,11 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #ddd;
+            background: #f5f5f5;
             padding: 7px;
+            position: sticky;
+            top: 50px;
+            z-index: 1;
         }
         .src-prev-left {
             display: flex;
@@ -770,7 +774,7 @@
                             </div>
 
                             {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
-                            <pre class="bottom-table panel panel-default source-info">
+                            <div class="source-info bottom-table">
                                 <div class="src-prev">
                                     <div class="src-prev-left">
                                         <span>Request-Body</span>
@@ -1495,7 +1499,7 @@ $(function() {
             try {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
-                console.error('parse(' + requestBody + ') error', e); /* todo */
+                console.error('parse(' + requestBody + ') error', e);
                 $reqMsg.html('Json date error!');
                 return;
             }
