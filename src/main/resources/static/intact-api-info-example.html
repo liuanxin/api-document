@@ -1742,7 +1742,11 @@ $(function() {
     });
 
     $(document).on('click', '.no-scroll', function() {
-        let source = $(this).closest('.source-info').find('.source-code');
+        let $sourceInfo = $(this).closest('.source-info');
+        let source = $sourceInfo.find('.source-code');
+        if (isBlank(source)) {
+            source = $sourceInfo.find('div[data-name="_request-body_"]');
+        }
         if (source.css('max-height') === 'none') {
             source.css('max-height', '');
             $(this).html('全显');
