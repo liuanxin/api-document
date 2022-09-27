@@ -1458,8 +1458,10 @@ $(function() {
         let $formParent = $form.parents('.module-api-info');
         let curl = $form.find('.curl');
         let response = $form.find('.response');
+        let $reqMsg = $btn.closest('form').find('.src-prev-req-msg');
         curl.hide();
         response.hide();
+        $reqMsg.html('');
 
         $.validationEngine.defaults.scroll = false;
         let flag = $form.validationEngine('validate', { scroll: false });
@@ -1486,7 +1488,7 @@ $(function() {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
                 console.error('parse(' + requestBody + ') error', e); /* todo */
-                $btn.closest('form').find('.src-prev-req-msg').html('Json date error, please check');
+                $reqMsg.html('!Json date error!');
                 return;
             }
         }
