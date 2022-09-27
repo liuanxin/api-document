@@ -505,13 +505,13 @@ public final class ReturnHandler {
                     } else {
                         ApiModel apiModel = field.getAnnotation(ApiModel.class);
                         if (Tools.isNotBlank(apiModel)) {
-                            example = apiModel.example();
-                            basicTypeExample = Tools.isEmpty(example) ? apiModel.value() : example;
+                            example = Tools.escape(apiModel.example());
+                            basicTypeExample = Tools.isEmpty(example) ? Tools.escape(apiModel.value()) : example;
                         } else {
                             ApiParam apiParam = field.getAnnotation(ApiParam.class);
                             if (Tools.isNotBlank(apiParam)) {
-                                example = apiParam.example();
-                                basicTypeExample = Tools.isEmpty(example) ? apiParam.value() : example;
+                                example = Tools.escape(apiParam.example());
+                                basicTypeExample = Tools.isEmpty(example) ? Tools.escape(apiParam.value()) : example;
                             }
                         }
                     }

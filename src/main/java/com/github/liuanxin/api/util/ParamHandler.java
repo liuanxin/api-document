@@ -185,7 +185,7 @@ public final class ParamHandler {
 
             param.setParamType(apiParam.paramType().hasHeader() ? "1" : ApiConst.EMPTY);
 
-            String example = apiParam.example();
+            String example = Tools.escape(apiParam.example());
             if (Tools.isNotEmpty(example)) {
                 param.setExample(example);
             }
@@ -211,7 +211,7 @@ public final class ParamHandler {
 
             param.setParamType(apiModel.paramType().hasHeader() ? "1" : ApiConst.EMPTY);
 
-            String example = apiModel.example();
+            String example = Tools.escape(apiModel.example());
             if (Tools.isNotEmpty(example)) {
                 param.setExample(example);
             }

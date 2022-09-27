@@ -40,24 +40,14 @@
             height: 0;
         }
         pre {
-            font-size: 14px;
-            margin: 0 0 14px;
-            padding: 7px 0 7px 14px;
-            overflow: hidden;
-        }
-        .use-time {
-            position: sticky;
-            top: 0;
-            margin: 0 14px 7px 0;
-            padding-top: 7px;
-            border-bottom: 1px solid #ddd;
-            min-height: 28px;
+            padding: 7px 0 7px 7px;
+            border: none;
+            margin: 0;
         }
         .source-code {
             overflow: auto;
-            max-height: 416px;
+            max-height: 408px;
             display: flex;
-            flex-direction: row;
             align-items: flex-start;
         }
         .line-number {
@@ -66,14 +56,11 @@
             margin: 0 7px 0 -14px;
             border-right: 1px solid;
             padding: 0 7px 0 14px;
-            display: flex;
             position: sticky;
-            left: -14px;
+            display: flex;
             flex-direction: column;
         }
-        .source {
-            margin: 0 7px;
-        }
+        .source {}
         .comment {
             color: #998;
             font-style: italic;
@@ -143,12 +130,40 @@
         .module-api-info-basic {
             margin: 7px 0;
         }
-        .module-api-info-desc {}
+        .module-api-info-desc {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            margin-bottom: 7px;
+            padding: 7px;
+            border-radius: 4px;
+        }
         .module-api-info-param {}
         .module-api-info-request {}
         .module-api-info-return {}
+        .source-info {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f5f5f5;
+        }
+        .modal-dialog > .source-info {
+            margin: 10px;
+            padding: 0;
+        }
         .bottom-table {
             margin-bottom: 10px;
+        }
+        .src-prev {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 7px;
+        }
+        .src-prev-left {
+            display: flex;
+        }
+        .src-prev-right {
+            display: flex;
         }
         .text-left {
             vertical-align: middle !important;
@@ -175,31 +190,17 @@
         .wrap {
             white-space: pre-wrap;
         }
+        .green {
+            color: green !important;
+        }
         .red {
             color: red !important;
         }
-        .copy-status {
-            right: 0;
-            position: absolute;
-            color: rgba(255, 0, 0, .8);
-            margin: 14px 14px 0 0;
-            padding-right: 180px;
-            z-index: 2;
+        .copy-status, .copy, .no-scroll {
+            margin: 0 7px;
         }
         .copy, .no-scroll {
-            right: 0;
-            position: absolute;
-            z-index: 2;
             cursor: pointer;
-            color: rgba(140, 140, 140, .8);
-            margin: 14px 14px 0 0;
-            transition: color .1s;
-        }
-        .copy {
-            padding-right: 120px;
-        }
-        .no-scroll {
-            padding-right: 20px;
         }
         .copy:hover, .no-scroll:hover {
             color: rgb(100, 100, 100);
@@ -370,22 +371,18 @@
         </div>
     </div>
 </div>
-<header class="print-nil">
-    <div class="header container">
-        <div class="header-content"></div>
-    </div>
-</header>
+<header class="print-nil"><div class="header container"><div class="header-content"></div></div></header>
 <script id="choose-project" type="text/x-dot-template">
     <div class="header-text">Choose project:</div>
     <div class="header-select">
-        <select class="project-choose form-control" name="p">
+        <label><select class="project-choose form-control" name="p">
             <option value="">Current</option>
             {{ let cp = it.project; }}
             {{~ it.projects  :p}}
             {{ let s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
             <option value="{{= p[0]}}" data-url="{{= p[2]}}"{{= s}}>{{= p[1]}}</option>
             {{~}}
-        </select>
+        </select></label>
     </div>
 </script>
 <main class="container">
@@ -406,7 +403,7 @@
                     </h3>
                     <div class="module-api-info">
                         <div><code>{{= url.method || ''}} {{= url.url || ''}}</code></div>
-                        <div class="module-api-info-basic"><code>Content-Type: {{= url.contentType || ''}}</code></div>
+                        <div class="module-api-info-basic"><code>Content-Type : {{= url.contentType || ''}}</code></div>
                         {{
                         let moduleDesc = '';
                         let hasDev = url.develop && url.develop !== '';
@@ -429,7 +426,7 @@
                             }
                         }
                         }}
-                        <pre class="module-api-info-desc{{= printNil}}">{{= moduleDesc}}</pre>
+                        <div class="module-api-info-desc bottom-table{{= printNil}}">{{= moduleDesc}}</div>
 
                         {{
                         let globalParamList = it.tokenList || [];
@@ -481,62 +478,77 @@
                         {{?}}
 
                         {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
-                        <div class="module-api-info-request">
-                            <div class="copy-status print-nil"></div>
-                            <div class="copy print-nil">Copy</div>
-                            <div class="no-scroll print-nil">No-Scroll</div>
-                            <pre class="src src-json" data-request-body="1">{{= url.requestBodyJson || ''}}</pre>
+                        <div class="module-api-info-request source-info bottom-table">
+                            <div class="src-prev">
+                                <div class="src-prev-left">Request-Body example</div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">Copy</div>
+                                    <div class="no-scroll print-nil">No-Scroll</div>
+                                </div>
+                            </div>
+                            <pre class="src src-json">{{= url.requestBodyJson || ''}}</pre>
                         </div>
                         {{?}}
 
-                        <div class="module-api-info-return">
-                            <div class="copy-status print-nil"></div>
-                            <div class="copy print-nil">Copy</div>
-                            <div class="no-scroll print-nil">No-Scroll</div>
-                            <pre class="src src-json">{{= url.commentJson || ''}}</pre>
-
-                            {{? url.returnList && url.returnList.length > 0}}
-                            <div class="bottom-table panel panel-default">
-                                <table class="table table-striped table-bordered table-hover table-condensed">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-left">Return field name</th>
-                                        <th class="text-left">Type</th>
-                                        <th class="text-left">Comment</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {{~ url.returnList  :rtn}}
-                                    <tr>
-                                        <td class="text-left">{{= rtn.name || ''}}</td>
-                                        <td class="text-left">{{= rtn.type || ''}}</td>
-                                        <td class="text-left wrap">
-                                            {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}
-                                        </td>
-                                    </tr>
-                                    {{~}}
-                                    </tbody>
-                                </table>
+                        <div class="module-api-info-return source-info bottom-table">
+                            <div class="src-prev">
+                                <div class="src-prev-left">Response Example</div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">Copy</div>
+                                    <div class="no-scroll print-nil">No-Scroll</div>
+                                </div>
                             </div>
-                            {{?}}
+                            <pre class="src src-json">{{= url.commentJson || ''}}</pre>
+                        </div>
 
-                            {{
-                            let hasSelfResponse = false;
-                            let responseList;
-                            if (url.responseList && url.responseList.length > 0) {
-                                hasSelfResponse = true;
-                                responseList = url.responseList;
-                            } else if (it.responseList && it.responseList.length > 0) {
-                                responseList = it.responseList;
-                            } else { responseList = []; }
+                        {{? url.returnList && url.returnList.length > 0}}
+                        <div class="bottom-table panel panel-default">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-left">Return field name</th>
+                                    <th class="text-left">Type</th>
+                                    <th class="text-left">Comment</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{~ url.returnList  :rtn}}
+                                <tr>
+                                    <td class="text-left">{{= rtn.name || ''}}</td>
+                                    <td class="text-left">{{= rtn.type || ''}}</td>
+                                    <td class="text-left wrap">
+                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}
+                                    </td>
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                        </div>
+                        {{?}}
 
-                            let hasAction = false;
-                            for (let i = 0; i < responseList.length; i++) {
+                        {{
+                        let hasSelfResponse = false;
+                        let responseList;
+                        if (url.responseList && url.responseList.length > 0) {
+                            hasSelfResponse = true;
+                            responseList = url.responseList;
+                        } else if (it.responseList && it.responseList.length > 0) {
+                            responseList = it.responseList;
+                        } else {
+                            responseList = [];
+                        }
+
+                        let hasAction = false;
+                        for (let i = 0; i < responseList.length; i++) {
                             let comment = responseList[i].comment;
-                            if (comment !== undefined && comment !== null && comment !== '') { hasAction = true; }
+                            if (comment !== undefined && comment !== null && comment !== '') {
+                                hasAction = true;
                             }
-                            }}
-                            {{? responseList.length > 0}}
+                        }
+                        }}
+                        {{? responseList.length > 0}}
                             <div class="bottom-table panel panel-default">
                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                     <thead>
@@ -557,8 +569,8 @@
                                         }}
                                         {{? comment !== undefined && comment !== null && comment !== ''}}
                                         <td class="text-left print-nil">
-                                            <span class="response-example" title="click to view response {{= response.code + ': ' + response.msg}}"
-                                                  data-toggle="modal" data-target="#{{= targetId}}">View example</span>
+                                            <span class="response-example" title="click to view response {{= response.code + ': ' + response.msg}} Example"
+                                                  data-toggle="modal" data-target="#{{= targetId}}">View Response example</span>
                                         </td>
                                         {{?? hasAction}}
                                         <td class="text-left print-nil"></td>
@@ -570,59 +582,65 @@
                             </div>
 
                             {{? hasSelfResponse}}
-                            {{~ responseList  :response}}
-                            {{ let comment = response.comment; }}
-                            {{? comment !== undefined && comment !== null && comment !== ''}}
-                            <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade" tabindex="-1"
-                                 aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                                <div class="modal-dialog modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">
-                                            Module「{{= module.info || ''}}」api「{{= url.title || ''}}」response「{{= response.code + ': ' + response.msg}}」
-                                        </h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="copy-status print-nil"></div>
-                                        <div class="copy print-nil">Copy</div>
-                                        <div class="no-scroll print-nil">No-Scroll</div>
-                                        <pre class="src src-json">{{= response.comment || ''}}</pre>
+                                {{~ responseList  :response}}
+                                    {{ let comment = response.comment; }}
+                                    {{? comment !== undefined && comment !== null && comment !== ''}}
+                                        <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
+                                             tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                                        <div class="modal-dialog modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                <h4 class="modal-title">
+                                                    Module「{{= module.info || ''}}」api「{{= url.title || ''}}」response「{{= response.code + ': ' + response.msg}}」
+                                                </h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="source-info">
+                                                    <div class="src-prev">
+                                                        <div class="src-prev-left"></div>
+                                                        <div class="src-prev-right">
+                                                            <div class="copy-status green print-nil"></div>
+                                                            <div class="copy print-nil">Copy</div>
+                                                            <div class="no-scroll print-nil">No-Scroll</div>
+                                                        </div>
+                                                    </div>
+                                                    <pre class="src src-json">{{= response.comment || ''}}</pre>
+                                                </div>
 
-                                        {{? response.returnList && response.returnList.length > 0}}
-                                        <div class="bottom-table panel panel-default">
-                                            <table class="table table-striped table-bordered table-hover table-condensed">
-                                                <thead>
-                                                <tr>
-                                                    <th class="text-left">Field name</th>
-                                                    <th class="text-left">Type</th>
-                                                    <th class="text-left">Comment</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {{~ response.returnList  :rtn}}
-                                                <tr>
-                                                    <td class="text-left">{{= rtn.name || ''}}</td>
-                                                    <td class="text-left">{{= rtn.type || ''}}</td>
-                                                    <td class="text-left wrap">
-                                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}
-                                                    </td>
-                                                </tr>
-                                                {{~}}
-                                                </tbody>
-                                            </table>
+                                                {{? response.returnList && response.returnList.length > 0}}
+                                                <div class="bottom-table panel panel-default">
+                                                    <table class="table table-striped table-bordered table-hover table-condensed">
+                                                        <thead>
+                                                        <tr>
+                                                            <th class="text-left">Field name</th>
+                                                            <th class="text-left">Type</th>
+                                                            <th class="text-left">Comment</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        {{~ response.returnList  :rtn}}
+                                                        <tr>
+                                                            <td class="text-left">{{= rtn.name || ''}}</td>
+                                                            <td class="text-left">{{= rtn.type || ''}}</td>
+                                                            <td class="text-left wrap">
+                                                                {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">$1</span>')}}
+                                                            </td>
+                                                        </tr>
+                                                        {{~}}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                {{?}}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                            </div>
                                         </div>
-                                        {{?}}
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
+                                    {{?}}
+                                {{~}}
                             {{?}}
-                            {{~}}
-                            {{?}}
-                            {{?}}
-                        </div>
+                        {{?}}
                     </div>
                 </div>
                 {{~}}
@@ -642,10 +660,17 @@
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <div class="copy-status print-nil"></div>
-                        <div class="copy print-nil">Copy</div>
-                        <div class="no-scroll print-nil">No-Scroll</div>
-                        <pre class="src src-json">{{= response.comment || ''}}</pre>
+                        <div class="source-info">
+                            <div class="src-prev">
+                                <div class="src-prev-left"></div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">Copy</div>
+                                    <div class="no-scroll print-nil">No-Scroll</div>
+                                </div>
+                            </div>
+                            <pre class="src src-json">{{= response.comment || ''}}</pre>
+                        </div>
 
                         {{? response.returnList && response.returnList.length > 0}}
                         <div class="bottom-table panel panel-default">
@@ -898,8 +923,7 @@ function loadData() {
                 if (isNotBlank($html)) {
                     let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
-                    let flag = String($(this).attr('data-request-body')) === '1';
-                    $(this).html('<div class="use-time print-nil">' + (flag ? 'Request-Body' : 'Return') + ' example</div>' + addLine(html));
+                    $(this).html(addLine(html));
                 } else {
                     $(this).html(addLine('<span class="red">Return null or Can not analyze return type</span>'));
                 }
@@ -978,7 +1002,7 @@ $(function() {
     });
 
     $(document).on('click', '.no-scroll', function() {
-        let source = $(this).parent().find('.source-code');
+        let source = $(this).closest('.source-info').find('.source-code');
         if (source.css('max-height') === 'none') {
             source.css('max-height', '');
             $(this).html('No-Scroll');
@@ -989,7 +1013,7 @@ $(function() {
     });
     $(document).on('click', '.copy', function() {
         let $this = $(this);
-        let copyValue = $this.next().next().find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
+        let copyValue = $this.closest('.source-info').find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
         let $copyStatus = $this.prev();
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(copyValue).then(

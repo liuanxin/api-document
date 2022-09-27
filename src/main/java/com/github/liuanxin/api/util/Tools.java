@@ -799,4 +799,20 @@ public class Tools {
         BigInteger result = new BigInteger(value.substring(index), radix);
         return (negative ? result.negate() : result);
     }
+
+    public static String escape(String str) {
+        if (isNotBlank(str)) {
+            Map<String, String> map = maps(
+                    "\"", "&#34;", // "&quot;",
+                    "'", "&#39;", // "&apos;",
+                    "&", "&#38;", // "&amp;",
+                    "<", "&#60;", // "&lt;",
+                    ">", "&#62;"  // "&gt;"
+            );
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                str = str.replace(entry.getKey(), entry.getValue());
+            }
+        }
+        return str;
+    }
 }

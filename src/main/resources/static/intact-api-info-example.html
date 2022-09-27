@@ -69,24 +69,14 @@
             transform: scale(0.95);
         }
         pre {
-            font-size: 14px;
-            margin: 0 0 14px;
-            padding: 7px 0 7px 14px;
-            overflow: hidden;
-        }
-        .use-time {
-            position: sticky;
-            top: 0;
-            margin: 0 14px 7px 0;
-            padding-top: 7px;
-            border-bottom: 1px solid #ddd;
-            min-height: 28px;
+            padding: 7px 0 7px 7px;
+            border: none;
+            margin: 0;
         }
         .source-code {
             overflow: auto;
-            max-height: 416px;
+            max-height: 408px;
             display: flex;
-            flex-direction: row;
             align-items: flex-start;
         }
         .line-number {
@@ -95,14 +85,11 @@
             margin: 0 7px 0 -14px;
             border-right: 1px solid;
             padding: 0 7px 0 14px;
-            display: flex;
             position: sticky;
-            left: -14px;
+            display: flex;
             flex-direction: column;
         }
-        .source {
-            margin: 0 7px;
-        }
+        .source {}
         .comment {
             color: #998;
             font-style: italic;
@@ -176,12 +163,54 @@
         .module-api-info-basic {
             margin: 7px 0;
         }
-        .module-api-info-desc {}
+        .module-api-info-desc {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            margin-bottom: 7px;
+            padding: 7px;
+            border-radius: 4px;
+        }
         .module-api-info-param {}
         .module-api-info-request {}
         .module-api-info-return {}
+        .source-info {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f5f5f5;
+        }
+        .modal-dialog > .source-info {
+            margin: 10px;
+            padding: 0;
+        }
         .bottom-table {
             margin-bottom: 10px;
+        }
+        .src-prev {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding: 7px;
+        }
+        .src-prev-left {
+            display: flex;
+        }
+        .src-prev-req-msg {
+            margin-left: 10px;
+        }
+        .src-prev-res-msg {
+            margin-left: 10px;
+        }
+        .src-prev-right {
+            display: flex;
+        }
+        .data-info-multi {
+            min-height: 416px;
+            border: none;
+            border-radius: unset;
+        }
+        .data-info-multi > .source-code {
+            overflow: unset;
         }
         .text-left {
             vertical-align: middle !important;
@@ -223,28 +252,11 @@
         .red {
             color: red !important;
         }
-        .copy-status {
-            right: 0;
-            position: absolute;
-            color: rgba(255, 0, 0, .8);
-            margin: 14px 14px 0 0;
-            padding-right: 140px;
-            z-index: 2;
+        .copy-status, .copy, .no-scroll {
+            margin: 0 7px;
         }
         .copy, .no-scroll {
-            right: 0;
-            position: absolute;
-            z-index: 2;
             cursor: pointer;
-            color: rgba(140, 140, 140, .8);
-            margin: 14px 14px 0 0;
-            transition: color .1s;
-        }
-        .copy {
-            padding-right: 80px;
-        }
-        .no-scroll {
-            padding-right: 20px;
         }
         .copy:hover, .no-scroll:hover {
             color: rgb(100, 100, 100);
@@ -410,22 +422,18 @@
         </div>
     </div>
 </div>
-<header class="print-nil">
-    <div class="header container-fluid">
-        <div class="header-content"></div>
-    </div>
-</header>
+<header class="print-nil"><div class="header container"><div class="header-content"></div></div></header>
 <script id="choose-project" type="text/x-dot-template">
     <div class="header-text">选择项目:</div>
     <div class="header-select">
-        <select class="project-choose form-control" name="p">
+        <label><select class="project-choose form-control" name="p">
             <option value="">当前</option>
             {{ let cp = it.project; }}
             {{~ it.projects  :p}}
             {{ let s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
             <option value="{{= p[0]}}" data-url="{{= p[2]}}"{{= s}}>{{= p[1]}}</option>
             {{~}}
-        </select>
+        </select></label>
     </div>
 </script>
 <main class="container-fluid">
@@ -446,7 +454,7 @@
                     </h3>
                     <div class="module-api-info">
                         <div><code>{{= url.method || ''}} {{= url.url || ''}}</code></div>
-                        <div class="module-api-info-basic"><code>Content-Type: {{= url.contentType || ''}}</code></div>
+                        <div class="module-api-info-basic"><code>Content-Type : {{= url.contentType || ''}}</code></div>
                         {{
                         let moduleDesc = '';
                         let hasDev = url.develop && url.develop !== '';
@@ -469,147 +477,170 @@
                             }
                         }
                         }}
-                        <pre class="module-api-info-desc{{= printNil}}">{{= moduleDesc}}</pre>
+                        <div class="module-api-info-desc bottom-table{{= printNil}}">{{= moduleDesc}}</div>
 
                         {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
-                        <div class="module-api-info-request">
-                            <div class="copy-status print-nil"></div>
-                            <div class="copy print-nil">复制</div>
-                            <div class="no-scroll print-nil">不滚动</div>
-                            <pre class="src src-json" data-request-body="1">{{= url.requestBodyJson || ''}}</pre>
+                        <div class="module-api-info-request source-info bottom-table">
+                            <div class="src-prev">
+                                <div class="src-prev-left">请求示例</div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">复制</div>
+                                    <div class="no-scroll print-nil">全显</div>
+                                </div>
+                            </div>
+                            <pre class="src src-json">{{= url.requestBodyJson || ''}}</pre>
                         </div>
                         {{?}}
 
-                        <div class="module-api-info-return">
-                            <div class="copy-status print-nil"></div>
-                            <div class="copy print-nil">复制</div>
-                            <div class="no-scroll print-nil">不滚动</div>
-                            <pre class="src src-json" data-flag="module-api-info-return-src">{{= url.commentJson || ''}}</pre>
-
-                            {{? url.returnList && url.returnList.length > 0}}
-                            <div class="bottom-table panel panel-default" data-flag="module-api-info-return-comment">
-                                <table class="table table-striped table-bordered table-hover table-condensed">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-left">名称</th>
-                                        <th class="text-left">类型</th>
-                                        <th class="text-left">说明</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {{~ url.returnList  :rtn}}
-                                    <tr>
-                                        <td class="text-left">{{= rtn.name || ''}}</td>
-                                        <td class="text-left">{{= rtn.type || ''}}</td>
-                                        <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
-                                    </tr>
-                                    {{~}}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {{?}}
-
-                            {{
-                            let hasSelfResponse = false;
-                            let responseList;
-                            if (url.responseList && url.responseList.length > 0) {
-                                hasSelfResponse = true;
-                                responseList = url.responseList;
-                            } else if (it.responseList && it.responseList.length > 0) {
-                                responseList = it.responseList;
-                            } else { responseList = []; }
-
-                            let hasAction = false;
-                            for (let i = 0; i < responseList.length; i++) {
-                                let comment = responseList[i].comment;
-                                if (comment !== undefined && comment !== null && comment !== '') { hasAction = true; }
-                            }
-                            }}
-                            {{? responseList.length > 0}}
-                            <div class="bottom-table panel panel-default">
-                                <table class="table table-striped table-bordered table-hover table-condensed">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-left">响应码</th>
-                                        <th class="text-left">说明</th>
-                                        {{? hasAction}}<th class="text-left print-nil">操作</th>{{?}}
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {{~ responseList  :response}}
-                                    <tr>
-                                        <td class="text-left">{{= response.code || ''}}</td>
-                                        <td class="text-left">{{= response.msg || ''}}</td>
-                                        {{
-                                        let comment = response.comment;
-                                        let targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
-                                        }}
-                                        {{? comment !== undefined && comment !== null && comment !== ''}}
-                                        <td class="text-left print-nil">
-                                                <span class="response-example" title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
-                                                      data-toggle="modal" data-target="#{{= targetId}}">返回示例</span>
-                                        </td>
-                                        {{?? hasAction}}
-                                        <td class="text-left print-nil"></td>
-                                        {{?}}
-                                    </tr>
-                                    {{~}}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {{? hasSelfResponse}}
-                            {{~ responseList  :response}}
-                            {{ let comment = response.comment; }}
-                            {{? comment !== undefined && comment !== null && comment !== ''}}
-                            <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
-                                 tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                                <div class="modal-dialog modal-content">
-                                    <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        <h4 class="modal-title">
-                                            模块「{{= module.info || ''}}」接口「{{= url.title || ''}}」响应「{{= response.code + ': ' + response.msg}}」的示例
-                                        </h4>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="copy-status print-nil"></div>
-                                        <div class="copy print-nil">复制</div>
-                                        <div class="no-scroll print-nil">不滚动</div>
-                                        <pre class="src src-json">{{= response.comment || ''}}</pre>
-
-                                        {{? response.returnList && response.returnList.length > 0}}
-                                        <div class="bottom-table panel panel-default">
-                                            <table class="table table-striped table-bordered table-hover table-condensed">
-                                                <thead>
-                                                <tr>
-                                                    <th class="text-left">名称</th>
-                                                    <th class="text-left">类型</th>
-                                                    <th class="text-left">说明</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                {{~ response.returnList  :rtn}}
-                                                <tr>
-                                                    <td class="text-left">{{= rtn.name || ''}}</td>
-                                                    <td class="text-left">{{= rtn.type || ''}}</td>
-                                                    <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
-                                                </tr>
-                                                {{~}}
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        {{?}}
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                                    </div>
+                        <div class="module-api-info-return source-info bottom-table">
+                            <div class="src-prev">
+                                <div class="src-prev-left">响应示例</div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">复制</div>
+                                    <div class="no-scroll print-nil">全显</div>
                                 </div>
                             </div>
-                            {{?}}
-                            {{~}}
-                            {{?}}
-                            {{?}}
+                            <pre class="src src-json" data-flag="module-api-info-return-src">{{= url.commentJson || ''}}</pre>
                         </div>
+
+                        {{? url.returnList && url.returnList.length > 0}}
+                        <div class="bottom-table panel panel-default" data-flag="module-api-info-return-comment">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-left">名称</th>
+                                    <th class="text-left">类型</th>
+                                    <th class="text-left">说明</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{~ url.returnList  :rtn}}
+                                <tr>
+                                    <td class="text-left">{{= rtn.name || ''}}</td>
+                                    <td class="text-left">{{= rtn.type || ''}}</td>
+                                    <td class="text-left wrap">
+                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}
+                                    </td>
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                        </div>
+                        {{?}}
+
+                        {{
+                        let hasSelfResponse = false;
+                        let responseList;
+                        if (url.responseList && url.responseList.length > 0) {
+                            hasSelfResponse = true;
+                            responseList = url.responseList;
+                        } else if (it.responseList && it.responseList.length > 0) {
+                            responseList = it.responseList;
+                        } else {
+                            responseList = [];
+                        }
+
+                        let hasAction = false;
+                        for (let i = 0; i < responseList.length; i++) {
+                            let comment = responseList[i].comment;
+                            if (comment !== undefined && comment !== null && comment !== '') {
+                                hasAction = true;
+                            }
+                        }
+                        }}
+                        {{? responseList.length > 0}}
+                        <div class="bottom-table panel panel-default">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-left">响应码</th>
+                                    <th class="text-left">说明</th>
+                                    {{? hasAction}}<th class="text-left print-nil">操作</th>{{?}}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{~ responseList  :response}}
+                                <tr>
+                                    <td class="text-left">{{= response.code || ''}}</td>
+                                    <td class="text-left">{{= response.msg || ''}}</td>
+                                    {{
+                                    let comment = response.comment;
+                                    let targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
+                                    }}
+                                    {{? comment !== undefined && comment !== null && comment !== ''}}
+                                    <td class="text-left print-nil">
+                                            <span class="response-example" title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
+                                                  data-toggle="modal" data-target="#{{= targetId}}">返回示例</span>
+                                    </td>
+                                    {{?? hasAction}}
+                                    <td class="text-left print-nil"></td>
+                                    {{?}}
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{? hasSelfResponse}}
+                        {{~ responseList  :response}}
+                        {{ let comment = response.comment; }}
+                        {{? comment !== undefined && comment !== null && comment !== ''}}
+                        <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
+                             tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">
+                                        模块「{{= module.info || ''}}」接口「{{= url.title || ''}}」响应「{{= response.code + ': ' + response.msg}}」示例
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="source-info">
+                                        <div class="src-prev">
+                                            <div class="src-prev-left"></div>
+                                            <div class="src-prev-right">
+                                                <div class="copy-status green print-nil"></div>
+                                                <div class="copy print-nil">复制</div>
+                                                <div class="no-scroll print-nil">全显</div>
+                                            </div>
+                                        </div>
+                                        <pre class="src src-json">{{= response.comment || ''}}</pre>
+                                    </div>
+
+                                    {{? response.returnList && response.returnList.length > 0}}
+                                    <div class="bottom-table panel panel-default">
+                                        <table class="table table-striped table-bordered table-hover table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th class="text-left">名称</th>
+                                                <th class="text-left">类型</th>
+                                                <th class="text-left">说明</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {{~ response.returnList  :rtn}}
+                                            <tr>
+                                                <td class="text-left">{{= rtn.name || ''}}</td>
+                                                <td class="text-left">{{= rtn.type || ''}}</td>
+                                                <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
+                                            </tr>
+                                            {{~}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {{?}}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                </div>
+                            </div>
+                        </div>
+                        {{?}}
+                        {{~}}
+                        {{?}}
+                        {{?}}
 
                         {{
                         let globalParamList = it.tokenList || [];
@@ -685,7 +716,7 @@
                                                    class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                         </div>
                                         {{?? hasTextarea}}
-                                        <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}" {{?}}class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                        <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}} class="form-control data-info-multi{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                         {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
                                         <select class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                             <option></option>
@@ -729,28 +760,52 @@
                             </div>
                             {{?}}
 
-                            {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
-                            <div class="bottom-table panel panel-default">
-                                <div class="use-time print-nil">请求体 - 入参</div>
-                                <textarea class="form-control data-info src src-json" style="min-height:416px" name="(request-body)">{{= localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':(request-body)')}}</textarea>
-                            </div>
-                            {{?}}
-
-                            <p>
+                            <div class="bottom-table">
                                 /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
                                 {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
                                 <input class="form-submit btn" type="button" value="请求此接口"/>
-                            </p>
-                            <div class="curl">
-                                <div class="copy-status print-nil"></div>
-                                <div class="copy print-nil">复制</div>
-                                <div class="no-scroll print-nil">不滚动</div>
+                            </div>
+
+                            {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
+                            <div class="bottom-table panel panel-default source-info">
+                                <div class="src-prev">
+                                    <div class="src-prev-left">
+                                        <span>请求</span><span class="src-prev-req-msg red print-nil"></span>
+                                    </div>
+                                    <div class="src-prev-right">
+                                        <div class="copy-status green print-nil"></div>
+                                        <div class="copy print-nil">复制</div>
+                                        <div class="no-scroll print-nil">全显</div>
+                                    </div>
+                                </div>
+                                {{ let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':_request-body_') || ''; }}
+                                <pre contenteditable="true" class="form-control data-info-multi src src-json" data-name="_request-body_">{{= requestBodyData}}</pre>
+                            </div>
+                            {{?}}
+
+                            <div class="curl bottom-table source-info">
+                                <div class="src-prev">
+                                    <div class="src-prev-left">cURL 命令</div>
+                                    <div class="src-prev-right">
+                                        <div class="copy-status green print-nil"></div>
+                                        <div class="copy print-nil">复制</div>
+                                        <div class="no-scroll print-nil">全显</div>
+                                    </div>
+                                </div>
                                 <pre class="src src-json"></pre>
                             </div>
-                            <div class="response">
-                                <div class="copy-status print-nil"></div>
-                                <div class="copy print-nil">复制</div>
-                                <div class="no-scroll print-nil">不滚动</div>
+
+                            <div class="response bottom-table source-info">
+                                <div class="src-prev">
+                                    <div class="src-prev-left">
+                                        <span>响应</span><span class="src-prev-res-msg print-nil"></span>
+                                    </div>
+                                    <div class="src-prev-right">
+                                        <div class="copy-status green print-nil"></div>
+                                        <div class="copy print-nil">复制</div>
+                                        <div class="no-scroll print-nil">全显</div>
+                                    </div>
+                                </div>
                                 <pre class="src src-json"></pre>
                             </div>
                         </form>
@@ -769,14 +824,21 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="modal-title">
-                            全局响应「{{= response.code + ': ' + response.msg}}」的示例
+                            全局响应「{{= response.code + ': ' + response.msg}}」示例
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <div class="copy-status print-nil"></div>
-                        <div class="copy print-nil">复制</div>
-                        <div class="no-scroll print-nil">不滚动</div>
-                        <pre class="src src-json">{{= response.comment || ''}}</pre>
+                        <div class="source-info">
+                            <div class="src-prev">
+                                <div class="src-prev-left"></div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">复制</div>
+                                    <div class="no-scroll print-nil">全显</div>
+                                </div>
+                            </div>
+                            <pre class="src src-json">{{= response.comment || ''}}</pre>
+                        </div>
 
                         {{? response.returnList && response.returnList.length > 0}}
                         <div class="bottom-table panel panel-default">
@@ -948,8 +1010,7 @@ function getProjectDomain() {
 }
 function timeLog(start) {
     let end = new Date().getTime();
-    return '<div class="use-time print-nil"><div>用时: ' + (end - start) + 'ms</div>' +
-        '<div>' + formatDate(start) + ' -> ' + formatDate(end) + '</div></div>';
+    return formatDate(start) + ' -> ' + formatDate(end) + ' (' + (end - start) + ' ms)';
 }
 function objectifyForm(form) {
     let headers = {};
@@ -1081,8 +1142,7 @@ function loadData() {
                 if (isNotBlank($html)) {
                     let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!递归实体!!!</span>');
-                    let flag = String($(this).attr('data-request-body')) === '1';
-                    $(this).html('<div class="use-time print-nil">' + (flag ? '请求体' : '响应') + '示例</div>' + addLine(html));
+                    $(this).html(addLine(html));
                 } else {
                     $(this).html(addLine('<span class="red">响应为空 或 无法解析返回类型</span>'));
                 }
@@ -1341,6 +1401,15 @@ function getComment(lineFieldRelation, fieldCommentRelation, key) {
     }
     return null;
 }
+function handleItem($val, value) {
+    let $form = $val.closest('form');
+    let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + ($val.attr('name') || $val.attr('data-name'));
+    if (isNotBlank(value)) {
+        localStorage.setItem(key, value);
+    } else {
+        localStorage.removeItem(key);
+    }
+}
 
 $(function() {
     let linked = 1; /** 初始 1, 切换项目后 2, 两者都会触发 scroll, 1 在 scroll 时需要改变 active, 2 触发 scroll 时只改成 1 */
@@ -1374,14 +1443,12 @@ $(function() {
 
     $(document).on('change', '.data-info', function() {
         let $this = $(this);
-        let value = $this.val();
-        let $form = $this.closest('form');
-        let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $this.attr('name');
-        if (isNotBlank(value)) {
-            localStorage.setItem(key, value);
-        } else {
-            localStorage.removeItem(key);
-        }
+        handleItem($this, $this.val());
+    });
+
+    $(document).on('blur', '.data-info-multi', function() {
+        let $this = $(this);
+        handleItem($this, $this.html());
     });
 
     $(document).on('click', '.form-submit', function() {
@@ -1411,13 +1478,14 @@ $(function() {
         }
         let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
-        let requestBody = $form.find('textarea[name="(request-body)"]').val();
+        let requestBody = $form.find('pre[data-name="_request-body_"]').html();
         if (isNotBlank(requestBody)) {
             requestBody = requestBody.replace(/\/\*.*\*\/\n/g, '');
             try {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
                 console.error('parse(' + requestBody + ') error', e);
+                $btn.closest('form').find('.src-prev-req-msg').html('Json 数据有误');
                 return;
             }
         }
@@ -1518,7 +1586,7 @@ $(function() {
                 curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
             }
         }
-        curl.find('pre').html('<div class="use-time print-nil">cURL</div>' + addLine(curlHtml));
+        curl.find('pre').html(addLine(curlHtml));
         curl.show();
 
 
@@ -1589,7 +1657,8 @@ $(function() {
         $btn.attr('disabled', 'disabled');
         $btn.addClass('disabled');
         $.ajax(settings).done(function(result) {
-            let html = timeLog(start);
+            $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
+            let html = '';
             if (isBlank(result)) {
                 html += '<span class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</span>';
             } else {
@@ -1602,7 +1671,8 @@ $(function() {
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
         }).fail(function(error) {
-            let html = timeLog(start);
+            $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
+            let html = '';
             if (isBlank(error)) {
                 html += '<span class="red">' + method + ' 请求(' + url + ')失败</span>';
             } else {
@@ -1661,10 +1731,10 @@ $(function() {
     });
 
     $(document).on('click', '.no-scroll', function() {
-        let source = $(this).parent().find('.source-code');
+        let source = $(this).closest('.source-info').find('.source-code');
         if (source.css('max-height') === 'none') {
             source.css('max-height', '');
-            $(this).html('不滚动');
+            $(this).html('全显');
         } else {
             source.css('max-height', 'none');
             $(this).html('滚动');
@@ -1672,8 +1742,8 @@ $(function() {
     });
     $(document).on('click', '.copy', function() {
         let $this = $(this);
+        let copyValue = $this.closest('.source-info').find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
         let $copyStatus = $this.prev();
-        let copyValue = $this.next().next().find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(copyValue).then(
                 function () {
