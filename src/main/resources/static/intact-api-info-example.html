@@ -1491,7 +1491,7 @@ $(function() {
 
         let requestBody = $form.find('div[data-name="_request-body_"]').html().replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
         if (isNotBlank(requestBody)) {
-            requestBody = requestBody.replace(/\/\*.*\*\/\n/g, '').replace('<br>', '');
+            requestBody = requestBody.replace(/<span class=".*?">.*<\/span>/g, '').replace('<br>', '');
             try {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
