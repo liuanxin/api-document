@@ -193,7 +193,7 @@
         .src-prev-left {
             display: flex;
         }
-        .src-prev-req-msg {
+        .src-prev-req-format, .src-prev-req-msg {
             margin-left: 10px;
         }
         .src-prev-res-msg {
@@ -770,7 +770,9 @@
                             <pre class="bottom-table panel panel-default source-info">
                                 <div class="src-prev">
                                     <div class="src-prev-left">
-                                        <span>Request-Body</span><span class="src-prev-req-msg red print-nil"></span>
+                                        <span>Request-Body</span>
+                                        <span class="src-prev-req-format green print-nil">Format-Json</span>
+                                        <span class="src-prev-req-msg red print-nil"></span>
                                     </div>
                                     <div class="src-prev-right">
                                         <div class="copy-status green print-nil"></div>
@@ -1449,6 +1451,10 @@ $(function() {
     $(document).on('blur', '.data-info-multi', function() {
         let $this = $(this);
         handleItem($this, $this.html());
+    });
+
+    $(document).on('click', '.src-prev-req-format', function() {
+        console.log('format json & add comment'); /* todo */
     });
 
     $(document).on('click', '.form-submit', function() {
