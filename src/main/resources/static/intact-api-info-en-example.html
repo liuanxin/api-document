@@ -68,31 +68,29 @@
         input[type=button]:active {
             transform: scale(0.95);
         }
-        pre {
-            padding: 7px 0 7px 7px;
-            border: none;
-            margin: 0;
-        }
         .source-code {
             overflow: auto;
             max-height: 408px;
             display: flex;
             align-items: flex-start;
+            padding: 7px 0 7px 7px;
         }
         .line-number {
             color: #2B91AF;
             text-align: right;
-            margin: 0 7px 0 -14px;
+            margin-right: 7px;
             border-right: 1px solid;
-            padding: 0 7px 0 14px;
+            padding: 0 7px;
             position: sticky;
             display: flex;
             flex-direction: column;
         }
-        .source {}
+        .source {
+            white-space: pre;
+        }
         .comment {
-          color: #998;
-          font-style: italic;
+            color: #aaa;
+            font-style: italic;
         }
         table thead {
             background: rgba(51,51,51,.1);
@@ -489,7 +487,7 @@
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
-                            <pre class="src src-json">{{= url.requestBodyJson || ''}}</pre>
+                            <div class="src src-json">{{= url.requestBodyJson || ''}}</div>
                         </div>
                         {{?}}
 
@@ -502,7 +500,7 @@
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
-                            <pre class="src src-json" data-flag="module-api-info-return-src">{{= url.commentJson || ''}}</pre>
+                            <div class="source-code" data-flag="module-api-info-return-src">{{= url.commentJson || ''}}</div>
                         </div>
 
                         {{? url.returnList && url.returnList.length > 0}}
@@ -606,7 +604,7 @@
                                                 <div class="no-scroll print-nil">No-Scroll</div>
                                             </div>
                                         </div>
-                                        <pre class="src src-json">{{= response.comment || ''}}</pre>
+                                        <div class="src src-json">{{= response.comment || ''}}</div>
                                     </div>
 
                                     {{? response.returnList && response.returnList.length > 0}}
@@ -779,7 +777,7 @@
                                     </div>
                                 </div>
                                 {{ let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':_request-body_') || ''; }}
-                                <pre contenteditable="true" class="form-control data-info-multi src src-json" data-name="_request-body_">{{= requestBodyData}}</pre>
+                                <div contenteditable="true" class="source-code form-control data-info-multi" data-name="_request-body_">{{= requestBodyData}}</div>
                             </div>
                             {{?}}
 
@@ -792,7 +790,7 @@
                                         <div class="no-scroll print-nil">No-Scroll</div>
                                     </div>
                                 </div>
-                                <pre class="src src-json"></pre>
+                                <div class="source-code"></div>
                             </div>
 
                             <div class="response bottom-table source-info">
@@ -806,7 +804,7 @@
                                         <div class="no-scroll print-nil">No-Scroll</div>
                                     </div>
                                 </div>
-                                <pre class="src src-json"></pre>
+                                <div class="source-code"></div>
                             </div>
                         </form>
                     </div>
@@ -837,7 +835,7 @@
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
-                            <pre class="src src-json">{{= response.comment || ''}}</pre>
+                            <div class="source-code">{{= response.comment || ''}}</div>
                         </div>
 
                         {{? response.returnList && response.returnList.length > 0}}
@@ -1137,7 +1135,7 @@ function loadData() {
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)');
             $rightArrow.css('display', '');
 
-            $('pre[class="src src-json"]').each(function() {
+            $('.source-code').each(function() {
                 let $html = escapeHtml($(this).html());
                 if (isNotBlank($html)) {
                     let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
@@ -1480,7 +1478,7 @@ $(function() {
         }
         let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
-        let requestBody = $form.find('pre[data-name="_request-body_"]').html();
+        let requestBody = $form.find('div[data-name="_request-body_"]').html();
         if (isNotBlank(requestBody)) {
             requestBody = requestBody.replace(/\/\*.*\*\/\n/g, '');
             try {
@@ -1588,7 +1586,7 @@ $(function() {
                 curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
             }
         }
-        curl.find('pre').html(addLine(curlHtml));
+        curl.find('.source-code').html(addLine(curlHtml));
         curl.show();
 
 
@@ -1613,7 +1611,7 @@ $(function() {
         }
         if (files.length > 0) {
             if ('POST' !== method.toUpperCase()) {
-                response.find('pre').html("<span class='red'>Upload files must use POST(It's possible to use the above cURL), please contact the backend to change!</span>");
+                response.find('.source-code').html("<span class='red'>Upload files must use POST(It's possible to use the above cURL), please contact the backend to change!</span>");
                 response.show();
                 return;
             }
@@ -1635,7 +1633,7 @@ $(function() {
         } else {
             if (hasRequestBody) {
                 if ('GET' === method.toUpperCase()) { /* https://stackoverflow.com/questions/978061/http-get-with-request-body */
-                    response.find('pre').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request" +
+                    response.find('.source-code').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request" +
                         "(It's possible to use the above cURL), please contact the backend change to POST!</span>");
                     response.show();
                     return;
@@ -1654,7 +1652,7 @@ $(function() {
             }
         }
 
-        let responseData = response.find('pre');
+        let responseData = response.find('.source-code');
         let start = new Date().getTime();
         $btn.attr('disabled', 'disabled');
         $btn.addClass('disabled');

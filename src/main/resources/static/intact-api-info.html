@@ -39,30 +39,28 @@
             width: 0;
             height: 0;
         }
-        pre {
-            padding: 7px 0 7px 7px;
-            border: none;
-            margin: 0;
-        }
         .source-code {
             overflow: auto;
             max-height: 408px;
             display: flex;
             align-items: flex-start;
+            padding: 7px 0 7px 7px;
         }
         .line-number {
             color: #2B91AF;
             text-align: right;
-            margin: 0 7px 0 -14px;
+            margin-right: 7px;
             border-right: 1px solid;
-            padding: 0 7px 0 14px;
+            padding: 0 7px;
             position: sticky;
             display: flex;
             flex-direction: column;
         }
-        .source {}
+        .source {
+            white-space: pre;
+        }
         .comment {
-            color: #998;
+            color: #aaa;
             font-style: italic;
         }
         table thead {
@@ -313,13 +311,13 @@
             .print-nil {
                 display: none;
             }
-            pre, .text-left, .panel {
+            .text-left, .panel {
                 overflow: unset;
             }
-            pre, .text-left {
+            .text-left {
                 white-space: pre-wrap;
             }
-            pre .source-code {
+            .source-code {
                 max-height: none;
             }
         }
@@ -487,7 +485,7 @@
                                     <div class="no-scroll print-nil">全显</div>
                                 </div>
                             </div>
-                            <pre class="src src-json">{{= url.requestBodyJson || ''}}</pre>
+                            <div class="source-code">{{= url.requestBodyJson || '' }}</div>
                         </div>
                         {{?}}
 
@@ -500,7 +498,7 @@
                                     <div class="no-scroll print-nil">全显</div>
                                 </div>
                             </div>
-                            <pre class="src src-json">{{= url.commentJson || ''}}</pre>
+                            <div class="source-code">{{= url.commentJson || '' }}</div>
                         </div>
 
                         {{? url.returnList && url.returnList.length > 0}}
@@ -604,7 +602,7 @@
                                                             <div class="no-scroll print-nil">全显</div>
                                                         </div>
                                                     </div>
-                                                    <pre class="src src-json">{{= response.comment || ''}}</pre>
+                                                    <div class="source-code">{{= response.comment || '' }}</div>
                                                 </div>
 
                                                 {{? response.returnList && response.returnList.length > 0}}
@@ -669,7 +667,7 @@
                                     <div class="no-scroll print-nil">全显</div>
                                 </div>
                             </div>
-                            <pre class="src src-json">{{= response.comment || ''}}</pre>
+                            <div class="source-code">{{= response.comment || '' }}</div>
                         </div>
 
                         {{? response.returnList && response.returnList.length > 0}}
@@ -815,13 +813,13 @@ function addLine(html) {
     if (isBlank(html)) {
         return '';
     }
-    let lineHtml = '<div class="source-code"><div class="line-number print-nil">';
+    let lineHtml = '<div class="line-number">';
     let i, lineNum = html.split(/\n/).length;
     for (i = 1; i <= lineNum; i++) {
         lineHtml += '<div>' + i + '</div>';
     }
     lineHtml += '</div>';
-    return lineHtml + '<div class="source">' + html + '</div></div>';
+    return lineHtml + '<div class="source">' + html + '</div>';
 }
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -918,7 +916,7 @@ function loadData() {
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)'); /* 避免切换项目时导航为显示 */
             $rightArrow.css('display', '');
 
-            $('pre[class="src src-json"]').each(function() {
+            $('.source-code').each(function() {
                 let $html = escapeHtml($(this).html());
                 if (isNotBlank($html)) {
                     let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
