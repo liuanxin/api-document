@@ -203,9 +203,11 @@
             display: flex;
         }
         .data-info-multi {
-            min-height: 216px;
+            min-height: 316px;
             border: none;
             border-radius: unset;
+            overflow: auto;
+            background: #f5f5f5;
         }
         .data-info-multi > .source-code {
             overflow: unset;
@@ -714,7 +716,7 @@
                                                    class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                         </div>
                                         {{?? hasTextarea}}
-                                        <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}} class="form-control data-info-multi{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                        <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control data-info-multi{{= validateClass}}{{= tokenClass}}" style="border:1px solid #ccc;border-radius:4px;" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                         {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
                                         <select class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                             <option></option>
@@ -777,7 +779,7 @@
                                     </div>
                                 </div>
                                 {{ let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':_request-body_') || ''; }}
-                                <div contenteditable="true" class="source-code form-control data-info-multi" data-name="_request-body_">{{= requestBodyData}}</div>
+                                <div contenteditable="true" class="form-control data-info-multi" style="white-space:pre;" data-name="_request-body_">{{= requestBodyData}}</div>
                             </div>
                             {{?}}
 
@@ -1478,9 +1480,9 @@ $(function() {
         }
         let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
-        let requestBody = $form.find('div[data-name="_request-body_"]').html();
+        let requestBody = $form.find('div[data-name="_request-body_"]').html().replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
         if (isNotBlank(requestBody)) {
-            requestBody = requestBody.replace(/\/\*.*\*\/\n/g, '');
+            requestBody = requestBody.replace(/\/\*.*\*\/\n/g, '').replace('<br>', '');
             try {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
