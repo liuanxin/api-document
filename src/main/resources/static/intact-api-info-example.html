@@ -205,10 +205,9 @@
             display: flex;
         }
         .data-info-multi {
-            min-height: 416px;
+            min-height: 216px;
             border: none;
             border-radius: unset;
-            background: #f5f5f5;
         }
         .data-info-multi > .source-code {
             overflow: unset;
@@ -1488,7 +1487,7 @@ $(function() {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
                 console.error('parse(' + requestBody + ') error', e);
-                $reqMsg.html('!Json 数据有误!');
+                $reqMsg.html('Json 数据有误!');
                 return;
             }
         }
