@@ -934,7 +934,7 @@ function loadData() {
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
                     $(this).html(addLine(html));
                 } else {
-                    $(this).html(addLine('<span class="red">Return null or Can not analyze return type</span>'));
+                    $(this).html(addLine('<span class="red">Empty or parse error</span>'));
                 }
             });
 

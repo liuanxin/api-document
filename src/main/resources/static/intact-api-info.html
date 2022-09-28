@@ -934,7 +934,7 @@ function loadData() {
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!递归实体!!!</span>');
                     $(this).html(addLine(html));
                 } else {
-                    $(this).html(addLine('<span class="red">响应为空 或 无法解析返回类型</span>'));
+                    $(this).html(addLine('<span class="red">数据为空 或 无法解析</span>'));
                 }
             });
 
