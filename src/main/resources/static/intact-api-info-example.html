@@ -214,6 +214,7 @@
             display: flex;
         }
         .request-data {
+            background: #fff;
             display: flex;
             overflow: auto;
             height: 316px;
@@ -224,7 +225,6 @@
         .request-data-info {
             white-space: pre;
             outline: 0 solid transparent;
-            height: 100%;
             width: 100%;
         }
         .text-left {
@@ -792,8 +792,11 @@
                                 </div>
                                 <div class="request-data">
                                     <div class="line-number"></div>
-                                    {{ let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':_request-body_') || ''; }}
-                                    <div contenteditable="true" class="request-data-info" data-name="_request-body_">{{= requestBodyData}}</div>
+                                    {{
+                                    let requestBodyKey = '_request_body_';
+                                    let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':' + requestBodyKey + '') || '';
+                                    }}
+                                    <div contenteditable="true" class="request-data-info" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
                                 </div>
                             </div>
                             {{?}}
@@ -1174,18 +1177,16 @@ function loadData() {
 
             $('.request-data-info').each(function() {
                 let $this = $(this);
-                let html = escapeHtml($this.html().trim());
+                let html = $this.html();
                 let $line = $this.closest('.request-data').find('.line-number');
                 if (isNotBlank(html)) {
+                    html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n');
                     let lineHtml = '';
-                    let i, lineNum = html.split(/\n/).length;
+                    let i, lineNum = html.split('\n').length;
                     for (i = 1; i <= lineNum; i++) {
                         lineHtml += '<div>' + i + '</div>';
                     }
                     $line.html(lineHtml);
-
-                    html = html.replace(/(.*?)(\/\*(.*?)\*\/)/g, '$1<span class="comment">$2</span>');
-                    $this.html(Prism.highlight(html, Prism.languages.json, 'json'));
                 } else {
                     $line.html('<div>1</div>');
                 }
@@ -1496,25 +1497,32 @@ $(function() {
         handleItem($this, $this.html());
     });
 
-    $(document).on('blur', '.request-data-info', function() {
+    $(document).on('focus', '.request-data-info', function() {
         let $this = $(this);
-        let $form = $this.closest('form');
-        let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $this.attr('data-name');
+        $this.data('before', $this.html());
+    }).on('blur keyup paste input', '.request-data-info', function() {
+        let $this = $(this);
         let html = $this.html();
-        if (isNotBlank(html)) {
-            html = html.replace(/<br>|<\/div>/g, '\n').replace(/<div>|<span class=".*?">|<\/span>|&nbsp;/g, '')
-                .replace(/[ ]{2}<span class="comment">(.*?)<\/span>/g, '$1');
+        if ($this.data('before') !== html) {
+            $this.data('before', html);
 
-            let lineHtml = '';
-            let i, lineNum = html.trimEnd().split(/\n/).length;
-            for (i = 1; i <= lineNum; i++) {
-                lineHtml += '<div>' + i + '</div>';
+            let $form = $this.closest('form');
+            let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $this.attr('data-name');
+            let $line = $form.find('.request-data > .line-number');
+            if (isNotBlank(html)) {
+                localStorage.setItem(key, html);
+
+                html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n');
+                let lineHtml = '';
+                let i, lineNum = html.split('\n').length;
+                for (i = 1; i <= lineNum; i++) {
+                    lineHtml += '<div>' + i + '</div>';
+                }
+                $line.html(lineHtml);
+            } else {
+                localStorage.removeItem(key);
+                $line.html('<div>1</div>');
             }
-            $form.find('.request-data > .line-number').html(lineHtml);
-            $this.html(Prism.highlight(html, Prism.languages.json, 'json'));
-            localStorage.setItem(key, html);
-        } else {
-            localStorage.removeItem(key);
         }
     });
 
@@ -1551,10 +1559,10 @@ $(function() {
         }
         let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
-        let requestBody = $form.find('[data-name="_request-body_"]').html() || '';
+        let requestBody = $form.find('.request-data-info').html() || '';
         if (isNotBlank(requestBody)) {
-            requestBody = requestBody.replace(/<br>|<\/div>|<div>|<span class=".*?">|<\/span>|&nbsp;/g, '')
-                .replace(/<span class="comment">(.*?)<\/span>/g, '');
+            requestBody = requestBody.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n');
+            requestBody = requestBody.replace(/<span class=".*?">.*?<\/span>/g, '');
         }
         if (isNotBlank(requestBody)) {
             try {
@@ -1736,7 +1744,7 @@ $(function() {
             $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
             let html = '';
             if (isBlank(result)) {
-                html += '<span class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</span>';
+                html += '<div class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</div>';
             } else {
                 html += addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent));
             }
@@ -1749,18 +1757,18 @@ $(function() {
             $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
             let html = '';
             if (isBlank(error)) {
-                html += '<span class="red">' + method + ' 请求(' + url + ')失败</span>';
+                html += '<div class="red">' + method + ' 请求(' + url + ')失败</div>';
             } else {
-                html += '<span class="red">响应码: ' + error.status + '</span>';
+                html += '<div class="red">响应码: ' + error.status + '</div>';
                 let json = error.responseJSON;
                 if (isNotBlank(json)) {
                     html += '\n\n' + escapeHtml(JSON.stringify(json, null, 2));
                 } else {
                     let text = error.responseText;
                     if (isNotBlank(text)) {
-                        html += '\n<span class="red wrap">响应文本: ' + escapeHtml(text) + '</span>';
+                        html += '\n<div class="red wrap">响应文本: ' + escapeHtml(text) + '</div>';
                     } else {
-                        html += '\n<span class="red">响应为空</span>';
+                        html += '\n<div class="red">响应为空</div>';
                     }
                 }
             }
@@ -1809,7 +1817,7 @@ $(function() {
         let $sourceInfo = $(this).closest('.source-info');
         let source = $sourceInfo.find('.source-code');
         if (isBlank(source)) {
-            source = $sourceInfo.find('[data-name="_request-body_"]');
+            source = $sourceInfo.find('.request-data-info');
         }
         if (source.css('max-height') === 'none') {
             source.css('max-height', '');
