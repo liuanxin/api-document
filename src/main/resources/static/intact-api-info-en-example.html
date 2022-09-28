@@ -1814,22 +1814,28 @@ $(function() {
 
     $(document).on('click', '.no-scroll', function() {
         let $sourceInfo = $(this).closest('.source-info');
-        let source = $sourceInfo.find('.source-code');
-        if (source.length === 0) {
-            source = $sourceInfo.find('.request-data');
+        let $source = $sourceInfo.find('.source-code');
+        if ($source.length === 0) {
+            $source = $sourceInfo.find('.request-data');
         }
-        if (source.css('max-height') === 'none') {
-            source.css('max-height', '');
+        if ($source.css('max-height') === 'none') {
+            $source.css('max-height', '');
             $(this).html('No-Scroll');
         } else {
-            source.css('max-height', 'none');
+            $source.css('max-height', 'none');
             $(this).html('Scroll');
         }
     });
     $(document).on('click', '.copy', function() {
         let $this = $(this);
-        let copyValue = $this.closest('.source-info').find('.source').html() || '';
+        let $sourceInfo = $this.closest('.source-info');
+        let $source = $sourceInfo.find('.source-code');
+        if ($source.length === 0) {
+            $source = $sourceInfo.find('.request-data-info');
+        }
+        let copyValue = $source.html() || '';
         if (isNotBlank(copyValue)) {
+            copyValue = copyValue.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n');
             copyValue = copyValue.replace(/<.*?>/g, '').replace(/\/\*.*?\*\/\n/g, '');
             copyValue = JSON.stringify(JSON.parse(copyValue), null, 2);
         }
