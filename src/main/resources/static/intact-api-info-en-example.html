@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css">
     <style> @import url('//fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+SC&display=swap'); </style>
     <style>
         * {
@@ -73,21 +74,23 @@
             max-height: 408px;
             display: flex;
             align-items: flex-start;
-            padding: 7px 0 7px 7px;
+            padding: 7px 0;
         }
         .line-number {
             color: #2B91AF;
             text-align: right;
             margin-right: 7px;
             border-right: 1px solid;
-            padding: 0 7px;
-            position: sticky;
+            padding: 0 10px;
             display: flex;
             flex-direction: column;
+            line-height: 1.5;
+            background: #f5f5f5;
+            position: sticky;
+            left: 0;
+            z-index: 1;
         }
-        .source {
-            white-space: pre;
-        }
+        .source {}
         .comment {
             color: #aaa;
             font-style: italic;
@@ -192,7 +195,7 @@
             padding: 7px;
             position: sticky;
             top: 50px;
-            z-index: 1;
+            z-index: 2;
         }
         .src-prev-left {
             display: flex;
@@ -767,12 +770,6 @@
                             </div>
                             {{?}}
 
-                            <div class="bottom-table">
-                                /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
-                                {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
-                                <input class="form-submit btn" type="button" value="Request backend"/>
-                            </div>
-
                             {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
                             <div class="source-info bottom-table">
                                 <div class="src-prev">
@@ -787,10 +784,20 @@
                                         <div class="no-scroll print-nil">No-Scroll</div>
                                     </div>
                                 </div>
-                                {{ let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':_request-body_') || ''; }}
-                                <div contenteditable="true" class="form-control data-info-multi" style="white-space:pre;" data-name="_request-body_">{{= requestBodyData}}</div>
+                                <div class="source-code">
+                                    <div class="line-number"></div>
+                                    {{ let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':_request-body_') || ''; }}
+                                    <div contenteditable="true" class="form-control data-info-multi"
+                                         style="white-space:pre;" data-name="_request-body_">{{= requestBodyData}}</div>
+                                </div>
                             </div>
                             {{?}}
+
+                            <div class="bottom-table">
+                                /* When there is only one input text on the form, adding an invisible input can disable the carriage return event for that input. */
+                                {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
+                                <input class="form-submit btn" type="button" value="Request backend"/>
+                            </div>
 
                             <div class="curl bottom-table source-info">
                                 <div class="src-prev">
@@ -927,6 +934,9 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/languages/jquery.validationEngine-en.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/jquery.validationEngine.min.js"></script>
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-json.min.js"></script>
+
 <script type="text/javascript">
 function isBlank(str) {
     return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
@@ -1000,7 +1010,8 @@ function addLine(html) {
         lineHtml += '<div>' + i + '</div>';
     }
     lineHtml += '</div>';
-    return lineHtml + '<div class="source">' + html + '</div></div>';
+    return lineHtml + '<div class="source"><pre style="margin:0;padding:0;border:none;background:#f5f5f5;">'
+        + '<code class="language-json">' + html + '</code></pre></div>';
 }
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1176,6 +1187,8 @@ function loadData() {
                 showClear: true,
                 showClose: true
             });
+
+            Prism.highlightAll();
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }

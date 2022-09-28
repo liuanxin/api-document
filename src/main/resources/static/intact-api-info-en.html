@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAD1BMVEVHcEwzZ9YzZtUzZtYzZ9aXuimUAAAABHRSTlMA40hLwZlVdgAAAD1JREFUKM9jYBi0wNDFRYjBBUq4AAVEXFwcQWxHmIALCIEJBhYHBmoJgMwG24ImIISuhYEcATSnwwUGKQAAN0oX04RzeZMAAAAASUVORK5CYII=">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css">
     <style> @import url('//fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+SC&display=swap'); </style>
     <style>
         * {
@@ -44,21 +45,23 @@
             max-height: 408px;
             display: flex;
             align-items: flex-start;
-            padding: 7px 0 7px 7px;
+            padding: 7px 0;
         }
         .line-number {
             color: #2B91AF;
             text-align: right;
             margin-right: 7px;
             border-right: 1px solid;
-            padding: 0 7px;
-            position: sticky;
+            padding: 0 10px;
             display: flex;
             flex-direction: column;
+            line-height: 1.5;
+            background: #f5f5f5;
+            position: sticky;
+            left: 0;
+            z-index: 1;
         }
-        .source {
-            white-space: pre;
-        }
+        .source {}
         .comment {
             color: #aaa;
             font-style: italic;
@@ -159,7 +162,7 @@
             padding: 7px;
             position: sticky;
             top: 50px;
-            z-index: 1;
+            z-index: 2;
         }
         .src-prev-left {
             display: flex;
@@ -750,6 +753,9 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/dot/1.1.2/doT.min.js"></script>
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/prism.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/components/prism-json.min.js"></script>
+
 <script type="text/javascript">
 function isBlank(str) {
     return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
@@ -823,7 +829,8 @@ function addLine(html) {
         lineHtml += '<div>' + i + '</div>';
     }
     lineHtml += '</div>';
-    return lineHtml + '<div class="source">' + html + '</div>';
+    return lineHtml + '<div class="source"><pre style="margin:0;padding:0;border:none;background:#f5f5f5;">'
+        + '<code class="language-json">' + html + '</code></pre></div>';
 }
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -943,6 +950,8 @@ function loadData() {
                     }
                 }
             }
+
+            Prism.highlightAll();
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }
