@@ -1774,7 +1774,14 @@ $(function() {
     });
     $(document).on('click', '.copy', function() {
         let $this = $(this);
-        let copyValue = $this.closest('.source-info').find('.source').html().replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '');
+        let copyValue = $this.closest('.source-info').find('.source').html() || '';
+        if (isNotBlank(copyValue)) {
+            copyValue = copyValue.replace(/<.*?>/g, '').replace(/\/\*.*?\*\/\n/g, '');
+            copyValue = JSON.stringify(JSON.parse(copyValue), null, 2);
+        }
+        if (isBlank(copyValue)) {
+            return;
+        }
         let $copyStatus = $this.prev();
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(copyValue).then(
