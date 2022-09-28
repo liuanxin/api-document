@@ -217,8 +217,7 @@
             background: #fff;
             display: flex;
             overflow: auto;
-            height: 316px;
-            min-height: 316px;
+            max-height: 380px;
             line-height: 1.5;
             align-items: flex-start;
         }
@@ -1816,8 +1815,8 @@ $(function() {
     $(document).on('click', '.no-scroll', function() {
         let $sourceInfo = $(this).closest('.source-info');
         let source = $sourceInfo.find('.source-code');
-        if (isBlank(source)) {
-            source = $sourceInfo.find('.request-data-info');
+        if (source.length === 0) {
+            source = $sourceInfo.find('.request-data');
         }
         if (source.css('max-height') === 'none') {
             source.css('max-height', '');
