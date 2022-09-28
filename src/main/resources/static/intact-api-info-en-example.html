@@ -81,6 +81,7 @@
             text-align: right;
             margin-right: 7px;
             border-right: 1px solid;
+            min-height: 100%;
             padding: 0 10px;
             display: flex;
             flex-direction: column;
@@ -201,7 +202,7 @@
             display: flex;
         }
         .src-prev-req-format, .src-prev-req-msg {
-            margin-left: 10px;
+            margin-left: 20px;
         }
         .src-prev-req-format {
             cursor: pointer;
@@ -212,12 +213,19 @@
         .src-prev-right {
             display: flex;
         }
-        .data-info-multi {
-            min-height: 316px;
-            border: none;
-            border-radius: unset;
+        .request-data {
+            display: flex;
             overflow: auto;
-            background: #f5f5f5;
+            height: 316px;
+            min-height: 316px;
+            line-height: 1.5;
+            align-items: flex-start;
+        }
+        .request-data-info {
+            white-space: pre;
+            outline: 0 solid transparent;
+            height: 100%;
+            width: 100%;
         }
         .text-left {
             vertical-align: middle !important;
@@ -263,9 +271,10 @@
             margin: 0 7px;
         }
         .copy, .no-scroll {
+            margin-left: 20px;
             cursor: pointer;
         }
-        .copy:hover, .no-scroll:hover {
+        .src-prev-req-format:hover, .copy:hover, .no-scroll:hover {
             color: rgb(100, 100, 100);
             font-weight: bold;
         }
@@ -784,8 +793,7 @@
                                 <div class="request-data">
                                     <div class="line-number"></div>
                                     {{ let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':_request-body_') || ''; }}
-                                    <div contenteditable="true" class="form-control data-info-request"
-                                         style="white-space:pre;" data-name="_request-body_">{{= requestBodyData}}</div>
+                                    <div contenteditable="true" class="request-data-info" data-name="_request-body_">{{= requestBodyData}}</div>
                                 </div>
                             </div>
                             {{?}}
@@ -1155,13 +1163,32 @@ function loadData() {
             $rightArrow.css('display', '');
 
             $('.source-code').each(function() {
-                let $html = escapeHtml($(this).html());
-                if (isNotBlank($html)) {
-                    let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+                let html = escapeHtml($(this).html());
+                if (isNotBlank(html)) {
+                    html = html.replace(/(.*?)(\/\*(.*?)\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
-                    $(this).html(addLine(html));
+                    $(this).html(addLine(Prism.highlight(html, Prism.languages.json, 'json')));
                 } else {
-                    $(this).html(addLine('<span class="red">Return null or Can not analyze return type</span>'));
+                    $(this).html(addLine('<span class="red">Empty Or Parse Error</span>'));
+                }
+            });
+
+            $('.request-data-info').each(function() {
+                let $this = $(this);
+                let html = escapeHtml($this.html().trim());
+                let $line = $this.closest('.request-data').find('.line-number');
+                if (isNotBlank(html)) {
+                    let lineHtml = '';
+                    let i, lineNum = html.split(/\n/).length;
+                    for (i = 1; i <= lineNum; i++) {
+                        lineHtml += '<div>' + i + '</div>';
+                    }
+                    $line.html(lineHtml);
+
+                    html = html.replace(/(.*?)(\/\*(.*?)\*\/)/g, '$1<span class="comment">$2</span>');
+                    $this.html(Prism.highlight(html, Prism.languages.json, 'json'));
+                } else {
+                    $line.html('<div>1</div>');
                 }
             });
 
@@ -1184,8 +1211,6 @@ function loadData() {
                 showClear: true,
                 showClose: true
             });
-
-            Prism.highlightAll();
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }
@@ -1277,7 +1302,7 @@ function returnCommentWithLevel($trs) {
             let name = $($tds[0]).text();
             let comment = $($tds[2]).text().trim();
 
-            let currentLevel = ((name.length - name.trimLeft().length) / tabLen) + 1;
+            let currentLevel = ((name.length - name.trimStart().length) / tabLen) + 1;
             let parent = getParent(tmpArr, currentLevel);
             let currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
             tmpArr.push({ level: currentLevel, name: currentName, value: comment });
@@ -1309,7 +1334,7 @@ function relationBySource(sourceComment) {
     }
     let firstEnd = '<div class="source">';
     comment = comment.substring(comment.indexOf(firstEnd) + firstEnd.length);
-    comment = comment.replace(/<span class=".*">|<\/span>/g, '').replace(/<\/div>/g, '');
+    comment = comment.replace(/<span class=".*?">|<\/span>/g, '').replace(/<\/div>/g, '');
 
     let relation = {};
     let tabLen = 2;
@@ -1327,7 +1352,7 @@ function relationBySource(sourceComment) {
                     ? lineTrim.substring(lineTrim.indexOf(strStart) + strStart.length, lineTrim.lastIndexOf(strEnd))
                     : '');
 
-            let currentLevel = (line.length - line.trimLeft().length) / tabLen;
+            let currentLevel = (line.length - line.trimStart().length) / tabLen;
             let parent = getParent(tmpArr, currentLevel);
             let currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
             tmpArr.push({ level: currentLevel, name: currentName, value: paramComment });
@@ -1353,7 +1378,7 @@ function handleLineFieldRelation(json) {
             let lineTrim = line.trim();
             if (/".*?": .*?/.test(lineTrim)) {
                 let name = lineTrim.substring(1, lineTrim.indexOf('": '));
-                let currentLevel = (line.length - line.trimLeft().length) / tabLen;
+                let currentLevel = (line.length - line.trimStart().length) / tabLen;
                 let parent = getSourceParent(tmpArr, currentLevel);
                 let currentName = isNotBlank(parent) ? (parent.name + '.' + name.trim()) : name.trim();
                 tmpArr.push({ level: currentLevel, name: currentName, array: lineTrim.endsWith('": [') });
@@ -1470,17 +1495,23 @@ $(function() {
         handleItem($this, $this.html());
     });
 
-    $(document).on('change', '.data-info-request', function() {
+    $(document).on('input', '.request-data-info', function() {
         let $this = $(this);
-
         let $form = $this.closest('form');
-        let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':_request-body_';
-        let value = $form.find('div[data-name="_request-body_"]').html() || '';
-        if (isNotBlank(value)) {
-            value = value.replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '').replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
-        }
-        if (isNotBlank(value)) {
-            localStorage.setItem(key, value);
+        let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $this.attr('data-name');
+        let html = $this.html();
+        if (isNotBlank(html)) {
+            html = html.replace(/<br>|<\/div>/g, '\n').replace(/<div>|<span class=".*?">|<\/span>|&nbsp;/g, '')
+                .replace(/[ ]{2}<span class="comment">(.*?)<\/span>/g, '$1');
+
+            let lineHtml = '';
+            let i, lineNum = html.trimEnd().split(/\n/).length;
+            for (i = 1; i <= lineNum; i++) {
+                lineHtml += '<div>' + i + '</div>';
+            }
+            $form.find('.request-data > .line-number').html(lineHtml);
+            $this.html(Prism.highlight(html, Prism.languages.json, 'json'));
+            localStorage.setItem(key, html);
         } else {
             localStorage.removeItem(key);
         }
@@ -1521,8 +1552,8 @@ $(function() {
 
         let requestBody = $form.find('div[data-name="_request-body_"]').html() || '';
         if (isNotBlank(requestBody)) {
-            requestBody = requestBody.replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '').replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
-            requestBody = requestBody.replace(/<span class=".*?">.*<\/span>/g, '').replace('<br>', '');
+            requestBody = requestBody.replace(/[ ]{2}<span class=".*?">.*?<\/span>/g, '').replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
+            requestBody = requestBody.replace(/<span class=".*?">.*?<\/span>/g, '').replace('<br>', '');
         }
         if (isNotBlank(requestBody)) {
             try {
@@ -1777,7 +1808,7 @@ $(function() {
         let $sourceInfo = $(this).closest('.source-info');
         let source = $sourceInfo.find('.source-code');
         if (isBlank(source)) {
-            source = $sourceInfo.find('div[data-name="_request-body_"]');
+            source = $sourceInfo.find('[data-name="_request-body_"]');
         }
         if (source.css('max-height') === 'none') {
             source.css('max-height', '');
