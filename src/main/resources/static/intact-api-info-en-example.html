@@ -219,9 +219,6 @@
             overflow: auto;
             background: #f5f5f5;
         }
-        .data-info-multi > .source-code {
-            overflow: unset;
-        }
         .text-left {
             vertical-align: middle !important;
         }
@@ -379,13 +376,13 @@
             .print-nil {
                 display: none;
             }
-            pre, .text-left, .panel {
+            .text-left, .panel {
                 overflow: unset;
             }
-            pre, .text-left {
+            .text-left {
                 white-space: pre-wrap;
             }
-            pre .source-code {
+            .source-code {
                 max-height: none;
             }
         }
@@ -499,7 +496,7 @@
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
-                            <div class="src src-json">{{= url.requestBodyJson || ''}}</div>
+                            <div class="source-code">{{= url.requestBodyJson || ''}}</div>
                         </div>
                         {{?}}
 
@@ -616,7 +613,7 @@
                                                 <div class="no-scroll print-nil">No-Scroll</div>
                                             </div>
                                         </div>
-                                        <div class="src src-json">{{= response.comment || ''}}</div>
+                                        <div class="source-code">{{= response.comment || ''}}</div>
                                     </div>
 
                                     {{? response.returnList && response.returnList.length > 0}}
@@ -771,7 +768,7 @@
                             {{?}}
 
                             {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
-                            <div class="source-info bottom-table">
+                            <div class="bottom-table source-info">
                                 <div class="src-prev">
                                     <div class="src-prev-left">
                                         <span>Request-Body</span>
@@ -784,10 +781,10 @@
                                         <div class="no-scroll print-nil">No-Scroll</div>
                                     </div>
                                 </div>
-                                <div class="source-code">
+                                <div class="request-data">
                                     <div class="line-number"></div>
                                     {{ let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':_request-body_') || ''; }}
-                                    <div contenteditable="true" class="form-control data-info-multi"
+                                    <div contenteditable="true" class="form-control data-info-request"
                                          style="white-space:pre;" data-name="_request-body_">{{= requestBodyData}}</div>
                                 </div>
                             </div>
@@ -1004,7 +1001,7 @@ function addLine(html) {
     if (isBlank(html)) {
         return '';
     }
-    let lineHtml = '<div class="source-code"><div class="line-number print-nil">';
+    let lineHtml = '<div class="line-number">';
     let i, lineNum = html.split(/\n/).length;
     for (i = 1; i <= lineNum; i++) {
         lineHtml += '<div>' + i + '</div>';
@@ -1425,7 +1422,7 @@ function getComment(lineFieldRelation, fieldCommentRelation, key) {
 }
 function handleItem($val, value) {
     let $form = $val.closest('form');
-    let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + ($val.attr('name') || $val.attr('data-name'));
+    let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $val.attr('name');
     if (isNotBlank(value)) {
         localStorage.setItem(key, value);
     } else {
@@ -1468,9 +1465,25 @@ $(function() {
         handleItem($this, $this.val());
     });
 
-    $(document).on('blur', '.data-info-multi', function() {
+    $(document).on('change', '.data-info-multi', function() {
         let $this = $(this);
         handleItem($this, $this.html());
+    });
+
+    $(document).on('change', '.data-info-request', function() {
+        let $this = $(this);
+
+        let $form = $this.closest('form');
+        let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':_request-body_';
+        let value = $form.find('div[data-name="_request-body_"]').html() || '';
+        if (isNotBlank(value)) {
+            value = value.replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '').replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
+        }
+        if (isNotBlank(value)) {
+            localStorage.setItem(key, value);
+        } else {
+            localStorage.removeItem(key);
+        }
     });
 
     $(document).on('click', '.src-prev-req-format', function() {
@@ -1506,9 +1519,12 @@ $(function() {
         }
         let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
-        let requestBody = $form.find('div[data-name="_request-body_"]').html().replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
+        let requestBody = $form.find('div[data-name="_request-body_"]').html() || '';
         if (isNotBlank(requestBody)) {
+            requestBody = requestBody.replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '').replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
             requestBody = requestBody.replace(/<span class=".*?">.*<\/span>/g, '').replace('<br>', '');
+        }
+        if (isNotBlank(requestBody)) {
             try {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
@@ -1692,7 +1708,6 @@ $(function() {
             } else {
                 html += addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent));
             }
-            responseData.css('padding-top', '0');
             responseData.css('white-space', '');
             responseData.html(html);
             response.show();

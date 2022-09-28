@@ -709,57 +709,57 @@
                                     let enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                     }}
                                     <tr{{? required}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
-                                    <td class="text-left">{{= param.name || ''}}</td>
-                                    <td class="text-left" style="height: inherit;">
-                                        {{? dataType === 'file'}}
-                                        <div class="input-group">
-                                            <label class="input-group-btn">
-                                                <span class="btn btn-default{{? required}} bold{{?}}">
-                                                    选择文件
-                                                    <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
-                                                </span>
-                                            </label>
-                                            <input type="text"{{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
-                                                   class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
-                                        </div>
-                                        {{?? hasTextarea}}
-                                        <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control data-info-multi{{= validateClass}}{{= tokenClass}}" style="border:1px solid #ccc;border-radius:4px;" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
-                                        {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
-                                        <select class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
-                                            <option></option>
-                                            {{? Array.isArray(enumInfo) }}
-                                            {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
+                                        <td class="text-left">{{= param.name || ''}}</td>
+                                        <td class="text-left" style="height: inherit;">
+                                            {{? dataType === 'file'}}
+                                            <div class="input-group">
+                                                <label class="input-group-btn">
+                                                    <span class="btn btn-default{{? required}} bold{{?}}">
+                                                        选择文件
+                                                        <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
+                                                    </span>
+                                                </label>
+                                                <input type="text"{{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                                       class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
+                                            </div>
+                                            {{?? hasTextarea}}
+                                            <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control data-info-multi{{= validateClass}}{{= tokenClass}}" style="border:1px solid #ccc;border-radius:4px;" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                            {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
+                                            <select class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
+                                                <option></option>
+                                                {{? Array.isArray(enumInfo) }}
+                                                {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
+                                                {{??}}
+                                                {{ let k; for(k in enumInfo) { }}
+                                                <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected="selected"{{?}}>{{= enumInfo[k]}}</option>
+                                                {{ } }}
+                                                {{?}}
+                                            </select>
+                                            {{?? (param.showDataType || '').toLowerCase() === 'date' || dataType === 'date'}}
+                                            {{ let hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
+                                            <div class="input-group date form-datetime">
+                                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                                <input type="text" name="{{= param.name || ''}}"{{= header}}
+                                                       {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                                       class="form-control data-info{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
+                                                       {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
+                                            </div>
                                             {{??}}
-                                            {{ let k; for(k in enumInfo) { }}
-                                            <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected="selected"{{?}}>{{= enumInfo[k]}}</option>
-                                            {{ } }}
+                                            {{ textNum++; }}
+                                            <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                                   class="form-control data-info{{= validateClass}}{{= tokenClass}}"
+                                                   type="{{= (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
+                                                   name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                             {{?}}
-                                        </select>
-                                        {{?? (param.showDataType || '').toLowerCase() === 'date' || dataType === 'date'}}
-                                        {{ let hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
-                                        <div class="input-group date form-datetime">
-                                            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                            <input type="text" name="{{= param.name || ''}}"{{= header}}
-                                                   {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
-                                                   class="form-control data-info{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}"
-                                                   {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
-                                        </div>
-                                        {{??}}
-                                        {{ textNum++; }}
-                                        <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
-                                               class="form-control data-info{{= validateClass}}{{= tokenClass}}"
-                                               type="{{= (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
-                                               name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
-                                        {{?}}
-                                    </td>
-                                    <td class="text-left">{{= required ? '✓' : '✗'}}</td>
-                                    <td class="text-left">{{=
-                                        param.showDataType && param.showDataType !== ''
-                                        ? param.showDataType
-                                        : (param.dataType && param.dataType !== '' ? param.dataType : '')
+                                        </td>
+                                        <td class="text-left">{{= required ? '✓' : '✗'}}</td>
+                                        <td class="text-left">{{=
+                                            param.showDataType && param.showDataType !== ''
+                                                ? param.showDataType
+                                                : (param.dataType && param.dataType !== '' ? param.dataType : '')
                                         }}</td>
-                                    {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
-                                    {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
+                                        {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                        {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                     </tr>
                                     {{~}}
                                     </tbody>
@@ -1470,7 +1470,7 @@ $(function() {
         handleItem($this, $this.html());
     });
 
-    $(document).on('blur', '.data-info-request', function() {
+    $(document).on('change', '.data-info-request', function() {
         let $this = $(this);
 
         let $form = $this.closest('form');
@@ -1522,9 +1522,9 @@ $(function() {
         let requestBody = $form.find('div[data-name="_request-body_"]').html() || '';
         if (isNotBlank(requestBody)) {
             requestBody = requestBody.replace(/[ ]{2}<span class=".*?">.*<\/span>/g, '').replace(/<div>/g, '').replace(/<\/div>/g, '').replace(/&nbsp;/g, '');
+            requestBody = requestBody.replace(/<span class=".*?">.*<\/span>/g, '').replace('<br>', '');
         }
         if (isNotBlank(requestBody)) {
-            requestBody = requestBody.replace(/<span class=".*?">.*<\/span>/g, '').replace('<br>', '');
             try {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
             } catch (e) {
