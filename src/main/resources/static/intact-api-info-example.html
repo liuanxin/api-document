@@ -1496,7 +1496,7 @@ $(function() {
         handleItem($this, $this.html());
     });
 
-    $(document).on('input', '.request-data-info', function() {
+    $(document).on('blur', '.request-data-info', function() {
         let $this = $(this);
         let $form = $this.closest('form');
         let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $this.attr('data-name');
