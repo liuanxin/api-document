@@ -1166,7 +1166,7 @@ function loadData() {
                 if (isNotBlank(html)) {
                     html = html.replace(/(.*?)(\/\*(.*?)\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
-                    $(this).html(addLine(Prism.highlight(html, Prism.languages.json, 'json')));
+                    $(this).html(addLine(html));
                 } else {
                     $(this).html(addLine('<span class="red">Empty Or Parse Error</span>'));
                 }
@@ -1185,7 +1185,7 @@ function loadData() {
                     $line.html(lineHtml);
 
                     html = html.replace(/(.*?)(\/\*(.*?)\*\/)/g, '$1<span class="comment">$2</span>');
-                    $this.html(Prism.highlight(html, Prism.languages.json, 'json'));
+                    $this.html(html);
                 } else {
                     $line.html('<div>1</div>');
                 }
@@ -1210,6 +1210,8 @@ function loadData() {
                 showClear: true,
                 showClose: true
             });
+
+            Prism.highlightAll();
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }
