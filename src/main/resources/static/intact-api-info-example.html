@@ -1466,7 +1466,7 @@ function handleItem($val, value) {
 }
 function handleContentEditable(html) {
     return html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n')
-        .replace(/<div>|<span .*?>|<\/span>|\/\*.*?\*\//g, '');
+        .replace(/<div>|<span .*?>|<\/span>/g, '').replace(new RegExp('\/\*(.*?)\\*\/', 'g'), '');
 }
 
 $(function() {
