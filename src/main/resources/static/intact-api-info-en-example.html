@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>api document</title>
+    <title>Api-Document</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAD1BMVEVHcEwzZ9YzZtUzZtYzZ9aXuimUAAAABHRSTlMA40hLwZlVdgAAAD1JREFUKM9jYBi0wNDFRYjBBUq4AAVEXFwcQWxHmIALCIEJBhYHBmoJgMwG24ImIISuhYEcATSnwwUGKQAAN0oX04RzeZMAAAAASUVORK5CYII=">
@@ -85,13 +85,15 @@
             padding: 0 10px;
             display: flex;
             flex-direction: column;
-            line-height: 1.5;
+            line-height: 1.425;
             background: #f5f5f5;
             position: sticky;
             left: 0;
             z-index: 1;
         }
-        .source {}
+        .source {
+            white-space: pre;
+        }
         .comment {
             color: #aaa;
             font-style: italic;
@@ -201,11 +203,18 @@
         .src-prev-left {
             display: flex;
         }
-        .src-prev-req-format, .src-prev-req-msg {
-            margin-left: 20px;
-        }
         .src-prev-req-format {
+            margin-left: 20px;
             cursor: pointer;
+            color: #428bca;
+        }
+        .src-prev-req-compress {
+            margin-left: 20px;
+            cursor: pointer;
+            color: #449d44;
+        }
+        .src-prev-req-msg {
+            margin-left: 20px;
         }
         .src-prev-res-msg {
             margin-left: 10px;
@@ -218,13 +227,15 @@
             display: flex;
             overflow: auto;
             max-height: 380px;
-            line-height: 1.5;
+            height: 380px;
             align-items: flex-start;
         }
         .request-data-info {
             white-space: pre;
             outline: 0 solid transparent;
             width: 100%;
+            height: 100%;
+            line-height: 1.425;
         }
         .text-left {
             vertical-align: middle !important;
@@ -273,8 +284,7 @@
             margin-left: 20px;
             cursor: pointer;
         }
-        .src-prev-req-format:hover, .copy:hover, .no-scroll:hover {
-            color: rgb(100, 100, 100);
+        .src-prev-req-format:hover, .src-prev-req-compress:hover, .copy:hover, .no-scroll:hover {
             font-weight: bold;
         }
         .copy-impl {
@@ -500,7 +510,7 @@
                                 <div class="src-prev-left">Request example</div>
                                 <div class="src-prev-right">
                                     <div class="copy-status green print-nil"></div>
-                                    <div class="copy print-nil">Copy</div>
+                                    <div class="copy print-nil">Copy(uncomment)</div>
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
@@ -513,7 +523,7 @@
                                 <div class="src-prev-left">Response example</div>
                                 <div class="src-prev-right">
                                     <div class="copy-status green print-nil"></div>
-                                    <div class="copy print-nil">Copy</div>
+                                    <div class="copy print-nil">Copy(uncomment)</div>
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
@@ -617,7 +627,7 @@
                                             <div class="src-prev-left"></div>
                                             <div class="src-prev-right">
                                                 <div class="copy-status green print-nil"></div>
-                                                <div class="copy print-nil">Copy</div>
+                                                <div class="copy print-nil">Copy(uncomment)</div>
                                                 <div class="no-scroll print-nil">No-Scroll</div>
                                             </div>
                                         </div>
@@ -781,11 +791,12 @@
                                     <div class="src-prev-left">
                                         <span>Request-Body</span>
                                         <span class="src-prev-req-format green print-nil">Format-Json</span>
+                                        <span class="src-prev-req-compress print-nil">Compress</span>
                                         <span class="src-prev-req-msg red print-nil"></span>
                                     </div>
                                     <div class="src-prev-right">
                                         <div class="copy-status green print-nil"></div>
-                                        <div class="copy print-nil">Copy</div>
+                                        <div class="copy print-nil">Copy(uncomment)</div>
                                         <div class="no-scroll print-nil">No-Scroll</div>
                                     </div>
                                 </div>
@@ -795,7 +806,7 @@
                                     let requestBodyKey = '_request_body_';
                                     let requestBodyData = localStorage.getItem(url.method.toLowerCase() + ':' + url.url + ':' + requestBodyKey + '') || '';
                                     }}
-                                    <div contenteditable="true" class="request-data-info" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
+                                    <div contenteditable="true" data-lpignore="true" class="language-json request-data-info" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
                                 </div>
                             </div>
                             {{?}}
@@ -825,7 +836,7 @@
                                     </div>
                                     <div class="src-prev-right">
                                         <div class="copy-status green print-nil"></div>
-                                        <div class="copy print-nil">Copy</div>
+                                        <div class="copy print-nil">Copy(uncomment)</div>
                                         <div class="no-scroll print-nil">No-Scroll</div>
                                     </div>
                                 </div>
@@ -856,7 +867,7 @@
                                 <div class="src-prev-left"></div>
                                 <div class="src-prev-right">
                                     <div class="copy-status green print-nil"></div>
-                                    <div class="copy print-nil">Copy</div>
+                                    <div class="copy print-nil">Copy(uncomment)</div>
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
@@ -1017,7 +1028,7 @@ function addLine(html) {
         lineHtml += '<div>' + i + '</div>';
     }
     lineHtml += '</div>';
-    return lineHtml + '<div class="source"><pre style="margin:0;padding:0;border:none;background:#f5f5f5;"><code class="language-json">' + html + '</code></pre></div>';
+    return lineHtml + '<div class="source language-json">' + html + '</div>';
 }
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -1166,9 +1177,9 @@ function loadData() {
             $('.source-code').each(function() {
                 let html = escapeHtml($(this).html());
                 if (isNotBlank(html)) {
-                    html = html.replace(/(.*?)(\/\*(.*?)\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
                     $(this).html(addLine(html));
+                    Prism.highlightElement($(this).find('.source')[0]);
                 } else {
                     $(this).html(addLine('<span class="red">Empty Or Parse Error</span>'));
                 }
@@ -1179,13 +1190,13 @@ function loadData() {
                 let html = $this.html();
                 let $line = $this.closest('.request-data').find('.line-number');
                 if (isNotBlank(html)) {
-                    html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n');
                     let lineHtml = '';
-                    let i, lineNum = html.split('\n').length;
+                    let i, lineNum = handleContentEditable(html).split('\n').length;
                     for (i = 1; i <= lineNum; i++) {
                         lineHtml += '<div>' + i + '</div>';
                     }
                     $line.html(lineHtml);
+                    Prism.highlightElement($this[0]);
                 } else {
                     $line.html('<div>1</div>');
                 }
@@ -1210,8 +1221,6 @@ function loadData() {
                 showClear: true,
                 showClose: true
             });
-
-            Prism.highlightAll();
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }
@@ -1455,6 +1464,10 @@ function handleItem($val, value) {
         localStorage.removeItem(key);
     }
 }
+function handleContentEditable(html) {
+    return html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n')
+        .replace(/<div>|<span .*?>|<\/span>|\/\*.*?\*\//g, '');
+}
 
 $(function() {
     let linked = 1; /** init 1, change proejct: 2, all trigger scroll, 1 at scroll change active, 2 at scroll just set to 1 */
@@ -1511,9 +1524,8 @@ $(function() {
             if (isNotBlank(html)) {
                 localStorage.setItem(key, html);
 
-                html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n');
                 let lineHtml = '';
-                let i, lineNum = html.split('\n').length;
+                let i, lineNum = handleContentEditable(html).split('\n').length;
                 for (i = 1; i <= lineNum; i++) {
                     lineHtml += '<div>' + i + '</div>';
                 }
@@ -1526,7 +1538,53 @@ $(function() {
     });
 
     $(document).on('click', '.src-prev-req-format', function() {
-        console.log('format json & add comment'); /* todo */
+        let json = '';
+        try {
+            let $source = $(this).closest('.source-info');
+            let $request = $source.find('.request-data-info');
+            json = handleContentEditable($request.html());
+            json = JSON.stringify(JSON.parse(json), null, 2);
+            $request.html(json);
+            Prism.highlightElement($request[0]);
+
+            let $form = $(this).closest('form');
+            let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $request.attr('data-name');
+            localStorage.setItem(key, json);
+
+            let lineHtml = '';
+            let i, lineNum = json.split('\n').length;
+            for (i = 1; i <= lineNum; i++) {
+                lineHtml += '<div>' + i + '</div>';
+            }
+            $source.find('.line-number').html(lineHtml);
+        } catch (e) {
+            console.error('format json(' + json + ') error', e);
+        }
+    });
+
+    $(document).on('click', '.src-prev-req-compress', function() {
+        let json = '';
+        try {
+            let $source = $(this).closest('.source-info');
+            let $request = $source.find('.request-data-info');
+            json = handleContentEditable($request.html());
+            json = JSON.stringify(JSON.parse(json));
+            $request.html(json);
+            Prism.highlightElement($request[0]);
+
+            let $form = $(this).closest('form');
+            let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $request.attr('data-name');
+            localStorage.setItem(key, json);
+
+            let lineHtml = '';
+            let i, lineNum = json.split('\n').length;
+            for (i = 1; i <= lineNum; i++) {
+                lineHtml += '<div>' + i + '</div>';
+            }
+            $source.find('.line-number').html(lineHtml);
+        } catch (e) {
+            console.error('format json(' + json + ') error', e);
+        }
     });
 
     $(document).on('click', '.form-submit', function() {
@@ -1560,8 +1618,15 @@ $(function() {
 
         let requestBody = $form.find('.request-data-info').html();
         if (isNotBlank(requestBody)) {
-            requestBody = requestBody.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n');
-            requestBody = requestBody.replace(/<span class=".*?">.*?<\/span>/g, '');
+            requestBody = handleContentEditable(requestBody).replace(/<span class=".*?">.*?<\/span>/g, '');
+
+            let arr = requestBody.split('\n');
+            let i, len = arr.length;
+            let strArr = [];
+            for (i = 0; i < len; i++) {
+                strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, '').replace(/([ ]*?)\/\/.*?$/, ''));
+            }
+            requestBody = strArr.join('\n');
         }
         if (isNotBlank(requestBody)) {
             try {
@@ -1815,29 +1880,50 @@ $(function() {
     $(document).on('click', '.no-scroll', function() {
         let $sourceInfo = $(this).closest('.source-info');
         let $source = $sourceInfo.find('.source-code');
-        if ($source.length === 0) {
-            $source = $sourceInfo.find('.request-data');
-        }
-        if ($source.css('max-height') === 'none') {
-            $source.css('max-height', '');
-            $(this).html('No-Scroll');
+        if ($source.length !== 0) {
+            if ($source.css('max-height') === 'none') {
+                $source.css('max-height', '');
+                $(this).html('No-Scroll');
+            } else {
+                $source.css('max-height', 'unset');
+                $(this).html('Scroll');
+            }
         } else {
-            $source.css('max-height', 'none');
-            $(this).html('Scroll');
+            $source = $sourceInfo.find('.request-data');
+            if ($source.css('max-height') === 'none') {
+                $source.css('max-height', '');
+                $source.css('height', '');
+                $(this).html('No-Scroll');
+            } else {
+                $source.css('max-height', 'unset');
+                $source.css('height', 'unset');
+                $(this).html('Scroll');
+            }
         }
     });
     $(document).on('click', '.copy', function() {
         let $this = $(this);
         let $sourceInfo = $this.closest('.source-info');
-        let $source = $sourceInfo.find('.source-code');
-        if ($source.length === 0) {
-            $source = $sourceInfo.find('.request-data-info');
+        let $source = $sourceInfo.find('.source');
+        let copyValue;
+        if ($source.length !== 0) {
+            copyValue = $source.html();
+        } else {
+            copyValue = $sourceInfo.find('.request-data-info').html();
+            if (isNotBlank(copyValue)) {
+                copyValue = handleContentEditable(copyValue);
+            }
         }
-        let copyValue = $source.html() || '';
         if (isNotBlank(copyValue)) {
-            copyValue = copyValue.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n');
-            copyValue = copyValue.replace(/<.*?>/g, '').replace(/\/\*.*?\*\/\n/g, '');
-            copyValue = JSON.stringify(JSON.parse(copyValue), null, 2);
+            copyValue = copyValue.replace(/<.*?>/g, '');
+
+            let arr = copyValue.split('\n');
+            let i, len = arr.length;
+            let strArr = [];
+            for (i = 0; i < len; i++) {
+                strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, '').replace(/([ ]*?)\/\/.*?$/, ''));
+            }
+            copyValue = strArr.join('\n');
         }
         if (isBlank(copyValue)) {
             return;

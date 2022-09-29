@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>api document</title>
+    <title>Api-Document</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAD1BMVEVHcEwzZ9YzZtUzZtYzZ9aXuimUAAAABHRSTlMA40hLwZlVdgAAAD1JREFUKM9jYBi0wNDFRYjBBUq4AAVEXFwcQWxHmIALCIEJBhYHBmoJgMwG24ImIISuhYEcATSnwwUGKQAAN0oX04RzeZMAAAAASUVORK5CYII=">
@@ -55,13 +55,15 @@
             padding: 0 10px;
             display: flex;
             flex-direction: column;
-            line-height: 1.5;
+            line-height: 1.425;
             background: #f5f5f5;
             position: sticky;
             left: 0;
             z-index: 1;
         }
-        .source {}
+        .source {
+            white-space: pre;
+        }
         .comment {
             color: #aaa;
             font-style: italic;
@@ -488,7 +490,7 @@
                                 <div class="src-prev-left">Request-Body example</div>
                                 <div class="src-prev-right">
                                     <div class="copy-status green print-nil"></div>
-                                    <div class="copy print-nil">Copy</div>
+                                    <div class="copy print-nil">Copy(uncomment)</div>
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
@@ -501,7 +503,7 @@
                                 <div class="src-prev-left">Response Example</div>
                                 <div class="src-prev-right">
                                     <div class="copy-status green print-nil"></div>
-                                    <div class="copy print-nil">Copy</div>
+                                    <div class="copy print-nil">Copy(uncomment)</div>
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
@@ -605,7 +607,7 @@
                                                         <div class="src-prev-left"></div>
                                                         <div class="src-prev-right">
                                                             <div class="copy-status green print-nil"></div>
-                                                            <div class="copy print-nil">Copy</div>
+                                                            <div class="copy print-nil">Copy(uncomment)</div>
                                                             <div class="no-scroll print-nil">No-Scroll</div>
                                                         </div>
                                                     </div>
@@ -670,7 +672,7 @@
                                 <div class="src-prev-left"></div>
                                 <div class="src-prev-right">
                                     <div class="copy-status green print-nil"></div>
-                                    <div class="copy print-nil">Copy</div>
+                                    <div class="copy print-nil">Copy(uncomment)</div>
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
@@ -829,7 +831,7 @@ function addLine(html) {
         lineHtml += '<div>' + i + '</div>';
     }
     lineHtml += '</div>';
-    return lineHtml + '<div class="source"><pre style="margin:0;padding:0;border:none;background:#f5f5f5;"><code class="language-json">' + html + '</code></pre></div>';
+    return lineHtml + '<div class="source language-json">' + html + '</div>';
 }
 function escapeHtml(html) {
     return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -927,11 +929,12 @@ function loadData() {
             $rightArrow.css('display', '');
 
             $('.source-code').each(function() {
-                let $html = escapeHtml($(this).html());
-                if (isNotBlank($html)) {
-                    let html = $html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
+                let html = escapeHtml($(this).html());
+                if (isNotBlank(html)) {
+                    // html = html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
-                    $(this).html(addLine(Prism.highlight(html, Prism.languages.json, 'json')));
+                    $(this).html(addLine(html));
+                    Prism.highlightElement($(this).find('.source')[0]);
                 } else {
                     $(this).html(addLine('<span class="red">Empty or parse error</span>'));
                 }
@@ -1021,10 +1024,16 @@ $(function() {
     });
     $(document).on('click', '.copy', function() {
         let $this = $(this);
-        let copyValue = $this.closest('.source-info').find('.source').html() || '';
+        let copyValue = $this.closest('.source-info').find('.source').html();
         if (isNotBlank(copyValue)) {
-            copyValue = copyValue.replace(/<.*?>/g, '').replace(/\/\*.*?\*\/\n/g, '');
-            copyValue = JSON.stringify(JSON.parse(copyValue), null, 2);
+            copyValue = copyValue.replace(/<.*?>/g, '');
+            let arr = copyValue.split('\n');
+            let i, len = arr.length;
+            let strArr = [];
+            for (i = 0; i < len; i++) {
+                strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, ''));
+            }
+            copyValue = strArr.join('\n');
         }
         if (isBlank(copyValue)) {
             return;
