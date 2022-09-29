@@ -1625,7 +1625,7 @@ $(function() {
 
         let requestBody = $form.find('.request-data-info').html();
         if (isNotBlank(requestBody)) {
-            requestBody = handleContentEditable(requestBody).replace(/<span class=".*?">.*?<\/span>/g, '');
+            requestBody = handleContentEditable(requestBody);
 
             let arr = requestBody.split('\n');
             let i, len = arr.length;
