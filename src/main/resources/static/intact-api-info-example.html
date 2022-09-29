@@ -1511,7 +1511,7 @@ function handleInput($this, action, format) {
         }
     } catch (e) {
         console.error('格式化 json(' + json + ') 时错误', e);
-        $reqMsg.html('Json 数据有误!');
+        $reqMsg.html('Json 数据有误');
         setTimeout(function () { $reqMsg.html(''); }, 3000);
     }
 }

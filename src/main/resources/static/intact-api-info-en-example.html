@@ -1506,12 +1506,12 @@ function handleInput($this, action, format) {
         }
         $source.find('.line-number').html(lineHtml);
         if (format) {
-            $reqMsg.html('生成的尾部注释不影响调用');
+            $reqMsg.html('Comment on tail does not affect the Request');
             setTimeout(function () { $reqMsg.html(''); }, 3000);
         }
     } catch (e) {
-        console.error('格式化 json(' + json + ') 时错误', e);
-        $reqMsg.html('Json 数据有误!');
+        console.error('format json(' + json + ') error', e);
+        $reqMsg.html('Json data error');
         setTimeout(function () { $reqMsg.html(''); }, 3000);
     }
 }
