@@ -237,6 +237,7 @@
             width: 100%;
             height: 100%;
             line-height: 1.425;
+            caret-color: #000;
         }
         .text-left {
             vertical-align: middle !important;
@@ -1254,7 +1255,7 @@ function addComment(json, element, res) {
         returnJson += lines[i];
         let comment = getComment(lineFieldRelation, fieldCommentRelation, i.toString());
         if (isNotBlank(comment)) {
-            returnJson += ' '.repeat(2) + '<span class="comment">/* ' + comment + ' */</span>';
+            returnJson += ' '.repeat(2) + '/* ' + comment + ' */';
         }
         returnJson += '\n';
     }

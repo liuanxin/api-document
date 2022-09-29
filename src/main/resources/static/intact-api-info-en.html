@@ -932,7 +932,6 @@ function loadData() {
             $('.source-code').each(function() {
                 let html = escapeHtml($(this).html());
                 if (isNotBlank(html)) {
-                    // html = html.replace(/(.*?)(\/\*.*?\*\/)/g, '$1<span class="comment">$2</span>');
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">$1</span>');
                     $(this).html(addLine(html));
                     Prism.highlightElement($(this).find('.source')[0]);
