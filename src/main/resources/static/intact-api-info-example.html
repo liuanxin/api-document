@@ -1483,7 +1483,7 @@ function handleContentEditable(html) {
     }
     return html;
 }
-function handleInput($this, action) {
+function handleInput($this, action, format) {
     let json = '';
     let $source = $this.closest('.source-info');
     let $reqMsg = $source.find('.src-prev-req-msg');
@@ -1505,6 +1505,10 @@ function handleInput($this, action) {
             lineHtml += '<div>' + i + '</div>';
         }
         $source.find('.line-number').html(lineHtml);
+        if (format) {
+            $reqMsg.html('生成的尾部注释不影响调用');
+            setTimeout(function () { $reqMsg.html(''); }, 3000);
+        }
     } catch (e) {
         console.error('格式化 json(' + json + ') 时错误', e);
         $reqMsg.html('Json 数据有误!');
@@ -1585,13 +1589,13 @@ $(function() {
         let $formParent = $(this).closest('.module-api-info');
         handleInput($(this), function(json) {
             return addComment(escapeHtml(JSON.stringify(JSON.parse(json), null, 2)), $formParent, false);
-        });
+        }, true);
     });
 
     $(document).on('click', '.src-prev-req-compress', function() {
         handleInput($(this), function(json) {
             return JSON.stringify(JSON.parse(json));
-        });
+        }, false);
     });
 
     $(document).on('click', '.form-submit', function() {
