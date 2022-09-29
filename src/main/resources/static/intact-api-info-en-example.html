@@ -515,7 +515,7 @@
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
-                            <div class="source-code">{{= url.requestBodyJson || ''}}</div>
+                            <div class="source-code" data-flag="module-api-info-request-src">{{= url.requestBodyJson || ''}}</div>
                         </div>
                         {{?}}
 
@@ -528,11 +528,11 @@
                                     <div class="no-scroll print-nil">No-Scroll</div>
                                 </div>
                             </div>
-                            <div class="source-code" data-flag="module-api-info-return-src">{{= url.commentJson || ''}}</div>
+                            <div class="source-code" data-flag="module-api-info-response-src">{{= url.commentJson || ''}}</div>
                         </div>
 
                         {{? url.returnList && url.returnList.length > 0}}
-                        <div class="bottom-table panel panel-default" data-flag="module-api-info-return-comment">
+                        <div class="bottom-table panel panel-default" data-flag="module-api-info-response-comment">
                             <table class="table table-striped table-bordered table-hover table-condensed">
                                 <thead>
                                 <tr>
@@ -1237,8 +1237,8 @@ function handleError($arrow, $ele, info) {
         '<div class="config">config error? <span id="delete-prefix" class="config-prefix">delete</span></div>');
 }
 
-function addComment(json, element) {
-    let fieldCommentRelation = handleFieldCommentRelation(element);
+function addComment(json, element, res) {
+    let fieldCommentRelation = handleFieldCommentRelation(element, res);
     if (isBlank(fieldCommentRelation)) {
         return json;
     }
@@ -1260,9 +1260,13 @@ function addComment(json, element) {
     }
     return returnJson.trim();
 }
-function handleFieldCommentRelation(element) {
-    let relation = relationByComment(element.find('[data-flag="module-api-info-return-comment"]'));
-    return isNotBlank(relation) ? relation : relationBySource(element.find('[data-flag="module-api-info-return-src"]'));
+function handleFieldCommentRelation(element, res) {
+    if (res) {
+        let relation = relationByComment(element.find('[data-flag="module-api-info-response-comment"]'));
+        return isNotBlank(relation) ? relation : relationBySource(element.find('[data-flag="module-api-info-response-src"]'));
+    } else {
+        return relationBySource(element.find('[data-flag="module-api-info-request-src"]'));
+    }
 }
 function relationByComment(allComment) {
     if (isBlank(allComment.html())) {
@@ -1466,8 +1470,46 @@ function handleItem($val, value) {
     }
 }
 function handleContentEditable(html) {
-    return html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n')
-        .replace(/<div>|<span .*?>|<\/span>/g, '').replace(new RegExp('\/\*(.*?)\\*\/', 'g'), '');
+    html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n')
+        .replace(/<\/div>/g, '\n').replace(/<div>|<span .*?>|<\/span>/g, '');
+    if (isNotBlank(html)) {
+        let arr = html.split('\n');
+        let i, len = arr.length;
+        let strArr = [];
+        for (i = 0; i < len; i++) {
+            strArr.push(arr[i].replace(/\/\*(.*?)\*\/$/, '').replace(/\/\/.*?$/, ''));
+        }
+        html = strArr.join('\n');
+    }
+    return html;
+}
+function handleInput($this, action) {
+    let json = '';
+    let $source = $this.closest('.source-info');
+    let $reqMsg = $source.find('.src-prev-req-msg');
+    $reqMsg.html('');
+    try {
+        let $request = $source.find('.request-data-info');
+        json = handleContentEditable($request.html());
+        json = action(json);
+        $request.html(json);
+        Prism.highlightElement($request[0]);
+
+        let $form = $this.closest('form');
+        let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $request.attr('data-name');
+        localStorage.setItem(key, json);
+
+        let lineHtml = '';
+        let i, lineNum = json.split('\n').length;
+        for (i = 1; i <= lineNum; i++) {
+            lineHtml += '<div>' + i + '</div>';
+        }
+        $source.find('.line-number').html(lineHtml);
+    } catch (e) {
+        console.error('格式化 json(' + json + ') 时错误', e);
+        $reqMsg.html('Json 数据有误!');
+        setTimeout(function () { $reqMsg.html(''); }, 3000);
+    }
 }
 
 $(function() {
@@ -1513,7 +1555,8 @@ $(function() {
     $(document).on('focus', '.request-data-info', function() {
         let $this = $(this);
         $this.data('before', $this.html());
-    }).on('blur keyup paste input', '.request-data-info', function() {
+    });
+    $(document).on('blur keyup paste input', '.request-data-info', function() {
         let $this = $(this);
         let html = $this.html();
         if ($this.data('before') !== html) {
@@ -1539,62 +1582,25 @@ $(function() {
     });
 
     $(document).on('click', '.src-prev-req-format', function() {
-        let json = '';
-        try {
-            let $source = $(this).closest('.source-info');
-            let $request = $source.find('.request-data-info');
-            json = handleContentEditable($request.html());
-            json = JSON.stringify(JSON.parse(json), null, 2);
-            $request.html(json);
-            Prism.highlightElement($request[0]);
-
-            let $form = $(this).closest('form');
-            let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $request.attr('data-name');
-            localStorage.setItem(key, json);
-
-            let lineHtml = '';
-            let i, lineNum = json.split('\n').length;
-            for (i = 1; i <= lineNum; i++) {
-                lineHtml += '<div>' + i + '</div>';
-            }
-            $source.find('.line-number').html(lineHtml);
-        } catch (e) {
-            console.error('format json(' + json + ') error', e);
-        }
+        let $formParent = $(this).closest('.module-api-info');
+        handleInput($(this), function(json) {
+            return addComment(escapeHtml(JSON.stringify(JSON.parse(json), null, 2)), $formParent, false);
+        });
     });
 
     $(document).on('click', '.src-prev-req-compress', function() {
-        let json = '';
-        try {
-            let $source = $(this).closest('.source-info');
-            let $request = $source.find('.request-data-info');
-            json = handleContentEditable($request.html());
-            json = JSON.stringify(JSON.parse(json));
-            $request.html(json);
-            Prism.highlightElement($request[0]);
-
-            let $form = $(this).closest('form');
-            let key = $form.attr('method').toLowerCase() + ':' + $form.attr('action') + ':' + $request.attr('data-name');
-            localStorage.setItem(key, json);
-
-            let lineHtml = '';
-            let i, lineNum = json.split('\n').length;
-            for (i = 1; i <= lineNum; i++) {
-                lineHtml += '<div>' + i + '</div>';
-            }
-            $source.find('.line-number').html(lineHtml);
-        } catch (e) {
-            console.error('format json(' + json + ') error', e);
-        }
+        handleInput($(this), function(json) {
+            return JSON.stringify(JSON.parse(json));
+        });
     });
 
     $(document).on('click', '.form-submit', function() {
         let $btn = $(this);
-        let $form = $btn.parents('form');
+        let $form = $btn.closest('form');
         let $formParent = $form.parents('.module-api-info');
         let curl = $form.find('.curl');
         let response = $form.find('.response');
-        let $reqMsg = $btn.closest('form').find('.src-prev-req-msg');
+        let $reqMsg = $form.find('.src-prev-req-msg');
         curl.hide();
         response.hide();
         $reqMsg.html('');
@@ -1635,6 +1641,7 @@ $(function() {
             } catch (e) {
                 console.error('parse(' + requestBody + ') error', e);
                 $reqMsg.html('Json date error!');
+                setTimeout(function () { $reqMsg.html(''); }, 3000);
                 return;
             }
         }
@@ -1811,7 +1818,7 @@ $(function() {
             if (isBlank(result)) {
                 html += '<div class="green">' + method + ' (' + url + ') success, but response nil</div>';
             } else {
-                html += addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent));
+                html += addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true));
             }
             responseData.css('white-space', '');
             responseData.html(html);
