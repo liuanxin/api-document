@@ -1948,7 +1948,7 @@ $(function() {
         let copyElement = document.createElement('textarea');
         copyElement.setAttribute('readonly', 'readonly');
         copyElement.setAttribute('class', 'copy-impl');
-        $(copyElement).html(copyValue); /* copyElement.value = copyValue; // 没生效, 不知道为什么 */
+        $(copyElement).html(copyValue); /* 「copyElement.value = copyValue;」 没生效, 不知道为什么 */
 
         let $parent = $ele.parent()[0];
         $parent.appendChild(copyElement);
