@@ -459,25 +459,25 @@
                                 <tr>
                                     <th class="text-left">Param name</th>
                                     <th class="text-left">Data type</th>
-                                    <th class="text-left">Required</th>
-                                    {{? hasDesc}}<th class="text-left">Comment</th>{{?}}
                                     {{? hasExample}}<th class="text-left">Example</th>{{?}}
+                                    <th class="text-left">Required</th>
                                     {{? hasHeader}}<th class="text-left">Param type</th>{{?}}
+                                    {{? hasDesc}}<th class="text-left">Comment</th>{{?}}
                                 </tr>
                                 </thead>
                                 <tbody>
                                 {{~ paramList  :param}}
                                 <tr{{? String(param.required) === '1'}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
-                                <td class="text-left">{{= param.name || ''}}</td>
-                                <td class="text-left">{{=
-                                    param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
-                                    ? param.showDataType
-                                    : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
+                                    <td class="text-left">{{= param.name || ''}}</td>
+                                    <td class="text-left">{{=
+                                        param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
+                                        ? param.showDataType
+                                        : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                     }}</td>
-                                <td class="text-left">{{= String(param.required) === '1' ? '✓' : '✗'}}</td>
-                                {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
-                                {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
-                                {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                    {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
+                                    <td class="text-left">{{= String(param.required) === '1' ? '✓' : '✗'}}</td>
+                                    {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                    {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                 </tr>
                                 {{~}}
                                 </tbody>

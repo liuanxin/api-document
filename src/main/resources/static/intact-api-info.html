@@ -459,10 +459,10 @@
                                 <tr>
                                     <th class="text-left">参数名称</th>
                                     <th class="text-left">数据类型</th>
-                                    <th class="text-left">必须</th>
-                                    {{? hasDesc}}<th class="text-left">说明</th>{{?}}
                                     {{? hasExample}}<th class="text-left">示例</th>{{?}}
+                                    <th class="text-left">必须</th>
                                     {{? hasHeader}}<th class="text-left">参数类型</th>{{?}}
+                                    {{? hasDesc}}<th class="text-left">说明</th>{{?}}
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -474,10 +474,10 @@
                                         ? param.showDataType
                                         : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                     }}</td>
-                                    <td class="text-left">{{= String(param.required) === '1' ? '✓' : '✗'}}</td>
-                                    {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                     {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
+                                    <td class="text-left">{{= String(param.required) === '1' ? '✓' : '✗'}}</td>
                                     {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                    {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                 </tr>
                                 {{~}}
                                 </tbody>
