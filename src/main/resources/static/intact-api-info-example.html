@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="//cdn.bootcss.com/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.min.css">
     <link rel="stylesheet" href="//cdn.bootcdn.net/ajax/libs/prism/1.23.0/themes/prism.min.css">
-    <style> @import url('//fonts.googleapis.com/css2?family=Fira+Code&family=Noto+Sans+SC&display=swap'); </style>
+    <style> @import url('//fonts.loli.net/css2?family=Fira+Code&display=swap'); </style>
     <style>
         * {
-            font-family: "Fira Code", "Noto Sans SC", Menlo, Monaco, Consolas, "Courier New", monospace, "Glyphicons Halflings" !important;
+            font-family: "Fira Code", "sans-serif", monospace, "Glyphicons Halflings" !important;
         }
         html {
             position: relative;
@@ -58,6 +58,7 @@
             border: none;
             font-size: 16px;
             color: #fff;
+            outline: 0 solid transparent;
             background-color: #56baed;
             box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
             transition: all 0.3s ease-in-out;
@@ -154,7 +155,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            background: #eee;
+            background: #ddd;
             margin-right: 10px;
             border: 1px solid transparent;
             border-radius: 4px 4px 0 0;
@@ -169,8 +170,9 @@
         .active> .tab, .active > .tab:focus, .active > .tab:hover {
             color: #555;
             cursor: default;
-            background-color: #fff;
+            background: #52b9e9;
             border: 1px solid #ddd;
+            border-bottom-color: transparent;
         }
         .tab-content {}
         .module, .module-last {}
