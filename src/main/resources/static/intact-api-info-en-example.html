@@ -1306,8 +1306,8 @@ function loadData() {
                 showClear: true,
                 showClose: true
             }).on('dp.change', function() {
-                let $this = $(this);
-                handleItem($this, $this.find('.data-info').val());
+                let $this = $(this).find('.data-info');
+                handleItem($this, $this.val());
             });
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
