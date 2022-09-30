@@ -842,7 +842,7 @@
                                                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                                         <input type="text" name="{{= param.name || ''}}"{{= header}}
                                                                {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                               class="form-control data-info-date{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}" value="{{= example}}"
+                                                               class="form-control data-info{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}" value="{{= example}}"
                                                                {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
                                                     </div>
                                                     {{??}}
@@ -1305,6 +1305,9 @@ function loadData() {
                 showTodayButton: true,
                 showClear: true,
                 showClose: true
+            }).on('dp.change', function() {
+                let $this = $(this);
+                handleItem($this, $this.find('.data-info').val());
             });
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
@@ -1643,11 +1646,6 @@ $(function() {
     });
 
     $(document).on('change', '.data-info', function() {
-        let $this = $(this);
-        handleItem($this, $this.val());
-    });
-
-    $(document).on('input', '.data-info-date', function() {
         let $this = $(this);
         handleItem($this, $this.val());
     });
