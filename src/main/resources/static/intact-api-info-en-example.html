@@ -801,10 +801,10 @@
                                             let arrJoin = arr.filter(function(e){ return e !== undefined && e !== null && e !== ''; }).join(',');
 
                                             let validateClass = (arrJoin !== undefined && arrJoin !== null && arrJoin !== '') ? (' validate[' + arrJoin + ']') : '';
-                                            let tokenClass = String(param.hasToken) === '1' ? ' has-token' : '';
+                                            let tokenClass = String(param.hasToken) === '1' ? ' has-token' : ' data-info';
                                             let header = String(param.paramType) === '1' ? ' header="1"' : '';
                                             let dataKey = (moduleUrlId + ':' + param.name);
-                                            let example = localStorage.getItem('global-' + param.name) || localStorage.getItem(dataKey) || param.example || '';
+                                            let example = localStorage.getItem('$global-header-' + param.name) || localStorage.getItem(dataKey) || param.example || '';
 
                                             let enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
                                             let enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
@@ -824,9 +824,9 @@
                                                                class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                                     </div>
                                                     {{?? hasTextarea}}
-                                                    <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control data-info{{= validateClass}}{{= tokenClass}}" style="border:1px solid #ccc;border-radius:4px;" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                                    <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control{{= validateClass}}{{= tokenClass}}" style="border:1px solid #ccc;border-radius:4px;" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                                     {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
-                                                    <select class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
+                                                    <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                                         <option></option>
                                                         {{? Array.isArray(enumInfo) }}
                                                         {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
@@ -842,13 +842,13 @@
                                                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                                         <input type="text" name="{{= param.name || ''}}"{{= header}}
                                                                {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                               class="form-control data-info{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}" value="{{= example}}"
+                                                               class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}" value="{{= example}}"
                                                                {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
                                                     </div>
                                                     {{??}}
                                                     {{ textNum++; }}
                                                     <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                           class="form-control data-info{{= validateClass}}{{= tokenClass}}"
+                                                           class="form-control{{= validateClass}}{{= tokenClass}}"
                                                            type="{{= dataType === 'password' || (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
                                                            name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                                     {{?}}
@@ -1647,7 +1647,7 @@ $(function() {
         let name = $this.attr('name');
         let value = $this.val();
         if (isNotBlank(value)) {
-            localStorage.setItem('global-' + name, value);
+            localStorage.setItem('$global-header-' + name, value);
         } else {
             localStorage.removeItem(name);
         }
