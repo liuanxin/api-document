@@ -130,7 +130,7 @@ public class DocumentParam {
         param.setName(token.name());
         param.setDesc(token.desc());
         param.setExample(token.example());
-        param.setHasToken("1");
+        param.setHasToken(token.globalSave() ? "1" : ApiConst.EMPTY);
         param.setParamType(token.paramType().hasHeader() ? "1" : ApiConst.EMPTY);
         param.setRequired(token.required() ? "1" : ApiConst.EMPTY);
         param.setHasTextarea(token.textarea() ? "1" : ApiConst.EMPTY);

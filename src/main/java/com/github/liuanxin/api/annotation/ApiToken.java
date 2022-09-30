@@ -22,6 +22,9 @@ public @interface ApiToken {
     /** @return Header or Query */
     ParamType paramType() default ParamType.Header;
 
+    /** @return true will save all same info in html */
+    boolean globalSave() default true;
+
     /** @return if param has @RequestParam(required = true) etc..., this set will ignore */
     boolean required() default false;
 
