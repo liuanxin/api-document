@@ -557,10 +557,10 @@
                         }}
                         <ul class="nav nav-tabs bottom-table">
                             <li{{? !requestActive}} class="active"{{?}}>
-                                <div class="tab" data-value="0">Example</div>
+                                <div class="tab">Example</div>
                             </li>
                             <li{{? requestActive}} class="active"{{?}}>
-                                <div class="tab" data-value="1">Request</div>
+                                <div class="tab" data-tab="1">Request</div>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -1575,14 +1575,17 @@ function handleInput($this, action, format) {
     let $reqMsg = $source.find('.src-prev-req-msg');
     $reqMsg.html('');
     try {
+        let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
         let $request = $source.find('.request-data-info');
         json = handleContentEditable($request.html());
         json = action(json);
-        $request.html(json);
-        Prism.highlightElement($request[0]);
-
-        localStorage.setItem($this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name'), json);
-
+        if (isNotBlank(json)) {
+            $request.html(json);
+            Prism.highlightElement($request[0]);
+            localStorage.setItem(itemKey, json);
+        } else {
+            localStorage.removeItem(itemKey);
+        }
         let lineHtml = '';
         let i, lineNum = json.split('\n').length;
         for (i = 1; i <= lineNum; i++) {
@@ -1624,7 +1627,13 @@ $(function() {
             $content.find('.active').removeClass('in active');
             $content.children().eq($parent.index()).addClass('in active');
 
-            localStorage.setItem($this.closest('.module-api').find('.anchor').attr('id'), $this.attr('data-value'));
+            let link = $this.closest('.module-api').find('.anchor').attr('id');
+            let tab = $this.attr('data-tab');
+            if (String(tab) === '1') {
+                localStorage.setItem(link, tab);
+            } else {
+                localStorage.removeItem(link);
+            }
         }
     });
 
