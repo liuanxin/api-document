@@ -824,7 +824,7 @@
                                                                class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                                     </div>
                                                     {{?? hasTextarea}}
-                                                    <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control data-info-multi{{= validateClass}}{{= tokenClass}}" style="border:1px solid #ccc;border-radius:4px;" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                                    <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control data-info{{= validateClass}}{{= tokenClass}}" style="border:1px solid #ccc;border-radius:4px;" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
                                                     {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
                                                     <select class="form-control data-info{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
                                                         <option></option>
@@ -1657,11 +1657,6 @@ $(function() {
     $(document).on('change', '.data-info', function() {
         let $this = $(this);
         handleItem($this, $this.val());
-    });
-
-    $(document).on('change', '.data-info-multi', function() {
-        let $this = $(this);
-        handleItem($this, $this.html());
     });
 
     $(document).on('focus', '.request-data-info', function() {
