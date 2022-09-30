@@ -1132,7 +1132,7 @@ function getProjectDomain() {
 }
 function timeLog(start) {
     let end = new Date().getTime();
-    return formatDate(start) + ' -> ' + formatDate(end) + ' (' + (end - start) + ' ms)';
+    return '[' + formatDate(start) + ' -> ' + formatDate(end) + ' (' + (end - start) + ' ms)]';
 }
 function objectifyForm(form) {
     let headers = {};
@@ -1575,8 +1575,8 @@ function handleInput($this, action, format) {
     let $reqMsg = $source.find('.src-prev-req-msg');
     $reqMsg.html('');
     try {
-        let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
         let $request = $source.find('.request-data-info');
+        let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
         json = handleContentEditable($request.html());
         json = action(json);
         if (isNotBlank(json)) {
