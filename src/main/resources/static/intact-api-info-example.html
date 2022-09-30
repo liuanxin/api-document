@@ -1646,10 +1646,11 @@ $(function() {
         let $this = $(this);
         let name = $this.attr('name');
         let value = $this.val();
+        let key = '$global-header-' + name;
         if (isNotBlank(value)) {
-            localStorage.setItem('$global-header-' + name, value);
+            localStorage.setItem(key, value);
         } else {
-            localStorage.removeItem(name);
+            localStorage.removeItem(key);
         }
         $('[name="' + name + '"]').val(value);
     });
