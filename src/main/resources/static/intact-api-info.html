@@ -364,7 +364,7 @@
     </style>
 </head>
 <body>
-<div id="config-prefix" class="modal fade" tabindex="-1" aria-hidden="true">
+<div id="config-prefix-url" class="modal fade" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -557,97 +557,97 @@
                         }
                         }}
                         {{? responseList.length > 0}}
-                            <div class="bottom-table panel panel-default">
-                                <table class="table table-striped table-bordered table-hover table-condensed">
-                                    <thead>
-                                    <tr>
-                                        <th class="text-left">响应码</th>
-                                        <th class="text-left">说明</th>
-                                        {{? hasAction}}<th class="text-left print-nil">操作</th>{{?}}
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {{~ responseList  :response}}
-                                    <tr>
-                                        <td class="text-left">{{= response.code || ''}}</td>
-                                        <td class="text-left">{{= response.msg || ''}}</td>
-                                        {{
-                                        let comment = response.comment;
-                                        let targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
-                                        }}
-                                        {{? comment !== undefined && comment !== null && comment !== ''}}
-                                        <td class="text-left print-nil">
-                                            <span class="response-example" title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
-                                                  data-toggle="modal" data-target="#{{= targetId}}">返回示例</span>
-                                        </td>
-                                        {{?? hasAction}}
-                                        <td class="text-left print-nil"></td>
-                                        {{?}}
-                                    </tr>
-                                    {{~}}
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            {{? hasSelfResponse}}
+                        <div class="bottom-table panel panel-default">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-left">响应码</th>
+                                    <th class="text-left">说明</th>
+                                    {{? hasAction}}<th class="text-left print-nil">操作</th>{{?}}
+                                </tr>
+                                </thead>
+                                <tbody>
                                 {{~ responseList  :response}}
-                                    {{ let comment = response.comment; }}
+                                <tr>
+                                    <td class="text-left">{{= response.code || ''}}</td>
+                                    <td class="text-left">{{= response.msg || ''}}</td>
+                                    {{
+                                    let comment = response.comment;
+                                    let targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
+                                    }}
                                     {{? comment !== undefined && comment !== null && comment !== ''}}
-                                        <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
-                                             tabindex="-1"  aria-hidden="true" data-backdrop="static" data-keyboard="false">
-                                        <div class="modal-dialog modal-content">
-                                            <div class="modal-header">
-                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                                <h4 class="modal-title">
-                                                    模块「{{= module.info || ''}}」接口「{{= url.title || ''}}」响应「{{= response.code + ': ' + response.msg}}」示例
-                                                </h4>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="source-info">
-                                                    <div class="src-prev">
-                                                        <div class="src-prev-left"></div>
-                                                        <div class="src-prev-right">
-                                                            <div class="copy-status green print-nil"></div>
-                                                            <div class="copy print-nil">复制(去注释)</div>
-                                                            <div class="no-scroll print-nil">全显</div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="source-code">{{= response.comment || '' }}</div>
-                                                </div>
+                                    <td class="text-left print-nil">
+                                        <span class="response-example" title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
+                                              data-toggle="modal" data-target="#{{= targetId}}">返回示例</span>
+                                    </td>
+                                    {{?? hasAction}}
+                                    <td class="text-left print-nil"></td>
+                                    {{?}}
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                        </div>
 
-                                                {{? response.returnList && response.returnList.length > 0}}
-                                                <div class="bottom-table panel panel-default">
-                                                    <table class="table table-striped table-bordered table-hover table-condensed">
-                                                        <thead>
-                                                        <tr>
-                                                            <th class="text-left">名称</th>
-                                                            <th class="text-left">类型</th>
-                                                            <th class="text-left">说明</th>
-                                                        </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                        {{~ response.returnList  :rtn}}
-                                                        <tr>
-                                                            <td class="text-left">{{= rtn.name || ''}}</td>
-                                                            <td class="text-left">{{= rtn.type || ''}}</td>
-                                                            <td class="text-left wrap">
-                                                                {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}
-                                                            </td>
-                                                        </tr>
-                                                        {{~}}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                {{?}}
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        {{? hasSelfResponse}}
+                        {{~ responseList  :response}}
+                        {{ let comment = response.comment; }}
+                        {{? comment !== undefined && comment !== null && comment !== ''}}
+                        <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
+                             tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">
+                                        模块「{{= module.info || ''}}」接口「{{= url.title || ''}}」响应「{{= response.code + ': ' + response.msg}}」示例
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="source-info">
+                                        <div class="src-prev">
+                                            <div class="src-prev-left"></div>
+                                            <div class="src-prev-right">
+                                                <div class="copy-status green print-nil"></div>
+                                                <div class="copy print-nil">复制(去注释)</div>
+                                                <div class="no-scroll print-nil">全显</div>
                                             </div>
                                         </div>
+                                        <div class="source-code">{{= response.comment || '' }}</div>
+                                    </div>
+
+                                    {{? response.returnList && response.returnList.length > 0}}
+                                    <div class="bottom-table panel panel-default">
+                                        <table class="table table-striped table-bordered table-hover table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th class="text-left">名称</th>
+                                                <th class="text-left">类型</th>
+                                                <th class="text-left">说明</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {{~ response.returnList  :rtn}}
+                                            <tr>
+                                                <td class="text-left">{{= rtn.name || ''}}</td>
+                                                <td class="text-left">{{= rtn.type || ''}}</td>
+                                                <td class="text-left wrap">
+                                                    {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}
+                                                </td>
+                                            </tr>
+                                            {{~}}
+                                            </tbody>
+                                        </table>
                                     </div>
                                     {{?}}
-                                {{~}}
-                            {{?}}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                </div>
+                            </div>
+                        </div>
+                        {{?}}
+                        {{~}}
+                        {{?}}
                         {{?}}
                     </div>
                 </div>
