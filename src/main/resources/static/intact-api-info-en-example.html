@@ -85,7 +85,6 @@
             padding: 0 10px;
             display: flex;
             flex-direction: column;
-            line-height: 1.425;
             background: #f5f5f5;
             position: sticky;
             left: 0;
@@ -264,7 +263,6 @@
             outline: 0 solid transparent;
             width: 100%;
             height: 100%;
-            line-height: 1.425;
             caret-color: #000;
         }
         .text-left {
@@ -1560,7 +1558,7 @@ function handleContentEditable(html) {
         let i, len = arr.length;
         let strArr = [];
         for (i = 0; i < len; i++) {
-            strArr.push(arr[i].replace(/\/\*(.*?)\*\/$/, '').replace(/\/\/.*?$/, ''));
+            strArr.push(arr[i].replace(/([ ]*?)\/\*(.*?)\*\/$/, ''));
         }
         html = strArr.join('\n');
     }
@@ -1697,12 +1695,12 @@ $(function() {
     $(document).on('click', '.form-submit', function() {
         let $btn = $(this);
         let $form = $btn.closest('form');
-        let $formParent = $form.parents('.module-api-info');
-        let curl = $form.find('.curl');
-        let response = $form.find('.response');
+        let $formParent = $form.closest('.module-api-info');
+        let $curl = $form.find('.curl');
+        let $response = $form.find('.response');
         let $reqMsg = $form.find('.src-prev-req-msg');
-        curl.hide();
-        response.hide();
+        $curl.hide();
+        $response.hide();
         $reqMsg.html('');
 
         $.validationEngine.defaults.scroll = false;
@@ -1842,8 +1840,8 @@ $(function() {
                 curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
             }
         }
-        curl.find('.source-code').html(addLine(curlHtml));
-        curl.show();
+        $curl.find('.source-code').html(addLine(curlHtml));
+        $curl.show();
 
 
         let settings = {
@@ -1867,8 +1865,8 @@ $(function() {
         }
         if (files.length > 0) {
             if ('POST' !== method.toUpperCase()) {
-                response.find('.source-code').html("<span class='red'>Upload files must use POST(It's possible to use the above cURL), please contact the backend to change!</span>");
-                response.show();
+                $response.find('.source-code').html("<span class='red'>Upload files must use POST(It's possible to use the above cURL), please contact the backend to change!</span>");
+                $response.show();
                 return;
             }
 
@@ -1889,9 +1887,9 @@ $(function() {
         } else {
             if (hasRequestBody) {
                 if ('GET' === method.toUpperCase()) { /* https://stackoverflow.com/questions/978061/http-get-with-request-body */
-                    response.find('.source-code').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request" +
+                    $response.find('.source-code').html("<span class='red'>Browser cannot send RequestBody parameter via a GET request" +
                         "(It's possible to use the above cURL), please contact the backend change to POST!</span>");
-                    response.show();
+                    $response.show();
                     return;
                 }
                 settings['contentType'] = 'application/json';
@@ -1908,21 +1906,22 @@ $(function() {
             }
         }
 
-        let responseData = response.find('.source-code');
+        let $responseData = $response.find('.source-code');
         let start = new Date().getTime();
         $btn.attr('disabled', 'disabled');
         $btn.addClass('disabled');
         $.ajax(settings).done(function(result) {
             $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
-            let html = '';
+            let html;
             if (isBlank(result)) {
-                html += '<div class="green">' + method + ' (' + url + ') success, but response nil</div>';
+                html = '<div class="green">' + method + ' (' + url + ') success, but response nil</div>';
             } else {
-                html += addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true));
+                html = addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true));
             }
-            responseData.css('white-space', '');
-            responseData.html(html);
-            response.show();
+            $responseData.css('white-space', '');
+            $responseData.html(html);
+            Prism.highlightElement($responseData[0]);
+            $response.show();
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
         }).fail(function(error) {
@@ -1944,10 +1943,9 @@ $(function() {
                     }
                 }
             }
-            responseData.css('padding-top', 'unset');
-            responseData.css('white-space', 'pre-wrap');
-            responseData.html(html);
-            response.show();
+            $responseData.css('white-space', 'pre-wrap');
+            $responseData.html(html);
+            $response.show();
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
         });
