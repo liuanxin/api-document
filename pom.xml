@@ -11,7 +11,7 @@
 
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.8.4</version>
+    <version>0.8.5</version>
     <description>Collect api document, support to spring mvc</description>
 
     <developers>
@@ -24,8 +24,8 @@
     <properties>
         <java.version>1.8</java.version>
 
-        <slf4j.version>2.0.1</slf4j.version>
-        <jackson.version>2.13.4</jackson.version>
+        <slf4j.version>2.0.3</slf4j.version>
+        <jackson.version>2.14.0-rc1</jackson.version>
 
         <spring-webmvc.version>5.3.23</spring-webmvc.version>
         <servlet-api.version>2.5</servlet-api.version>
