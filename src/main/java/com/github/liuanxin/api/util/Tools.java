@@ -472,15 +472,16 @@ public class Tools {
             Class<?> fieldType = field.getType();
             if (notBasicType(fieldType)) {
                 if (Collection.class.isAssignableFrom(fieldType)) {
-                    if (notBasicType((Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0])) {
+                    Type type = ((ParameterizedType) field.getGenericType()).getRawType();
+                    if ((type instanceof Class) && notBasicType((Class<?>) type)) {
                         return true;
                     }
                 } else if (Map.class.isAssignableFrom(fieldType)) {
                     Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
-                    if (notBasicType((Class<?>) types[0])) {
+                    if ((types[0] instanceof Class) && notBasicType((Class<?>) types[0])) {
                         return true;
                     }
-                    if (notBasicType((Class<?>) types[1])) {
+                    if ((types[1] instanceof Class) && notBasicType((Class<?>) types[1])) {
                         return true;
                     }
                 }
