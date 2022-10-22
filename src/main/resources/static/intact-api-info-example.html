@@ -1557,7 +1557,8 @@ function handleItem($val, value) {
 }
 function handleContentEditable(html) {
     html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n')
-        .replace(/<\/div>/g, '\n').replace(/<div>|<span .*?>|<\/span>/g, '');
+        .replace(/<\/div>/g, '\n').replace(/<div>|<span .*?>|<\/span>/g, '')
+        .replace(/^<(.*?)>/g, '').replace(/<\/(.*?)>$/g, '');
     if (isNotBlank(html)) {
         let arr = html.split('\n');
         let i, len = arr.length;
