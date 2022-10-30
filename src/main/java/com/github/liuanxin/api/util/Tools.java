@@ -450,8 +450,7 @@ public class Tools {
         if (isBlank(clazz)) {
             return false;
         }
-        Object defaultValue = getTypeDefaultValue(clazz);
-        if (!isBlank(defaultValue)) {
+        if (isNotBlank(getTypeDefaultValue(clazz))) {
             return true;
         }
         // include enum
@@ -475,6 +474,8 @@ public class Tools {
                         return true;
                     }
                     return (types[1] instanceof Class) && notBasicType((Class<?>) types[1]);
+                } else {
+                    return true;
                 }
             }
         }
@@ -483,6 +484,9 @@ public class Tools {
     static boolean innerType(Class<?> clazz) {
         if (basicType(clazz)) {
             return false;
+        }
+        if (clazz == Object.class) {
+            return true;
         }
         List<Field> fieldList = new ArrayList<>();
         fieldList.addAll(Arrays.asList(clazz.getFields()));
@@ -503,6 +507,8 @@ public class Tools {
                     if ((types[1] instanceof Class) && notBasicType((Class<?>) types[1])) {
                         return true;
                     }
+                } else {
+                    return true;
                 }
             }
         }
