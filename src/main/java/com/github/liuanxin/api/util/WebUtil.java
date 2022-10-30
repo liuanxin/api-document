@@ -397,7 +397,8 @@ public final class WebUtil {
         if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
             MethodParameter parameter = parameters[0];
             RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-            return Tools.isNotBlank(requestBody) && Tools.innerType(parameter.getParameterType());
+            return Tools.isNotBlank(requestBody) &&
+                    (Tools.innerType(parameter.getParameterType()) || Tools.innerType(parameter.getParameter().getParameterizedType()));
         }
         return false;
     }
@@ -414,7 +415,7 @@ public final class WebUtil {
             module = new DocumentModule(group);
             module.setIndex(index);
         } else if (module.getIndex() > index) {
-            // if set multi-module and different index, use the smaller
+            // if set multiple-module and different index, use the smaller
             module.setIndex(index);
         }
         module.addUrl(url);

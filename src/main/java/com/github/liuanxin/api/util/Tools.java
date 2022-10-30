@@ -6,6 +6,7 @@ import com.github.liuanxin.api.constant.ApiConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -461,6 +462,25 @@ public class Tools {
         return !basicType(clazz);
     }
 
+    static boolean innerType(Type type) {
+        if (type instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) type).getRawType();
+            if (rawType instanceof Class<?>) {
+                Class<?> clazz = (Class<?>) rawType;
+                if (Collection.class.isAssignableFrom(clazz)) {
+                    Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+                    return (types[0] instanceof Class) && notBasicType((Class<?>) types[0]);
+                } else if (Map.class.isAssignableFrom(clazz)) {
+                    Type[] types = ((ParameterizedType) type).getActualTypeArguments();
+                    if ((types[0] instanceof Class) && notBasicType((Class<?>) types[0])) {
+                        return true;
+                    }
+                    return (types[1] instanceof Class) && notBasicType((Class<?>) types[1]);
+                }
+            }
+        }
+        return false;
+    }
     static boolean innerType(Class<?> clazz) {
         if (basicType(clazz)) {
             return false;
@@ -472,8 +492,8 @@ public class Tools {
             Class<?> fieldType = field.getType();
             if (notBasicType(fieldType)) {
                 if (Collection.class.isAssignableFrom(fieldType)) {
-                    Type type = ((ParameterizedType) field.getGenericType()).getRawType();
-                    if ((type instanceof Class) && notBasicType((Class<?>) type)) {
+                    Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
+                    if ((types[0] instanceof Class) && notBasicType((Class<?>) types[0])) {
                         return true;
                     }
                 } else if (Map.class.isAssignableFrom(fieldType)) {
