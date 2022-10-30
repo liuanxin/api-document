@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -99,8 +101,20 @@ public final class WebUtil {
             if (Tools.isNotBlank(requestMapping) && Tools.isNotBlank(handlerMethod) && wasJsonApi(handlerMethod)) {
                 ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
                 if (Tools.isBlank(ignore) || !ignore.value()) {
-                    PatternsRequestCondition patternsCondition = requestMapping.getPatternsCondition();
-                    Set<String> urlArray = Tools.isBlank(patternsCondition) ? new HashSet<>() : patternsCondition.getPatterns();
+                    PathPatternsRequestCondition patternsCondition = requestMapping.getPathPatternsCondition();
+                    Set<String> urlArray = new HashSet<>();
+                    if (Tools.isNotBlank(patternsCondition)) {
+                        Set<PathPattern> patterns = patternsCondition.getPatterns();
+                        for (PathPattern pattern : patterns) {
+                            urlArray.add(pattern.getPatternString());
+                        }
+                    }
+                    if (urlArray.isEmpty()) {
+                        PatternsRequestCondition condition = requestMapping.getPatternsCondition();
+                        if (Tools.isNotBlank(condition)) {
+                            urlArray.addAll(condition.getPatterns());
+                        }
+                    }
 
                     RequestMethodsRequestCondition methodsCondition = requestMapping.getMethodsCondition();
                     Set<RequestMethod> methodArray = Tools.isBlank(methodsCondition) ? new HashSet<>() : methodsCondition.getMethods();
