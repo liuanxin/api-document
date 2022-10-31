@@ -889,7 +889,7 @@
                                             let requestBodyKey = '_request_body_';
                                             let requestBodyData = localStorage.getItem(moduleUrlId + ':' + requestBodyKey + '') || '';
                                             }}
-                                            <div contenteditable="true" data-lpignore="true" class="language-json request-data-info" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
+                                            <div contenteditable="true" style="display:inline-block;" data-lpignore="true" class="language-json request-data-info" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
                                         </div>
                                     </div>
                                     {{?}}
@@ -1663,32 +1663,34 @@ $(function() {
         let $this = $(this);
         $this.data('before', $this.html());
     });
+    $(document).on('keypress', '.request-data-info', function(e) {
+        if (hasEnter(e)) {
+            document.execCommand('insertHTML', false, '\n');
+            return false;
+        }
+    });
     $(document).on('blur keyup paste input', '.request-data-info', function() {
         let $this = $(this);
-        let html = $this.html();
-        if ($this.data('before') !== html) {
-            $this.data('before', html);
+        let text = $this.text();
+        if ($this.data('before') !== text) {
+            $this.data('before', text);
 
             let key = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $this.attr('data-name');
             let $line = $this.closest('form').find('.request-data > .line-number');
-            if (isNotBlank(html)) {
-                html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n').replace(/<br>/g, '\n')
-                    .replace(/<div>|<span .*?>|<\/span>/g, '').replace(/^<(.*?)>/g, '').replace(/<\/(.*?)>$/g, '');
-                if (isNotBlank(html)) {
-                    let arr = html.split('\n');
-                    let i, len = arr.length;
-                    let strArr = [];
-                    for (i = 0; i < len; i++) {
-                        strArr.push(arr[i].replace(/([ ]*?)\/\*(.*?)\*\/$/, ''));
-                    }
-                    html = strArr.join('\n');
+            if (isNotBlank(text)) {
+                let arr = text.split('\n');
+                let i, len = arr.length;
+                let strArr = [];
+                for (i = 0; i < len; i++) {
+                    strArr.push(arr[i].replace(/([ ]*?)\/\*(.*?)\*\/$/, ''));
                 }
-                localStorage.setItem(key, html);
+                text = strArr.join('\n');
+                localStorage.setItem(key, text);
 
                 let lineHtml = '';
-                let i, lineNum = html.split('\n').length;
-                for (i = 1; i <= lineNum; i++) {
-                    lineHtml += '<div>' + i + '</div>';
+                let j, lineNum = text.split('\n').length;
+                for (j = 1; j <= lineNum; j++) {
+                    lineHtml += '<div>' + j + '</div>';
                 }
                 $line.html(lineHtml);
             } else {
