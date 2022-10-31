@@ -1272,11 +1272,11 @@ function loadData() {
 
             $('.request-data-info').each(function() {
                 let $this = $(this);
-                let html = $this.html();
+                let text = $this.text();
                 let $line = $this.closest('.request-data').find('.line-number');
-                if (isNotBlank(html)) {
+                if (isNotBlank(text)) {
                     let lineHtml = '';
-                    let i, lineNum = handleContentEditable(html).split('\n').length;
+                    let i, lineNum = handleContentEditable(text, false).split('\n').length;
                     for (i = 1; i <= lineNum; i++) {
                         lineHtml += '<div>' + i + '</div>';
                     }
@@ -1555,20 +1555,18 @@ function handleItem($val, value) {
         localStorage.removeItem(key);
     }
 }
-function handleContentEditable(html) {
-    html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n')
-        .replace(/<\/div>/g, '\n').replace(/<div>|<span .*?>|<\/span>/g, '')
-        .replace(/^<(.*?)>/g, '').replace(/<\/(.*?)>$/g, '').replace(/br>/g, '');
-    if (isNotBlank(html)) {
-        let arr = html.split('\n');
+function handleContentEditable(text, dropComment) {
+    if (isBlank(text) || !dropComment) {
+        return text;
+    } else {
+        let arr = text.split('\n');
         let i, len = arr.length;
         let strArr = [];
         for (i = 0; i < len; i++) {
-            strArr.push(arr[i].replace(/([ ]*?)\/\*(.*?)\*\/$/, ''));
+            strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, '').replace(/([ ]*?)\/\/.*?$/, ''));
         }
-        html = strArr.join('\n');
+        return strArr.join('\n');
     }
-    return html;
 }
 function handleInput($this, action, format) {
     let json = '';
@@ -1578,7 +1576,7 @@ function handleInput($this, action, format) {
     try {
         let $request = $source.find('.request-data-info');
         let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
-        json = handleContentEditable($request.html());
+        json = handleContentEditable($request.text(), true);
         json = action(json);
         if (isNotBlank(json)) {
             $request.html(json);
@@ -1667,18 +1665,18 @@ $(function() {
     });
     $(document).on('blur keyup paste input', '.request-data-info', function() {
         let $this = $(this);
-        let html = $this.html();
-        if ($this.data('before') !== html) {
-            $this.data('before', html);
+        let text = $this.text();
+        if ($this.data('before') !== text) {
+            $this.data('before', text);
 
             let key = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $this.attr('data-name');
             let $line = $this.closest('form').find('.request-data > .line-number');
-            if (isNotBlank(html)) {
-                html = handleContentEditable(html);
-                localStorage.setItem(key, html);
+            if (isNotBlank(text)) {
+                text = handleContentEditable(text, false);
+                localStorage.setItem(key, text);
 
                 let lineHtml = '';
-                let i, lineNum = html.split('\n').length;
+                let i, lineNum = text.split('\n').length;
                 for (i = 1; i <= lineNum; i++) {
                     lineHtml += '<div>' + i + '</div>';
                 }
@@ -1732,18 +1730,7 @@ $(function() {
         }
         let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
-        let requestBody = $form.find('.request-data-info').html();
-        if (isNotBlank(requestBody)) {
-            requestBody = handleContentEditable(requestBody);
-
-            let arr = requestBody.split('\n');
-            let i, len = arr.length;
-            let strArr = [];
-            for (i = 0; i < len; i++) {
-                strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, '').replace(/([ ]*?)\/\/.*?$/, ''));
-            }
-            requestBody = strArr.join('\n');
-        }
+        let requestBody = handleContentEditable($form.find('.request-data-info').text(), true);
         if (isNotBlank(requestBody)) {
             try {
                 requestBody = JSON.stringify(JSON.parse(requestBody));
@@ -2022,15 +2009,7 @@ $(function() {
         let $this = $(this);
         let $sourceInfo = $this.closest('.source-info');
         let $source = $sourceInfo.find('.source');
-        let copyValue;
-        if ($source.length !== 0) {
-            copyValue = $source.html();
-        } else {
-            copyValue = $sourceInfo.find('.request-data-info').html();
-            if (isNotBlank(copyValue)) {
-                copyValue = handleContentEditable(copyValue);
-            }
-        }
+        let copyValue = ($source.length !== 0 ? $source : $sourceInfo.find('.request-data-info')).text();
         if (isNotBlank(copyValue)) {
             copyValue = copyValue.replace(/<.*?>/g, '');
 
