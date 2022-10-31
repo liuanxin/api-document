@@ -1665,18 +1665,27 @@ $(function() {
     });
     $(document).on('blur keyup paste input', '.request-data-info', function() {
         let $this = $(this);
-        let text = $this.text();
-        if ($this.data('before') !== text) {
-            $this.data('before', text);
+        let html = $this.html();
+        if ($this.data('before') !== html) {
+            $this.data('before', html);
 
             let key = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $this.attr('data-name');
             let $line = $this.closest('form').find('.request-data > .line-number');
-            if (isNotBlank(text)) {
-                text = handleContentEditable(text, false);
-                localStorage.setItem(key, text);
+            if (isNotBlank(html)) {
+                html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n').replace(/br>/g, '\n');
+                if (isNotBlank(html)) {
+                    let arr = html.split('\n');
+                    let i, len = arr.length;
+                    let strArr = [];
+                    for (i = 0; i < len; i++) {
+                        strArr.push(arr[i].replace(/([ ]*?)\/\*(.*?)\*\/$/, ''));
+                    }
+                    html = strArr.join('\n');
+                }
+                localStorage.setItem(key, html);
 
                 let lineHtml = '';
-                let i, lineNum = text.split('\n').length;
+                let i, lineNum = html.split('\n').length;
                 for (i = 1; i <= lineNum; i++) {
                     lineHtml += '<div>' + i + '</div>';
                 }
