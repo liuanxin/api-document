@@ -1672,7 +1672,8 @@ $(function() {
             let key = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $this.attr('data-name');
             let $line = $this.closest('form').find('.request-data > .line-number');
             if (isNotBlank(html)) {
-                html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n').replace(/br>/g, '\n');
+                html = html.replace(/<div><br><\/div>/g, '\n').replace(/<\/div><div>/g, '\n').replace(/<\/div>/g, '\n').replace(/br>/g, '\n')
+                    .replace(/<div>|<span .*?>|<\/span>/g, '').replace(/^<(.*?)>/g, '').replace(/<\/(.*?)>$/g, '');
                 if (isNotBlank(html)) {
                     let arr = html.split('\n');
                     let i, len = arr.length;
