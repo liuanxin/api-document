@@ -34,7 +34,7 @@
             background: rgba(255,255,255,0.94);
         }
         button, input[type=button] {
-            outline: none;
+            outline: none !important;
         }
         .anchor {
             display: block;
@@ -227,7 +227,7 @@
             padding: 7px;
             position: sticky;
             top: 50px;
-            z-index: 2;
+            z-index: 10;
         }
         .modal-body > .src-prev {
             position: unset;
@@ -424,6 +424,9 @@
             font-weight: 500;
         }
         @media print {
+            header {
+                position: unset;
+            }
             .print-nil {
                 display: none;
             }
@@ -435,6 +438,12 @@
             }
             .source-code {
                 max-height: none;
+            }
+            .line-number {
+                position: unset;
+            }
+            .src-prev {
+                position: unset;
             }
         }
         @media (max-width: 992px), print {
@@ -875,7 +884,7 @@
                                     <div class="bottom-table source-info">
                                         <div class="src-prev">
                                             <div class="src-prev-left">
-                                                <span>请求</span>
+                                                <span>请求体</span>
                                                 <span class="src-prev-req-format print-nil">格式化</span>
                                                 <span class="src-prev-req-compress print-nil">压缩</span>
                                                 <span class="src-prev-req-msg red print-nil"></span>
@@ -886,13 +895,12 @@
                                                 <div class="no-scroll print-nil">全显</div>
                                             </div>
                                         </div>
+                                        {{
+                                        let requestBodyKey = '_request_body_';
+                                        let requestBodyData = localStorage.getItem(moduleUrlId + ':' + requestBodyKey + '') || '';
+                                        }}
                                         <div class="request-data">
-                                            <div class="line-number"></div>
-                                            {{
-                                            let requestBodyKey = '_request_body_';
-                                            let requestBodyData = localStorage.getItem(moduleUrlId + ':' + requestBodyKey + '') || '';
-                                            }}
-                                            <div contenteditable="true" style="display:inline-block;" data-lpignore="true" class="language-json request-data-info" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
+                                            <div class="request-data-info" data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
                                         </div>
                                     </div>
                                     {{?}}
@@ -1042,6 +1050,8 @@
 
 <script src="//cdn.bootcdn.net/ajax/libs/prism/1.23.0/prism.min.js"></script>
 <script src="//cdn.bootcdn.net/ajax/libs/prism/1.23.0/components/prism-json.min.js"></script>
+<script src="//cdn.bootcdn.net/ajax/libs/ace/1.12.5/ace.js"></script>
+<script src="//cdn.bootcdn.net/ajax/libs/json5/2.2.1/index.min.js"></script>
 
 <script type="text/javascript">
 function isBlank(str) {
@@ -1274,20 +1284,7 @@ function loadData() {
             });
 
             $('.request-data-info').each(function() {
-                let $this = $(this);
-                let text = $this.text();
-                let $line = $this.closest('.request-data').find('.line-number');
-                if (isNotBlank(text)) {
-                    let lineHtml = '';
-                    let i, lineNum = handleContentEditable(text, false).split('\n').length;
-                    for (i = 1; i <= lineNum; i++) {
-                        lineHtml += '<div>' + i + '</div>';
-                    }
-                    $line.html(lineHtml);
-                    Prism.highlightElement($this[0]);
-                } else {
-                    $line.html('<div>1</div>');
-                }
+                setEdit($(this)[0]);
             });
 
             if ($('.col-md-3').css('display') !== 'none') {
@@ -1325,6 +1322,28 @@ function handleError($arrow, $ele, info) {
     $ele.html('<div class="config red">' + info + '</div>' +
         '<div class="config">请求的上下文路径不对? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">配置</span></div>' +
         '<div class="config">配置有误? <span id="delete-prefix" class="config-prefix">删除配置</span></div>');
+}
+
+function setEdit(ele) {
+    let editor = ace.edit(ele);
+    editor.setTheme("ace/theme/chrome");
+    editor.setShowPrintMargin(false);
+    let session = editor.getSession();
+    session.setOptions({ tabSize: 2, useSoftTabs: false });
+    session.setUseWorker(false);
+    session.setMode("ace/mode/json");
+}
+function getValueHeight(ele) {
+    return (ace.edit(ele[0]) || ace.edit(ele)).renderer.layerConfig.maxHeight;
+}
+function getEditValue(ele) {
+    return (ace.edit(ele[0]) || ace.edit(ele)).getValue();
+}
+function setEditValue(ele, value) {
+    (ace.edit(ele[0]) || ace.edit(ele)).setValue(value);
+}
+function resizeEdit(ele) {
+    (ace.edit(ele[0]) || ace.edit(ele)).resize();
 }
 
 function addComment(json, element, res) {
@@ -1558,19 +1577,6 @@ function handleItem($val, value) {
         localStorage.removeItem(key);
     }
 }
-function handleContentEditable(text, dropComment) {
-    if (isBlank(text) || !dropComment) {
-        return text;
-    } else {
-        let arr = text.split('\n');
-        let i, len = arr.length;
-        let strArr = [];
-        for (i = 0; i < len; i++) {
-            strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, ''));
-        }
-        return strArr.join('\n');
-    }
-}
 function handleInput($this, action, format) {
     let json = '';
     let $source = $this.closest('.source-info');
@@ -1579,21 +1585,14 @@ function handleInput($this, action, format) {
     try {
         let $request = $source.find('.request-data-info');
         let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
-        json = handleContentEditable($request.text(), true);
+        json = JSON.stringify(JSON5.parse(getEditValue($request)));
         json = action(json);
         if (isNotBlank(json)) {
-            $request.html(json);
-            Prism.highlightElement($request[0]);
+            setEditValue($request, json);
             localStorage.setItem(itemKey, json);
         } else {
             localStorage.removeItem(itemKey);
         }
-        let lineHtml = '';
-        let i, lineNum = json.split('\n').length;
-        for (i = 1; i <= lineNum; i++) {
-            lineHtml += '<div>' + i + '</div>';
-        }
-        $source.find('.line-number').html(lineHtml);
         if (format) {
             $reqMsg.html('生成的尾部注释不影响调用');
             setTimeout(function () { $reqMsg.html(''); }, 3000);
@@ -1662,57 +1661,16 @@ $(function() {
         handleItem($this, $this.val());
     });
 
-    $(document).on('focus', '.request-data-info', function() {
-        let $this = $(this);
-        $this.data('before', $this.html());
-    });
-    $(document).on('keypress', '.request-data-info', function(e) {
-        if (hasEnter(e)) {
-            document.execCommand('insertHTML', false, '\n');
-            return false;
-        }
-    });
-    $(document).on('blur keyup paste input', '.request-data-info', function() {
-        let $this = $(this);
-        let text = $this.text();
-        if ($this.data('before') !== text) {
-            $this.data('before', text);
-
-            let key = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $this.attr('data-name');
-            let $line = $this.closest('form').find('.request-data > .line-number');
-            if (isNotBlank(text)) {
-                let arr = text.split('\n');
-                let i, len = arr.length;
-                let strArr = [];
-                for (i = 0; i < len; i++) {
-                    strArr.push(arr[i].replace(/([ ]*?)\/\*(.*?)\*\/$/, ''));
-                }
-                text = strArr.join('\n');
-                localStorage.setItem(key, text);
-
-                let lineHtml = '';
-                let j, lineNum = text.split('\n').length;
-                for (j = 1; j <= lineNum; j++) {
-                    lineHtml += '<div>' + j + '</div>';
-                }
-                $line.html(lineHtml);
-            } else {
-                localStorage.removeItem(key);
-                $line.html('<div>1</div>');
-            }
-        }
-    });
-
     $(document).on('click', '.src-prev-req-format', function() {
         let $formParent = $(this).closest('.module-api-info');
         handleInput($(this), function(json) {
-            return addComment(escapeHtml(JSON.stringify(JSON.parse(json), null, 2)), $formParent, false);
+            return addComment(escapeHtml(JSON.stringify(JSON5.parse(json), null, 2)), $formParent, false);
         }, true);
     });
 
     $(document).on('click', '.src-prev-req-compress', function() {
         handleInput($(this), function(json) {
-            return JSON.stringify(JSON.parse(json));
+            return JSON.stringify(JSON5.parse(json));
         }, false);
     });
 
@@ -1745,10 +1703,10 @@ $(function() {
         }
         let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
-        let requestBody = handleContentEditable($form.find('.request-data-info').text(), true);
+        let requestBody = getEditValue($form.find('.request-data-info'));
         if (isNotBlank(requestBody)) {
             try {
-                requestBody = JSON.stringify(JSON.parse(requestBody));
+                requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
                 console.error('parse(' + requestBody + ') error', e);
                 $reqMsg.html('Json 数据有误!');
@@ -1997,34 +1955,38 @@ $(function() {
     });
 
     $(document).on('click', '.no-scroll', function() {
-        let $sourceInfo = $(this).closest('.source-info');
+        let $this = $(this);
+        let $sourceInfo = $this.closest('.source-info');
         let $source = $sourceInfo.find('.source-code');
         if ($source.length !== 0) {
             if ($source.css('max-height') === 'none') {
                 $source.css('max-height', '');
-                $(this).html('全显');
+                $this.html('全显');
             } else {
                 $source.css('max-height', 'unset');
-                $(this).html('滚动');
+                $this.html('滚动');
             }
         } else {
             $source = $sourceInfo.find('.request-data');
-            if ($source.css('max-height') === 'none') {
+            let editElement = $sourceInfo.find('.request-data-info');
+            let valueHeight = getValueHeight(editElement) + 'px';
+            if ($source.css('max-height') === valueHeight) {
                 $source.css('max-height', '');
                 $source.css('height', '');
-                $(this).html('全显');
+                $this.html('全显');
             } else {
-                $source.css('max-height', 'unset');
-                $source.css('height', 'unset');
-                $(this).html('滚动');
+                $source.css('max-height', valueHeight);
+                $source.css('height', valueHeight);
+                $this.html('滚动');
             }
+            resizeEdit(editElement);
         }
     });
     $(document).on('click', '.copy', function() {
         let $this = $(this);
         let $sourceInfo = $this.closest('.source-info');
         let $source = $sourceInfo.find('.source');
-        let copyValue = ($source.length !== 0 ? $source : $sourceInfo.find('.request-data-info')).text();
+        let copyValue = ($source.length !== 0) ? $source.text() : getEditValue($sourceInfo.find('.request-data-info'));
         if (isNotBlank(copyValue)) {
             copyValue = copyValue.replace(/<.*?>/g, '');
 
