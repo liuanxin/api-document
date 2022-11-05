@@ -424,8 +424,9 @@ public final class WebUtil {
         if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
             MethodParameter parameter = parameters[0];
             RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-            return Tools.isNotBlank(requestBody) &&
-                    (Tools.innerType(parameter.getParameterType()) || Tools.innerType(parameter.getParameter().getParameterizedType()));
+            // return Tools.isNotBlank(requestBody) &&
+            //        (Tools.innerType(parameter.getParameterType()) || Tools.innerType(parameter.getParameter().getParameterizedType()));
+            return Tools.isNotBlank(requestBody);
         }
         return false;
     }
