@@ -1955,29 +1955,33 @@ $(function() {
     });
 
     $(document).on('click', '.no-scroll', function() {
+        let display = '全显', scroll = '滚动';
         let $this = $(this);
         let $sourceInfo = $this.closest('.source-info');
         let $source = $sourceInfo.find('.source-code');
         if ($source.length !== 0) {
             if ($source.css('max-height') === 'none') {
                 $source.css('max-height', '');
-                $this.html('全显');
+                $this.html(display);
             } else {
                 $source.css('max-height', 'unset');
-                $this.html('滚动');
+                $this.html(scroll);
             }
         } else {
             $source = $sourceInfo.find('.request-data');
             let editElement = $sourceInfo.find('.request-data-info');
-            let valueHeight = getValueHeight(editElement) + 'px';
-            if ($source.css('max-height') === valueHeight) {
+            let height = getValueHeight(editElement);
+            let oldHeight = $source.css('max-height');
+            let originalHeight = isNotBlank(oldHeight) ? (parseFloat(oldHeight.substring(0, oldHeight.indexOf('px'))) || 0) : 0;
+            let valueHeight = height + 'px';
+            if (oldHeight === valueHeight || originalHeight >= height) {
                 $source.css('max-height', '');
                 $source.css('height', '');
-                $this.html('全显');
+                $this.html(display);
             } else {
                 $source.css('max-height', valueHeight);
                 $source.css('height', valueHeight);
-                $this.html('滚动');
+                $this.html(scroll);
             }
             resizeEdit(editElement);
         }
