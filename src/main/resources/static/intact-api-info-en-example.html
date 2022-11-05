@@ -1335,6 +1335,7 @@ function handleError($arrow, $ele, info) {
 function setEdit(ele) {
     let editor = ace.edit(ele);
     editor.setTheme("ace/theme/chrome");
+    editor.setAutoScrollEditorIntoView(true);
     editor.setShowPrintMargin(false);
     let session = editor.getSession();
     session.setOptions({ tabSize: 2, useSoftTabs: false });
@@ -1352,11 +1353,6 @@ function setEditValue(ele, value) {
 }
 function resizeEdit(ele) {
     (ace.edit(ele[0]) || ace.edit(ele)).resize();
-}
-function allResize() {
-    $('.request-data-info').each(function() {
-        resizeEdit($(this));
-    });
 }
 
 function addComment(json, element, res) {
@@ -1951,7 +1947,6 @@ $(function() {
             $content.css('width', '100%');
             localStorage.setItem(rightArrowKey, '1');
         }
-        allResize();
     });
 
     $('#config-prefix-url').on('show.bs.modal', function () {
