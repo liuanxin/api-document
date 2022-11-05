@@ -18,7 +18,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class Tools {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Tools.class);
@@ -266,24 +266,8 @@ public class Tools {
     public static <T> T first(T[] array) {
         return isEmpty(array) ? null : array[0];
     }
-    public static <T> String toStr(Collection<T> collection) {
-        if (isEmpty(collection)) {
-            return ApiConst.EMPTY;
-        }
-        StringBuilder sbd = new StringBuilder();
-        int i = 0;
-        for (T t : collection) {
-            sbd.append(t);
-            if (i + 1 != collection.size()) {
-                sbd.append(ApiConst.SPLIT);
-            }
-            i++;
-        }
-        return sbd.toString();
-    }
 
     // ========== list map ==========
-    @SuppressWarnings("unchecked")
     static List lists(Object... values) {
         return isEmpty(values) ? new ArrayList() : new ArrayList(Arrays.asList(values));
     }
@@ -300,7 +284,6 @@ public class Tools {
     public static <K, V> HashMap<K, V> maps(Object... keysAndValues) {
         return (HashMap<K, V>) maps(newHashMap(), keysAndValues);
     }
-    @SuppressWarnings("unchecked")
     private static <K, V> Map<K, V> maps(Map<K, V> result, Object... keysAndValues) {
         if (isNotEmpty(keysAndValues)) {
             for (int i = 0; i < keysAndValues.length; i += 2) {
@@ -349,11 +332,6 @@ public class Tools {
                         if (isNotBlank(value) && source.equalsIgnoreCase(value.toString().trim())) {
                             return em;
                         }
-                        /*
-                        if (source.equalsIgnoreCase(String.valueOf(((Enum) em).ordinal()))) {
-                            return em;
-                        }
-                        */
                     }
                 }
                 return constants[0];

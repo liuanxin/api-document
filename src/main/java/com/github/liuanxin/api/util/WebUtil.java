@@ -3,6 +3,8 @@ package com.github.liuanxin.api.util;
 import com.github.liuanxin.api.annotation.*;
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
-import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public final class WebUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebUtil.class);
 
     public static List<DocumentInfo> getProjects(Map<String, String> projectMap) {
         if (Tools.isNotEmpty(projectMap)) {
@@ -84,7 +86,6 @@ public final class WebUtil {
         return copyright;
     }
 
-    @SuppressWarnings("ConstantConditions")
     public static DocumentInfoAndUrlMap infoAndUrlMap(RequestMappingHandlerMapping mapping,
                                                       DocumentCopyright copyright) {
         Map<String, DocumentModule> moduleMap = Tools.newLinkedHashMap();
@@ -101,32 +102,16 @@ public final class WebUtil {
             if (Tools.isNotBlank(requestMapping) && Tools.isNotBlank(handlerMethod) && wasJsonApi(handlerMethod)) {
                 ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
                 if (Tools.isBlank(ignore) || !ignore.value()) {
-                    PathPatternsRequestCondition patternsCondition = requestMapping.getPathPatternsCondition();
-                    Set<String> urlArray = new HashSet<>();
-                    if (Tools.isNotBlank(patternsCondition)) {
-                        Set<PathPattern> patterns = patternsCondition.getPatterns();
-                        for (PathPattern pattern : patterns) {
-                            urlArray.add(pattern.getPatternString());
-                        }
-                    }
-                    if (urlArray.isEmpty()) {
-                        PatternsRequestCondition condition = requestMapping.getPatternsCondition();
-                        if (Tools.isNotBlank(condition)) {
-                            urlArray.addAll(condition.getPatterns());
-                        }
-                    }
-
-                    RequestMethodsRequestCondition methodsCondition = requestMapping.getMethodsCondition();
-                    Set<RequestMethod> methodArray = Tools.isBlank(methodsCondition) ? new HashSet<>() : methodsCondition.getMethods();
-
-                    if (!ignoreUrl(urlArray, methodArray, copyright.getIgnoreUrlSet())) {
+                    Set<String> urlSet = getUrl(requestMapping);
+                    Set<String> methodSet = getMethod(requestMapping);
+                    if (!ignoreUrl(urlSet, methodSet, copyright.getIgnoreUrlSet())) {
                         String method = handlerMethod.toString();
                         boolean innerRequestBody = hasInnerParamRequestBody(handlerMethod);
                         DocumentUrl document = new DocumentUrl();
                         // url
-                        document.setUrl(Tools.toStr(urlArray));
+                        document.setUrl(String.join(", ", urlSet));
                         // method : get, post, put...
-                        document.setMethod(Tools.toStr(methodArray));
+                        document.setMethod(String.join(", ", methodSet));
                         // param
                         List<DocumentParam> paramList;
                         if (innerRequestBody) {
@@ -239,15 +224,57 @@ public final class WebUtil {
         return new DocumentInfoAndUrlMap(documentInfo, documentMap);
     }
 
-    private static String getRequestBodyParamTypeByMethod(HandlerMethod handlerMethod) {
-        String paramType = handlerMethod.getMethod().getParameterTypes()[0].toString();
-        if (Tools.isNotBlank(paramType)) {
-            String prefix = "class ";
-            if (paramType.startsWith(prefix)) {
-                paramType = paramType.substring(prefix.length());
+    private static Set<String> getUrl(RequestMappingInfo requestMapping) {
+        Set<String> urlSet = new LinkedHashSet<>();
+        /*
+        PathPatternsRequestCondition pathPatternsCondition = requestMapping.getPathPatternsCondition();
+        if (Tools.isNotBlank(pathPatternsCondition)) {
+            Set<PathPattern> patterns = pathPatternsCondition.getPatterns();
+            if (Tools.isNotEmpty(patterns)) {
+                for (PathPattern pattern : patterns) {
+                    urlSet.add(pattern.getPatternString());
+                }
             }
         }
-        return paramType;
+        */
+        try {
+            Object condition = requestMapping.getClass().getMethod("getPathPatternsCondition").invoke(requestMapping);
+            if (Tools.isNotBlank(condition)) {
+                // noinspection unchecked
+                Set<PathPattern> patterns = (Set<PathPattern>) condition.getClass().getMethod("getPatterns").invoke(condition);
+                if (Tools.isNotEmpty(patterns)) {
+                    for (PathPattern pattern : patterns) {
+                        urlSet.add(pattern.getPatternString());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("getPathPatternsCondition just support with spring-mvc 5.3", e);
+            }
+        }
+        if (urlSet.isEmpty()) {
+            PatternsRequestCondition condition = requestMapping.getPatternsCondition();
+            if (Tools.isNotBlank(condition)) {
+                urlSet.addAll(condition.getPatterns());
+            }
+        }
+        return urlSet;
+    }
+    private static Set<String> getMethod(RequestMappingInfo requestMapping) {
+        Set<String> methodSet = new LinkedHashSet<>();
+        Set<RequestMethod> methodArray = requestMapping.getMethodsCondition().getMethods();
+        if (Tools.isNotEmpty(methodArray)) {
+            for (RequestMethod method : methodArray) {
+                methodSet.add(method.name());
+            }
+        }
+        return methodSet;
+    }
+
+    private static String getRequestBodyParamTypeByMethod(HandlerMethod handlerMethod) {
+        Class<?>[] parameterTypes = handlerMethod.getMethod().getParameterTypes();
+        return Tools.isNotEmpty(parameterTypes) ? parameterTypes[0].getName() : ApiConst.EMPTY;
     }
     private static String getReturnTypeByMethod(HandlerMethod handlerMethod, ApiMethod apiMethod) {
         String returnType;
@@ -422,15 +449,11 @@ public final class WebUtil {
         moduleMap.put(group, module);
     }
 
-    private static boolean ignoreUrl(Set<String> urlSet, Set<RequestMethod> methodSet, Set<String> ignoreUrlSet) {
+    private static boolean ignoreUrl(Set<String> urlSet, Set<String> methodSet, Set<String> ignoreUrlSet) {
         if (Tools.isBlank(ignoreUrlSet)) {
             ignoreUrlSet = Tools.sets();
         }
 
-        List<String> methodList = new LinkedList<>();
-        for (RequestMethod method : methodSet) {
-            methodList.add(method.name());
-        }
         for (String ignoreUrl : ignoreUrlSet) {
             if (!ignoreUrl.startsWith("/")) {
                 ignoreUrl = "/" + ignoreUrl;
@@ -441,7 +464,7 @@ public final class WebUtil {
                 if (urlAndMethod.length == 2) {
                     String tmpUrl = urlAndMethod[0];
                     String tmpMethod = urlAndMethod[1].toUpperCase();
-                    if (methodList.contains(tmpMethod)) {
+                    if (methodSet.contains(tmpMethod)) {
                         for (String url : urlSet) {
                             if (url.matches(tmpUrl)) {
                                 return true;
@@ -460,7 +483,7 @@ public final class WebUtil {
                 if (urlAndMethod.length == 2) {
                     String tmpUrl = urlAndMethod[0];
                     String tmpMethod = urlAndMethod[1].toUpperCase();
-                    if (urlSet.contains(tmpUrl) && methodList.contains(tmpMethod)) {
+                    if (urlSet.contains(tmpUrl) && methodSet.contains(tmpMethod)) {
                         return true;
                     }
                 } else if (urlSet.contains(ignoreUrl)) {
