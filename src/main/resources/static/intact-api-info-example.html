@@ -1326,7 +1326,7 @@ function handleError($arrow, $ele, info) {
 
 function setEdit(ele) {
     let editor = ace.edit(ele);
-    editor.setTheme("ace/theme//chrome");
+    editor.setTheme("ace/theme/chrome");
     editor.setShowPrintMargin(false);
     let session = editor.getSession();
     session.setOptions({ tabSize: 2, useSoftTabs: false });
