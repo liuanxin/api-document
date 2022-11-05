@@ -792,7 +792,7 @@ function hasEnter(event) {
     return handled;
 }
 
-let localServerPathItem = 'prefix-url';
+let localServerPathItem = '__prefix-url__';
 function handleContextPath() {
     let param = 'context-path=', append = '&';
     let search = location.search.trim();
@@ -884,7 +884,7 @@ function loadMulti() {
     });
 }
 
-let rightArrowKey = 'right-arrow';
+let rightArrowKey = '__right-arrow__';
 function loadData() {
     let $title = $('title');
     let $headerContent = $('.header-content');
