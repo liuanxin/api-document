@@ -1273,9 +1273,10 @@ function loadData() {
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)');
             $rightArrow.css('display', '');
 
+            let $nav = $('.col-md-3');
             if (localStorage.getItem(rightArrowKey) === '1') {
                 $rightArrow.find('.img').css('transform', 'rotate(180deg)');
-                $('.col-md-3').css('width', '0');
+                $nav.css('width', '0');
                 $('.col-md-9').css('width', '100%');
             }
 
@@ -1294,7 +1295,7 @@ function loadData() {
                 setEdit($(this)[0]);
             });
 
-            if ($('.col-md-3').css('display') !== 'none') {
+            if ($nav.css('display') !== 'none') {
                 let hash = location.hash;
                 if (isNotBlank(hash)) {
                     let $anchor = $(hash);
@@ -1351,6 +1352,11 @@ function setEditValue(ele, value) {
 }
 function resizeEdit(ele) {
     (ace.edit(ele[0]) || ace.edit(ele)).resize();
+}
+function allResize() {
+    $('.request-data-info').each(function() {
+        resizeEdit($(this)[0]);
+    });
 }
 
 function addComment(json, element, res) {
@@ -1945,6 +1951,7 @@ $(function() {
             $content.css('width', '100%');
             localStorage.setItem(rightArrowKey, '1');
         }
+        allResize();
     });
 
     $('#config-prefix-url').on('show.bs.modal', function () {

@@ -935,9 +935,10 @@ function loadData() {
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)'); /* Avoid navigating not display when switching items */
             $rightArrow.css('display', '');
 
+            let $nav = $('.col-md-3');
             if (localStorage.getItem(rightArrowKey) === '1') {
                 $rightArrow.find('.img').css('transform', 'rotate(180deg)');
-                $('.col-md-3').css('width', '0');
+                $nav.css('width', '0');
                 $('.col-md-9').css('width', '100%');
             }
 
@@ -952,7 +953,7 @@ function loadData() {
                 }
             });
 
-            if ($('.col-md-3').css('display') !== 'none') {
+            if ($nav.css('display') !== 'none') {
                 let hash = location.hash;
                 if (isNotBlank(hash)) {
                     let $anchor = $(hash);
