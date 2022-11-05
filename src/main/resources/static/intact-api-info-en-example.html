@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jQuery-Validation-Engine/2.6.4/validationEngine.jquery.min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/prism/1.23.0/themes/prism.min.css">
-    <style> @import url('//fonts.googleapis.com/css2?family=Fira+Code&display=swap'); </style>
+    <style> @import url('//cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/fira_code.min.css'); </style>
     <style>
         * {
             font-family: "Fira Code", "sans-serif", monospace, "Glyphicons Halflings" !important;
@@ -1326,7 +1326,7 @@ function handleError($arrow, $ele, info) {
 
 function setEdit(ele) {
     let editor = ace.edit(ele);
-    editor.setTheme("ace/theme/chrome");
+    editor.setTheme("ace/theme//chrome");
     editor.setShowPrintMargin(false);
     let session = editor.getSession();
     session.setOptions({ tabSize: 2, useSoftTabs: false });
