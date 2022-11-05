@@ -338,7 +338,7 @@
             height: 26px;
             cursor: pointer;
             background: #fff;
-            z-index: 2;
+            z-index: 20;
         }
         .right-arrow .img {
             width: 26px;
@@ -1355,7 +1355,7 @@ function resizeEdit(ele) {
 }
 function allResize() {
     $('.request-data-info').each(function() {
-        resizeEdit($(this)[0]);
+        resizeEdit($(this));
     });
 }
 
