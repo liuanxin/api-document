@@ -1258,14 +1258,26 @@ function loadData() {
             $urlInfo.html(urlRenderTemplate(doc));
             $urlNavInfo.html(navRenderTemplate(doc));
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)');
-            $rightArrow.css('display', '');
 
             let $nav = $('.col-md-3');
+            $rightArrow.css('display', 'none');
             if (localStorage.getItem(rightArrowKey) === '1') {
+                let $content = $('.col-md-9');
+                $nav.css('display', 'none');
+                $content.css('display', 'none');
+
                 $rightArrow.find('.img').css('transform', 'rotate(180deg)');
                 $nav.css('width', '0');
-                $('.col-md-9').css('width', '100%');
+                $content.css('width', '100%');
+
+                $nav.css('display', '');
+                $content.css('display', '');
             }
+            $rightArrow.css('display', '');
+
+            $('.request-data-info').each(function() {
+                setEdit($(this));
+            });
 
             $('.source-code').each(function() {
                 let html = escapeHtml($(this).html());
@@ -1276,10 +1288,6 @@ function loadData() {
                 } else {
                     $(this).html(addLine('<span class="red">数据为空 或 无法解析</span>'));
                 }
-            });
-
-            $('.request-data-info').each(function() {
-                setEdit($(this)[0]);
             });
 
             if ($nav.css('display') !== 'none') {
@@ -1320,7 +1328,7 @@ function handleError($arrow, $ele, info) {
 }
 
 function setEdit(ele) {
-    let editor = ace.edit(ele);
+    let editor = (ace.edit(ele[0]) || ace.edit(ele));
     editor.setTheme("ace/theme/chrome");
     editor.setAutoScrollEditorIntoView(true);
     editor.setShowPrintMargin(false);

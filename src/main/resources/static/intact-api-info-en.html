@@ -926,14 +926,22 @@ function loadData() {
             $urlInfo.html(urlRenderTemplate(doc));
             $urlNavInfo.html(navRenderTemplate(doc));
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)'); /* Avoid navigating not display when switching items */
-            $rightArrow.css('display', '');
 
             let $nav = $('.col-md-3');
+            $rightArrow.css('display', 'none');
             if (localStorage.getItem(rightArrowKey) === '1') {
+                let $content = $('.col-md-9');
+                $nav.css('display', 'none');
+                $content.css('display', 'none');
+
                 $rightArrow.find('.img').css('transform', 'rotate(180deg)');
                 $nav.css('width', '0');
-                $('.col-md-9').css('width', '100%');
+                $content.css('width', '100%');
+
+                $nav.css('display', '');
+                $content.css('display', '');
             }
+            $rightArrow.css('display', '');
 
             $('.source-code').each(function() {
                 let html = escapeHtml($(this).html());
