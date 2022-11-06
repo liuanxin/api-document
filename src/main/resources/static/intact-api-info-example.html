@@ -1599,29 +1599,36 @@ function handleItem($val, value) {
     }
 }
 function handleInput($this, action, format) {
-    let json = '';
     let $source = $this.closest('.source-info');
-    let $reqMsg = $source.find('.src-prev-req-msg');
-    $reqMsg.html('');
-    try {
-        let $request = $source.find('.request-data-info');
+    let $request = $source.find('.request-data-info');
+    let value = getEditValue($request);
+    if (isNotBlank(value)) {
         let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
-        json = JSON.stringify(JSON5.parse(getEditValue($request)));
-        json = action(json);
-        if (isNotBlank(json)) {
-            setEditValue($request, json);
-            localStorage.setItem(itemKey, json);
-        } else {
-            localStorage.removeItem(itemKey);
+        let $reqMsg = $source.find('.src-prev-req-msg');
+        $reqMsg.html('');
+        let json = '';
+        try {
+            json = JSON.stringify(JSON5.parse(value));
+            json = action(json);
+            if (isNotBlank(json)) {
+                setEditValue($request, json);
+                localStorage.setItem(itemKey, json);
+            } else {
+                localStorage.removeItem(itemKey);
+            }
+            if (format) {
+                $reqMsg.html('Comment on tail does not affect the Request');
+                setTimeout(function () {
+                    $reqMsg.html('');
+                }, 3000);
+            }
+        } catch (e) {
+            console.error('format json(' + json + ') error', e);
+            $reqMsg.html('Json data error');
+            setTimeout(function () {
+                $reqMsg.html('');
+            }, 3000);
         }
-        if (format) {
-            $reqMsg.html('生成的尾部注释不影响调用');
-            setTimeout(function () { $reqMsg.html(''); }, 3000);
-        }
-    } catch (e) {
-        console.error('格式化 json(' + json + ') 时错误', e);
-        $reqMsg.html('Json 数据有误');
-        setTimeout(function () { $reqMsg.html(''); }, 3000);
     }
 }
 
