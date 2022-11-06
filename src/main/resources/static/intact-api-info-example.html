@@ -1615,14 +1615,14 @@ function handleInput($this, action, format) {
                 localStorage.removeItem(itemKey);
             }
             if (format) {
-                $reqMsg.html('Comment on tail does not affect the Request');
+                $reqMsg.html('生成的尾部注释不影响调用');
                 setTimeout(function () {
                     $reqMsg.html('');
                 }, 3000);
             }
         } catch (e) {
-            console.error('format json(' + value + ') error', e);
-            $reqMsg.html('Json data error');
+            console.error('格式化 json(' + value + ') 时错误', e);
+            $reqMsg.html('Json 数据有误');
             setTimeout(function () {
                 $reqMsg.html('');
             }, 3000);
