@@ -931,6 +931,7 @@ function loadData() {
             $rightArrow.css('display', 'none');
             if (localStorage.getItem(rightArrowKey) === '1') {
                 let $content = $('.col-md-9');
+                $rightArrow.css('display', 'none');
                 $nav.css('display', 'none');
                 $content.css('display', 'none');
 
@@ -938,10 +939,10 @@ function loadData() {
                 $nav.css('width', '0');
                 $content.css('width', '100%');
 
+                $rightArrow.css('display', '');
                 $nav.css('display', '');
                 $content.css('display', '');
             }
-            $rightArrow.css('display', '');
 
             $('.source-code').each(function() {
                 let html = escapeHtml($(this).html());
