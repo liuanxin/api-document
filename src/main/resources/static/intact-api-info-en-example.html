@@ -2050,7 +2050,16 @@ $(function() {
         let $this = $(this);
         let $sourceInfo = $this.closest('.source-info');
         let $source = $sourceInfo.find('.source');
-        let copyValue = ($source.length !== 0) ? $source.text() : getEditValue($sourceInfo.find('.request-data-info'));
+        let copyValue;
+        if ($source.length !== 0) {
+            copyValue = $source.text();
+        } else {
+            let $copyElement = $sourceInfo.find('.request-data-info');
+            if ($copyElement.length === 0) {
+                $copyElement = $sourceInfo.find('.result-data-info');
+            }
+            copyValue = getEditValue($copyElement);
+        }
         if (isNotBlank(copyValue)) {
             copyValue = copyValue.replace(/<.*?>/g, '');
 
