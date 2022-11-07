@@ -253,7 +253,16 @@
             max-height: 380px;
             height: 380px;
         }
+        .result-data {
+            max-height: 380px;
+            height: 380px;
+        }
         .request-data-info {
+            width: 100%;
+            height: 100%;
+        }
+        .result-data-info {
+            background: #f5f5f5;
             width: 100%;
             height: 100%;
         }
@@ -921,7 +930,9 @@
                                                 <div class="no-scroll print-nil">全显</div>
                                             </div>
                                         </div>
-                                        <div class="source-code"></div>
+                                        <div class="result-data">
+                                            <div class="result-data-info" data-lpignore="true"></div>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -1329,14 +1340,14 @@ function handleError($arrow, $ele, info) {
 
 function setEdit(ele) {
     let editor = (ace.edit(ele[0]) || ace.edit(ele));
-    editor.setTheme("ace/theme/chrome");
-    editor.setAutoScrollEditorIntoView(true);
-    editor.setShowPrintMargin(false);
     let session = editor.getSession();
     session.setOptions({ tabSize: 2, useSoftTabs: false });
     session.setUseWrapMode(true);
     session.setUseWorker(false);
     session.setMode("ace/mode/json");
+    editor.setTheme("ace/theme/chrome");
+    editor.setAutoScrollEditorIntoView(true);
+    editor.setShowPrintMargin(false);
 
     editor.on('change', function() {
         let $this = $(document.activeElement);
@@ -1903,21 +1914,33 @@ $(function() {
             }
         }
 
-        let $responseData = $response.find('.source-code');
+        let $responseData = $response.find('.result-data-info');
         let start = new Date().getTime();
         $btn.attr('disabled', 'disabled');
         $btn.addClass('disabled');
         $.ajax(settings).done(function(result) {
             $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
             let html;
-            if (isBlank(result)) {
+            let fail = isBlank(result);
+            if (fail) {
                 html = '<div class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</div>';
             } else {
-                html = addLine(addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true));
+                html = addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true);
             }
             $responseData.css({'white-space':'','flex-direction':'','padding':''});
             $responseData.html(html);
-            Prism.highlightElement($responseData.find('.source')[0]);
+            if (!fail) {
+                let editor = ace.edit($responseData[0]);
+                let session = editor.getSession();
+                session.setOptions({ tabSize: 2, useSoftTabs: false });
+                session.setUseWrapMode(true);
+                session.setUseWorker(false);
+                session.setMode("ace/mode/json");
+                editor.setTheme("ace/theme/chrome");
+                editor.setAutoScrollEditorIntoView(true);
+                editor.setShowPrintMargin(false);
+                editor.setReadOnly(true);
+            }
             $response.show();
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
@@ -2000,8 +2023,14 @@ $(function() {
             }
         } else {
             $source = $sourceInfo.find('.request-data');
-            let editElement = $sourceInfo.find('.request-data-info');
-            let height = getValueHeight(editElement);
+            if ($source.length === 0) {
+                $source = $sourceInfo.find('.result-data');
+            }
+            let $editElement = $sourceInfo.find('.request-data-info');
+            if ($editElement.length === 0) {
+                $editElement = $sourceInfo.find('.result-data-info');
+            }
+            let height = getValueHeight($editElement);
             let oldHeight = $source.css('max-height');
             let originalHeight = isNotBlank(oldHeight) ? (parseFloat(oldHeight.substring(0, oldHeight.indexOf('px'))) || 0) : 0;
             let valueHeight = height + 'px';
@@ -2014,7 +2043,7 @@ $(function() {
                 $source.css('height', valueHeight);
                 $this.html(scroll);
             }
-            resizeEdit(editElement);
+            resizeEdit($editElement);
         }
     });
     $(document).on('click', '.copy', function() {
