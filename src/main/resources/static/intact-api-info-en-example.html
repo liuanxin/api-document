@@ -915,7 +915,6 @@
                                             <div class="src-prev-right">
                                                 <div class="copy-status green print-nil"></div>
                                                 <div class="copy print-nil">Copy</div>
-                                                <div class="no-scroll print-nil">No-Scroll</div>
                                             </div>
                                         </div>
                                         <div class="source-code"></div>
@@ -1921,14 +1920,19 @@ $(function() {
         $btn.attr('disabled', 'disabled');
         $btn.addClass('disabled');
         let $resultData = $response.find('.result-data');
+        let $runLog = $btn.closest('form').find('.src-prev-res-msg');
+        let $action = $response.find('.src-prev-right');
         $.ajax(settings).done(function(result) {
-            $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
+            $runLog.html(timeLog(start));
             let html;
             let fail = isBlank(result);
             if (fail) {
                 $resultData.css('height', 'unset');
-                html = '<div class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</div>';
+                $action.css('display', 'none');
+                html = '<div class="green">' + method + ' request (' + url + ') success, but response has empty</div>';
             } else {
+                $resultData.css('height', '');
+                $action.css('display', '');
                 html = addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true);
             }
             $responseData.css({'white-space':'','flex-direction':'','padding':''});
@@ -1960,7 +1964,8 @@ $(function() {
             $btn.removeClass('disabled');
         }).fail(function(error) {
             $resultData.css('height', 'unset');
-            $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
+            $action.css('display', 'none');
+            $runLog.html(timeLog(start));
             let html = '';
             if (isBlank(error)) {
                 html += '<div class="red">' + method + ' (' + url + ') fail</div>';
