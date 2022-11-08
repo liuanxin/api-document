@@ -1367,7 +1367,7 @@ function getEditValue(ele) {
     return (ace.edit(ele[0]) || ace.edit(ele)).getValue();
 }
 function setEditValue(ele, value) {
-    (ace.edit(ele[0]) || ace.edit(ele)).setValue(value);
+    (ace.edit(ele[0]) || ace.edit(ele)).getSession().setValue(value, -1);
 }
 function resizeEdit(ele) {
     (ace.edit(ele[0]) || ace.edit(ele)).resize();
@@ -1928,7 +1928,6 @@ $(function() {
                 html = addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true);
             }
             $responseData.css({'white-space':'','flex-direction':'','padding':''});
-            $responseData.html(html);
             if (!fail) {
                 let editor = ace.edit($responseData[0]);
                 let session = editor.getSession();
@@ -1936,10 +1935,13 @@ $(function() {
                 session.setUseWrapMode(true);
                 session.setUseWorker(false);
                 session.setMode("ace/mode/json");
+                session.setValue(html, -1);
                 editor.setTheme("ace/theme/chrome");
                 editor.setAutoScrollEditorIntoView(true);
                 editor.setShowPrintMargin(false);
                 editor.setReadOnly(true);
+            } else {
+                $responseData.html(html);
             }
             $response.show();
             $btn.removeAttr('disabled');
