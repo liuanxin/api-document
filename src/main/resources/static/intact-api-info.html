@@ -103,10 +103,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
         }
-        .footer > p {
-            margin: 5px 0;
+        .footer > div {
+            padding: 0 20px;
+        }
+        .footer > div:not(:last-of-type) {
+            border-right: 1px solid #ccc;
         }
         .config {
             margin-top: 10px;
@@ -739,10 +741,10 @@
 <footer></footer>
 <script id="copyright" type="text/x-dot-template">
     <div class="footer">
-        <p class="version">版本: <span>{{= it.version || ''}}</span></p>
-        <p class="statistics">共 {{= it.groupCount || ''}} 个模块, {{= it.apiCount || ''}} 个接口</p>
-        <p class="team">{{= it.team || ''}}</p>
-        <p class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright || ''}}</p>
+        <div class="version">版本: {{= it.version || ''}}</div>
+        <div class="statistics">共 {{= it.groupCount || ''}} 个模块, {{= it.apiCount || ''}} 个接口</div>
+        <div class="team">{{= it.team || ''}}</div>
+        <div class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright || ''}}</div>
     </div>
 </script>
 
