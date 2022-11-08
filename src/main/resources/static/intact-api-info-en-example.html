@@ -1920,11 +1920,13 @@ $(function() {
         let start = new Date().getTime();
         $btn.attr('disabled', 'disabled');
         $btn.addClass('disabled');
+        let $resultData = $response.find('.result-data');
         $.ajax(settings).done(function(result) {
             $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
             let html;
             let fail = isBlank(result);
             if (fail) {
+                $resultData.css('height', 'unset');
                 html = '<div class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</div>';
             } else {
                 html = addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true);
@@ -1942,6 +1944,14 @@ $(function() {
                 editor.setAutoScrollEditorIntoView(true);
                 editor.setShowPrintMargin(false);
                 editor.setReadOnly(true);
+
+                let oldHeight = $resultData.css('height');
+                let originalHeight = isNotBlank(oldHeight) ? (parseFloat(oldHeight.substring(0, oldHeight.indexOf('px'))) || 0) : 0;
+                let maxHeight = 17 * html.split('\n').length;
+                if (maxHeight > 0 && originalHeight > maxHeight) {
+                    $resultData.css('height', maxHeight);
+                    editor.resize();
+                }
             } else {
                 $responseData.html(html);
             }
@@ -1949,6 +1959,7 @@ $(function() {
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
         }).fail(function(error) {
+            $resultData.css('height', 'unset');
             $btn.closest('form').find('.src-prev-res-msg').html(timeLog(start));
             let html = '';
             if (isBlank(error)) {
@@ -2038,13 +2049,12 @@ $(function() {
             let oldHeight = $source.css('max-height');
             let originalHeight = isNotBlank(oldHeight) ? (parseFloat(oldHeight.substring(0, oldHeight.indexOf('px'))) || 0) : 0;
             let valueHeight = height + 'px';
+            $source.css('height', valueHeight);
             if (oldHeight === valueHeight || originalHeight >= height) {
                 $source.css('max-height', '');
-                $source.css('height', '');
                 $this.html(display);
             } else {
                 $source.css('max-height', valueHeight);
-                $source.css('height', valueHeight);
                 $this.html(scroll);
             }
             resizeEdit($editElement);
