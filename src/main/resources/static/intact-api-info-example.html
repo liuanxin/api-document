@@ -1938,11 +1938,10 @@ $(function() {
                 html = addComment(escapeHtml(JSON.stringify(result, null, 2)), $formParent, true);
             }
             $responseData.css({'white-space':'','flex-direction':'','padding':''});
-            $responseData.html('');
             if (!fail) {
+                ace.edit($responseData[0]).destroy();
                 let editor = ace.edit($responseData[0]);
                 let session = editor.getSession();
-                session.setValue('');
                 session.setOptions({ tabSize: 2, useSoftTabs: false });
                 session.setUseWrapMode(true);
                 session.setUseWorker(false);
