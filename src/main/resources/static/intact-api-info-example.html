@@ -1053,6 +1053,8 @@
 <script src="//cdn.bootcdn.net/ajax/libs/json5/2.2.1/index.min.js"></script>
 
 <script type="text/javascript">
+$.ajaxSetup({ cache: false });
+
 function isBlank(str) {
     return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
 }

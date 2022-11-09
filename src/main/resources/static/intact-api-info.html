@@ -760,6 +760,8 @@
 <script src="//cdn.bootcdn.net/ajax/libs/prism/1.23.0/components/prism-json.min.js"></script>
 
 <script type="text/javascript">
+$.ajaxSetup({ cache: false });
+
 function isBlank(str) {
     return str === undefined || str === null || str === 'undefined' || str === 'null' || str === '';
 }
