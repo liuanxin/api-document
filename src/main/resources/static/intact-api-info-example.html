@@ -1858,6 +1858,7 @@ $(function() {
         let settings = {
             url: url,
             method: method,
+            cache: false,
             beforeSend: function(request) {
                 if (Object.getOwnPropertyNames(headers).length > 0) {
                     $.each(headers, function(key, value) {
@@ -1892,7 +1893,6 @@ $(function() {
             });
 
             settings['data'] = formData;
-            settings['cache'] = false;
             settings['processData'] = false;
             settings['contentType'] = false;
         } else {
