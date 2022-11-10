@@ -1625,7 +1625,7 @@ function handleInput($this, action, format) {
             json = action(JSON.stringify(JSON5.parse(value)));
         } catch (e) {
             console.error('format json(' + value + ') error.', e);
-            $reqMsg.html('Json data error(at ' + e.lineNumber + ':' + e.columnNumber);
+            $reqMsg.html('Json data error(at ' + e.lineNumber + ':' + e.columnNumber + ')');
             return;
         }
         if (isNotBlank(json)) {
@@ -1746,7 +1746,7 @@ $(function() {
                 requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
                 console.error('json(' + requestBody + ') error.', e);
-                $reqMsg.html('Json data error(at ' + e.lineNumber + ':' + e.columnNumber);
+                $reqMsg.html('Json data error(at ' + e.lineNumber + ':' + e.columnNumber + ')');
                 return;
             }
         }

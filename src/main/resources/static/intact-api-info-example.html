@@ -1625,7 +1625,7 @@ function handleInput($this, action, format) {
             json = action(JSON.stringify(JSON5.parse(value)));
         } catch (e) {
             console.error('json(' + value + ') 错误.', e);
-            $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列');
+            $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列)');
             return;
         }
         if (isNotBlank(json)) {
@@ -1746,7 +1746,7 @@ $(function() {
                 requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
                 console.error('json(' + requestBody + ')错误.', e);
-                $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列');
+                $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列)');
                 return;
             }
         }
