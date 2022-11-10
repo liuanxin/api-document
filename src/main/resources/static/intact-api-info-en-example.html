@@ -1636,7 +1636,7 @@ function handleInput($this, action, format) {
             }
         } catch (e) {
             console.error('format json(' + value + ') error', e);
-            $reqMsg.html('Json data error');
+            $reqMsg.html('Json data error(at ' + e.lineNumber + ':' + e.columnNumber);
             setTimeout(function () {
                 $reqMsg.html('');
             }, 3000);
@@ -1749,7 +1749,7 @@ $(function() {
                 requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
                 console.error('parse(' + requestBody + ') error', e);
-                $reqMsg.html('Json date error!');
+                $reqMsg.html('Json data error!(at ' + e.lineNumber + ':' + e.columnNumber);
                 setTimeout(function () { $reqMsg.html(''); }, 3000);
                 return;
             }

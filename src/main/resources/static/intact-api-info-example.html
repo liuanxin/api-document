@@ -1636,7 +1636,7 @@ function handleInput($this, action, format) {
             }
         } catch (e) {
             console.error('格式化 json(' + value + ') 时错误', e);
-            $reqMsg.html('Json 数据有误');
+            $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列');
             setTimeout(function () {
                 $reqMsg.html('');
             }, 3000);
@@ -1749,7 +1749,7 @@ $(function() {
                 requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
                 console.error('parse(' + requestBody + ') error', e);
-                $reqMsg.html('Json 数据有误!');
+                $reqMsg.html('Json 数据有误!(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列');
                 setTimeout(function () { $reqMsg.html(''); }, 3000);
                 return;
             }
