@@ -932,7 +932,6 @@ function loadData() {
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)'); /* Avoid navigating not display when switching items */
 
             let $nav = $('.col-md-3');
-            $rightArrow.css('display', 'none');
             if (localStorage.getItem(rightArrowKey) === '1') {
                 let $content = $('.col-md-9');
                 $rightArrow.css('display', 'none');
@@ -974,8 +973,8 @@ function loadData() {
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }
-    }).fail(function(error) {
-        console.error(method + ' ' + requestUrl + ' error: ' + JSON.stringify(error));
+    }).fail(function(e) {
+        console.error(method + ' ' + requestUrl + ' error.', e);
         handleError($rightArrow, $urlInfo, 'Request error, Incorrect network or cross-domain error!');
     });
 }

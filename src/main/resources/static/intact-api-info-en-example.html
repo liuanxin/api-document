@@ -1329,8 +1329,8 @@ function loadData() {
         } else {
             $urlInfo.html('<span class="red">No api info</span>');
         }
-    }).fail(function(error) {
-        console.error(method + ' ' + requestUrl + ' error: ' + JSON.stringify(error));
+    }).fail(function(e) {
+        console.error(method + ' ' + requestUrl + ' error.', e);
         handleError($rightArrow, $urlInfo, 'Request error, Incorrect network or cross-domain error!');
     });
 }
@@ -1620,26 +1620,23 @@ function handleInput($this, action, format) {
         let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
         let $reqMsg = $source.find('.src-prev-req-msg');
         $reqMsg.html('');
+        let json;
         try {
-            let json = action(JSON.stringify(JSON5.parse(value)));
-            if (isNotBlank(json)) {
-                setEditValue($request, json);
-                localStorage.setItem(itemKey, json);
-            } else {
-                localStorage.removeItem(itemKey);
-            }
-            if (format) {
-                $reqMsg.html('Comment on tail does not affect the Request');
-                setTimeout(function () {
-                    $reqMsg.html('');
-                }, 3000);
-            }
+            json = action(JSON.stringify(JSON5.parse(value)));
         } catch (e) {
-            console.error('format json(' + value + ') error', e);
+            console.error('format json(' + value + ') error.', e);
             $reqMsg.html('Json data error(at ' + e.lineNumber + ':' + e.columnNumber);
-            setTimeout(function () {
-                $reqMsg.html('');
-            }, 3000);
+            return;
+        }
+        if (isNotBlank(json)) {
+            setEditValue($request, json);
+            localStorage.setItem(itemKey, json);
+        } else {
+            localStorage.removeItem(itemKey);
+        }
+        if (format) {
+            $reqMsg.html('Comment on tail does not affect the Request');
+            setTimeout(function () { $reqMsg.html(''); }, 3000);
         }
     }
 }
@@ -1748,9 +1745,8 @@ $(function() {
             try {
                 requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
-                console.error('parse(' + requestBody + ') error', e);
-                $reqMsg.html('Json data error!(at ' + e.lineNumber + ':' + e.columnNumber);
-                setTimeout(function () { $reqMsg.html(''); }, 3000);
+                console.error('json(' + requestBody + ') error.', e);
+                $reqMsg.html('Json data error(at ' + e.lineNumber + ':' + e.columnNumber);
                 return;
             }
         }

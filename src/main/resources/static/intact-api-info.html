@@ -973,8 +973,8 @@ function loadData() {
         } else {
             $urlInfo.html('<span class="red">无接口信息</span>');
         }
-    }).fail(function(error) {
-        console.error(method + ' ' + requestUrl + ' 错误: ' + JSON.stringify(error));
+    }).fail(function(e) {
+        console.error(method + ' ' + requestUrl + ' 错误.', e);
         handleError($rightArrow, $urlInfo, '接口无法请求, 网络有误 或 有跨域问题!');
     });
 }

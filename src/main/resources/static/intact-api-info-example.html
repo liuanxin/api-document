@@ -1329,8 +1329,8 @@ function loadData() {
         } else {
             $urlInfo.html('<span class="red">无接口信息</span>');
         }
-    }).fail(function(error) {
-        console.error(method + ' ' + requestUrl + ' 错误: ' + JSON.stringify(error));
+    }).fail(function(e) {
+        console.error(method + ' ' + requestUrl + ' 错误.', e);
         handleError($rightArrow, $urlInfo, '接口无法请求, 网络有误 或 有跨域问题!');
     });
 }
@@ -1620,26 +1620,23 @@ function handleInput($this, action, format) {
         let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
         let $reqMsg = $source.find('.src-prev-req-msg');
         $reqMsg.html('');
+        let json;
         try {
-            let json = action(JSON.stringify(JSON5.parse(value)));
-            if (isNotBlank(json)) {
-                setEditValue($request, json);
-                localStorage.setItem(itemKey, json);
-            } else {
-                localStorage.removeItem(itemKey);
-            }
-            if (format) {
-                $reqMsg.html('生成的尾部注释不影响调用');
-                setTimeout(function () {
-                    $reqMsg.html('');
-                }, 3000);
-            }
+            json = action(JSON.stringify(JSON5.parse(value)));
         } catch (e) {
-            console.error('格式化 json(' + value + ') 时错误', e);
+            console.error('json(' + value + ') 错误.', e);
             $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列');
-            setTimeout(function () {
-                $reqMsg.html('');
-            }, 3000);
+            return;
+        }
+        if (isNotBlank(json)) {
+            setEditValue($request, json);
+            localStorage.setItem(itemKey, json);
+        } else {
+            localStorage.removeItem(itemKey);
+        }
+        if (format) {
+            $reqMsg.html('生成的尾部注释不影响调用');
+            setTimeout(function () { $reqMsg.html(''); }, 3000);
         }
     }
 }
@@ -1748,9 +1745,8 @@ $(function() {
             try {
                 requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
-                console.error('parse(' + requestBody + ') error', e);
-                $reqMsg.html('Json 数据有误!(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列');
-                setTimeout(function () { $reqMsg.html(''); }, 3000);
+                console.error('json(' + requestBody + ')错误.', e);
+                $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列');
                 return;
             }
         }
