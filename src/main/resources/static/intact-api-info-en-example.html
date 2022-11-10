@@ -895,7 +895,7 @@
                                         </div>
                                         {{
                                         let requestBodyKey = '_request_body_';
-                                        let requestBodyData = localStorage.getItem(moduleUrlId + ':' + requestBodyKey + '') || '';
+                                        let requestBodyData = localStorage.getItem(moduleUrlId + ':' + requestBodyKey + '') || url.requestBodyJson || '';
                                         }}
                                         <div class="request-data">
                                             <div class="request-data-info" data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
