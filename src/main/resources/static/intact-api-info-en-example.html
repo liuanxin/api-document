@@ -1978,7 +1978,10 @@ $(function() {
                     if (isNotBlank(text)) {
                         html += '<div class="red wrap" style="margin-top:7px;">Response Text: ' + escapeHtml(text) + '</div>';
                     } else {
-                        html += '<div class="red wrap" style="margin-top:7px;">The response is empty</div>';
+                        let statusText = error.statusText;
+                        if (isNotBlank(statusText)) {
+                            html += '<div class="red wrap" style="margin-top:7px;">' + statusText + '</div>';
+                        }
                     }
                 }
             }
