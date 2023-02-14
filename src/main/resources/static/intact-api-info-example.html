@@ -2088,7 +2088,7 @@ $(function() {
             let i, len = arr.length;
             let strArr = [];
             for (i = 0; i < len; i++) {
-                strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, '').replace(/([ ]*?)\/\/.*?$/, ''));
+                strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, ''));
             }
             copyValue = strArr.join('\n');
         }
