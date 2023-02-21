@@ -293,8 +293,13 @@
         .example {
             min-width: 200px;
         }
-        .curl, .response {
+        .curl, .response, .response-header {
             display: none;
+        }
+        .response-header {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f5f5f5;
         }
         .bold {
             font-weight: bold !important;
@@ -934,6 +939,12 @@
                                         <div class="result-data">
                                             <div class="result-data-info" data-lpignore="true"></div>
                                         </div>
+                                    </div>
+                                    <div class="response-header bottom-table panel panel-default">
+                                        <div class="src-prev">
+                                            <div class="src-prev-left">Response Header</div>
+                                        </div>
+                                        <div class="source-code"></div>
                                     </div>
                                 </form>
                             </div>
@@ -1717,9 +1728,11 @@ $(function() {
         let $formParent = $form.closest('.module-api-info');
         let $curl = $form.find('.curl');
         let $response = $form.find('.response');
+        let $responseHeader = $form.find('.response-header');
         let $reqMsg = $form.find('.src-prev-req-msg');
         $curl.hide();
         $response.hide();
+        $responseHeader.hide();
         $reqMsg.html('');
 
         $.validationEngine.defaults.scroll = false;
@@ -1920,7 +1933,7 @@ $(function() {
         let $resultData = $response.find('.result-data');
         let $runLog = $btn.closest('form').find('.src-prev-res-msg');
         let $action = $response.find('.src-prev-right');
-        $.ajax(settings).done(function(result) {
+        $.ajax(settings).done(function(result, status, request) {
             $runLog.html(timeLog(start));
             let html;
             let fail = isBlank(result);
@@ -1959,6 +1972,8 @@ $(function() {
                 $responseData.html(html);
             }
             $response.show();
+            $responseHeader.find('.source-code').html(addLine(request.getAllResponseHeaders().trim()));
+            $responseHeader.show();
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
         }).fail(function(error) {
