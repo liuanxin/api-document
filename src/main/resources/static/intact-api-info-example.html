@@ -1972,8 +1972,11 @@ $(function() {
                 $responseData.html(html);
             }
             $response.show();
-            $responseHeader.find('.source-code').html(addLine(request.getAllResponseHeaders().trim()));
-            $responseHeader.show();
+            let responseHeaders = String(request.getAllResponseHeaders()).trim();
+            if (isNotBlank(responseHeaders)) {
+                $responseHeader.find('.source-code').html(addLine(responseHeaders));
+                $responseHeader.show();
+            }
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
         }).fail(function(error) {
@@ -1998,6 +2001,11 @@ $(function() {
                             html += '<div class="red wrap" style="margin-top:7px;">' + statusText + '</div>';
                         }
                     }
+                }
+                let responseHeaders = String(error.getAllResponseHeaders()).trim();
+                if (isNotBlank(responseHeaders)) {
+                    $responseHeader.find('.source-code').html(addLine(responseHeaders));
+                    $responseHeader.show();
                 }
             }
             $responseData.css({'white-space':'pre-wrap','flex-direction':'column','padding':'7px'});
