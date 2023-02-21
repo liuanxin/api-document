@@ -79,6 +79,11 @@
             display: flex;
             align-items: flex-start;
         }
+        .source-code-no-height {
+            overflow: auto;
+            display: flex;
+            align-items: flex-start;
+        }
         .line-number {
             color: #2B91AF;
             text-align: right;
@@ -944,7 +949,7 @@
                                         <div class="src-prev">
                                             <div class="src-prev-left">响应头</div>
                                         </div>
-                                        <div class="source-code"></div>
+                                        <div class="source-code-no-height"></div>
                                     </div>
                                 </form>
                             </div>
@@ -1974,7 +1979,7 @@ $(function() {
             $response.show();
             let responseHeaders = String(request.getAllResponseHeaders()).trim();
             if (isNotBlank(responseHeaders)) {
-                $responseHeader.find('.source-code').html(addLine(responseHeaders));
+                $responseHeader.find('.source-code-no-height').html(addLine(responseHeaders));
                 $responseHeader.show();
             }
             $btn.removeAttr('disabled');
@@ -2004,7 +2009,7 @@ $(function() {
                 }
                 let responseHeaders = String(error.getAllResponseHeaders()).trim();
                 if (isNotBlank(responseHeaders)) {
-                    $responseHeader.find('.source-code').html(addLine(responseHeaders));
+                    $responseHeader.find('.source-code-no-height').html(addLine(responseHeaders));
                     $responseHeader.show();
                 }
             }
