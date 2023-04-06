@@ -104,7 +104,7 @@ public class DocumentController {
     }
 
     @GetMapping(value = ApiConst.URL_INFO, produces = ApiConst.PRODUCES)
-    public String url() {
+    public String getUrlInfo() {
         if (Tools.isBlank(copyright) || copyright.isOnline()) {
             return ApiConst.EMPTY;
         } else {
