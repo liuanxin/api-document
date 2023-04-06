@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class DocumentModule implements Comparable<DocumentModule> {
+public class DocumentModule extends Document implements Comparable<DocumentModule> {
 
     @JsonIgnore
     private int index = Integer.MAX_VALUE;
