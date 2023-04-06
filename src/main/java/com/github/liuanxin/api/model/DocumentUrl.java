@@ -275,72 +275,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         }
         return documentReturns;
     }
-    public static String commentJson(String returnJson,
-                                     boolean commentInReturnExample,
-                                     boolean commentInReturnExampleWithLevel,
-                                     List<DocumentReturn> returnList) {
-        if (Tools.isEmpty(returnJson)) {
-            return ApiConst.EMPTY;
-        }
-
-        String commentJson = Tools.toPrettyJson(returnJson);
-        if (Tools.isEmpty(commentJson)) {
-            return ApiConst.EMPTY;
-        }
-
-        // for windows pretty... \r\n to \n
-        commentJson = commentJson.replace("\r", ApiConst.EMPTY);
-        if (!commentInReturnExample) {
-            return commentJson;
-        }
-
-        StringBuilder sbd = new StringBuilder();
-
-        String[] split = commentJson.split(WRAP);
-        if (commentInReturnExampleWithLevel) {
-            Map<Integer, String> indexMap = indexMap(split);
-            Map<String, String> commentMap = documentReturnMap(returnList);
-
-            for (int i = 0; i < split.length; i++) {
-                String comment = split[i];
-                sbd.append(comment);
-
-                String desc = commentMap.get(indexMap.get(i));
-                if (Tools.isNotEmpty(desc) && !comment.contains(desc)) {
-                    sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
-                }
-                sbd.append(WRAP);
-            }
-        } else {
-            int index = 0;
-            for (String comment : split) {
-                sbd.append(comment);
-
-                comment = comment.trim();
-                if (returnList.size() > index) {
-                    DocumentReturn documentReturn = returnList.get(index);
-                    if (Tools.isNotEmpty(documentReturn)) {
-                        String returnName = documentReturn.getName().replace(ReturnHandler.TAB, ApiConst.EMPTY).trim();
-                        if (returnName.contains(ReturnHandler.LEVEL_APPEND)) {
-                            returnName = returnName.substring(0, returnName.indexOf(ReturnHandler.LEVEL_APPEND)).trim();
-                        }
-                        if (comment.startsWith(DOUBLE_QUOTE + returnName + DOUBLE_QUOTE)) {
-                            String desc = documentReturn.getDesc();
-                            if (Tools.isNotEmpty(desc) && !comment.contains(desc)) {
-                                sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
-                            }
-                            index++;
-                        }
-                    }
-                }
-                sbd.append(WRAP);
-            }
-        }
-        if (sbd.toString().endsWith(WRAP)) {
-            sbd.delete(sbd.length() - 1, sbd.length());
-        }
-        return sbd.toString();
-    }
     /**
      * <pre>
      * 0  {
@@ -461,7 +395,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         return returnMap;
     }
 
-
     @Override
     public int compareTo(DocumentUrl obj) {
         if (Tools.isBlank(obj)) {
@@ -480,6 +413,83 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
                 return title.compareTo(obj.getTitle());
             }
         }
+    }
+
+    public static String commentJson(String returnJson,
+                                     boolean commentInReturnExample,
+                                     boolean commentInReturnExampleWithLevel,
+                                     List<DocumentReturn> returnList) {
+        if (Tools.isEmpty(returnJson)) {
+            return ApiConst.EMPTY;
+        }
+
+        String commentJson = Tools.toPrettyJson(returnJson);
+        if (Tools.isEmpty(commentJson)) {
+            return ApiConst.EMPTY;
+        }
+
+        // for windows pretty... \r\n to \n
+        commentJson = commentJson.replace("\r", ApiConst.EMPTY);
+        if (!commentInReturnExample) {
+            return commentJson;
+        }
+
+        StringBuilder sbd = new StringBuilder();
+
+        String[] split = commentJson.split(WRAP);
+        if (commentInReturnExampleWithLevel) {
+            sbd = sbdCommentInReturnWithLevel(returnList, sbd, split);
+        } else {
+            sbdCommentNotInReturnWithLevel(returnList, sbd, split);
+        }
+        if (sbd.toString().endsWith(WRAP)) {
+            sbd.delete(sbd.length() - 1, sbd.length());
+        }
+        return sbd.toString();
+    }
+
+    private static StringBuilder sbdCommentNotInReturnWithLevel(List<DocumentReturn> returnList, StringBuilder sbd, String[] split) {
+        int index = 0;
+        for (String comment : split) {
+            sbd.append(comment);
+
+            comment = comment.trim();
+            if (returnList.size() > index) {
+                DocumentReturn documentReturn = returnList.get(index);
+                if (Tools.isNotEmpty(documentReturn)) {
+                    String returnName = documentReturn.getName().replace(ReturnHandler.TAB, ApiConst.EMPTY).trim();
+                    if (returnName.contains(ReturnHandler.LEVEL_APPEND)) {
+                        returnName = returnName.substring(0, returnName.indexOf(ReturnHandler.LEVEL_APPEND)).trim();
+                    }
+                    if (comment.startsWith(DOUBLE_QUOTE + returnName + DOUBLE_QUOTE)) {
+                        String desc = documentReturn.getDesc();
+                        if (Tools.isNotEmpty(desc) && !comment.contains(desc)) {
+                            sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
+                        }
+                        index++;
+                    }
+                }
+            }
+            sbd.append(WRAP);
+        }
+        return sbd;
+    }
+
+    private static StringBuilder sbdCommentInReturnWithLevel(List<DocumentReturn> returnList, StringBuilder sbd, String[] split) {
+        Map<Integer, String> indexMap = indexMap(split);
+        Map<String, String> commentMap = documentReturnMap(returnList);
+
+        for (int i = 0; i < split.length; i++) {
+            String comment = split[i];
+            sbd.append(comment);
+
+            String desc = commentMap.get(indexMap.get(i));
+            if (Tools.isNotEmpty(desc) && !comment.contains(desc)) {
+                sbd.append(COMMENT_START).append(desc.replace(WRAP, WRAP_REPLACE)).append(COMMENT_END);
+            }
+            sbd.append(WRAP);
+        }
+        return sbd;
     }
 
     @Override
