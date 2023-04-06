@@ -1,10 +1,11 @@
 package com.github.liuanxin.api.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.liuanxin.api.constant.ApiConst;
+import com.github.liuanxin.api.util.HttpUtil;
+import com.github.liuanxin.api.util.Tools;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DocumentCopyright {
 
@@ -175,5 +176,39 @@ public class DocumentCopyright {
     public DocumentCopyright setProjectMap(Map<String, String> projectMap) {
         this.projectMap = projectMap;
         return this;
+    }
+
+    public String getProjectInfo(String p) {
+        if (isProjectMerge()) {
+            return ApiConst.EMPTY;
+        }
+
+        Map<String, String> projectMap = getProjectMap();
+        if (Tools.isEmpty(projectMap)) {
+            return ApiConst.EMPTY;
+        }
+
+        boolean flag = false;
+        List<List<String>> returnList = new ArrayList<>();
+        for (Map.Entry<String, String> entry : projectMap.entrySet()) {
+            String key = entry.getKey();
+            String url = entry.getValue();
+            if (Tools.isNotEmpty(key) && Tools.isNotEmpty(url)) {
+                String[] split = key.split(ApiConst.HORIZON);
+                String name, value;
+                if (split.length > 1) {
+                    name = split[0];
+                    value = split[1];
+                } else {
+                    name = value = key;
+                }
+
+                returnList.add(Arrays.asList(name, value, HttpUtil.getUrl(url)));
+                if (Tools.isNotEmpty(p) && name.equalsIgnoreCase(p) || value.equals(p)) {
+                    flag = true;
+                }
+            }
+        }
+        return Tools.isEmpty(p) || flag ? Tools.toJson(returnList) : ApiConst.EMPTY;
     }
 }

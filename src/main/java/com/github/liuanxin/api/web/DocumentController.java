@@ -55,37 +55,9 @@ public class DocumentController {
 
     @GetMapping(value = ApiConst.URL_PROJECT, produces = ApiConst.PRODUCES)
     public String getProjectInfo(String p) {
-        if (copyright.isProjectMerge()) {
-            return ApiConst.EMPTY;
-        }
 
-        Map<String, String> projectMap = copyright.getProjectMap();
-        if (Tools.isEmpty(projectMap)) {
-            return ApiConst.EMPTY;
-        }
+        return copyright.getProjectInfo(p);
 
-        boolean flag = false;
-        List<List<String>> returnList = new ArrayList<>();
-        for (Map.Entry<String, String> entry : projectMap.entrySet()) {
-            String key = entry.getKey();
-            String url = entry.getValue();
-            if (Tools.isNotEmpty(key) && Tools.isNotEmpty(url)) {
-                String[] split = key.split(ApiConst.HORIZON);
-                String name, value;
-                if (split.length > 1) {
-                    name = split[0];
-                    value = split[1];
-                } else {
-                    name = value = key;
-                }
-
-                returnList.add(Arrays.asList(name, value, HttpUtil.getUrl(url)));
-                if (Tools.isNotEmpty(p) && name.equalsIgnoreCase(p) || value.equals(p)) {
-                    flag = true;
-                }
-            }
-        }
-        return Tools.isEmpty(p) || flag ? Tools.toJson(returnList) : ApiConst.EMPTY;
     }
 
     @GetMapping(value = ApiConst.URL_EXAMPLE, produces = ApiConst.PRODUCES)
