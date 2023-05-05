@@ -115,7 +115,7 @@ public final class WebUtil {
                         // param
                         List<DocumentParam> paramList;
                         if (innerRequestBody) {
-                            String paramType = getRequestBodyParamTypeByMethod(handlerMethod);
+                            String paramType = ReturnType.getRequestBodyParamTypeByMethod(handlerMethod);
                             String requestBodyJson = ReturnHandler.handlerReturnJson(method, paramType);
                             List<DocumentReturn> requestBodyParamList = ReturnHandler.handlerReturn(method, paramType);
                             document.setRequestBodyJson(DocumentUrl.commentJson(requestBodyJson, true, true, requestBodyParamList));
@@ -144,7 +144,7 @@ public final class WebUtil {
                         document.setParamList(paramList);
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
-                        String returnType = getReturnTypeByMethod(handlerMethod, apiMethod);
+                        String returnType = ReturnType.getReturnTypeByMethod(handlerMethod, apiMethod);
                         // return param
                         document.setReturnList(ReturnHandler.handlerReturn(method, returnType));
                         // return json
@@ -272,88 +272,6 @@ public final class WebUtil {
         return methodSet;
     }
 
-    private static String getRequestBodyParamTypeByMethod(HandlerMethod handlerMethod) {
-        Class<?>[] parameterTypes = handlerMethod.getMethod().getParameterTypes();
-        return Tools.isNotEmpty(parameterTypes) ? parameterTypes[0].getName() : ApiConst.EMPTY;
-    }
-    private static String getReturnTypeByMethod(HandlerMethod handlerMethod, ApiMethod apiMethod) {
-        String returnType;
-        if (Tools.isNotBlank(apiMethod)) {
-            returnType = getReturnTypeByAnnotation(Tools.first(apiMethod.returnType()));
-        } else {
-            returnType = ApiConst.EMPTY;
-        }
-
-        if (Tools.isEmpty(returnType) && Tools.isNotBlank(handlerMethod)) {
-            returnType = handlerMethod.getMethod().getGenericReturnType().toString();
-        }
-        if (Tools.isNotBlank(returnType)) {
-            String prefix = "class ";
-            if (returnType.startsWith(prefix)) {
-                returnType = returnType.substring(prefix.length());
-            }
-        }
-        return returnType;
-    }
-    private static String getReturnTypeByAnnotation(ApiReturnType type) {
-        return Tools.isBlank(type)
-                ? null
-                : getReturnType(type.value(), type.genericParent(), type.generic(), type.genericChild());
-    }
-    private static String getReturnType(Class<?> response, Class<?> genericParent, Class<?>[] generic, Class<?>[] genericChild) {
-        if (Tools.isBlank(response)) {
-            return null;
-        } else {
-            StringBuilder sbd = new StringBuilder();
-            sbd.append(response.getName());
-            if (Tools.isNotBlank(genericParent) && genericParent != Void.class) {
-                sbd.append("<").append(genericParent.getName());
-            }
-
-            if (Tools.isNotBlank(generic)) {
-                int secondLen = generic.length;
-                if (secondLen > 0) {
-                    int childrenLen = 0;
-                    if (Tools.isNotBlank(genericChild)) {
-                        childrenLen = genericChild.length;
-                        if (childrenLen > 0 && secondLen > 1) {
-                            secondLen = 1;
-                        }
-                    }
-
-                    sbd.append("<");
-                    for (int i = 0; i < secondLen; i++) {
-                        if (i > 0) {
-                            sbd.append(", ");
-                        }
-                        sbd.append(generic[i].getName());
-                    }
-                    if (childrenLen > 0) {
-                        sbd.append("<");
-                        for (int i = 0; i < childrenLen; i++) {
-                            if (i > 0) {
-                                sbd.append(", ");
-                            }
-                            sbd.append(genericChild[i].getName());
-                        }
-                        sbd.append(">");
-                    }
-                    sbd.append(">");
-                }
-            }
-
-            if (Tools.isNotBlank(genericParent) && genericParent != Void.class) {
-                sbd.append(">");
-            }
-            return sbd.toString();
-        }
-    }
-    private static String getReturnTypeByResponse(DocumentResponse res) {
-        return Tools.isBlank(res) || Tools.isBlank(res.getResponse())
-                ? null
-                : getReturnType(res.getResponse(), res.getGenericParent(), res.getGeneric(), res.getGenericChild());
-    }
-
     private static List<DocumentResponse> globalResponse(List<DocumentResponse> globalResponse,
                                                          boolean globalCommentInReturn,
                                                          boolean globalRecordLevel) {
@@ -361,7 +279,7 @@ public final class WebUtil {
             return Collections.emptyList();
         }
         for (DocumentResponse response : globalResponse) {
-            String type = getReturnTypeByResponse(response);
+            String type = ReturnType.getReturnTypeByResponse(response);
             if (Tools.isNotBlank(type)) {
                 String method = response.getCode() + ":" + response.getMsg();
                 String json = ReturnHandler.handlerReturnJson(method, type);
@@ -382,7 +300,7 @@ public final class WebUtil {
             for (ApiResponse apiResponse : responses.value()) {
                 DocumentResponse response = new DocumentResponse(apiResponse);
 
-                String type = getReturnTypeByAnnotation(Tools.first(apiResponse.type()));
+                String type = ReturnType.getReturnTypeByAnnotation(Tools.first(apiResponse.type()));
                 if (Tools.isNotBlank(type)) {
                     String method = handlerMethod.toString();
                     String json = ReturnHandler.handlerReturnJson(method, type);

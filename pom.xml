@@ -57,6 +57,18 @@
             <version>${servlet-api.version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.9.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -71,5 +83,6 @@
                 </configuration>
             </plugin>
         </plugins>
+        <defaultGoal>install</defaultGoal>
     </build>
 </project>

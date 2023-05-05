@@ -28,7 +28,7 @@ public final class ParamHandler {
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];
-            if (Tools.isNotBlank(parameter) && Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
+            if (toolFullfillCriteria(parameter)) {
                 // if param not basicType, into a layer of processing
                 Class<?> parameterType = parameter.getParameterType();
                 ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
@@ -65,6 +65,10 @@ public final class ParamHandler {
             }
         }
         return params;
+    }
+
+    private static boolean toolFullfillCriteria(MethodParameter parameter) {
+        return Tools.isNotBlank(parameter) && Tools.isBlank(parameter.getParameterAnnotation(ApiParamIgnore.class));
     }
 
     private static String getParamName(MethodParameter parameter, String paramName) {

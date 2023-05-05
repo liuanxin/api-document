@@ -7,9 +7,8 @@ import com.github.liuanxin.api.constant.ApiConst;
 import java.util.Objects;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class DocumentParam {
+public class DocumentParam extends Document{
 
-    private String name;
     private String dataType;
     private String showDataType;
     private String paramType;
