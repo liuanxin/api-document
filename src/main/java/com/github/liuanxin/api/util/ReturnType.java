@@ -14,16 +14,16 @@ public class ReturnType {
 
     static String getReturnTypeByMethod(HandlerMethod handlerMethod, ApiMethod apiMethod) {
         String returnType;
-        if (Tools.isNotBlank(apiMethod)) {
+        if (Tools.isNotNull(apiMethod)) {
             returnType = getReturnTypeByAnnotation(Tools.first(apiMethod.returnType()));
         } else {
             returnType = ApiConst.EMPTY;
         }
 
-        if (Tools.isEmpty(returnType) && Tools.isNotBlank(handlerMethod)) {
+        if (Tools.isEmpty(returnType) && Tools.isNotNull(handlerMethod)) {
             returnType = handlerMethod.getMethod().getGenericReturnType().toString();
         }
-        if (Tools.isNotBlank(returnType)) {
+        if (Tools.isNotNull(returnType)) {
             String prefix = "class ";
             if (returnType.startsWith(prefix)) {
                 returnType = returnType.substring(prefix.length());
@@ -33,26 +33,26 @@ public class ReturnType {
     }
 
     static String getReturnTypeByAnnotation(ApiReturnType type) {
-        return Tools.isBlank(type)
+        return Tools.isNull(type)
                 ? null
                 : getReturnType(type.value(), type.genericParent(), type.generic(), type.genericChild());
     }
 
     private static String getReturnType(Class<?> response, Class<?> genericParent, Class<?>[] generic, Class<?>[] genericChild) {
-        if (Tools.isBlank(response)) {
+        if (Tools.isNull(response)) {
             return null;
         } else {
             StringBuilder sbd = new StringBuilder();
             sbd.append(response.getName());
-            if (Tools.isNotBlank(genericParent) && genericParent != Void.class) {
+            if (Tools.isNotNull(genericParent) && genericParent != Void.class) {
                 sbd.append("<").append(genericParent.getName());
             }
 
-            if (Tools.isNotBlank(generic)) {
+            if (Tools.isNotNull(generic)) {
                 int secondLen = generic.length;
                 if (secondLen > 0) {
                     int childrenLen = 0;
-                    if (Tools.isNotBlank(genericChild)) {
+                    if (Tools.isNotNull(genericChild)) {
                         childrenLen = genericChild.length;
                         if (childrenLen > 0 && secondLen > 1) {
                             secondLen = 1;
@@ -80,7 +80,7 @@ public class ReturnType {
                 }
             }
 
-            if (Tools.isNotBlank(genericParent) && genericParent != Void.class) {
+            if (Tools.isNotNull(genericParent) && genericParent != Void.class) {
                 sbd.append(">");
             }
             return sbd.toString();
@@ -88,8 +88,7 @@ public class ReturnType {
     }
 
     static String getReturnTypeByResponse(DocumentResponse res) {
-        return Tools.isBlank(res) || Tools.isBlank(res.getResponse())
-                ? null
+        return Tools.isNull(res) || Tools.isNull(res.getResponse()) ? null
                 : getReturnType(res.getResponse(), res.getGenericParent(), res.getGeneric(), res.getGenericChild());
     }
 }

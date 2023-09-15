@@ -14,8 +14,7 @@ public class Recursive {
     private Class<?> self;
 
 
-    public Recursive() {
-    }
+    public Recursive() {}
     public Recursive(Recursive parent, String fieldName, Class<?> self) {
         this.parent = parent;
         this.fieldName = fieldName;
@@ -91,7 +90,7 @@ public class Recursive {
         return check(self, parent);
     }
     private static boolean check(Class<?> self, Recursive parent) {
-        if (Tools.isBlank(parent)) {
+        if (Tools.isNull(parent)) {
             return false;
         } else if (parent.self == self) {
             return true;
@@ -126,13 +125,13 @@ public class Recursive {
         return sbd.toString();
     }
     private static void orbit(Recursive self, StringBuilder sbd) {
-        if (Tools.isNotBlank(self)) {
-            if (Tools.isNotBlank(self.parent)) {
+        if (Tools.isNotNull(self)) {
+            if (Tools.isNotNull(self.parent)) {
                 orbit(self.parent, sbd);
                 sbd.append(" --> ");
             }
             sbd.append(self.self.getName());
-            if (Tools.isNotBlank(self.fieldName)) {
+            if (Tools.isNotNull(self.fieldName)) {
                 sbd.append(ApiConst.SPACE).append(self.fieldName);
             }
         }

@@ -3,16 +3,12 @@ package com.github.liuanxin.api.web;
 import com.github.liuanxin.api.annotation.ApiIgnore;
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.model.*;
-import com.github.liuanxin.api.util.HttpUtil;
 import com.github.liuanxin.api.util.Tools;
 import com.github.liuanxin.api.util.WebUtil;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -41,7 +37,7 @@ public class DocumentController {
 
     @PostMapping(value = ApiConst.URL_CLEAR, produces = ApiConst.PRODUCES)
     public int clear() {
-        if (Tools.isNotBlank(return_info_cache) && Tools.isNotBlank(url_map_cache)) {
+        if (Tools.isNotNull(return_info_cache) && Tools.isNotNull(url_map_cache)) {
             LOCK.lock();
             try {
                 return_info_cache = null;
@@ -55,29 +51,27 @@ public class DocumentController {
 
     @GetMapping(value = ApiConst.URL_PROJECT, produces = ApiConst.PRODUCES)
     public String getProjectInfo(String p) {
-
         return copyright.getProjectInfo(p);
-
     }
 
     @GetMapping(value = ApiConst.URL_EXAMPLE, produces = ApiConst.PRODUCES)
     public String urlExample(@PathVariable(ApiConst.PLACEHOLDER) String id) {
-        if (Tools.isBlank(copyright) || copyright.isOnline()) {
+        if (Tools.isNull(copyright) || copyright.isOnline()) {
             return ApiConst.EMPTY;
         } else {
             collect();
-            if (Tools.isBlank(url_map_cache)) {
+            if (Tools.isEmpty(url_map_cache)) {
                 return ApiConst.EMPTY;
             } else {
                 DocumentUrl document = url_map_cache.get(id);
-                return Tools.isBlank(document) ? ApiConst.EMPTY : document.getReturnJson();
+                return Tools.isNull(document) ? ApiConst.EMPTY : document.getReturnJson();
             }
         }
     }
 
     @GetMapping(value = ApiConst.URL_INFO, produces = ApiConst.PRODUCES)
     public String getUrlInfo() {
-        if (Tools.isBlank(copyright) || copyright.isOnline()) {
+        if (Tools.isNull(copyright) || copyright.isOnline()) {
             return ApiConst.EMPTY;
         } else {
             collect();
@@ -86,10 +80,10 @@ public class DocumentController {
     }
 
     private void collect() {
-        if (Tools.isBlank(return_info_cache) && Tools.isBlank(url_map_cache)) {
+        if (Tools.isNull(return_info_cache) && Tools.isNull(url_map_cache)) {
             LOCK.lock();
             try {
-                if (Tools.isBlank(return_info_cache) && Tools.isBlank(url_map_cache)) {
+                if (Tools.isNull(return_info_cache) && Tools.isNull(url_map_cache)) {
                     DocumentInfoAndUrlMap infoAndUrlMap = WebUtil.infoAndUrlMap(mapping, copyright);
                     if (copyright.isProjectMerge()) {
                         infoAndUrlMap.appendDocument(WebUtil.getProjects(copyright.getProjectMap()));

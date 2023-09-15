@@ -45,7 +45,7 @@ public class HttpUtil {
     }
 
     public static String getDomain(String url) {
-        if (Tools.isBlank(url)) {
+        if (Tools.isEmpty(url)) {
             return ApiConst.EMPTY;
         }
         String lowerUrl = url.toLowerCase();

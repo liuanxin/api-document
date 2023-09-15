@@ -167,30 +167,30 @@ public class Tools {
     );
 
     // ========== string ==========
-    public static boolean isBlank(Object obj) {
+    public static boolean isNull(Object obj) {
         return obj == null;
     }
-    public static boolean isNotBlank(Object obj) {
-        return !isBlank(obj);
+    public static boolean isNotNull(Object obj) {
+        return !isNull(obj);
     }
     public static boolean isEmpty(Object obj) {
-        return isBlank(obj) || ApiConst.EMPTY.equals(obj.toString().trim());
+        return isNull(obj) || obj.toString().trim().isEmpty();
     }
     public static boolean isNotEmpty(Object obj) {
         return !isEmpty(obj);
     }
     private static String toStr(Object obj) {
-        return isBlank(obj) ? ApiConst.EMPTY : obj.toString();
+        return isNull(obj) ? ApiConst.EMPTY : obj.toString();
     }
 
     // ========== date ==========
     private static Date parseDate(String source) {
-        if (isNotBlank(source)) {
+        if (isNotNull(source)) {
             source = source.trim();
             for (DateType type : DateType.values()) {
                 try {
                     Date date = new SimpleDateFormat(type.getValue()).parse(source);
-                    if (Tools.isNotBlank(date)) {
+                    if (Tools.isNotNull(date)) {
                         return date;
                     }
                 } catch (ParseException | IllegalArgumentException ignore) {
@@ -246,19 +246,19 @@ public class Tools {
 
     // ========== array map ==========
     public static <T> boolean isEmpty(T[] array) {
-        return isBlank(array) || array.length == 0;
+        return isNull(array) || array.length == 0;
     }
     public static <T> boolean isNotEmpty(T[] array) {
         return !isEmpty(array);
     }
     public static <T> boolean isEmpty(Collection<T> collection) {
-        return isBlank(collection) || collection.isEmpty();
+        return isNull(collection) || collection.isEmpty();
     }
     public static <T> boolean isNotEmpty(Collection<T> collection) {
         return !isEmpty(collection);
     }
     private static boolean isEmpty(Map map) {
-        return isBlank(map) || map.isEmpty();
+        return isNull(map) || map.isEmpty();
     }
     public static boolean isNotEmpty(Map map) {
         return !isEmpty(map);
@@ -315,7 +315,7 @@ public class Tools {
 
     // ========== enum ==========
     private static Object toEnum(Class<?> clazz, Object obj) {
-        if (isNotBlank(clazz) && clazz.isEnum()) {
+        if (isNotNull(clazz) && clazz.isEnum()) {
             Object[] constants = clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
                 if (isNotEmpty(obj)) {
@@ -325,11 +325,11 @@ public class Tools {
                             return em;
                         }
                         Object code = getMethod(em, "getCode");
-                        if (isNotBlank(code) && source.equalsIgnoreCase(code.toString().trim())) {
+                        if (isNotNull(code) && source.equalsIgnoreCase(code.toString().trim())) {
                             return em;
                         }
                         Object value = getMethod(em, "getValue");
-                        if (isNotBlank(value) && source.equalsIgnoreCase(value.toString().trim())) {
+                        if (isNotNull(value) && source.equalsIgnoreCase(value.toString().trim())) {
                             return em;
                         }
                     }
@@ -352,7 +352,7 @@ public class Tools {
         }
     }
     private static String collectEnumInfo(Class<?> clazz) {
-        if (isNotBlank(clazz) && clazz.isEnum()) {
+        if (isNotNull(clazz) && clazz.isEnum()) {
             Enum[] constants = (Enum[]) clazz.getEnumConstants();
             if (isNotEmpty(constants)) {
                 StringBuilder sbd = new StringBuilder();
@@ -425,10 +425,10 @@ public class Tools {
         return BASIC_TYPE_VALUE_MAP.get(clazz.getSimpleName());
     }
     static boolean basicType(Class<?> clazz) {
-        if (isBlank(clazz)) {
+        if (isNull(clazz)) {
             return false;
         }
-        if (isNotBlank(getTypeDefaultValue(clazz))) {
+        if (isNotNull(getTypeDefaultValue(clazz))) {
             return true;
         }
         // include enum
@@ -508,7 +508,7 @@ public class Tools {
         return ApiConst.FILE_TYPE.equals(fileType);
     }
     static String getInputType(Class<?> type) {
-        if (isBlank(type)) {
+        if (isNull(type)) {
             return ApiConst.EMPTY;
         }
         if (type.isArray()) {
@@ -535,12 +535,12 @@ public class Tools {
     }
 
     static Object getReturnType(Class<?> clazz) {
-        if (isBlank(clazz)) {
+        if (isNull(clazz)) {
             return null;
         }
 
         Object defaultValue = getTypeDefaultValue(clazz);
-        if (isNotBlank(defaultValue)) {
+        if (isNotNull(defaultValue)) {
             return defaultValue;
         } else if (clazz.isEnum()) {
             // Enum return first
@@ -552,7 +552,7 @@ public class Tools {
 
     private static final List<String> TRUE_LIST = Arrays.asList("true", "on", "yes", "1", "✓", "✔", "☑");
     static Object getReturnTypeExample(Class<?> clazz, String example) {
-        if (isBlank(clazz)) {
+        if (isNull(clazz)) {
             return null;
         }
 
@@ -560,7 +560,7 @@ public class Tools {
             return toEnum(clazz, example);
         }
         Object defaultObj = getTypeDefaultValue(clazz);
-        if (isBlank(example)) {
+        if (isNull(example)) {
             return defaultObj;
         }
 
@@ -805,7 +805,7 @@ public class Tools {
     }
 
     public static String escape(String str) {
-        if (isNotBlank(str)) {
+        if (isNotNull(str)) {
             Map<String, String> map = maps(
                     "\"", "&#34;", // "&quot;",
                     "'", "&#39;", // "&apos;",

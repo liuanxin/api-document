@@ -63,7 +63,7 @@ public final class ReturnHandler {
             return;
         }
         Class<?> outClass = getClass(className);
-        if (Tools.isBlank(outClass)) {
+        if (Tools.isNull(outClass)) {
             return;
         }
 
@@ -89,7 +89,7 @@ public final class ReturnHandler {
                         return;
                     }
                     Object key = Tools.mapKeyDefault(keyClazz);
-                    if (Tools.isBlank(key)) {
+                    if (Tools.isNull(key)) {
                         if (LOGGER.isWarnEnabled()) {
                             LOGGER.warn("method {} ==> map key({}) just handle basic type", method, keyAndValue);
                         }
@@ -121,19 +121,19 @@ public final class ReturnHandler {
                     if (ignore && Tools.isEmpty(field.getAnnotation(ApiReturnIgnore.class))) {
                         String name = null;
                         JsonProperty jsonProperty = field.getAnnotation(JsonProperty.class);
-                        if (Tools.isNotBlank(jsonProperty)) {
+                        if (Tools.isNotNull(jsonProperty)) {
                             name = jsonProperty.value();
                         } else {
                             ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                            if (Tools.isNotBlank(apiReturn)) {
+                            if (Tools.isNotNull(apiReturn)) {
                                 name = apiReturn.name();
                             } else {
                                 ApiModel apiModel = field.getAnnotation(ApiModel.class);
-                                if (Tools.isNotBlank(apiModel)) {
+                                if (Tools.isNotNull(apiModel)) {
                                     name = apiModel.name();
                                 } else {
                                     ApiParam apiParam = field.getAnnotation(ApiParam.class);
-                                    if (Tools.isNotBlank(apiParam)) {
+                                    if (Tools.isNotNull(apiParam)) {
                                         name = apiParam.name();
                                     }
                                 }
@@ -209,7 +209,7 @@ public final class ReturnHandler {
 
         String desc = null;
         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-        if (Tools.isNotBlank(apiReturn)) {
+        if (Tools.isNotNull(apiReturn)) {
             desc = apiReturn.value();
             String returnType = apiReturn.type();
             if (Tools.isNotEmpty(returnType)) {
@@ -217,7 +217,7 @@ public final class ReturnHandler {
             }
         } else {
             ApiModel apiModel = field.getAnnotation(ApiModel.class);
-            if (Tools.isNotBlank(apiModel)) {
+            if (Tools.isNotNull(apiModel)) {
                 desc = apiModel.value();
                 String returnType = apiModel.dataType();
                 if (Tools.isNotEmpty(returnType)) {
@@ -225,7 +225,7 @@ public final class ReturnHandler {
                 }
             } else {
                 ApiParam apiParam = field.getAnnotation(ApiParam.class);
-                if (Tools.isNotBlank(apiParam)) {
+                if (Tools.isNotNull(apiParam)) {
                     desc = apiParam.value();
                     String returnType = apiParam.dataType();
                     if (Tools.isNotEmpty(returnType)) {
@@ -234,7 +234,7 @@ public final class ReturnHandler {
                 }
             }
         }
-        if (Tools.isBlank(desc)) {
+        if (Tools.isNull(desc)) {
             desc = ApiConst.EMPTY;
         }
         documentReturn.setDesc(Tools.descInfo(fieldType, desc));
@@ -291,7 +291,7 @@ public final class ReturnHandler {
             return null;
         }
         Class<?> outClass = getClass(className);
-        if (Tools.isBlank(outClass)) {
+        if (Tools.isNull(outClass)) {
             return null;
         }
 
@@ -318,7 +318,7 @@ public final class ReturnHandler {
             return;
         }
         Class<?> innerClass = getClass(className);
-        if (Tools.isBlank(innerClass)) {
+        if (Tools.isNull(innerClass)) {
             return;
         }
         if (Collection.class.isAssignableFrom(innerClass)) {
@@ -371,8 +371,8 @@ public final class ReturnHandler {
                     if (GENERIC_CLASS_NAME.contains(clazzType.toString()) || clazzType == fieldClazz) {
                         Class<?> tmpClazz = getParameterizedType(type);
                         Class<?> tmpType = getParameterizedType(clazzType);
-                        if ((Tools.isNotBlank(tmpClazz) && Collection.class.isAssignableFrom(tmpClazz))
-                                || (Tools.isNotBlank(tmpType) && Collection.class.isAssignableFrom(tmpType))) {
+                        if ((Tools.isNotNull(tmpClazz) && Collection.class.isAssignableFrom(tmpClazz))
+                                || (Tools.isNotNull(tmpType) && Collection.class.isAssignableFrom(tmpType))) {
                             setField(field, obj, Tools.lists(value));
                         } else {
                             setField(field, obj, value);
@@ -420,7 +420,7 @@ public final class ReturnHandler {
                 list = new ArrayList();
             }
             Object object = handlerReturnJsonObj(parentRecursive, fieldName, method, obj);
-            if (Tools.isNotBlank(object)) {
+            if (Tools.isNotNull(object)) {
                 list.add(object);
             }
             return list;
@@ -447,13 +447,13 @@ public final class ReturnHandler {
                     return Collections.emptyMap();
                 }
                 Object key = Tools.mapKeyDefault(keyClazz);
-                if (Tools.isBlank(key)) {
+                if (Tools.isNull(key)) {
                     if (LOGGER.isWarnEnabled()) {
                         LOGGER.warn("method {} ==> handle json, map key({}) just handle basic type", method, keyAndValue);
                     }
                     return Collections.emptyMap();
                 } else {
-                    // key may be empty String: "", value may by null
+                    // key may be empty String: "", value may be null
                     return Tools.maps(key, handlerReturnJsonObj(parentRecursive, fieldName, method, keyValue[1].trim()));
                 }
             }
@@ -499,17 +499,17 @@ public final class ReturnHandler {
 
                     String basicTypeExample = null, example = null;
                     ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
-                    if (Tools.isNotBlank(apiReturn)) {
+                    if (Tools.isNotNull(apiReturn)) {
                         example = apiReturn.example();
                         basicTypeExample = Tools.isEmpty(example) ? apiReturn.value() : example;
                     } else {
                         ApiModel apiModel = field.getAnnotation(ApiModel.class);
-                        if (Tools.isNotBlank(apiModel)) {
+                        if (Tools.isNotNull(apiModel)) {
                             example = Tools.escape(apiModel.example());
                             basicTypeExample = Tools.isEmpty(example) ? Tools.escape(apiModel.value()) : example;
                         } else {
                             ApiParam apiParam = field.getAnnotation(ApiParam.class);
-                            if (Tools.isNotBlank(apiParam)) {
+                            if (Tools.isNotNull(apiParam)) {
                                 example = Tools.escape(apiParam.example());
                                 basicTypeExample = Tools.isEmpty(example) ? Tools.escape(apiParam.value()) : example;
                             }

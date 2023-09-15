@@ -41,7 +41,7 @@ public final class WebUtil {
                             String uri = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
                             String requestInfo = HttpUtil.get(uri + ApiConst.URL_PREFIX + ApiConst.URL_INFO);
                             ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
-                            return Tools.isBlank(projectInfo) ? null : projectInfo.fillModule(name, url);
+                            return Tools.isNull(projectInfo) ? null : projectInfo.fillModule(name, url);
                         }
                     }));
                 }
@@ -49,7 +49,7 @@ public final class WebUtil {
             for (Future<DocumentInfo> future : futureList) {
                 try {
                     DocumentInfo info = future.get();
-                    if (Tools.isNotBlank(info)) {
+                    if (Tools.isNotNull(info)) {
                         returnList.add(info);
                     }
                 } catch (InterruptedException | ExecutionException ignore) {
@@ -99,9 +99,9 @@ public final class WebUtil {
         for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethods.entrySet()) {
             RequestMappingInfo requestMapping = entry.getKey();
             HandlerMethod handlerMethod = entry.getValue();
-            if (Tools.isNotBlank(requestMapping) && Tools.isNotBlank(handlerMethod) && wasJsonApi(handlerMethod)) {
+            if (Tools.isNotNull(requestMapping) && Tools.isNotNull(handlerMethod) && wasJsonApi(handlerMethod)) {
                 ApiIgnore ignore = getAnnotation(handlerMethod, ApiIgnore.class);
-                if (Tools.isBlank(ignore) || !ignore.value()) {
+                if (Tools.isNull(ignore) || !ignore.value()) {
                     Set<String> urlSet = getUrl(requestMapping);
                     Set<String> methodSet = getMethod(requestMapping);
                     if (!ignoreUrl(urlSet, methodSet, copyright.getIgnoreUrlSet())) {
@@ -125,7 +125,7 @@ public final class WebUtil {
                         }
                         // no annotation: use global, annotation is false: not use, annotation is true: use self
                         ApiTokens apiTokens = getAnnotation(handlerMethod, ApiTokens.class);
-                        if (Tools.isBlank(apiTokens)) {
+                        if (Tools.isNull(apiTokens)) {
                             document.setUseGlobalParam("1");
                         } else {
                             document.setUseGlobalParam(apiTokens.useGlobal() ? "1" : ApiConst.EMPTY);
@@ -152,7 +152,7 @@ public final class WebUtil {
 
                         boolean commentInReturn = globalCommentInReturn;
                         boolean recordLevel = globalRecordLevel;
-                        if (Tools.isNotBlank(apiMethod)) {
+                        if (Tools.isNotNull(apiMethod)) {
                             document.setTitle(apiMethod.value());
                             document.setDesc(apiMethod.desc());
                             document.setDevelop(apiMethod.develop());
@@ -190,12 +190,12 @@ public final class WebUtil {
                         if (lowerClassName.endsWith(classSuffix)) {
                             info = className.substring(0, lowerClassName.indexOf(classSuffix));
                         }
-                        if (Tools.isBlank(apiGroup)) {
+                        if (Tools.isNull(apiGroup)) {
                             addGroup(moduleMap, 0, info + ApiConst.HORIZON + className, document);
                         } else {
                             int index = apiGroup.index();
                             for (String group : apiGroup.value()) {
-                                if (Tools.isNotBlank(group)) {
+                                if (Tools.isNotNull(group)) {
                                     String groupName = group.contains(ApiConst.HORIZON)
                                             ? group : (info + ApiConst.HORIZON + group);
                                     addGroup(moduleMap, index, groupName, document);
@@ -239,7 +239,7 @@ public final class WebUtil {
         */
         try {
             Object condition = requestMapping.getClass().getMethod("getPathPatternsCondition").invoke(requestMapping);
-            if (Tools.isNotBlank(condition)) {
+            if (Tools.isNotNull(condition)) {
                 // noinspection unchecked
                 Set<PathPattern> patterns = (Set<PathPattern>) condition.getClass().getMethod("getPatterns").invoke(condition);
                 if (Tools.isNotEmpty(patterns)) {
@@ -255,7 +255,7 @@ public final class WebUtil {
         }
         if (urlSet.isEmpty()) {
             PatternsRequestCondition condition = requestMapping.getPatternsCondition();
-            if (Tools.isNotBlank(condition)) {
+            if (Tools.isNotNull(condition)) {
                 urlSet.addAll(condition.getPatterns());
             }
         }
@@ -280,7 +280,7 @@ public final class WebUtil {
         }
         for (DocumentResponse response : globalResponse) {
             String type = ReturnType.getReturnTypeByResponse(response);
-            if (Tools.isNotBlank(type)) {
+            if (Tools.isNotNull(type)) {
                 String method = response.getCode() + ":" + response.getMsg();
                 String json = ReturnHandler.handlerReturnJson(method, type);
                 List<DocumentReturn> returnList = ReturnHandler.handlerReturn(method, type);
@@ -296,12 +296,12 @@ public final class WebUtil {
                                                          boolean methodRecordLevel) {
         List<DocumentResponse> responseList = new LinkedList<>();
         ApiResponses responses = getAnnotation(handlerMethod, ApiResponses.class);
-        if (Tools.isNotBlank(responses)) {
+        if (Tools.isNotNull(responses)) {
             for (ApiResponse apiResponse : responses.value()) {
                 DocumentResponse response = new DocumentResponse(apiResponse);
 
                 String type = ReturnType.getReturnTypeByAnnotation(Tools.first(apiResponse.type()));
-                if (Tools.isNotBlank(type)) {
+                if (Tools.isNotNull(type)) {
                     String method = handlerMethod.toString();
                     String json = ReturnHandler.handlerReturnJson(method, type);
                     List<DocumentReturn> returnList = ReturnHandler.handlerReturn(method, type);
@@ -320,7 +320,7 @@ public final class WebUtil {
         if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
             MethodParameter parameter = parameters[0];
             RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-            return Tools.isNotBlank(requestBody);
+            return Tools.isNotNull(requestBody);
         } else {
             return false;
         }
@@ -331,7 +331,7 @@ public final class WebUtil {
         if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
             MethodParameter parameter = parameters[0];
             RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-            return Tools.isNotBlank(requestBody) && Tools.basicType(parameter.getParameterType());
+            return Tools.isNotNull(requestBody) && Tools.basicType(parameter.getParameterType());
         } else {
             return false;
         }
@@ -344,7 +344,7 @@ public final class WebUtil {
             RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
             // return Tools.isNotBlank(requestBody) &&
             //        (Tools.innerType(parameter.getParameterType()) || Tools.innerType(parameter.getParameter().getParameterizedType()));
-            return Tools.isNotBlank(requestBody);
+            return Tools.isNotNull(requestBody);
         }
         return false;
     }
@@ -357,7 +357,7 @@ public final class WebUtil {
 
     private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {
         DocumentModule module = moduleMap.get(group);
-        if (Tools.isBlank(module)) {
+        if (Tools.isNull(module)) {
             module = new DocumentModule(group);
             module.setIndex(index);
         } else if (module.getIndex() > index) {
@@ -369,7 +369,7 @@ public final class WebUtil {
     }
 
     private static boolean ignoreUrl(Set<String> urlSet, Set<String> methodSet, Set<String> ignoreUrlSet) {
-        if (Tools.isBlank(ignoreUrlSet)) {
+        if (Tools.isNull(ignoreUrlSet)) {
             ignoreUrlSet = Tools.sets();
         }
 
@@ -415,11 +415,11 @@ public final class WebUtil {
 
     private static boolean wasJsonApi(HandlerMethod handlerMethod) {
         // @ResponseBody can be annotation on method and class
-        if (Tools.isNotBlank(getAnnotation(handlerMethod, ResponseBody.class))) {
+        if (Tools.isNotNull(getAnnotation(handlerMethod, ResponseBody.class))) {
             return true;
         } else {
             // @RestController just annotation on class
-            return Tools.isNotBlank(getAnnotationByClass(handlerMethod, RestController.class));
+            return Tools.isNotNull(getAnnotationByClass(handlerMethod, RestController.class));
         }
     }
 
@@ -429,7 +429,7 @@ public final class WebUtil {
 
     private static <T extends Annotation> T getAnnotation(HandlerMethod handlerMethod, Class<T> clazz) {
         T annotation = handlerMethod.getMethodAnnotation(clazz);
-        if (Tools.isBlank(annotation)) {
+        if (Tools.isNull(annotation)) {
             annotation = getAnnotationByClass(handlerMethod, clazz);
         }
         return annotation;

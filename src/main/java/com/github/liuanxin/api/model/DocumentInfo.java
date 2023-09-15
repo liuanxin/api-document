@@ -78,21 +78,10 @@ public class DocumentInfo {
 
     public void append(List<DocumentInfo> projects) {
         if (Tools.isNotEmpty(projects)) {
-            Set<DocumentParam> tokenSet = Tools.isBlank(tokenList)
-                    ? new LinkedHashSet<DocumentParam>()
-                    : new LinkedHashSet<>(tokenList);
-
-            Set<DocumentResponse> responseSet = Tools.isBlank(responseList)
-                    ? new LinkedHashSet<DocumentResponse>()
-                    : new LinkedHashSet<>(responseList);
-
-            Map<String, Object> enumMap = Tools.isBlank(enumInfo)
-                    ? new LinkedHashMap<String, Object>()
-                    : new LinkedHashMap<>(enumInfo);
-
-            Set<DocumentModule> moduleSet = Tools.isBlank(moduleList)
-                    ? new LinkedHashSet<DocumentModule>()
-                    : new LinkedHashSet<>(moduleList);
+            Set<DocumentParam> tokenSet = Tools.isEmpty(tokenList) ? new LinkedHashSet<>() : new LinkedHashSet<>(tokenList);
+            Set<DocumentResponse> responseSet = Tools.isEmpty(responseList) ? new LinkedHashSet<>() : new LinkedHashSet<>(responseList);
+            Map<String, Object> enumMap = Tools.isEmpty(enumInfo) ? new LinkedHashMap<>() : new LinkedHashMap<>(enumInfo);
+            Set<DocumentModule> moduleSet = Tools.isEmpty(moduleList) ? new LinkedHashSet<>() : new LinkedHashSet<>(moduleList);
 
             for (DocumentInfo info : projects) {
                 tokenSet.addAll(info.getTokenList());

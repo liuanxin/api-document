@@ -17,8 +17,7 @@ public class DocumentModule extends Document implements Comparable<DocumentModul
     private String info;
     private List<DocumentUrl> urlList;
 
-    public DocumentModule() {
-    }
+    public DocumentModule() {}
 
     public DocumentModule(String groupName) {
         fillNameAndInfo(groupName);
@@ -94,7 +93,7 @@ public class DocumentModule extends Document implements Comparable<DocumentModul
         }
     }
     public void addUrl(DocumentUrl url) {
-        if (Tools.isBlank(urlList)) {
+        if (Tools.isEmpty(urlList)) {
             urlList = new LinkedList<>();
         }
         urlList.add(url);
@@ -116,7 +115,7 @@ public class DocumentModule extends Document implements Comparable<DocumentModul
     }
     @Override
     public int compareTo(DocumentModule module) {
-        if (Tools.isBlank(module)) {
+        if (Tools.isNull(module)) {
             return -1;
         }
 

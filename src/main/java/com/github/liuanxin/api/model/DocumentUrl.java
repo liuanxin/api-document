@@ -397,7 +397,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
 
     @Override
     public int compareTo(DocumentUrl obj) {
-        if (Tools.isBlank(obj)) {
+        if (Tools.isNull(obj)) {
             return -1;
         }
 

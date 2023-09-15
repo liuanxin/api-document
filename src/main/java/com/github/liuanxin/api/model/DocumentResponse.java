@@ -142,6 +142,6 @@ public class DocumentResponse implements Comparable<DocumentResponse> {
 
     @Override
     public int compareTo(DocumentResponse response) {
-        return Tools.isBlank(response) ? -1 : (this.code - response.getCode());
+        return Tools.isNull(response) ? -1 : (this.code - response.getCode());
     }
 }
