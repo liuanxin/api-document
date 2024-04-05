@@ -1634,17 +1634,17 @@ function loadData() {
                 return;
             }
 
-            let title = handleLanguage((isNotBlank(copyright.title) ? (copyright.title + ' - ') : '') + '%@ js.title @%');
-            $title.html(title);
-            $headerContent.html(title);
-            $footer.html(copyrightTemplate(copyright));
+            let title = (isNotBlank(copyright.title) ? (copyright.title + ' - ') : '') + '%@ js.title @%';
+            fillLanguageData($title, title);
+            fillLanguageData($headerContent, title);
+            fillLanguageData($footer, copyrightTemplate(copyright));
 
             let doc = documentInfo.document;
             if (isBlank(doc)) {
                 return;
             }
-            $urlInfo.html(urlRenderTemplate(doc));
-            $urlNavInfo.html(navRenderTemplate(doc));
+            fillLanguageData($urlInfo, urlRenderTemplate(doc));
+            fillLanguageData($urlNavInfo, navRenderTemplate(doc));
             $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)');
 
             let $nav = $('.col-md-3');
@@ -1671,10 +1671,10 @@ function loadData() {
                 let html = escapeHtml($(this).html());
                 if (isNotBlank(html)) {
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!%@ js.recursive @%!!!</span>');
-                    $(this).html(addLine(html));
+                    fillLanguageData($(this), addLine(html));
                     Prism.highlightElement($(this).find('.source')[0]);
                 } else {
-                    $(this).html(addLine('<span class="red">%@ js.dataError @%</span>'));
+                    fillLanguageData($(this), addLine('<span class="red">%@ js.dataError @%</span>'));
                 }
             });
 
@@ -1701,7 +1701,7 @@ function loadData() {
                 handleItem($this, $this.val());
             });
         } else {
-            $urlInfo.html('<span class="red">%@ js.noInfo @%</span>');
+            fillLanguageData($urlInfo, '<span class="red">%@ js.noInfo @%</span>');
         }
     }).fail(function(e) {
         console.error(method + ' ' + requestUrl + ' fail.', e);
@@ -1710,7 +1710,7 @@ function loadData() {
 }
 function handleError($arrow, $ele, info) {
     $arrow.css('display', 'none');
-    $ele.html('<div class="config red">' + info + '</div>' +
+    fillLanguageData($ele, '<div class="config red">' + info + '</div>' +
         '<div class="config">%@ js.c1 @%? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">%@ js.c2 @%</span></div>' +
         '<div class="config">%@ js.c3 @%? <span id="delete-prefix" class="config-prefix">%@ js.c4 @%</span></div>');
 }
@@ -1999,7 +1999,7 @@ function handleInput($this, action, format) {
             json = action(JSON.stringify(JSON5.parse(value)));
         } catch (e) {
             console.error('json(' + value + ') error.', e);
-            $reqMsg.html('Json %@ js.jsonParseError1 @% ' + e.lineNumber + ', %@ js.jsonParseError2 @% ' + e.columnNumber + ')');
+            fillLanguageData($reqMsg, 'Json %@ js.jsonParseError1 @% ' + e.lineNumber + ', %@ js.jsonParseError2 @% ' + e.columnNumber + ')');
             return;
         }
         if (isNotBlank(json)) {
@@ -2009,7 +2009,7 @@ function handleInput($this, action, format) {
             localStorage.removeItem(itemKey);
         }
         if (format) {
-            $reqMsg.html('%@ js.tailComment @%');
+            fillLanguageData($reqMsg, '%@ js.tailComment @%');
             setTimeout(function () { $reqMsg.html(''); }, 3000);
         }
     }
@@ -2122,7 +2122,7 @@ $(function() {
                 requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
                 console.error('json(' + requestBody + ') error', e);
-                $reqMsg.html('Json %@ js.jsonParseError1 @% ' + e.lineNumber + ', %@ js.jsonParseError2 @% ' + e.columnNumber + ')');
+                fillLanguageData($reqMsg, 'Json %@ js.jsonParseError1 @% ' + e.lineNumber + ', %@ js.jsonParseError2 @% ' + e.columnNumber + ')');
                 return;
             }
         }
@@ -2223,7 +2223,7 @@ $(function() {
                 curlHtml = curlHtml.replace(/\s{2,}/g, ' ');
             }
         }
-        $curl.find('.source-code').html(addLine(curlHtml));
+        fillLanguageData($curl.find('.source-code'), addLine(curlHtml));
         $curl.show();
 
 
@@ -2249,7 +2249,7 @@ $(function() {
         }
         if (files.length > 0) {
             if ('POST' !== method.toUpperCase()) {
-                $response.find('.source-code').html("<span class='red'>%@ js.uploadError @%!</span>");
+                fillLanguageData($response.find('.source-code'), "<span class='red'>%@ js.uploadError @%!</span>");
                 $response.show();
                 return;
             }
@@ -2270,7 +2270,7 @@ $(function() {
         } else {
             if (hasRequestBody) {
                 if ('GET' === method.toUpperCase()) { /* https://stackoverflow.com/questions/978061/http-get-with-request-body */
-                    $response.find('.source-code').html("<span class='red'>%@ js.getBodyError @%!</span>");
+                    fillLanguageData($response.find('.source-code'), "<span class='red'>%@ js.getBodyError @%!</span>");
                     $response.show();
                     return;
                 }
@@ -2296,7 +2296,7 @@ $(function() {
         let $runLog = $btn.closest('form').find('.src-prev-res-msg');
         let $action = $response.find('.src-prev-right');
         $.ajax(settings).done(function(result, status, request) {
-            $runLog.html(timeLog(start));
+            fillLanguageData($runLog, timeLog(start));
             let html;
             let fail = isBlank(result);
             if (fail) {
@@ -2331,12 +2331,12 @@ $(function() {
                     editor.resize();
                 }
             } else {
-                $responseData.html(html);
+                fillLanguageData($responseData, html);
             }
             $response.show();
             let responseHeaders = String(request.getAllResponseHeaders()).trim();
             if (isNotBlank(responseHeaders)) {
-                $responseHeader.find('.source-code-no-height').html(addLine(responseHeaders));
+                fillLanguageData($responseHeader.find('.source-code-no-height'), addLine(responseHeaders));
                 $responseHeader.show();
             }
             $btn.removeAttr('disabled');
@@ -2344,7 +2344,7 @@ $(function() {
         }).fail(function(error) {
             $resultData.css('height', 'unset');
             $action.css('display', 'none');
-            $runLog.html(timeLog(start));
+            fillLanguageData($runLog, timeLog(start));
             let html = '';
             if (isBlank(error)) {
                 html += '<div class="red">' + method + ' %@ js.request1 @%(' + url + ')%@ js.request3 @%</div>';
@@ -2366,12 +2366,12 @@ $(function() {
                 }
                 let responseHeaders = String(error.getAllResponseHeaders()).trim();
                 if (isNotBlank(responseHeaders)) {
-                    $responseHeader.find('.source-code-no-height').html(addLine(responseHeaders));
+                    fillLanguageData($responseHeader.find('.source-code-no-height'), addLine(responseHeaders));
                     $responseHeader.show();
                 }
             }
             $responseData.css({'white-space':'pre-wrap','flex-direction':'column','padding':'7px'});
-            $responseData.html(html);
+            fillLanguageData($responseData, html);
             $response.show();
             $btn.removeAttr('disabled');
             $btn.removeClass('disabled');
@@ -2424,10 +2424,10 @@ $(function() {
         if ($source.length !== 0) {
             if ($source.css('max-height') === 'none') {
                 $source.css('max-height', '');
-                $this.html(display);
+                fillLanguageData($this, display);
             } else {
                 $source.css('max-height', 'unset');
-                $this.html(scroll);
+                fillLanguageData($this, scroll);
             }
         } else {
             $source = $sourceInfo.find('.request-data');
@@ -2445,10 +2445,10 @@ $(function() {
             $source.css('height', valueHeight);
             if (oldHeight === valueHeight || originalHeight >= height) {
                 $source.css('max-height', '');
-                $this.html(display);
+                fillLanguageData($this, display);
             } else {
                 $source.css('max-height', valueHeight);
-                $this.html(scroll);
+                fillLanguageData($this, scroll);
             }
             resizeEdit($editElement);
         }
@@ -2501,7 +2501,7 @@ $(function() {
         let copyElement = document.createElement('textarea');
         copyElement.setAttribute('readonly', 'readonly');
         copyElement.setAttribute('class', 'copy-impl');
-        $(copyElement).html(copyValue); /* 「copyElement.value = copyValue;」 不生效 */
+        fillLanguageData($(copyElement), copyValue); /* 「copyElement.value = copyValue;」 不生效 */
 
         let $parent = $ele.parent()[0];
         $parent.appendChild(copyElement);
