@@ -459,7 +459,7 @@
                                 <thead>
                                 <tr>
                                     <th class="text-left">%@ reqRes.param.name @%</th>
-                                    <th class="text-left">%@ reqRes.param.data-type @%</th>
+                                    <th class="text-left">%@ reqRes.param.dataType @%</th>
                                     <th class="text-left">%@ reqRes.param.required @%</th>
                                     {{? hasHeader}}<th class="text-left">%@ reqRes.param.type @%</th>{{?}}
                                     {{? hasExample}}<th class="text-left">%@ reqRes.param.example @%</th>{{?}}
@@ -807,7 +807,7 @@ const cn = {
         'example': '响应结果示例地址',
         'param': {
             'name': '参数名称',
-            'data-type': '数据类型',
+            'dataType': '数据类型',
             'required': '必须',
             'type': '参数类型',
             'example': '参数示例',
@@ -902,7 +902,7 @@ const en = {
         'example': 'Result example',
         'param': {
             'name': 'Param name',
-            'data-type': 'Data type',
+            'dataType': 'Data type',
             'required': 'Required',
             'type': 'Param type',
             'example': 'Param example',
@@ -1283,7 +1283,7 @@ $(function() {
     });
 
     $('#config-prefix-url').on('show.bs.modal', function () {
-        fillLanguageData($(this), handleLanguage($(this).html()));
+        fillLanguageData($(this), $(this).html());
         $('#prefix-url').val(localStorage.getItem(localServerPathItem));
     });
     $(document).on('click', '#delete-prefix', function() {
@@ -1344,7 +1344,7 @@ $(function() {
         let copyElement = document.createElement('textarea');
         copyElement.setAttribute('readonly', 'readonly');
         copyElement.setAttribute('class', 'copy-impl');
-        $(copyElement).html(copyValue); /* copyElement.value = copyValue; // 没生效, 不知道为什么 */
+        $(copyElement).html(copyValue); /* 「copyElement.value = copyValue;」 不生效 */
 
         let $parent = $ele.parent()[0];
         $parent.appendChild(copyElement);

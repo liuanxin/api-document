@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <title>接口文档</title>
+    <title>Api Document</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAD1BMVEVHcEwzZ9YzZtUzZtYzZ9aXuimUAAAABHRSTlMA40hLwZlVdgAAAD1JREFUKM9jYBi0wNDFRYjBBUq4AAVEXFwcQWxHmIALCIEJBhYHBmoJgMwG24ImIISuhYEcATSnwwUGKQAAN0oX04RzeZMAAAAASUVORK5CYII=">
@@ -488,23 +488,23 @@
     <div class="modal-dialog modal-lg modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <h4 class="modal-title">配置请求地址(当使用二级目录时), 或在请求页添加「?context-path=xxx」</h4>
+            <h4 class="modal-title">%@ context.modal-title @%</h4>
         </div>
         <div class="modal-body">
-            <input id="prefix-url" class="form-control" placeholder="如: http://www.example.com/xxx"/>
+            <input id="prefix-url" class="form-control" placeholder="%@ context.modal-plac @%: http://www.example.com/xxx"/>
         </div>
         <div class="modal-footer">
-            <button type="button" class="config-btn btn btn-info">提交</button>
-            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <button type="button" class="config-btn btn btn-info">%@ context.btn-submit @%</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">%@ context.btn-close @%</button>
         </div>
     </div>
 </div>
 <header class="print-nil"><div class="header container"><div class="header-content"></div></div></header>
 <script id="choose-project" type="text/x-dot-template">
-    <div class="header-text">选择项目:</div>
+    <div class="header-text">%@ choose.project @%:</div>
     <div class="header-select">
         <label><select class="project-choose form-control" name="p">
-            <option value="">当前</option>
+            <option value="">%@ choose.current @%</option>
             {{ let cp = it.project; }}
             {{~ it.projects  :p}}
             {{ let s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
@@ -537,16 +537,16 @@
                         let moduleDesc = '';
                         let hasDev = url.develop && url.develop !== '';
                         if (hasDev) {
-                            moduleDesc += '开发: ' + url.develop;
+                            moduleDesc += '%@ reqRes.develop @%: ' + url.develop;
                         }
                         if (url.desc && url.desc !== '') {
                             if (hasDev) { moduleDesc += '<br>'; }
-                            moduleDesc += '说明: ' + url.desc;
+                            moduleDesc += '%@ reqRes.desc @%: ' + url.desc;
                         }
 
                         let printNil = '';
                         if (url.exampleUrl && url.exampleUrl != '') {
-                            let example = '<a target="_blank" href="' + url.exampleUrl + '">响应结果示例地址</a>';
+                            let example = '<a target="_blank" href="' + url.exampleUrl + '">%@ reqRes.example @%</a>';
                             if (moduleDesc !== '') {
                                 moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
                             } else {
@@ -564,14 +564,14 @@
 
                         let hasDesc = false, hasFile = false, hasHeader = false, hasExample = false;
                         for (let i = 0; i < paramList.length; i++) {
-                        let paramDesc = paramList[i].desc;
-                        if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
+                            let paramDesc = paramList[i].desc;
+                            if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
 
-                        if (String(paramList[i].hasFile) === '1') { hasFile = true; }
-                        if (String(paramList[i].paramType) === '1') { hasHeader = true; }
+                            if (String(paramList[i].hasFile) === '1') { hasFile = true; }
+                            if (String(paramList[i].paramType) === '1') { hasHeader = true; }
 
-                        let urlExample = paramList[i].example;
-                        if (urlExample !== undefined && urlExample !== null && urlExample !== '') { hasExample = true; }
+                            let urlExample = paramList[i].example;
+                            if (urlExample !== undefined && urlExample !== null && urlExample !== '') { hasExample = true; }
                         }
                         let textNum = 0;
 
@@ -579,10 +579,10 @@
                         }}
                         <ul class="nav nav-tabs bottom-table">
                             <li{{? !requestActive}} class="active"{{?}}>
-                                <div class="tab">示例</div>
+                                <div class="tab">%@ reqRes.info.name @%</div>
                             </li>
                             <li{{? requestActive}} class="active"{{?}}>
-                                <div class="tab" data-tab="1">请求</div>
+                                <div class="tab" data-tab="1">%@ reqRes.req.name @%</div>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -592,12 +592,12 @@
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                         <tr>
-                                            <th class="text-left">参数名称</th>
-                                            <th class="text-left">数据类型</th>
-                                            {{? hasExample}}<th class="text-left">示例</th>{{?}}
-                                            <th class="text-left">必须</th>
-                                            {{? hasHeader}}<th class="text-left">参数类型</th>{{?}}
-                                            {{? hasDesc}}<th class="text-left">说明</th>{{?}}
+                                            <th class="text-left">%@ reqRes.info.param.name @%</th>
+                                            <th class="text-left">%@ reqRes.info.param.dataType @%</th>
+                                            <th class="text-left">%@ reqRes.info.param.required @%</th>
+                                            {{? hasHeader}}<th class="text-left">%@ reqRes.info.param.paramType @%</th>{{?}}
+                                            {{? hasExample}}<th class="text-left">%@ reqRes.info.param.example @%</th>{{?}}
+                                            {{? hasDesc}}<th class="text-left">%@ reqRes.info.param.desc @%</th>{{?}}
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -609,9 +609,9 @@
                                             ? param.showDataType
                                             : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                         }}</td>
-                                        {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
                                         <td class="text-left">{{= String(param.required) === '1' ? '✓' : '✗'}}</td>
                                         {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                        {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
                                         {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                         </tr>
                                         {{~}}
@@ -623,11 +623,11 @@
                                 {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== ''}}
                                 <div class="module-api-info-request source-info bottom-table">
                                     <div class="src-prev">
-                                        <div class="src-prev-left">请求示例</div>
+                                        <div class="src-prev-left">%@ reqRes.info.req.example @%</div>
                                         <div class="src-prev-right">
                                             <div class="copy-status green print-nil"></div>
-                                            <div class="copy print-nil">复制(去注释)</div>
-                                            <div class="no-scroll print-nil">全显</div>
+                                            <div class="copy print-nil">%@ reqRes.info.req.copy @%</div>
+                                            <div class="no-scroll print-nil">%@ reqRes.info.req.show @%</div>
                                         </div>
                                     </div>
                                     <div class="source-code" data-flag="module-api-info-request-src">{{= url.requestBodyJson || ''}}</div>
@@ -636,11 +636,11 @@
 
                                 <div class="module-api-info-return source-info bottom-table">
                                     <div class="src-prev">
-                                        <div class="src-prev-left">响应示例</div>
+                                        <div class="src-prev-left">%@ reqRes.info.res.example @%</div>
                                         <div class="src-prev-right">
                                             <div class="copy-status green print-nil"></div>
-                                            <div class="copy print-nil">复制(去注释)</div>
-                                            <div class="no-scroll print-nil">全显</div>
+                                            <div class="copy print-nil">%@ reqRes.info.res.copy @%</div>
+                                            <div class="no-scroll print-nil">%@ reqRes.info.res.show @%</div>
                                         </div>
                                     </div>
                                     <div class="source-code" data-flag="module-api-info-response-src">{{= url.commentJson || ''}}</div>
@@ -651,9 +651,9 @@
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                         <tr>
-                                            <th class="text-left">名称</th>
-                                            <th class="text-left">类型</th>
-                                            <th class="text-left">说明</th>
+                                            <th class="text-left">%@ reqRes.info.return.name @%</th>
+                                            <th class="text-left">%@ reqRes.info.return.type @%</th>
+                                            <th class="text-left">%@ reqRes.info.return.desc @%</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -662,7 +662,7 @@
                                             <td class="text-left">{{= rtn.name || ''}}</td>
                                             <td class="text-left">{{= rtn.type || ''}}</td>
                                             <td class="text-left wrap">
-                                                {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}
+                                                {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!%@ reqRes.info.return.recursive @%!!!</span>')}}
                                             </td>
                                         </tr>
                                         {{~}}
@@ -675,20 +675,20 @@
                                 let hasSelfResponse = false;
                                 let responseList;
                                 if (url.responseList && url.responseList.length > 0) {
-                                hasSelfResponse = true;
-                                responseList = url.responseList;
+                                    hasSelfResponse = true;
+                                    responseList = url.responseList;
                                 } else if (it.responseList && it.responseList.length > 0) {
-                                responseList = it.responseList;
+                                    responseList = it.responseList;
                                 } else {
-                                responseList = [];
+                                    responseList = [];
                                 }
 
                                 let hasAction = false;
                                 for (let i = 0; i < responseList.length; i++) {
-                                let comment = responseList[i].comment;
-                                if (comment !== undefined && comment !== null && comment !== '') {
-                                hasAction = true;
-                                }
+                                    let comment = responseList[i].comment;
+                                    if (comment !== undefined && comment !== null && comment !== '') {
+                                        hasAction = true;
+                                    }
                                 }
                                 }}
                                 {{? responseList.length > 0}}
@@ -696,9 +696,9 @@
                                     <table class="table table-striped table-bordered table-hover table-condensed">
                                         <thead>
                                         <tr>
-                                            <th class="text-left">响应码</th>
-                                            <th class="text-left">说明</th>
-                                            {{? hasAction}}<th class="text-left print-nil">操作</th>{{?}}
+                                            <th class="text-left">%@ reqRes.return.status.code @%</th>
+                                            <th class="text-left">%@ reqRes.return.status.desc @%</th>
+                                            {{? hasAction}}<th class="text-left print-nil">%@ reqRes.return.status.action @%</th>{{?}}
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -712,8 +712,8 @@
                                             }}
                                             {{? comment !== undefined && comment !== null && comment !== ''}}
                                             <td class="text-left print-nil">
-                                                <span class="response-example" title="点击查看响应 {{= response.code + ': ' + response.msg}} 时的示例"
-                                                      data-toggle="modal" data-target="#{{= targetId}}">返回示例</span>
+                                                <span class="response-example" title="%@ reqRes.return.status.t1 @% {{= response.code + ': ' + response.msg}} %@ reqRes.return.status.t2 @%"
+                                                      data-toggle="modal" data-target="#{{= targetId}}">%@ reqRes.return.status.example @%</span>
                                             </td>
                                             {{?? hasAction}}
                                             <td class="text-left print-nil"></td>
@@ -734,7 +734,7 @@
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal">&times;</button>
                                             <h4 class="modal-title">
-                                                模块「{{= module.info || ''}}」接口「{{= url.title || ''}}」响应「{{= response.code + ': ' + response.msg}}」示例
+                                                %@ reqRes.return.status.res.t1 @%「{{= module.info || ''}}」%@ reqRes.return.status.res.t2 @%「{{= url.title || ''}}」%@ reqRes.return.status.res.t3 @%「{{= response.code + ': ' + response.msg}}」%@ reqRes.return.status.res.t4 @%
                                             </h4>
                                         </div>
                                         <div class="modal-body">
@@ -743,8 +743,8 @@
                                                     <div class="src-prev-left"></div>
                                                     <div class="src-prev-right">
                                                         <div class="copy-status green print-nil"></div>
-                                                        <div class="copy print-nil">复制(去注释)</div>
-                                                        <div class="no-scroll print-nil">全显</div>
+                                                        <div class="copy print-nil">%@ reqRes.return.status.res.copy @%</div>
+                                                        <div class="no-scroll print-nil">%@ reqRes.return.status.res.show @%</div>
                                                     </div>
                                                 </div>
                                                 <div class="source-code">{{= response.comment || ''}}</div>
@@ -755,9 +755,9 @@
                                                 <table class="table table-striped table-bordered table-hover table-condensed">
                                                     <thead>
                                                     <tr>
-                                                        <th class="text-left">名称</th>
-                                                        <th class="text-left">类型</th>
-                                                        <th class="text-left">说明</th>
+                                                        <th class="text-left">%@ reqRes.return.status.res.info.name @%</th>
+                                                        <th class="text-left">%@ reqRes.return.status.res.info.type @%</th>
+                                                        <th class="text-left">%@ reqRes.return.status.res.info.desc @%</th>
                                                     </tr>
                                                     </thead>
                                                     <tbody>
@@ -766,7 +766,7 @@
                                                         <td class="text-left">{{= rtn.name || ''}}</td>
                                                         <td class="text-left">{{= rtn.type || ''}}</td>
                                                         <td class="text-left wrap">
-                                                            {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}
+                                                            {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!%@ reqRes.return.status.res.info.recursive @%!!!</span>')}}
                                                         </td>
                                                     </tr>
                                                     {{~}}
@@ -776,7 +776,7 @@
                                             {{?}}
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">%@ reqRes.return.status.res.close @%</button>
                                         </div>
                                     </div>
                                 </div>
@@ -796,12 +796,12 @@
                                         <table class="table table-striped table-bordered table-hover table-condensed">
                                             <thead>
                                             <tr>
-                                                <th class="text-left">参数名称</th>
-                                                <th class="text-left example">参数值</th>
-                                                <th class="text-left">必须</th>
-                                                <th class="text-left">数据类型</th>
-                                                {{? hasHeader}}<th class="text-left">参数类型</th>{{?}}
-                                                {{? hasDesc}}<th class="text-left">说明</th>{{?}}
+                                                <th class="text-left">%@ reqRes.req.param.name @%</th>
+                                                <th class="text-left example">%@ reqRes.req.param.value @%</th>
+                                                <th class="text-left">%@ reqRes.req.param.required @%</th>
+                                                <th class="text-left">%@ reqRes.req.param.dataType @%</th>
+                                                {{? hasHeader}}<th class="text-left">%@ reqRes.req.param.paramType @%</th>{{?}}
+                                                {{? hasDesc}}<th class="text-left">%@ reqRes.req.param.desc @%</th>{{?}}
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -838,11 +838,11 @@
                                                     <div class="input-group">
                                                         <label class="input-group-btn">
                                                             <span class="btn btn-default{{? required}} bold{{?}}">
-                                                                选择文件
+                                                                %@ reqRes.req.param.file @%
                                                                 <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
                                                             </span>
                                                         </label>
-                                                        <input type="text"{{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                                        <input type="text"{{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
                                                                class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
                                                     </div>
                                                     {{?? hasTextarea}}
@@ -863,13 +863,13 @@
                                                     <div class="input-group date form-datetime">
                                                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                                                         <input type="text" name="{{= param.name || ''}}"{{= header}}
-                                                               {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                                               {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
                                                                class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}" value="{{= example}}"
                                                                {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
                                                     </div>
                                                     {{??}}
                                                     {{ textNum++; }}
-                                                    <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
+                                                    <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
                                                            class="form-control{{= validateClass}}{{= tokenClass}}"
                                                            type="{{= dataType === 'password' || (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
                                                            name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
@@ -894,15 +894,15 @@
                                     <div class="bottom-table source-info">
                                         <div class="src-prev">
                                             <div class="src-prev-left">
-                                                <span>请求体</span>
-                                                <span class="src-prev-req-format print-nil">格式化</span>
-                                                <span class="src-prev-req-compress print-nil">压缩</span>
+                                                <span>%@ reqReq.req.body.name @%</span>
+                                                <span class="src-prev-req-format print-nil">%@ reqReq.req.body.format @%</span>
+                                                <span class="src-prev-req-compress print-nil">%@ reqReq.req.body.compress @%</span>
                                                 <span class="src-prev-req-msg red print-nil"></span>
                                             </div>
                                             <div class="src-prev-right">
                                                 <div class="copy-status green print-nil"></div>
-                                                <div class="copy print-nil">复制(去注释)</div>
-                                                <div class="no-scroll print-nil">全显</div>
+                                                <div class="copy print-nil">%@ reqReq.req.body.copy @%</div>
+                                                <div class="no-scroll print-nil">%@ reqReq.req.body.show @%</div>
                                             </div>
                                         </div>
                                         {{
@@ -918,7 +918,7 @@
                                     <div class="bottom-table">
                                         /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
                                         {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
-                                        <input class="form-submit btn" type="button" value="请求此接口"/>
+                                        <input class="form-submit btn" type="button" value="%@ reqReq.req.btn @%"/>
                                     </div>
 
                                     <div class="curl bottom-table source-info">
@@ -926,7 +926,7 @@
                                             <div class="src-prev-left">cURL</div>
                                             <div class="src-prev-right">
                                                 <div class="copy-status green print-nil"></div>
-                                                <div class="copy print-nil">复制</div>
+                                                <div class="copy print-nil">%@ reqReq.req.curl @%</div>
                                             </div>
                                         </div>
                                         <div class="source-code"></div>
@@ -935,12 +935,12 @@
                                     <div class="response bottom-table source-info">
                                         <div class="src-prev">
                                             <div class="src-prev-left">
-                                                <span>响应</span><span class="src-prev-res-msg green print-nil"></span>
+                                                <span>%@ reqReq.req.res.name @%</span><span class="src-prev-res-msg green print-nil"></span>
                                             </div>
                                             <div class="src-prev-right">
                                                 <div class="copy-status green print-nil"></div>
-                                                <div class="copy print-nil">复制(去注释)</div>
-                                                <div class="no-scroll print-nil">全显</div>
+                                                <div class="copy print-nil">%@ reqReq.req.res.copy @%</div>
+                                                <div class="no-scroll print-nil">%@ reqReq.req.res.show @%</div>
                                             </div>
                                         </div>
                                         <div class="result-data">
@@ -949,7 +949,7 @@
                                     </div>
                                     <div class="response-header bottom-table panel panel-default">
                                         <div class="src-prev">
-                                            <div class="src-prev-left">响应头</div>
+                                            <div class="src-prev-left">%@ reqReq.req.res.head @%</div>
                                         </div>
                                         <div class="source-code-no-height"></div>
                                     </div>
@@ -971,7 +971,7 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="modal-title">
-                            全局响应「{{= response.code + ': ' + response.msg}}」示例
+                            %@ reqRes.global.t1 @%「{{= response.code + ': ' + response.msg}}」%@ reqRes.global.t2 @%
                         </h4>
                     </div>
                     <div class="modal-body">
@@ -980,8 +980,8 @@
                                 <div class="src-prev-left"></div>
                                 <div class="src-prev-right">
                                     <div class="copy-status green print-nil"></div>
-                                    <div class="copy print-nil">复制(去注释)</div>
-                                    <div class="no-scroll print-nil">全显</div>
+                                    <div class="copy print-nil">%@ reqRes.global.copy @%</div>
+                                    <div class="no-scroll print-nil">%@ reqRes.global.show @%</div>
                                 </div>
                             </div>
                             <div class="source-code">{{= response.comment || ''}}</div>
@@ -992,9 +992,9 @@
                             <table class="table table-striped table-bordered table-hover table-condensed">
                                 <thead>
                                 <tr>
-                                    <th class="text-left">名称</th>
-                                    <th class="text-left">类型</th>
-                                    <th class="text-left">说明</th>
+                                    <th class="text-left">%@ reqRes.global.return.name @%</th>
+                                    <th class="text-left">%@ reqRes.global.return.type @%</th>
+                                    <th class="text-left">%@ reqRes.global.return.desc @%</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -1002,7 +1002,7 @@
                                 <tr>
                                     <td class="text-left">{{= rtn.name || ''}}</td>
                                     <td class="text-left">{{= rtn.type || ''}}</td>
-                                    <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!递归实体!!!</span>')}}</td>
+                                    <td class="text-left wrap">{{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!%@ reqRes.global.return.recursive @%!!!</span>')}}</td>
                                 </tr>
                                 {{~}}
                                 </tbody>
@@ -1011,7 +1011,7 @@
                         {{?}}
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">%@ reqRes.global.close @%</button>
                     </div>
                 </div>
             </div>
@@ -1045,8 +1045,8 @@
 <footer></footer>
 <script id="copyright" type="text/x-dot-template">
     <div class="footer">
-        <div class="version">版本: {{= it.version || ''}}</div>
-        <div class="statistics">共 {{= it.groupCount || ''}} 个模块, {{= it.apiCount || ''}} 个接口</div>
+        <div class="version">%@ copyright.version @%: {{= it.version || ''}}</div>
+        <div class="statistics">%@ copyright.s1 @% {{= it.groupCount || ''}}, %@ copyright.s2 @% {{= it.apiCount || ''}}</div>
         <div class="team">{{= it.team || ''}}</div>
         <div class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright || ''}}</div>
     </div>
@@ -1098,6 +1098,362 @@ function hasEnter(event) {
         event.preventDefault();
     }
     return handled;
+}
+
+const cn = {
+    'context': {
+        'modal-title': '配置请求前缀(当使用二级目录时)或在请求页添加「?context-path=xxx」',
+        'modal-plac': '如',
+        'btn-submit': '提交',
+        'btn-close': '关闭'
+    },
+    'choose': {
+        'project': '选择项目',
+        'current': '当前'
+    },
+    'reqRes': {
+        'develop': '开发',
+        'desc': '说明',
+        'example': '响应结果示例地址',
+        'info': {
+            'name': '示例',
+            'param': {
+                'name': '参数名称',
+                'dataType': '数据类型',
+                'required': '必须',
+                'paramType': '参数类型',
+                'example': '示例',
+                'desc': '说明'
+            },
+            'req': {
+                'example': '请求示例',
+                'copy': '复制(去注释)',
+                'show': '全显'
+            },
+            'res': {
+                'example': '响应示例',
+                'copy': '复制(去注释)',
+                'show': '全显'
+            },
+            'return': {
+                'name': '名称',
+                'type': '类型',
+                'desc': '说明',
+                'recursive': '递归实体',
+                'status': {
+                    'code': '响应码',
+                    'desc': '说明i',
+                    'action': '操作',
+                    't1': '点击查看响应',
+                    't2': '时的示例',
+                    'example': '返回示例',
+                    'res': {
+                        't1': '模块',
+                        't2': '接口',
+                        't3': '响应',
+                        't4': '示例',
+                        'copy': '复制(去注释)',
+                        'show': '全显'
+                        'info': {
+                            'name': '名称',
+                            'type': '类型',
+                            'desc': '说明',
+                            'recursive': '递归实体',
+                        },
+                        'close': '关闭'
+                    },
+                },
+            }
+        },
+        'req': {
+            'name': '请求',
+            'param': {
+                'name': '参数名称',
+                'value': '参数值',
+                'required': '必须',
+                'dataType': '数据类型',
+                'paramType': '参数类型',
+                'desc': '说明',
+                'file': '选择文件'
+            },
+            'body': {
+                'name': '请求体',
+                'format': '格式化',
+                'compress': '压缩',
+                'copy': '复制(去注释)',
+                'show': '全显'
+            },
+            'btn': '请求此接口',
+            'curl': '复制',
+            'res': {
+                'name': '响应',
+                'copy': '复制(去注释)',
+                'show': '全显',
+                'head': '响应头'
+            }
+        },
+        'global': {
+            't1': '全局响应',
+            't2': '示例',
+            'copy': '复制(去注释)',
+            'show': '全显',
+            'return': {
+                'name': '名称',
+                'type': '类型',
+                'desc': '说明',
+                'recursive': '递归实体'
+            },
+            'close': '关闭'
+        },
+    },
+    'copyright': {
+        'version': '版本',
+        's1': '模块数量',
+        's2': '接口数据'
+    },
+    'js': {
+        'reqError': '接口返回数据有误',
+        'title': '前后端交互',
+        'recursive': '递归实体',
+        'dataError': '数据为空 或 无法解析',
+        'noInfo': '无接口信息',
+        'networkError': '接口无法请求, 网络有误 或 有跨域问题',
+        'c1': '请求的上下文路径不对',
+        'c2': '配置',
+        'c3': '配置有误',
+        'c4': '删除配置',
+        'jsonParseError1': '数据解析有误(行',
+        'jsonParseError2': '列',
+        'tailComment': '生成的尾部注释不影响调用',
+        'fileReplace': '替换真实路径',
+        'uploadError': '上传文件需要用 POST(用 cURL 是可以的), 请联系后端修改',
+        'getBodyError': '浏览器不能通过 GET 请求发送 RequestBody 参数(用 cURL 是可以的), 请联系后端修改成 POST',
+        'request1': '请求',
+        'request2': '成功, 但是响应为空',
+        'request3': '失败',
+        'resCode': '响应码',
+        'resValue': '响应内容',
+        'show': '全显',
+        'scroll': '滚动',
+        'copy': '复制成功',
+        'copyFail': '复制失败'
+    }
+};
+const en = {
+    'context': {
+        'modal-title': 'Config request prefix(When use context-path) or add "?context-path=xxx" to the request url',
+        'modal-plac': 'For example',
+        'btn-submit': 'Submit',
+        'btn-close': 'Close'
+    },
+    'choose': {
+        'project': 'Choose project',
+        'current': 'current'
+    },
+    'reqRes': {
+        'develop': 'Develop',
+        'desc': 'Desc',
+        'example': 'Result example',
+        'info': {
+            'name': 'Example',
+            'param': {
+                'name': 'Param name',
+                'dataType': 'Data type',
+                'required': 'Requried',
+                'paramType': 'Param type',
+                'example': 'Example',
+                'desc': 'Desc'
+            },
+            'req': {
+                'example': 'Request Example',
+                'copy': 'Copy(uncomment)',
+                'show': 'No-Scroll'
+            },
+            'res': {
+                'example': 'Response example',
+                'copy': 'Copy(uncomment)',
+                'show': 'No-Scroll'
+            },
+            'return': {
+                'name': 'Name',
+                'type': 'Type',
+                'desc': 'Desc',
+                'recursive': 'RECURSIVE OBJECT',
+                'status': {
+                    'code': 'Response Status',
+                    'desc': 'Desc',
+                    'action': 'Action',
+                    't1': 'Click to view response',
+                    't2': '',
+                    'example': 'View example',
+                    'res': {
+                        't1': 'Module',
+                        't2': 'api',
+                        't3': 'response',
+                        't4': 'example',
+                        'copy': 'Copy(uncomment)',
+                        'show': 'No-Scroll'
+                        'info': {
+                            'name': 'Name',
+                            'type': 'Type',
+                            'desc': 'Desc',
+                            'recursive': 'RECURSIVE OBJECT',
+                        },
+                        'close': 'Close'
+                    },
+                },
+            }
+        },
+        'req': {
+            'name': 'Request',
+            'param': {
+                'name': 'Param name',
+                'value': 'Param value',
+                'required': 'Required',
+                'dataType': 'Data type',
+                'paramType': 'Param type',
+                'desc': 'Desc',
+                'file': 'Browse...'
+            },
+            'body': {
+                'name': 'Request-Body',
+                'format': 'Format-Json',
+                'compress': 'Compress',
+                'copy': 'Copy(uncomment)',
+                'show': 'No-Scroll'
+            },
+            'btn': 'Request backend',
+            'curl': 'Copy',
+            'res': {
+                'name': 'Response',
+                'copy': 'Copy(uncomment)',
+                'show': 'No-Scroll',
+                'head': 'Response Header'
+            }
+        },
+        'global': {
+            't1': 'View example of global response',
+            't2': 'example
+            'name': 'Return name',
+            'type': 'Return type',
+            'desc': 'Return desc',',
+            'copy': 'Copy(uncomment)',
+            'show': 'No-Scroll',
+            'return': {
+                'name': 'Return name',
+                'type': 'Return type',
+                'desc': 'Return desc',
+                'recursive': 'RECURSIVE OBJECT'
+            },
+            'close': 'Close'
+        },
+    },
+    'copyright': {
+        'version': 'Version',
+        's1': 'Module',
+        's2': 'Api'
+    },
+    'js': {
+        'reqError': 'Return data error',
+        'title': 'Front-Back-end interactionEmpty Or Parse Error',
+        'recursive': 'RECURSIVE OBJECT',
+        'dataError': 'Empty Or Parse Error',
+        'noInfo': 'No api infoRequest error, Incorrect network or cross-domain error',
+        'networkError': 'Request error, Incorrect network or cross-domain error',
+        'c1': 'context-path error',
+        'c2': 'config',
+        'c3': 'config error',
+        'c4': 'delete',
+        'jsonParseError1': 'parse error(line',
+        'jsonParseError2': 'column',
+        'tailComment': 'Comment on tail does not affect the Request',
+        'fileReplace': 'REPLACE_REAL_PATH',
+        'uploadError': "Upload files must use POST(It's possible to use cURL), please contact the backend to change",
+        'getBodyError': "Browser cannot send RequestBody parameter via a GET request(It's possible to use cURL), please contact the backend change to POST",
+        'request1': 'request ',
+        'request2': ' success, but response has empty',
+        'request3': ' fail',
+        'resCode': 'Response Code',
+        'resValue': 'Response Text',
+        'show': 'No-Scroll',
+        'scroll': 'Scroll',
+        'copy': 'Copy Success',
+        'copyFail': 'Copy Fail'
+    }
+};
+
+const defaultLanguage = cn;
+const languageList = {
+    'zh': cn ,
+    'zh-cn': cn ,
+    'cn': cn ,
+    'en': en ,
+    'en-uk': en ,
+    'en-us': en ,
+    'uk': en ,
+    'us': en
+};
+
+function getSearch() {
+    let returnObj = {};
+    let search = location.search.trim();
+    if (isBlank(search)) {
+        return returnObj;
+    }
+    if (search.startsWith('?')) {
+        search = search.substring(1);
+    }
+    let arr = search.split('&');
+    let i, len = arr.length;
+    for (i = 0; i < len; i++) {
+        let kv = arr[i].split('=');
+        if (kv.length > 1) {
+            returnObj[kv[0]] = kv[1];
+        }
+    }
+    return returnObj;
+}
+function getLanguage() {
+    let key = 'lang';
+    let search = getSearch();
+    let value = String(search[key] || navigator.language).replace('_', '-').toLowerCase();
+    return languageList[value] || defaultLanguage;
+}
+function getLangData(properties) {
+    if (isBlank(properties)) {
+        return '';
+    }
+
+    let tmp = getLanguage();
+    let i, arr = properties.split('.');
+    for (i = 0; i < arr.length; i++) {
+        tmp = tmp[arr[i].trim()];
+        if (isBlank(tmp)) {
+            return '';
+        }
+    }
+    return tmp;
+}
+
+function handleLanguage(data) {
+    /* %@ var @% */
+    let match = data.match(/%@([\s\S]*?)@%/g);
+    if (isBlank(match)) {
+        return data;
+    } else {
+        let returnContent = data;
+        let i, len = match.length;
+        for (i = 0; i < len; i++) {
+            let key = match[i];
+            let value = getLangData(key.substring(2, key.length - 2).trim()) || '';
+
+            returnContent = returnContent.replace(key, value);
+        }
+        return returnContent;
+    }
+}
+function fillLanguageData($ele, html) {
+    $ele.html(handleLanguage(html));
 }
 
 let localServerPathItem = '__prefix-url__';
@@ -1274,11 +1630,11 @@ function loadData() {
             let documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
             let copyright = documentInfo.copyright;
             if (isBlank(copyright)) {
-                handleError($rightArrow, $urlInfo, '接口返回数据有误!');
+                handleError($rightArrow, $urlInfo, '%@ js.reqError @%!');
                 return;
             }
 
-            let title = (isNotBlank(copyright.title) ? (copyright.title + ' - ') : '') + '前后端交互';
+            let title = handleLanguage((isNotBlank(copyright.title) ? (copyright.title + ' - ') : '') + '%@ js.title @%');
             $title.html(title);
             $headerContent.html(title);
             $footer.html(copyrightTemplate(copyright));
@@ -1314,11 +1670,11 @@ function loadData() {
             $('.source-code').each(function() {
                 let html = escapeHtml($(this).html());
                 if (isNotBlank(html)) {
-                    html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!递归实体!!!</span>');
+                    html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!%@ js.recursive @%!!!</span>');
                     $(this).html(addLine(html));
                     Prism.highlightElement($(this).find('.source')[0]);
                 } else {
-                    $(this).html(addLine('<span class="red">数据为空 或 无法解析</span>'));
+                    $(this).html(addLine('<span class="red">%@ js.dataError @%</span>'));
                 }
             });
 
@@ -1345,18 +1701,18 @@ function loadData() {
                 handleItem($this, $this.val());
             });
         } else {
-            $urlInfo.html('<span class="red">无接口信息</span>');
+            $urlInfo.html('<span class="red">%@ js.noInfo @%</span>');
         }
     }).fail(function(e) {
-        console.error(method + ' ' + requestUrl + ' 错误.', e);
-        handleError($rightArrow, $urlInfo, '接口无法请求, 网络有误 或 有跨域问题!');
+        console.error(method + ' ' + requestUrl + ' fail.', e);
+        handleError($rightArrow, $urlInfo, '%@ js.networkError @%!');
     });
 }
 function handleError($arrow, $ele, info) {
     $arrow.css('display', 'none');
     $ele.html('<div class="config red">' + info + '</div>' +
-        '<div class="config">请求的上下文路径不对? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">配置</span></div>' +
-        '<div class="config">配置有误? <span id="delete-prefix" class="config-prefix">删除配置</span></div>');
+        '<div class="config">%@ js.c1 @%? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">%@ js.c2 @%</span></div>' +
+        '<div class="config">%@ js.c3 @%? <span id="delete-prefix" class="config-prefix">%@ js.c4 @%</span></div>');
 }
 
 function setEdit(ele) {
@@ -1642,8 +1998,8 @@ function handleInput($this, action, format) {
         try {
             json = action(JSON.stringify(JSON5.parse(value)));
         } catch (e) {
-            console.error('json(' + value + ') 错误.', e);
-            $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列)');
+            console.error('json(' + value + ') error.', e);
+            $reqMsg.html('Json %@ js.jsonParseError1 @% ' + e.lineNumber + ', %@ js.jsonParseError2 @% ' + e.columnNumber + ')');
             return;
         }
         if (isNotBlank(json)) {
@@ -1653,7 +2009,7 @@ function handleInput($this, action, format) {
             localStorage.removeItem(itemKey);
         }
         if (format) {
-            $reqMsg.html('生成的尾部注释不影响调用');
+            $reqMsg.html('%@ js.tailComment @%');
             setTimeout(function () { $reqMsg.html(''); }, 3000);
         }
     }
@@ -1765,8 +2121,8 @@ $(function() {
             try {
                 requestBody = JSON.stringify(JSON5.parse(requestBody));
             } catch (e) {
-                console.error('json(' + requestBody + ')错误.', e);
-                $reqMsg.html('Json 数据有误(第 ' + e.lineNumber + ' 行第 ' + e.columnNumber + ' 列)');
+                console.error('json(' + requestBody + ') error', e);
+                $reqMsg.html('Json %@ js.jsonParseError1 @% ' + e.lineNumber + ', %@ js.jsonParseError2 @% ' + e.columnNumber + ')');
                 return;
             }
         }
@@ -1823,7 +2179,7 @@ $(function() {
                 let fileName = file.name;
                 let filePath = file.value;
                 if (isNotBlank(fileName) && isNotBlank(filePath)) {
-                    filePath = filePath.replace('C:\\fakepath\\', '/$替换真实路径$/');
+                    filePath = filePath.replace('C:\\fakepath\\', '/$%@ js.fileReplace @%$/');
                     curlHtml += "&nbsp; -F '" + (fileName + '=@' + filePath) + "'" + line;
                 }
             });
@@ -1893,7 +2249,7 @@ $(function() {
         }
         if (files.length > 0) {
             if ('POST' !== method.toUpperCase()) {
-                $response.find('.source-code').html("<span class='red'>上传文件需要用 POST(用上面的 cURL 是可以的), 请联系后端修改!</span>");
+                $response.find('.source-code').html("<span class='red'>%@ js.uploadError @%!</span>");
                 $response.show();
                 return;
             }
@@ -1914,8 +2270,7 @@ $(function() {
         } else {
             if (hasRequestBody) {
                 if ('GET' === method.toUpperCase()) { /* https://stackoverflow.com/questions/978061/http-get-with-request-body */
-                    $response.find('.source-code').html("<span class='red'>浏览器不能通过 GET 请求发送 RequestBody 参数" +
-                        "(用上面的 cURL 是可以的), 请联系后端修改成 POST!</span>");
+                    $response.find('.source-code').html("<span class='red'>%@ js.getBodyError @%!</span>");
                     $response.show();
                     return;
                 }
@@ -1947,7 +2302,7 @@ $(function() {
             if (fail) {
                 $resultData.css('height', 'unset');
                 $action.css('display', 'none');
-                html = '<div class="green">' + method + ' 请求(' + url + ')成功, 但是响应为空</div>';
+                html = '<div class="green">' + method + ' %@ js.request1 @%(' + url + ')%@ js.request2 @%</div>';
             } else {
                 $resultData.css('height', '');
                 $action.css('display', '');
@@ -1992,16 +2347,16 @@ $(function() {
             $runLog.html(timeLog(start));
             let html = '';
             if (isBlank(error)) {
-                html += '<div class="red">' + method + ' 请求(' + url + ')失败</div>';
+                html += '<div class="red">' + method + ' %@ js.request1 @%(' + url + ')%@ js.request3 @%</div>';
             } else {
-                html += '<div class="red">响应码: ' + error.status + '</div>';
+                html += '<div class="red">%@ js.resCode @%: ' + error.status + '</div>';
                 let json = error.responseJSON;
                 if (isNotBlank(json)) {
                     html += '\n\n' + escapeHtml(JSON.stringify(json, null, 2));
                 } else {
                     let text = error.responseText;
                     if (isNotBlank(text)) {
-                        html += '<div class="red wrap" style="margin-top:7px;">响应内容: ' + escapeHtml(text) + '</div>';
+                        html += '<div class="red wrap" style="margin-top:7px;">%@ js.resValue @%: ' + escapeHtml(text) + '</div>';
                     } else {
                         let statusText = error.statusText;
                         if (isNotBlank(statusText)) {
@@ -2045,6 +2400,7 @@ $(function() {
     });
 
     $('#config-prefix-url').on('show.bs.modal', function () {
+        fillLanguageData($(this), $(this).html());
         $('#prefix-url').val(localStorage.getItem(localServerPathItem));
     });
     $(document).on('click', '#delete-prefix', function() {
@@ -2061,7 +2417,7 @@ $(function() {
     });
 
     $(document).on('click', '.no-scroll', function() {
-        let display = '全显', scroll = '滚动';
+        let display = '%@ js.show @%', scroll = '%@ js.scroll @%';
         let $this = $(this);
         let $sourceInfo = $this.closest('.source-info');
         let $source = $sourceInfo.find('.source-code');
@@ -2129,7 +2485,7 @@ $(function() {
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(copyValue).then(
                 function () {
-                    $copyStatus.text('复制成功!');
+                    $copyStatus.text('%@ js.copy @%!');
                     setTimeout(function () { $copyStatus.text(''); }, 3000);
                 },
                 function () {
@@ -2154,7 +2510,7 @@ $(function() {
         let flag = document.execCommand('copy');
         $parent.removeChild(copyElement);
 
-        $copyStatus.text('复制' + (flag ? '成功' : '失败'));
+        $copyStatus.text(flag ? '%@ js.copy @%' : '%@ js.copyFail @%');
         setTimeout(function() { $copyStatus.text(''); }, 3000);
     }
 
