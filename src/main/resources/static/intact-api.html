@@ -1217,7 +1217,7 @@ function loadData() {
                 let html = escapeHtml($(this).html());
                 if (isNotBlank(html)) {
                     html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!%@ js.recursive @%!!!</span>');
-                    fillLanguageData($(this, addLine(html)));
+                    fillLanguageData($(this), addLine(html));
                     Prism.highlightElement($(this).find('.source')[0]);
                 } else {
                     fillLanguageData($(this), addLine(handleLanguage('<span class="red">%@ js.dataError @%</span>')));
