@@ -25,7 +25,7 @@
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.8.9</version>
+    <version>0.9.1</version>
 </dependency>
 #+END_SRC
 
@@ -333,9 +333,9 @@ public class DemoVo {
 #+BEGIN_SRC xml
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
-运行项目, 访问页面 ~http://ip:port/static/api-info.html~ (spring boot 则不需要 /static 二级目录)
+运行项目, 访问页面 ~http://ip:port/static/api.html~ (spring boot 则不需要 /static 二级目录)
 
-页面 ~http://ip:port/static/api-info-example.html~ 直接请求后台接口
+页面 ~http://ip:port/static/api-example.html~ 直接请求后台接口
 
 -----
 

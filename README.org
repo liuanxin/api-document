@@ -30,7 +30,7 @@ add maven
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.8.9</version>
+    <version>0.9.1</version>
 </dependency>
 #+END_SRC
 
@@ -347,9 +347,9 @@ if not spring boot project, add this config
 <mvc:resources mapping="/static/**" location="classpath:/static/" />
 #+END_SRC
 
-Run and request ~http://ip:port/static/api-info-en.html~ (spring boot don't need /static second directory)
+Run and request ~http://ip:port/static/api.html~ (spring boot don't need /static second directory)
 
-test backend url, request ~http://ip:port/static/api-info-en-example.html~
+test backend url, request ~http://ip:port/static/api-example.html~
 
 -----
 
