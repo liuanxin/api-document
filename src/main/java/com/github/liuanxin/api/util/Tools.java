@@ -527,10 +527,10 @@ public class Tools {
         if (isNotEmpty(basicClass)) {
             return basicClass.getSimpleName();
         } else if (type.isEnum()) {
-            return "enum(" + paramType + ")";
+            return "Enum(" + paramType + ")";
         } else {
-            // string, string[], list, set, map... etc
-            return paramType.substring(0, 1).toLowerCase() + paramType.substring(1);
+            // String, String[], List, Set, Map... etc
+            return paramType;
         }
     }
 

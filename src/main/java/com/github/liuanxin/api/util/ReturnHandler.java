@@ -99,7 +99,7 @@ public final class ReturnHandler {
                     DocumentReturn mapKey = new DocumentReturn();
                     mapKey.setName(space + key + parent).setType(Tools.getInputType(keyClazz));
                     if (keyClazz.isEnum()) {
-                        mapKey.setDesc(Tools.descInfo(keyClazz, "enum"));
+                        mapKey.setDesc(Tools.descInfo(keyClazz, "Enum"));
                     }
                     // add key
                     returnList.add(mapKey);
@@ -196,16 +196,18 @@ public final class ReturnHandler {
     /** collect return info */
     private static DocumentReturn returnInfo(Field field, String name) {
         Class<?> fieldType = field.getType();
-        if (Collection.class.isAssignableFrom(fieldType)) {
-            String type = field.getGenericType().toString();
+        String drType = Tools.getInputType(fieldType);
+        String type = field.getGenericType().toString();
+        if (type.contains("<") && type.contains(">")) {
             String classType = type.substring(type.indexOf("<") + 1, type.lastIndexOf(">")).trim();
-            try {
-                fieldType = Class.forName(classType);
-            } catch (ClassNotFoundException ignore) {
+            List<String> typeList = new ArrayList<>();
+            for (String t : classType.split(",")) {
+                typeList.add(((t.contains(".") && !t.endsWith(".")) ? t.substring(t.lastIndexOf(".") + 1) : t.trim()).replace("$", "."));
             }
+            drType += "&lt;" + String.join(", ", typeList) + "&gt;";
         }
         DocumentReturn documentReturn = new DocumentReturn();
-        documentReturn.setName(name).setType(Tools.getInputType(fieldType));
+        documentReturn.setName(name).setType(drType);
 
         String desc = null;
         ApiReturn apiReturn = field.getAnnotation(ApiReturn.class);
