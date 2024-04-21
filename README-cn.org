@@ -52,7 +52,7 @@ public class ApiInfoConfig {
                 // // 当某些接口不好标 @ApiIgnore 时(格式: url|method, url 可以使用 * 通配 method 可以忽略)
                 // .setIgnoreUrlSet(Sets.newHashSet("/user*", "/product/info|post"))
 
-                // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准
+                // // 全局的响应说明, 如果类或方法上有 @ApiResponses 则以它们为准(方法的优先给高于类, 类上的优先级高于全局配置)
                 // .setGlobalResponse(Arrays.asList(
                 //     new DocumentResponse(400, "参数有误"),
                 //     new DocumentResponse(500, "请求异常").setResponse(XXX.class) // 见 @ApiReturnType 示例说明
