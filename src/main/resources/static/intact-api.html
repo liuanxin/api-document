@@ -246,9 +246,12 @@
             position: fixed;
             margin: 15px 0;
         }
+        .bs-docs-search {
+            margin-bottom: 20px;
+        }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
-            max-height: calc(100vh - 51px - 15px - 15px); /* 100vh - header - top - bottom */
+            max-height: calc(100vh - 51px - 15px - 15px - 54px); /* 100vh - header - top - bottom - search */
         }
         .bs-docs-sidebar .nav > li > a {
             display: block;
@@ -399,13 +402,13 @@
         <div id="url-info" class="col-md-9"></div>
         <script id="url-render" type="text/x-dot-template">
             {{~ it.moduleList  :module:index}}
-            <div class="{{= index + 1 === it.moduleList.length ? 'module-last' : 'module'}}">
+            <div class="{{= index + 1 === it.moduleList.length ? 'module-last' : 'module'}} search-module">
                 <span id="{{= module.name}}" class="anchor"></span>
                 <h2 class="module-name">
                     <span>{{= index + 1}}</span> {{= module.info || ''}}
                 </h2>
                 {{~ module.urlList  :url:urlIndex}}
-                <div class="module-api">
+                <div class="module-api search-url" data-url="{{= url.url || ''}}" data-title="{{= url.title || ''}}">
                     <span id="{{= module.name}}-{{= url.id}}" class="anchor"></span>
                     <h3 class="module-api-index">
                         <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
@@ -719,14 +722,18 @@
         </div>
         <div class="col-md-3">
             <div class="bs-docs-sidebar">
+                <div id="url-search-info" class="bs-docs-search"></div>
+                <script id="url-search-render" type="text/x-dot-template">
+                    <input placeholder="%@ search @%" class="form-control ds-input" value="{{= localStorage.getItem('__global_search__') || ''}}"/>
+                </script>
                 <ul id="url-nav-info" class="nav"></ul>
                 <script id="url-nav-render" type="text/x-dot-template">
                     {{~ it.moduleList  :module:index}}
-                    <li>
+                    <li class="search-module">
                         <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
                         <ul class="nav">
                             {{~ module.urlList  :url:urlIndex}}
-                            <li>
+                            <li class="search-url" data-url="{{= url.url ||''}}" data-title="{{= url.title || ''}}">
                                 <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
                             </li>
                             {{~}}
@@ -791,6 +798,7 @@ function hasEnter(event) {
 }
 
 const cn = {
+    'search': '输入 url 或名称搜索',
     'context': {
         'modal-title': '配置请求前缀(当使用二级目录时)或在请求页添加「?context-path=xxx」',
         'modal-plac': '如',
@@ -886,6 +894,7 @@ const cn = {
     }
 };
 const en = {
+    'search': 'Search...',
     'context': {
         'modal-title': 'Config request prefix(When use context-path) or add "?context-path=xxx" to the request url',
         'modal-plac': 'For example',
@@ -1122,6 +1131,7 @@ let chooseProjectTemplate = doT.template($('#choose-project').html());
 let copyrightTemplate = doT.template($('#copyright').html());
 let urlRenderTemplate = doT.template($('#url-render').html());
 let navRenderTemplate = doT.template($('#url-nav-render').html());
+let navSearchTemplate = doT.template($('#url-search-render').html());
 
 loadMulti();
 
@@ -1153,6 +1163,7 @@ function loadData() {
     let $headerContent = $('.header-content');
     let $footer = $('footer');
     let $urlInfo = $('#url-info');
+    let $urlSearchInfo = $('#url-search-info');
     let $urlNavInfo = $('#url-nav-info');
     let $rightArrow = $('.right-arrow');
 
@@ -1160,6 +1171,7 @@ function loadData() {
     $headerContent.html('');
     $footer.html('');
     $urlInfo.html('');
+    fillLanguageData($urlSearchInfo, navSearchTemplate({}));
     $urlNavInfo.html('');
 
     let method = 'GET';
@@ -1195,7 +1207,7 @@ function loadData() {
             }
             fillLanguageData($urlInfo, urlRenderTemplate(doc));
             fillLanguageData($urlNavInfo, navRenderTemplate(doc));
-            $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px)'); /* 避免切换项目时导航为显示 */
+            $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px - 54px)'); /* 避免切换项目时导航为显示 */
 
             let $nav = $('.col-md-3');
             if (localStorage.getItem(rightArrowKey) === '1') {
@@ -1236,6 +1248,8 @@ function loadData() {
                     }
                 }
             }
+
+            handleSearch(localStorage.getItem('__global_search__'), true);
         } else {
             fillLanguageData($urlInfo, '<span class="red">%@ js.noInfo @%</span>');
         }
@@ -1249,6 +1263,54 @@ function handleError($arrow, $ele, info) {
     fillLanguageData($ele, '<div class="config red">' + info + '</div>' +
         '<div class="config">%@ js.c1 @%? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">%@ js.c2 @%</span></div>' +
         '<div class="config">%@ js.c3 @%? <span id="delete-prefix" class="config-prefix">%@ js.c4 @%</span></div>');
+}
+
+function handleSearch(value, hasGlobal) {
+    let searchKey = '__global_search__';
+    let viewClass = 'hidden';
+    let $eleModule = $('.search-module');
+    let $eleUrl = $('.search-url');
+    if (isBlank(value)) {
+        localStorage.removeItem(searchKey);
+        $eleModule.removeClass(viewClass);
+        $eleUrl.removeClass(viewClass);
+    } else {
+        if (!hasGlobal) {
+            localStorage.setItem(searchKey, value);
+        }
+        let allSearchNum = $eleUrl.filter(function() {
+            let $url = $(this);
+            return $url.data('url').includes(value) || $url.data('title').includes(value);
+        }).length;
+        if (allSearchNum > 0) {
+            $eleModule.each(function() {
+                let $module = $(this);
+                let $urlInModule = $module.find('.search-url');
+                let moduleSearchNum = $urlInModule.filter(function() {
+                    let $url = $(this);
+                    return $url.data('url').includes(value) || $url.data('title').includes(value);
+                }).length;
+                if (moduleSearchNum > 0) {
+                    $module.removeClass(viewClass);
+
+                    $urlInModule.each(function () {
+                        let $url = $(this);
+                        if ($url.data('url').includes(value) || $url.data('title').includes(value)) {
+                            $url.removeClass(viewClass);
+                        } else {
+                            $url.addClass(viewClass);
+                        }
+                    });
+                } else {
+                    $module.addClass(viewClass);
+                }
+            });
+        } else {
+            localStorage.removeItem(searchKey);
+            $eleModule.removeClass(viewClass);
+            $eleUrl.removeClass(viewClass);
+        }
+    }
 }
 
 $(function() {
@@ -1279,6 +1341,12 @@ $(function() {
             $nav.css('width', '0');
             $content.css('width', '100%');
             localStorage.setItem(rightArrowKey, '1');
+        }
+    });
+
+    $(document).on('keydown', '#url-search-info > input', function(e) {
+        if (hasEnter(e)) {
+            handleSearch($(this).val(), false);
         }
     });
 
@@ -1360,6 +1428,7 @@ $(function() {
     $(window).scroll(function() {
         let headerHeight = 51;
         let topBottomHeight = 30;
+        let searchHeight = 54;
         let scrolled = 'scrolled';
         let heightProperty = 'max-height';
 
@@ -1385,11 +1454,11 @@ $(function() {
             let pageHeight = scrollTop + $win.height();
             if (footerTop >= scrollTop && footerTop < pageHeight) {
                 let footViewHeight = pageHeight - footerTop;
-                $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight) + 'px)');
+                $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight + searchHeight) + 'px)');
             } else {
                 let htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
                 if ($bar.css(heightProperty) !== htmlViewHeight) {
-                    $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight) + 'px)');
+                    $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + searchHeight) + 'px)');
                 }
             }
 
