@@ -528,7 +528,8 @@
                     <span>{{= index + 1}}</span> {{= module.info || ''}}
                 </h2>
                 {{~ module.urlList  :url:urlIndex}}
-                <div class="module-api search-url" data-url="{{= url.url || ''}}" data-title="{{= url.title || ''}}">
+                <div class="module-api search-url" data-url="{{= url.url || ''}}" data-title="{{= url.title || ''}}"
+                     data-desc="{{= url.desc || ''}}" data-develop="{{= url.develop || ''}}">
                     {{ let moduleUrlId = module.name + '-' + url.id; }}
                     <span id="{{= moduleUrlId}}" class="anchor"></span>
                     <h3 class="module-api-index">
@@ -1038,7 +1039,8 @@
                         <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
                         <ul class="nav">
                             {{~ module.urlList  :url:urlIndex}}
-                            <li class="search-url" data-url="{{= url.url ||''}}" data-title="{{= url.title || ''}}">
+                            <li class="search-url" data-url="{{= url.url || ''}}" data-title="{{= url.title || ''}}"
+                                data-desc="{{= url.desc || ''}}" data-develop="{{= url.develop || ''}}">
                                 <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
                             </li>
                             {{~}}
@@ -1109,7 +1111,7 @@ function hasEnter(event) {
 }
 
 const cn = {
-    'search': '输入 url 或名称搜索',
+    'search': 'url 名称 说明 或 开发',
     'context': {
         'modal-title': '配置请求前缀(当使用二级目录时)或在请求页添加「?context-path=xxx」',
         'modal-plac': '如',
@@ -1249,7 +1251,7 @@ const cn = {
     }
 };
 const en = {
-    'search': 'Search...',
+    'search': 'url name desc or develop',
     'context': {
         'modal-title': 'Config request prefix(When use context-path) or add "?context-path=xxx" to the request url',
         'modal-plac': 'For example',
@@ -1743,7 +1745,8 @@ function handleSearch(value, hasGlobal) {
         }
         let allSearchNum = $eleUrl.filter(function() {
             let $url = $(this);
-            return $url.data('url').includes(search) || $url.data('title').includes(search);
+            return $url.data('url').includes(search) || $url.data('title').includes(search)
+                || $url.data('desc').includes(search) || $url.data('develop').includes(search);
         }).length;
         if (allSearchNum > 0) {
             $eleModule.each(function() {
@@ -1751,14 +1754,16 @@ function handleSearch(value, hasGlobal) {
                 let $urlInModule = $module.find('.search-url');
                 let moduleSearchNum = $urlInModule.filter(function() {
                     let $url = $(this);
-                    return $url.data('url').includes(search) || $url.data('title').includes(search);
+                    return $url.data('url').includes(search) || $url.data('title').includes(search)
+                        || $url.data('desc').includes(search) || $url.data('develop').includes(search);
                 }).length;
                 if (moduleSearchNum > 0) {
                     $module.removeClass(viewClass);
 
                     $urlInModule.each(function () {
                         let $url = $(this);
-                        if ($url.data('url').includes(value) || $url.data('title').includes(value)) {
+                        if ($url.data('url').includes(search) || $url.data('title').includes(search)
+                            || $url.data('desc').includes(search) || $url.data('develop').includes(search)) {
                             $url.removeClass(viewClass);
                         } else {
                             $url.addClass(viewClass);
