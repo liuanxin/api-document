@@ -1250,7 +1250,7 @@ function loadData() {
                 }
             }
 
-            handleSearch(localStorage.getItem('__global_search__').trim(), true);
+            handleSearch(localStorage.getItem('__global_search__'), true);
         } else {
             fillLanguageData($urlInfo, '<span class="red">%@ js.noInfo @%</span>');
         }
@@ -1271,7 +1271,8 @@ function handleSearch(value, hasGlobal) {
     let viewClass = 'hidden';
     let $eleModule = $('.search-module');
     let $eleUrl = $('.search-url');
-    if (isBlank(value)) {
+    let search = String(value).trim();
+    if (isBlank(search)) {
         localStorage.removeItem(searchKey);
         $eleModule.removeClass(viewClass);
         $eleUrl.removeClass(viewClass);
@@ -1281,7 +1282,7 @@ function handleSearch(value, hasGlobal) {
         }
         let allSearchNum = $eleUrl.filter(function() {
             let $url = $(this);
-            return $url.data('url').includes(value) || $url.data('title').includes(value);
+            return $url.data('url').includes(search) || $url.data('title').includes(search);
         }).length;
         if (allSearchNum > 0) {
             $eleModule.each(function() {
@@ -1289,14 +1290,14 @@ function handleSearch(value, hasGlobal) {
                 let $urlInModule = $module.find('.search-url');
                 let moduleSearchNum = $urlInModule.filter(function() {
                     let $url = $(this);
-                    return $url.data('url').includes(value) || $url.data('title').includes(value);
+                    return $url.data('url').includes(search) || $url.data('title').includes(search);
                 }).length;
                 if (moduleSearchNum > 0) {
                     $module.removeClass(viewClass);
 
                     $urlInModule.each(function () {
                         let $url = $(this);
-                        if ($url.data('url').includes(value) || $url.data('title').includes(value)) {
+                        if ($url.data('url').includes(search) || $url.data('title').includes(search)) {
                             $url.removeClass(viewClass);
                         } else {
                             $url.addClass(viewClass);
@@ -1347,7 +1348,7 @@ $(function() {
 
     $(document).on('keydown', '#url-search-info > input', function(e) {
         if (hasEnter(e)) {
-            handleSearch($(this).val().trim(), false);
+            handleSearch($(this).val(), false);
         }
     });
 
