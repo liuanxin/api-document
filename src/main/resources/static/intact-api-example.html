@@ -363,6 +363,7 @@
         }
         .bs-docs-search {
             margin-bottom: 20px;
+            max-width: calc(100% - 26px); /* right-arrow */
         }
         .bs-docs-sidebar > .nav {
             overflow-y: auto;
@@ -1710,7 +1711,7 @@ function loadData() {
                 handleItem($this, $this.val());
             });
 
-            handleSearch(localStorage.getItem('__global_search__'), true);
+            handleSearch(localStorage.getItem('__global_search__').trim(), true);
         } else {
             fillLanguageData($urlInfo, '<span class="red">%@ js.noInfo @%</span>');
         }
@@ -2460,7 +2461,7 @@ $(function() {
 
     $(document).on('keydown', '#url-search-info > input', function(e) {
         if (hasEnter(e)) {
-            handleSearch($(this).val(), false);
+            handleSearch($(this).val().trim(), false);
         }
     });
 
