@@ -135,6 +135,9 @@
         .project-choose {
             min-width: 200px;
         }
+        .body-content {
+            min-height: calc(100vh - 50px - 40px);
+        }
         .footer {
             background: #f5f5f5;
             padding: 10px 0;
@@ -499,7 +502,7 @@
         </div>
     </div>
 </div>
-<header class="print-nil"><div class="header container"><div class="header-content"></div></div></header>
+<header class="print-nil"><div class="header container-fluid"><div class="header-content"></div></div></header>
 <script id="choose-project" type="text/x-dot-template">
     <div class="header-text">Choose project:</div>
     <div class="header-select">
@@ -513,7 +516,7 @@
         </select></label>
     </div>
 </script>
-<main class="container-fluid">
+<main class="body-content container-fluid">
     <div class="row">
         <div id="url-info" class="col-md-9"></div>
         <script id="url-render" type="text/x-dot-template">
