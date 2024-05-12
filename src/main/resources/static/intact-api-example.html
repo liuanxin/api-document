@@ -1465,6 +1465,17 @@ function fillLanguageData($ele, html) {
     $ele.html(handleLanguage(html));
 }
 
+let localSearchKey = '__global_search__';
+function handleSearchValue() {
+    let key = 'search';
+    let search = getSearch();
+    let value = String(search[key]);
+    if (isNotBlank(value)) {
+        localStorage.setItem(localSearchKey, value);
+    }
+}
+handleSearchValue();
+
 let localServerPathItem = '__prefix-url__';
 function handleContextPath() {
     let param = 'context-path=', append = '&';
@@ -1713,7 +1724,7 @@ function loadData() {
                 handleItem($this, $this.val());
             });
 
-            handleSearch(localStorage.getItem('__global_search__'), true);
+            handleSearch(localStorage.getItem(localSearchKey), true);
         } else {
             fillLanguageData($urlInfo, '<span class="red">%@ js.noInfo @%</span>');
         }
@@ -1730,18 +1741,17 @@ function handleError($arrow, $ele, info) {
 }
 
 function handleSearch(value, hasGlobal) {
-    let searchKey = '__global_search__';
     let viewClass = 'hidden';
     let $eleModule = $('.search-module');
     let $eleUrl = $('.search-url');
     let search = String(value).trim();
     if (isBlank(search)) {
-        localStorage.removeItem(searchKey);
+        localStorage.removeItem(localSearchKey);
         $eleModule.removeClass(viewClass);
         $eleUrl.removeClass(viewClass);
     } else {
         if (!hasGlobal) {
-            localStorage.setItem(searchKey, value);
+            localStorage.setItem(localSearchKey, value);
         }
         let allSearchNum = $eleUrl.filter(function() {
             let $url = $(this);
@@ -1774,7 +1784,7 @@ function handleSearch(value, hasGlobal) {
                 }
             });
         } else {
-            localStorage.removeItem(searchKey);
+            localStorage.removeItem(localSearchKey);
             $eleModule.removeClass(viewClass);
             $eleUrl.removeClass(viewClass);
         }
