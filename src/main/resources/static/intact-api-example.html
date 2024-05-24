@@ -33,7 +33,7 @@
             box-shadow: 0 0 10px -2px #333;
             background: rgba(255,255,255,0.94);
         }
-        button, input[type=button] {
+        button, input[type=button], input[type=reset] {
             outline: none !important;
         }
         .anchor {
@@ -45,9 +45,12 @@
             height: 0;
         }
         input, select {
-            min-width: 180px;
+            min-width: 120px;
             width: 100%;
             min-height: 28px;
+        }
+        select {
+            appearance: none;
         }
         textarea {
             min-height: 120px;
@@ -55,16 +58,22 @@
             min-width: 180px;
             width: 100% !important;
         }
-        input[type=button] {
+        input[type=button], input[type=reset] {
             width: 180px;
             height: 32px;
             border: none;
             font-size: 16px;
             color: #fff;
             outline: 0 solid transparent;
+            transition: all 0.3s ease-in-out;
+        }
+        input[type=button] {
             background-color: #56baed;
             box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
-            transition: all 0.3s ease-in-out;
+        }
+        input[type=reset] {
+            background: #cecece;
+            box-shadow: 0 10px 30px 0 rgba(210,210,210,0.4);
         }
         input[type=button]:hover {
             color: #fff;
@@ -72,6 +81,54 @@
         }
         input[type=button]:active {
             transform: scale(0.95);
+        }
+        .input-team {
+            position: relative !important;
+        }
+        .input-field {
+            padding-right: 28px;
+        }
+        .input-select {
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            right: 4px;
+            bottom: calc(50% - 10px);
+            z-index: 4;
+        }
+        .input-textarea {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding-right: 36px;
+        }
+        .input-clean, .input-file-clean, .input-textarea-clean {
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            z-index: 4;
+            display: none;
+        }
+        .input-clean, .input-file-clean {
+            right: 6px;
+            bottom: calc(50% - 8px);
+        }
+        .input-textarea-clean {
+            right: 20px;
+            top: 8px;
+        }
+        .input-team:hover .input-select, .input-team:active .input-select {
+            display: none;
+        }
+        .input-team:hover .input-clean,
+        .input-team:active .input-clean,
+        .input-team:hover .input-file-clean,
+        .input-team:hover .input-textarea-clean,
+        .input-team:active .input-textarea-clean {
+            display: unset;
+        }
+        .form-button {
+            display: flex;
+            justify-content: space-between;
         }
         .source-code {
             overflow: auto;
@@ -497,8 +554,9 @@
             <button type="button" class="close" data-dismiss="modal">&times;</button>
             <h4 class="modal-title">%@ context.modal-title @%</h4>
         </div>
-        <div class="modal-body">
-            <input id="prefix-url" class="form-control" placeholder="%@ context.modal-plac @%: http://www.example.com/xxx"/>
+        <div class="modal-body clean-group">
+            <input id="prefix-url" class="form-control clean-field" placeholder="%@ context.modal-plac @%: http://www.example.com/xxx"/>
+            <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
         </div>
         <div class="modal-footer">
             <button type="button" class="config-btn btn btn-info">%@ context.btn-submit @%</button>
@@ -509,7 +567,7 @@
 <header class="print-nil"><div class="header container-fluid"><div class="header-content"></div></div></header>
 <script id="choose-project" type="text/x-dot-template">
     <div class="header-text">%@ choose.project @%:</div>
-    <div class="header-select">
+    <div class="header-select input-team">
         <label><select class="project-choose form-control" name="p">
             <option value="">%@ choose.current @%</option>
             {{ let cp = it.project; }}
@@ -518,6 +576,9 @@
             <option value="{{= p[0]}}" data-url="{{= p[2]}}"{{= s}}>{{= p[1]}}</option>
             {{~}}
         </select></label>
+        <svg viewBox="0 0 16 16" class="input-select">
+            <path d="m4.427 7.427 3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 7H4.604a.25.25 0 0 0-.177.427Z"/>
+        </svg>
     </div>
 </script>
 <main class="body-content container-fluid">
@@ -836,51 +897,65 @@
                                             let dataKey = (moduleUrlId + ':' + param.name);
                                             let example = localStorage.getItem('$global-header-' + param.name) || localStorage.getItem(dataKey) || param.example || '';
 
-                                            let enumRegexExec = /^enum\((.*?)\)$/.exec(param.dataType);
+                                            let enumRegexExec = /^enum\((.*?)\)$/i.exec(param.dataType);
                                             let enumInfo = (Array.isArray(enumRegexExec) && enumRegexExec.length > 1) ? it.enumInfo[enumRegexExec[1]] : '';
                                             }}
                                             <tr{{? required}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
                                                 <td class="text-left">{{= param.name || ''}}</td>
                                                 <td class="text-left" style="height: inherit;">
                                                     {{? dataType === 'file'}}
-                                                    <div class="input-group">
+                                                    <div class="input-group input-team">
                                                         <label class="input-group-btn">
                                                             <span class="btn btn-default{{? required}} bold{{?}}">
                                                                 %@ reqRes.req.param.file @%
                                                                 <input class="form-file hidden" type="file" name="{{= param.name || ''}}">
                                                             </span>
                                                         </label>
+                                                        <svg viewBox="0 0 16 16" class="input-file-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
                                                         <input type="text"{{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                               class="form-control{{? required}} bold{{?}}{{= validateClass}}" readonly="readonly">
+                                                               class="form-control{{? required}} bold{{?}}{{= validateClass}} input-field" readonly="readonly">
                                                     </div>
                                                     {{?? hasTextarea}}
-                                                    <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control{{= validateClass}}{{= tokenClass}}" style="border:1px solid #ccc;border-radius:4px;" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                                    <div class="input-team">
+                                                        <textarea {{? param.desc}}placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}" {{?}}class="form-control{{= validateClass}}{{= tokenClass}} input-textarea" name="{{= param.name || ''}}"{{= header}}>{{= example}}</textarea>
+                                                        <svg viewBox="0 0 16 16" class="input-textarea-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
+                                                    </div>
                                                     {{?? enumInfo !== undefined && enumInfo !== null && enumInfo !== ''}}
-                                                    <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
-                                                        <option></option>
-                                                        {{? Array.isArray(enumInfo) }}
-                                                        {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
-                                                        {{??}}
-                                                        {{ let k; for(k in enumInfo) { }}
-                                                        <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected="selected"{{?}}>{{= enumInfo[k]}}</option>
-                                                        {{ } }}
-                                                        {{?}}
-                                                    </select>
+                                                    <div class="input-team">
+                                                        <select class="form-control{{= validateClass}}{{= tokenClass}}" name="{{= param.name || ''}}"{{= header}}>
+                                                            <option></option>
+                                                            {{? Array.isArray(enumInfo) }}
+                                                            {{~ enumInfo  :e}}<option{{? example === e}} selected="selected"{{?}}>{{= e}}</option>{{~}}
+                                                            {{??}}
+                                                            {{ let k; for(k in enumInfo) { }}
+                                                            <option value="{{= k}}"{{? example === k || example === enumInfo[k]}} selected="selected"{{?}}>{{= enumInfo[k]}}</option>
+                                                            {{ } }}
+                                                            {{?}}
+                                                        </select>
+                                                        <svg viewBox="0 0 16 16" class="input-select"><path d="m4.427 7.427 3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 7H4.604a.25.25 0 0 0-.177.427Z"/></svg>
+                                                        <svg viewBox="0 0 16 16" class="input-clean has-text"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
+                                                    </div>
                                                     {{?? (param.showDataType || '').toLowerCase() === 'date' || dataType === 'date'}}
                                                     {{ let hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
                                                     <div class="input-group date form-datetime">
                                                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                                        <input type="text" name="{{= param.name || ''}}"{{= header}}
-                                                               {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                               class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}}" value="{{= example}}"
-                                                               {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
+                                                        <span class="input-team">
+                                                            <input type="text" name="{{= param.name || ''}}"{{= header}}
+                                                                   {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
+                                                                   class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}} input-field" value="{{= example}}"
+                                                                   {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
+                                                            <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
+                                                        </span>
                                                     </div>
                                                     {{??}}
                                                     {{ textNum++; }}
-                                                    <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                           class="form-control{{= validateClass}}{{= tokenClass}}"
-                                                           type="{{= dataType === 'password' || (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
-                                                           name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
+                                                    <div class="input-team">
+                                                        <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
+                                                               class="form-control{{= validateClass}}{{= tokenClass}} input-field"
+                                                               type="{{= dataType === 'password' || (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
+                                                               name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
+                                                        <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
+                                                    </div>
                                                     {{?}}
                                                 </td>
                                                 <td class="text-left">{{= required ? '✓' : '✗'}}</td>
@@ -923,10 +998,11 @@
                                     </div>
                                     {{?}}
 
-                                    <div class="bottom-table">
+                                    <div class="bottom-table form-button">
                                         /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
-                                        {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
+                                        {{? textNum === 1 }}<label><input type="text" class="hidden" /></label>{{?}}
                                         <input class="form-submit btn" type="button" value="%@ reqRes.req.btn @%"/>
+                                        <input class="form-reset btn" type="reset" value="%@ reqRes.req.reset @%"/>
                                     </div>
 
                                     <div class="curl bottom-table source-info">
@@ -1031,9 +1107,10 @@
         </div>
         <div class="col-md-3">
             <div class="bs-docs-sidebar">
-                <div id="url-search-info" class="bs-docs-search"></div>
+                <div id="url-search-info" class="bs-docs-search input-team"></div>
                 <script id="url-search-render" type="text/x-dot-template">
-                    <input placeholder="%@ search @%" class="form-control ds-input" value="{{= localStorage.getItem('__global_search__') || ''}}"/>
+                    <input placeholder="%@ search @%" class="form-control input-field has-search" value="{{= localStorage.getItem('__global_search__') || ''}}"/>
+                    <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
                 </script>
                 <ul id="url-nav-info" class="nav"></ul>
                 <script id="url-nav-render" type="text/x-dot-template">
@@ -1197,7 +1274,8 @@ const cn = {
                 'copy': '复制(去注释)',
                 'show': '全显'
             },
-            'btn': '请求此接口',
+            'btn': '请 求',
+            'reset': '重 置',
             'curl': '复制',
             'res': {
                 'name': '响应',
@@ -1337,7 +1415,8 @@ const en = {
                 'copy': 'Copy(uncomment)',
                 'show': 'No-Scroll'
             },
-            'btn': 'Request backend',
+            'btn': 'Submit',
+            'reset': 'Reset',
             'curl': 'Copy',
             'res': {
                 'name': 'Response',
@@ -2093,6 +2172,16 @@ function handleInput($this, action, format) {
         }
     }
 }
+function handleToken($this, value) {
+    let name = $this.attr('name');
+    let key = '$global-header-' + name;
+    if (isNotBlank(value)) {
+        localStorage.setItem(key, value);
+    } else {
+        localStorage.removeItem(key);
+    }
+    $('[name="' + name + '"]').val(value);
+}
 
 $(function() {
     let linked = 1; /** 初始 1, 切换项目后 2, 两者都会触发 scroll, 1 在 scroll 时需要改变 active, 2 触发 scroll 时只改成 1 */
@@ -2135,15 +2224,7 @@ $(function() {
 
     $(document).on('change', '.has-token', function() {
         let $this = $(this);
-        let name = $this.attr('name');
-        let value = $this.val();
-        let key = '$global-header-' + name;
-        if (isNotBlank(value)) {
-            localStorage.setItem(key, value);
-        } else {
-            localStorage.removeItem(key);
-        }
-        $('[name="' + name + '"]').val(value);
+        handleToken($this, $this.val());
     });
 
     $(document).on('change', '.data-info', function() {
@@ -2457,6 +2538,30 @@ $(function() {
         });
     });
 
+    $(document).on('click', '.form-reset', function() {
+        let $form = $(this).parents('form');
+        $form[0].reset();
+        $form.find('input,textarea,select').each(function() {
+            handleItem($(this), '');
+        });
+    });
+
+    $(document).on('click', '.input-clean,.input-file-clean,.input-textarea-clean', function() {
+        $(this).parents('.input-team').find('input,textarea,select').each(function() {
+            let $this = $(this);
+            if ($this.hasClass('has-token')) {
+                handleToken($this, '');
+            } else {
+                $this.val('');
+                if ($this.hasClass('has-search')) {
+                    handleSearch('', false);
+                } else {
+                    handleItem($this, '');
+                }
+            }
+        });
+    });
+
     $(document).on('click', '.right-arrow', function() {
         let $nav = $('.col-md-3');
         let $content = $('.col-md-9');
@@ -2478,7 +2583,7 @@ $(function() {
         });
     });
 
-    $(document).on('keydown', '#url-search-info > input', function(e) {
+    $(document).on('keydown', '#url-search-info > .has-search', function(e) {
         if (hasEnter(e)) {
             handleSearch($(this).val().trim(), false);
         }
