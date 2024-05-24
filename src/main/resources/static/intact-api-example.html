@@ -33,7 +33,7 @@
             box-shadow: 0 0 10px -2px #333;
             background: rgba(255,255,255,0.94);
         }
-        button, input[type=button], input[type=reset] {
+        button {
             outline: none !important;
         }
         .anchor {
@@ -44,7 +44,7 @@
             width: 0;
             height: 0;
         }
-        input, select {
+        select {
             min-width: 120px;
             width: 100%;
             min-height: 28px;
@@ -58,7 +58,7 @@
             min-width: 180px;
             width: 100% !important;
         }
-        input[type=button], input[type=reset] {
+        .form-submit, .form-reset {
             width: 180px;
             height: 32px;
             border: none;
@@ -67,19 +67,23 @@
             outline: 0 solid transparent;
             transition: all 0.3s ease-in-out;
         }
-        input[type=button] {
-            background-color: #56baed;
+        .form-submit {
+            background: #56baed;
             box-shadow: 0 10px 30px 0 rgba(95,186,233,0.4);
         }
-        input[type=reset] {
+        .form-reset {
             background: #cecece;
             box-shadow: 0 10px 30px 0 rgba(210,210,210,0.4);
         }
-        input[type=button]:hover {
+        .form-submit:hover {
             color: #fff;
-            background-color: #39ace7;
+            background: #01ace7;
         }
-        input[type=button]:active {
+        .form-reset:hover {
+            color: #fff;
+            background: #cecece;
+        }
+        .form-submit:active, .form-reset:active {
             transform: scale(0.95);
         }
         .input-team {
@@ -1000,9 +1004,9 @@
 
                                     <div class="bottom-table form-button">
                                         /* 表单只有一个 input text 时, 回车会提交表单, 加多一个不可见的 input text 可以禁用回车事件, 用 input hidden 是不行的 */
-                                        {{? textNum === 1 }}<label><input type="text" class="hidden" /></label>{{?}}
-                                        <input class="form-submit btn" type="button" value="%@ reqRes.req.btn @%"/>
-                                        <input class="form-reset btn" type="reset" value="%@ reqRes.req.reset @%"/>
+                                        {{? textNum === 1 }}<input type="text" class="hidden" />{{?}}
+                                        <button type="button" class="form-submit btn">%@ reqRes.req.btn @%</button>
+                                        <button type="button" class="form-reset btn">%@ reqRes.req.reset @%</button>
                                     </div>
 
                                     <div class="curl bottom-table source-info">
@@ -2182,11 +2186,31 @@ function handleToken($this, value) {
     }
     $('[name="' + name + '"]').val(value);
 }
+function handleCopy($ele, copyValue, $copyStatus) {
+    let copyElement = document.createElement('textarea');
+    copyElement.setAttribute('readonly', 'readonly');
+    copyElement.setAttribute('class', 'copy-impl');
+    fillLanguageData($(copyElement), copyValue); /* 「copyElement.value = copyValue;」 不生效 */
+
+    let $parent = $ele.parent()[0];
+    $parent.appendChild(copyElement);
+    copyElement.setSelectionRange(0, copyValue.length);
+    copyElement.select();
+    let flag = document.execCommand('copy');
+    $parent.removeChild(copyElement);
+
+    $copyStatus.text(handleLanguage(flag ? '%@ js.copy @%' : '%@ js.copyFail @%'));
+    setTimeout(function() { $copyStatus.text(''); }, 3000);
+}
 
 $(function() {
     let linked = 1; /** 初始 1, 切换项目后 2, 两者都会触发 scroll, 1 在 scroll 时需要改变 active, 2 触发 scroll 时只改成 1 */
 
     $(document.body).scrollspy({target: '.bs-docs-sidebar'});
+    $('#config-prefix-url').on('show.bs.modal', function () {
+        fillLanguageData($(this), $(this).html());
+        $('#prefix-url').val(localStorage.getItem(localServerPathItem));
+    });
 
     $(document).on('change', '.project-choose', function() {
         linked = 2;
@@ -2194,6 +2218,18 @@ $(function() {
         let hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
         loadData();
+    });
+    $(document).on('change', '.form-file', function() {
+        let $this = $(this);
+        $this.parents('.input-group').find(':text').val($this.val());
+    });
+    $(document).on('change', '.has-token', function() {
+        let $this = $(this);
+        handleToken($this, $this.val());
+    });
+    $(document).on('change', '.data-info', function() {
+        let $this = $(this);
+        handleItem($this, $this.val());
     });
 
     $(document).on('click', '.tab', function() {
@@ -2216,35 +2252,17 @@ $(function() {
             }
         }
     });
-
-    $(document).on('change', '.form-file', function() {
-        let $this = $(this);
-        $this.parents('.input-group').find(':text').val($this.val());
-    });
-
-    $(document).on('change', '.has-token', function() {
-        let $this = $(this);
-        handleToken($this, $this.val());
-    });
-
-    $(document).on('change', '.data-info', function() {
-        let $this = $(this);
-        handleItem($this, $this.val());
-    });
-
     $(document).on('click', '.src-prev-req-format', function() {
         let $formParent = $(this).closest('.module-api-info');
         handleInput($(this), function(json) {
             return addComment(escapeHtml(JSON.stringify(JSON5.parse(json), null, 2)), $formParent, false);
         }, true);
     });
-
     $(document).on('click', '.src-prev-req-compress', function() {
         handleInput($(this), function(json) {
             return JSON.stringify(JSON5.parse(json));
         }, false);
     });
-
     $(document).on('click', '.form-submit', function() {
         let $btn = $(this);
         let $form = $btn.closest('form');
@@ -2537,15 +2555,18 @@ $(function() {
             $btn.removeClass('disabled');
         });
     });
-
     $(document).on('click', '.form-reset', function() {
         let $form = $(this).parents('form');
-        $form[0].reset();
         $form.find('input,textarea,select').each(function() {
-            handleItem($(this), '');
+            $this = $(this);
+            if ($this.hasClass('has-token')) {
+                handleToken($this, '');
+            } else {
+                $this.val('');
+                handleItem($this, '');
+            }
         });
     });
-
     $(document).on('click', '.input-clean,.input-file-clean,.input-textarea-clean', function() {
         $(this).parents('.input-team').find('input,textarea,select').each(function() {
             let $this = $(this);
@@ -2561,7 +2582,6 @@ $(function() {
             }
         });
     });
-
     $(document).on('click', '.right-arrow', function() {
         let $nav = $('.col-md-3');
         let $content = $('.col-md-9');
@@ -2582,30 +2602,13 @@ $(function() {
             allResize();
         });
     });
-
-    $(document).on('keydown', '#url-search-info > .has-search', function(e) {
-        if (hasEnter(e)) {
-            handleSearch($(this).val().trim(), false);
-        }
-    });
-
-    $('#config-prefix-url').on('show.bs.modal', function () {
-        fillLanguageData($(this), $(this).html());
-        $('#prefix-url').val(localStorage.getItem(localServerPathItem));
-    });
     $(document).on('click', '#delete-prefix', function() {
         localStorage.removeItem(localServerPathItem);
         loadMulti();
     });
-    $(document).on('keydown', '#prefix-url', function(e) {
-        if (hasEnter(e)) {
-            newRequest();
-        }
-    });
     $(document).on('click', '.config-btn', function() {
         newRequest();
     });
-
     $(document).on('click', '.no-scroll', function() {
         let display = '%@ js.show @%', scroll = '%@ js.scroll @%';
         let $this = $(this);
@@ -2675,34 +2678,29 @@ $(function() {
         if (navigator.clipboard && window.isSecureContext) {
             navigator.clipboard.writeText(copyValue).then(
                 function () {
-                    $copyStatus.text('%@ js.copy @%!');
+                    $copyStatus.text(handleLanguage('%@ js.copy @%!'));
                     setTimeout(function () { $copyStatus.text(''); }, 3000);
                 },
                 function () {
                     /* $copyStatus.text('复制失败, 浏览器不支持'); */
-                    commandCopy($this, copyValue, $copyStatus);
+                    handleCopy($this, copyValue, $copyStatus);
                 }
             );
         } else {
-            commandCopy($this, copyValue, $copyStatus);
+            handleCopy($this, copyValue, $copyStatus);
         }
     });
-    function commandCopy($ele, copyValue, $copyStatus) {
-        let copyElement = document.createElement('textarea');
-        copyElement.setAttribute('readonly', 'readonly');
-        copyElement.setAttribute('class', 'copy-impl');
-        fillLanguageData($(copyElement), copyValue); /* 「copyElement.value = copyValue;」 不生效 */
 
-        let $parent = $ele.parent()[0];
-        $parent.appendChild(copyElement);
-        copyElement.setSelectionRange(0, copyValue.length);
-        copyElement.select();
-        let flag = document.execCommand('copy');
-        $parent.removeChild(copyElement);
-
-        $copyStatus.text(flag ? '%@ js.copy @%' : '%@ js.copyFail @%');
-        setTimeout(function() { $copyStatus.text(''); }, 3000);
-    }
+    $(document).on('keydown', '#url-search-info > .has-search', function(e) {
+        if (hasEnter(e)) {
+            handleSearch($(this).val().trim(), false);
+        }
+    });
+    $(document).on('keydown', '#prefix-url', function(e) {
+        if (hasEnter(e)) {
+            newRequest();
+        }
+    });
 
     $(window).scroll(function() {
         let headerHeight = 51;
