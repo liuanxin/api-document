@@ -2033,12 +2033,12 @@ $(function() {
         let $img = $(this).find('.img');
         if (String($img.attr('style')).includes('rotate(180deg)')) {
             $img.css('transform', '');
-            $nav.css('width', '');
+            $nav.css('opacity', '');
             $content.css('width', '');
             localStorage.removeItem(rightArrowKey);
         } else {
             $img.css('transform', 'rotate(180deg)');
-            $nav.css('width', '0');
+            $nav.css('opacity', '0');
             $content.css('width', '100%');
             localStorage.setItem(rightArrowKey, '1');
         }

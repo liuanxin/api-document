@@ -399,8 +399,18 @@
             width: 0 !important;
             height: 0 !important;
         }
+        .row-arrow .col-md-3 {
+            width: 0;
+            opacity: 0;
+        }
+        .row-arrow .col-md-9 {
+            width: 100%;
+        }
         .col-md-3, .col-md-9 {
-            transition: width .5s ease;
+            transition: width .5s;
+        }
+        .row-arrow .right-arrow .img {
+            transform: rotate(180deg);
         }
         .right-arrow {
             position: fixed;
@@ -572,14 +582,14 @@
 <script id="choose-project" type="text/x-dot-template">
     <div class="header-text">%@ choose.project @%:</div>
     <div class="header-select input-team">
-        <label><select class="project-choose form-control" name="p">
+        <select class="project-choose form-control" name="p">
             <option value="">%@ choose.current @%</option>
             {{ let cp = it.project; }}
             {{~ it.projects  :p}}
             {{ let s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
             <option value="{{= p[0]}}" data-url="{{= p[2]}}"{{= s}}>{{= p[1]}}</option>
             {{~}}
-        </select></label>
+        </select>
         <svg viewBox="0 0 16 16" class="input-select">
             <path d="m4.427 7.427 3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 7H4.604a.25.25 0 0 0-.177.427Z"/>
         </svg>
@@ -1758,18 +1768,7 @@ function loadData() {
 
             let $nav = $('.col-md-3');
             if (localStorage.getItem(rightArrowKey) === '1') {
-                let $content = $('.col-md-9');
-                $rightArrow.css('display', 'none');
-                $nav.css('display', 'none');
-                $content.css('display', 'none');
-
-                $rightArrow.find('.img').css('transform', 'rotate(180deg)');
-                $nav.css('width', '0');
-                $content.css('width', '100%');
-
-                $rightArrow.css('display', '');
-                $nav.css('display', '');
-                $content.css('display', '');
+                $('.row').addClass('row-arrow');
             }
 
             $('.request-data-info').each(function () {
@@ -2583,22 +2582,16 @@ $(function() {
         });
     });
     $(document).on('click', '.right-arrow', function() {
-        let $nav = $('.col-md-3');
-        let $content = $('.col-md-9');
-
-        let $img = $(this).find('.img');
-        if (String($img.attr('style')).includes('rotate(180deg)')) {
-            $img.css('transform', '');
-            $nav.css('width', '');
-            $content.css('width', '');
+        let $row = $(this).parents('.row');
+        let className = 'row-arrow';
+        if ($row.hasClass(className)) {
+            $row.removeClass(className);
             localStorage.removeItem(rightArrowKey);
         } else {
-            $img.css('transform', 'rotate(180deg)');
-            $nav.css('width', '0');
-            $content.css('width', '100%');
+            $row.addClass(className);
             localStorage.setItem(rightArrowKey, '1');
         }
-        $nav.on('transitionend webkitTransitionEnd oTransitionEnd', function () {
+        $('.col-md-9').on('transitionend webkitTransitionEnd oTransitionEnd', function () {
             allResize();
         });
     });
