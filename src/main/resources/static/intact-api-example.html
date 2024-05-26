@@ -105,12 +105,16 @@
             border-radius: 4px;
             padding-right: 36px;
         }
-        .input-clean, .input-file-clean, .input-textarea-clean {
+        .input-clean, .input-date-clean, .input-file-clean, .input-textarea-clean {
             width: 16px;
             height: 16px;
             position: absolute;
             z-index: 4;
             display: none;
+        }
+        .input-date-clean {
+            right: 6px;
+            bottom: -24px;
         }
         .input-clean, .input-file-clean {
             right: 6px;
@@ -125,7 +129,10 @@
         }
         .input-team:hover .input-clean,
         .input-team:active .input-clean,
+        .input-team:hover .input-date-clean,
+        .input-team:active .input-date-clean,
         .input-team:hover .input-file-clean,
+        .input-team:active .input-file-clean,
         .input-team:hover .input-textarea-clean,
         .input-team:active .input-textarea-clean {
             display: unset;
@@ -947,13 +954,15 @@
                                                     </div>
                                                     {{?? (param.showDataType || '').toLowerCase() === 'date' || dataType === 'date'}}
                                                     {{ let hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
-                                                    <div class="input-group date form-datetime input-team">
+                                                    <div class="input-group date form-datetime">
                                                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                                        <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
-                                                        <input type="text" name="{{= param.name || ''}}"{{= header}}
-                                                               {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                               class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}} input-field" value="{{= example}}"
-                                                               {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
+                                                        <div class="input-team">
+                                                            <svg viewBox="0 0 16 16" class="input-date-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
+                                                            <input type="text" name="{{= param.name || ''}}"{{= header}}
+                                                                   {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
+                                                                   class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}} input-field" value="{{= example}}"
+                                                                   {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
+                                                        </div>
                                                     </div>
                                                     {{??}}
                                                     {{ textNum++; }}
@@ -2560,7 +2569,7 @@ $(function() {
             }
         });
     });
-    $(document).on('click', '.input-clean,.input-file-clean,.input-textarea-clean', function() {
+    $(document).on('click', '.input-clean,.input-date-clean,.input-file-clean,.input-textarea-clean', function() {
         $(this).parents('.input-team').find('input,textarea,select').each(function() {
             let $this = $(this);
             if ($this.hasClass('has-token')) {
