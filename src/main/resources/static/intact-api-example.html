@@ -947,15 +947,13 @@
                                                     </div>
                                                     {{?? (param.showDataType || '').toLowerCase() === 'date' || dataType === 'date'}}
                                                     {{ let hasFormat = param.datePattern !== undefined && param.datePattern !== null && param.datePattern !== '';}}
-                                                    <div class="input-group date form-datetime">
+                                                    <div class="input-group date form-datetime input-team">
                                                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
-                                                        <span class="input-team">
-                                                            <input type="text" name="{{= param.name || ''}}"{{= header}}
-                                                                   {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                                   class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}} input-field" value="{{= example}}"
-                                                                   {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
-                                                            <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
-                                                        </span>
+                                                        <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
+                                                        <input type="text" name="{{= param.name || ''}}"{{= header}}
+                                                               {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
+                                                               class="form-control{{? required}} bold{{?}}{{= validateClass}}{{= tokenClass}} input-field" value="{{= example}}"
+                                                               {{? hasFormat}} data-date-format="{{= param.datePattern.replace(/yy/g, 'YY').replace(/dd/, 'DD')}}"{{?}}/>
                                                     </div>
                                                     {{??}}
                                                     {{ textNum++; }}
