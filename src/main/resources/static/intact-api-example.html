@@ -611,8 +611,10 @@
                     <span>{{= index + 1}}</span> {{= module.info || ''}}
                 </h2>
                 {{~ module.urlList  :url:urlIndex}}
-                <div class="module-api search-url" data-url="{{= url.url || ''}}" data-title='{{= (url.title || "").replace(/<.*?>|"/g, "")}}'
-                     data-desc='{{= (url.desc || "").replace(/<.*?>|"/g, "")}}' data-develop='{{= (url.develop || "").replace(/<.*?>|"/g, "")}}'>
+                <div class="module-api search-url" data-url="{{= url.url || ''}}"
+                     data-title='{{= (url.title || "").replace(/<.*?>|"/g, " ").replace(/\s/g, "")}}'
+                     data-desc='{{= (url.desc || "").replace(/<.*?>|"/g, " ").replace(/\s/g, "")}}'
+                     data-develop='{{= (url.develop || "").replace(/<.*?>|"/g, " ").replace(/\s/g, "")}}'>
                     {{ let moduleUrlId = module.name + '-' + url.id; }}
                     <span id="{{= moduleUrlId}}" class="anchor"></span>
                     <h3 class="module-api-index">
@@ -1138,8 +1140,10 @@
                         <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
                         <ul class="nav">
                             {{~ module.urlList  :url:urlIndex}}
-                            <li class="search-url" data-url="{{= url.url || ''}}" data-title='{{= (url.title || "").replace(/<.*?>|"/g, "")}}'
-                                data-desc='{{= (url.desc || "").replace(/<.*?>|"/g, "")}}' data-develop='{{= (url.develop || "").replace(/<.*?>|"/g, "")}}'>
+                            <li class="search-url" data-url="{{= url.url || ''}}"
+                                data-title='{{= (url.title || "").replace(/<.*?>|"/g, " ").replace(/\s/g, "")}}'
+                                data-desc='{{= (url.desc || "").replace(/<.*?>|"/g, " ").replace(/\s/g, "")}}'
+                                data-develop='{{= (url.develop || "").replace(/<.*?>|"/g, " ").replace(/\s/g, "")}}'>
                                 <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
                             </li>
                             {{~}}
