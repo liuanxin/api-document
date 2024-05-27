@@ -470,8 +470,8 @@
                     <span>{{= index + 1}}</span> {{= module.info || ''}}
                 </h2>
                 {{~ module.urlList  :url:urlIndex}}
-                <div class="module-api search-url" data-url="{{= url.url || ''}}" data-title="{{= url.title || ''}}"
-                     data-desc="{{= url.desc || ''}}" data-develop="{{= url.develop || ''}}">
+                <div class="module-api search-url" data-url="{{= url.url || ''}}" data-title='{{= (url.title || "").replace(/<.*?>|"/g, "")}}'
+                     data-desc='{{= (url.desc || "").replace(/<.*?>|"/g, "")}}' data-develop='{{= (url.develop || "").replace(/<.*?>|"/g, "")}}'>
                     <span id="{{= module.name}}-{{= url.id}}" class="anchor"></span>
                     <h3 class="module-api-index">
                         <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
@@ -797,8 +797,8 @@
                         <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
                         <ul class="nav">
                             {{~ module.urlList  :url:urlIndex}}
-                            <li class="search-url" data-url="{{= url.url || ''}}" data-title="{{= url.title || ''}}"
-                                data-desc="{{= url.desc || ''}}" data-develop="{{= url.develop || ''}}">
+                            <li class="search-url" data-url="{{= url.url || ''}}" data-title='{{= (url.title || "").replace(/<.*?>|"/g, "")}}'
+                                data-desc='{{= (url.desc || "").replace(/<.*?>|"/g, "")}}' data-develop='{{= (url.develop || "").replace(/<.*?>|"/g, "")}}'>
                                 <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
                             </li>
                             {{~}}
