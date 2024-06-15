@@ -13,7 +13,7 @@ public @interface ApiParam {
     /** @return param name, if set will ignore paramName */
     String name() default "";
 
-    /** @return if type was custom. can be: int、long、float、double、date、phone、email、url、ipv4 */
+    /** @return if type was custom. can be: int、long、float、double、password、date、phone、email、url、ipv4 */
     String dataType() default "";
 
     /** @return param example */

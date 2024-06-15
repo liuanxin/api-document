@@ -83,7 +83,7 @@
             color: #fff;
             background: #cfcfcf;
         }
-        .form-submit:active, .form-reset:active {
+        .form-submit:hover, .form-reset:hover {
             transform: scale(0.95);
         }
         .input-team {
@@ -99,7 +99,7 @@
             right: 4px;
             bottom: calc(50% - 10px);
             z-index: 4;
-            transition: opacity .5s;
+            transition: opacity 1s;
         }
         .input-textarea {
             border: 1px solid #ccc;
@@ -112,7 +112,7 @@
             position: absolute;
             z-index: 4;
             opacity: 0;
-            transition: opacity .5s;
+            transition: opacity 1s;
         }
         .input-date-clean {
             right: 6px;
@@ -126,17 +126,13 @@
             right: 20px;
             top: 8px;
         }
-        .input-team:hover .input-select, .input-team:active .input-select {
+        .input-team:hover .input-select {
             opacity: 0;
         }
         .input-team:hover .input-clean,
-        .input-team:active .input-clean,
         .input-team:hover .input-date-clean,
-        .input-team:active .input-date-clean,
         .input-team:hover .input-file-clean,
-        .input-team:active .input-file-clean,
-        .input-team:hover .input-textarea-clean,
-        .input-team:active .input-textarea-clean {
+        .input-team:hover .input-textarea-clean {
             opacity: 1;
         }
         .form-button {

@@ -56,36 +56,28 @@
             right: 4px;
             bottom: calc(50% - 10px);
             z-index: 4;
+            transition: opacity 1s;
         }
         .input-textarea {
             border: 1px solid #ccc;
             border-radius: 4px;
             padding-right: 36px;
         }
-        .input-clean, .input-file-clean, .input-textarea-clean {
+        .input-clean {
             width: 16px;
             height: 16px;
             position: absolute;
             z-index: 4;
-            display: none;
-        }
-        .input-clean, .input-file-clean {
+            opacity: 0;
+            transition: opacity 1s;
             right: 6px;
             bottom: calc(50% - 8px);
         }
-        .input-textarea-clean {
-            right: 20px;
-            top: 8px;
+        .input-team:hover .input-select {
+            opacity: 0;
         }
-        .input-team:hover .input-select, .input-team:active .input-select {
-            display: none;
-        }
-        .input-team:hover .input-clean,
-        .input-team:active .input-clean,
-        .input-team:hover .input-file-clean,
-        .input-team:hover .input-textarea-clean,
-        .input-team:active .input-textarea-clean {
-            display: unset;
+        .input-team:hover .input-clean {
+            opacity: 1;
         }
         .form-button {
             display: flex;
@@ -1421,7 +1413,7 @@ $(function() {
         history.replaceState({api: $(this).val()}, '', location.pathname + hash);
         loadData();
     });
-    $(document).on('click', '.input-clean,.input-file-clean,.input-textarea-clean', function() {
+    $(document).on('click', '.input-clean', function() {
         $(this).parents('.input-team').find('input,textarea,select').each(function() {
             let $this = $(this);
             if ($this.hasClass('has-token')) {
