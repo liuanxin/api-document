@@ -969,12 +969,21 @@
                                                         </div>
                                                     </div>
                                                     {{??}}
-                                                    {{ textNum++; }}
+                                                    {{
+                                                    textNum++;
+                                                    let inputType;
+                                                    if (dataType === 'password' || (param.showDataType || '').toLowerCase() === 'password' || (param.name || '').toLowerCase() === 'password') {
+                                                        inputType = 'password';
+                                                    } else if (dataType === 'int' || dataType === 'long' || dataType === 'float' || dataType === 'double') {
+                                                        inputType = 'number';
+                                                    } else {
+                                                        inputType = 'text';
+                                                    }
+                                                    }}
                                                     <div class="input-team">
                                                         <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
                                                                class="form-control{{= validateClass}}{{= tokenClass}} input-field"
-                                                               type="{{= dataType === 'password' || (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
-                                                               name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
+                                                               type="{{= inputType}}" name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                                         <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
                                                     </div>
                                                     {{?}}
