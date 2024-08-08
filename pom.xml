@@ -29,6 +29,9 @@
 
         <spring-webmvc.version>5.3.23</spring-webmvc.version>
         <servlet-api.version>2.5</servlet-api.version>
+
+        <junit.version>4.13.1</junit.version>
+        <mockito.version>3.9.0</mockito.version>
     </properties>
 
     <dependencies>
@@ -61,14 +64,14 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.9.0</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
