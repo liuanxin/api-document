@@ -983,7 +983,7 @@
                                                     }}
                                                     <div class="input-team">
                                                         <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}: {{= param.example}}{{?}}"{{?}}
-                                                               class="form-control{{= validateClass}}{{= tokenClass}} input-field"
+                                                               class="form-control{{= validateClass}}{{= tokenClass}} input-field"{{? inputType === 'password'}} autocomplete="off"{{?}}
                                                                type="{{= inputType}}" name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                                         <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
                                                     </div>

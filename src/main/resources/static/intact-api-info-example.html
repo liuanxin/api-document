@@ -876,6 +876,7 @@
                                                     {{ textNum++; }}
                                                     <input {{? param.desc}} placeholder="{{= param.desc}}{{? param.example}}. 如: {{= param.example}}{{?}}"{{?}}
                                                            class="form-control{{= validateClass}}{{= tokenClass}}"
+                                                           {{? dataType === 'password' || (param.name || '').toLowerCase() === 'password'}} autocomplete="off"{{?}}
                                                            type="{{= dataType === 'password' || (param.name || '').toLowerCase() === 'password' ? 'password' : 'text'}}"
                                                            name="{{= param.name || ''}}"{{= header}} value="{{= example}}"/>
                                                     {{?}}
