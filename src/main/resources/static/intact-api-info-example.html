@@ -912,7 +912,8 @@
                                         let requestBodyData = localStorage.getItem(moduleUrlId + ':' + requestBodyKey + '') || url.requestBodyJson || '';
                                         }}
                                         <div class="request-data">
-                                            <div class="request-data-info" data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
+                                            <div class="request-data-info" title="尾部注释不影响调用"
+                                                 data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
                                         </div>
                                     </div>
                                     {{?}}
@@ -1655,7 +1656,7 @@ function handleInput($this, action, format) {
             localStorage.removeItem(itemKey);
         }
         if (format) {
-            $reqMsg.html('生成的尾部注释不影响调用');
+            $reqMsg.html('尾部注释不影响调用');
             setTimeout(function () { $reqMsg.html(''); }, 3000);
         }
     }

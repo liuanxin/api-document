@@ -912,7 +912,8 @@
                                         let requestBodyData = localStorage.getItem(moduleUrlId + ':' + requestBodyKey + '') || url.requestBodyJson || '';
                                         }}
                                         <div class="request-data">
-                                            <div class="request-data-info" data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
+                                            <div class="request-data-info" title="Comment on tail does not affect the Request"
+                                                 data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
                                         </div>
                                     </div>
                                     {{?}}

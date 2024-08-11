@@ -1020,7 +1020,8 @@
                                         let requestBodyData = localStorage.getItem(moduleUrlId + ':' + requestBodyKey + '') || url.requestBodyJson || '';
                                         }}
                                         <div class="request-data">
-                                            <div class="request-data-info" data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
+                                            <div class="request-data-info" title="%@ js.tailComment @%"
+                                                 data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
                                         </div>
                                     </div>
                                     {{?}}
@@ -1345,7 +1346,7 @@ const cn = {
         'c4': '删除配置',
         'jsonParseError1': '数据解析有误(行',
         'jsonParseError2': '列',
-        'tailComment': '生成的尾部注释不影响调用',
+        'tailComment': '尾部注释不影响接口调用',
         'fileReplace': '替换真实路径',
         'uploadError': '上传文件需要用 POST(用 cURL 是可以的), 请联系后端修改',
         'getBodyError': '浏览器不能通过 GET 请求发送 RequestBody 参数(用 cURL 是可以的), 请联系后端修改成 POST',
