@@ -1905,12 +1905,14 @@ function setEdit(ele) {
 
     editor.on('change', function() {
         let $this = $(document.activeElement);
-        let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $this.closest('.request-data-info').attr('data-name');
-        let editValue = editor.getValue();
-        if (isNotBlank(editValue)) {
-            localStorage.setItem(itemKey, editValue);
-        } else {
-            localStorage.removeItem(itemKey);
+        let itemKey = ($this.closest('.module-api').find('.anchor').attr('id') || '') + ':' + ($this.closest('.request-data-info').attr('data-name') || '');
+        if (itemKey !== ':') {
+            let editValue = editor.getValue();
+            if (isNotBlank(editValue)) {
+                localStorage.setItem(itemKey, editValue);
+            } else {
+                localStorage.removeItem(itemKey);
+            }
         }
     });
 }
@@ -2181,16 +2183,16 @@ function handleInput($this, action, format) {
         }
         if (isNotBlank(json)) {
             setEditValue($request, json);
-            localStorage.setItem(itemKey, json);
+            itemKey !== ':' && localStorage.setItem(itemKey, json);
         } else {
-            localStorage.removeItem(itemKey);
+            itemKey !== ':' && localStorage.removeItem(itemKey);
         }
         if (format) {
             fillLanguageData($reqMsg, '%@ js.tailComment @%');
             setTimeout(function () { $reqMsg.html(''); }, 3000);
         }
     } else {
-      localStorage.removeItem(itemKey);
+        itemKey !== ':' && localStorage.removeItem(itemKey);
     }
 }
 function handleToken($this, value) {
