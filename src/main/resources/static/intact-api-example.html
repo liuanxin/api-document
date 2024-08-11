@@ -2167,8 +2167,8 @@ function handleInput($this, action, format) {
     let $source = $this.closest('.source-info');
     let $request = $source.find('.request-data-info');
     let value = getEditValue($request);
-    if (isNotBlank(value)) {
-        let itemKey = $this.closest('.module-api').find('.anchor').attr('id') + ':' + $request.attr('data-name');
+    let itemKey = ($this.closest('.module-api').find('.anchor').attr('id') || '') + ':' + ($request.attr('data-name') || '');
+    if (isNotBlank(value) && itemKey !== ':') {
         let $reqMsg = $source.find('.src-prev-req-msg');
         $reqMsg.html('');
         let json;
@@ -2189,6 +2189,8 @@ function handleInput($this, action, format) {
             fillLanguageData($reqMsg, '%@ js.tailComment @%');
             setTimeout(function () { $reqMsg.html(''); }, 3000);
         }
+    } else {
+      localStorage.removeItem(itemKey);
     }
 }
 function handleToken($this, value) {
@@ -2600,19 +2602,20 @@ $(function() {
     $(document).on('click', '.right-arrow', function() {
         let $row = $(this).parents('.row');
         let $nav = $('.col-md-3');
+        let $content = $('.col-md-9');
         let className = 'row-arrow';
         if ($row.hasClass(className)) {
             $nav.addClass('hidden');
             $row.removeClass(className);
             localStorage.removeItem(rightArrowKey);
-            $('.col-md-9').on('transitionend webkitTransitionEnd oTransitionEnd', function () {
+            $content.on('transitionend webkitTransitionEnd oTransitionEnd', function () {
                 $nav.removeClass('hidden');
             });
         } else {
             $row.addClass(className);
             localStorage.setItem(rightArrowKey, '1');
         }
-        $('.col-md-9').on('transitionend webkitTransitionEnd oTransitionEnd', function () {
+        $content.on('transitionend webkitTransitionEnd oTransitionEnd', function () {
             allResize();
         });
     });
