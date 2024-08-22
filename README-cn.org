@@ -152,6 +152,8 @@ public enum JsonCode {
     }
 
     ...
+
+    getter
 }
 
 public class DemoVo {
