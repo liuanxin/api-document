@@ -14,9 +14,9 @@ People who have maintained the project should have experience.
 If the api documentation is written separately (org-mode, markdown, rap or even word),
 as the project cycle progresses, the gap between the interface document and the real code will come the farther away.
 
-This document collection application has appeared because some of the details based on swagger are not so good
-(For example, the map cannot be parsed, the circular reference cannot be parsed, and the entry and exit parameters are poorly sorted. 
-swagger-ui view response instructions need to be swtich).
+This document collection application has appeared because some of the details based on swagger are not so good,
+For example, the map cannot be parsed, the circular reference cannot be parsed, and the entry and exit parameters are poorly sorted. 
+view desc need to be swtich(comments should be where the examples are, not together is a very bad experience).
 
 
 ** Usage
