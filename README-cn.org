@@ -131,7 +131,6 @@ public class JsonResult<T> {
     private String msg;
 
     @ApiReturn("返回数据")
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private T data;
 
     ...
