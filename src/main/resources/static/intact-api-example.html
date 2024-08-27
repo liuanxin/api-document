@@ -319,7 +319,8 @@
         }
         .src-prev-res-msg {
             margin-left: 10px;
-            font-size: .9em;
+            display: flex;
+            align-items: center;
         }
         .src-prev-right {
             display: flex;
@@ -448,7 +449,6 @@
         .bs-docs-sidebar .nav > li > a {
             display: block;
             padding: 4px 0 4px 20px;
-            font-size: 14px;
             font-weight: 500;
             color: #999;
         }
@@ -1899,6 +1899,7 @@ function setEdit(ele) {
     session.setUseWrapMode(true);
     session.setUseWorker(false);
     session.setMode("ace/mode/json");
+    editor.setFontSize("14px");
     editor.setTheme("ace/theme/chrome");
     editor.setAutoScrollEditorIntoView(true);
     editor.setShowPrintMargin(false);
@@ -2515,6 +2516,7 @@ $(function() {
                 session.setUseWorker(false);
                 session.setMode("ace/mode/json");
                 session.setValue(html, -1);
+                editor.setFontSize("14px");
                 editor.setTheme("ace/theme/chrome");
                 editor.setAutoScrollEditorIntoView(true);
                 editor.setShowPrintMargin(false);
