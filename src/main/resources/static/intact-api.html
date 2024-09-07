@@ -917,13 +917,25 @@ let pageCssList = hasCn ? [
     'cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/fira_code.min.css'
 ];
 let pageJsList = hasCn ? [
-    { url: 'cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js', children: [ 'cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js' ] },
+    {
+        url: 'cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js',
+        children: [ 'cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js' ]
+    },
     'cdn.bootcdn.net/ajax/libs/dot/1.1.3/doT.min.js',
-    { url: 'cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js', children: [ 'cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-json.min.js' ] }
+    {
+        url: 'cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js',
+        children: [ 'cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-json.min.js' ]
+    }
 ] : [
-    { url: 'cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js', children: [ 'cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js' ] },
+    {
+        url: 'cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js',
+        children: [ 'cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js' ]
+    },
     'cdnjs.cloudflare.com/ajax/libs/dot/1.1.3/doT.min.js',
-    { url: 'cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js', children: [ 'cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js' ] }
+    {
+        url: 'cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js',
+        children: [ 'cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js' ]
+    }
 ];
 writeCss(document.getElementsByTagName('link')[0], pageCssList);
 writeJs(document.getElementById('copyright'), pageJsList);
