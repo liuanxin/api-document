@@ -28,8 +28,10 @@ public class DocumentController {
 
     private final RequestMappingHandlerMapping mapping;
     private final DocumentCopyright copyright;
-    public DocumentController(@Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping mapping,
-                              DocumentCopyright copyright) {
+    public DocumentController(
+            @Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping mapping,
+            DocumentCopyright copyright
+    ) {
         this.mapping = mapping;
         this.copyright = copyright;
     }
