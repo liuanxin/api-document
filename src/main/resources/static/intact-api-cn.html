@@ -1,0 +1,1572 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>Api Document</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAD1BMVEVHcEwzZ9YzZtUzZtYzZ9aXuimUAAAABHRSTlMA40hLwZlVdgAAAD1JREFUKM9jYBi0wNDFRYjBBUq4AAVEXFwcQWxHmIALCIEJBhYHBmoJgMwG24ImIISuhYEcATSnwwUGKQAAN0oX04RzeZMAAAAASUVORK5CYII=">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/firacode/6.2.0/fira_code.min.css">
+    <style>
+        * {
+            font-family: "Fira Code", "PingFang SC", "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei", "Microsoft YaHei", monospace, "sans-serif", "Helvetica Neue", Helvetica, Arial, "Glyphicons Halflings" !important;
+        }
+        html {
+            position: relative;
+            min-height: 100%;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            height: 50px;
+            width: 100%;
+            z-index: 999;
+            transition: all .3s ease-in-out;
+            background-color: transparent;
+            border-bottom: 1px solid #f7f8f8;
+            display: flex;
+        }
+        header .scrolled {
+            box-shadow: 0 0 10px -2px #333;
+            background: rgba(255,255,255,0.94);
+        }
+        button, input[type=button] {
+            outline: none;
+        }
+        .anchor {
+            display: block;
+            position: relative;
+            top: -51px;
+            visibility: hidden;
+            width: 0;
+            height: 0;
+        }
+        .input-team {
+            position: relative !important;
+        }
+        .input-field {
+            padding-right: 28px;
+        }
+        .input-select {
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            right: 4px;
+            bottom: calc(50% - 10px);
+            z-index: 4;
+            transition: opacity .75s;;
+        }
+        .input-textarea {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding-right: 36px;
+        }
+        .input-clean {
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            z-index: 4;
+            opacity: 0;
+            transition: opacity .75s;;
+            right: 6px;
+            bottom: calc(50% - 8px);
+        }
+        .input-team:hover .input-select {
+            opacity: 0;
+        }
+        .input-team:hover .input-clean {
+            opacity: 1;
+        }
+        .form-button {
+            display: flex;
+            justify-content: space-between;
+        }
+        .source-code {
+            overflow: auto;
+            max-height: 386px;
+            display: flex;
+            align-items: flex-start;
+            padding: 5px 0;
+        }
+        .line-number {
+            color: #2B91AF;
+            text-align: right;
+            margin-right: 7px;
+            border-right: 1px solid;
+            padding: 0 10px;
+            display: flex;
+            flex-direction: column;
+            background: #f5f5f5;
+        }
+        .source {
+            white-space: pre;
+        }
+        .comment {
+            color: #aaa;
+            font-style: italic;
+        }
+        table thead {
+            background: rgba(51,51,51,.1);
+        }
+        table thead tr th {
+            white-space: nowrap;
+        }
+        .header {
+            display: flex;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+            font-size: 26px;
+            color: #6495ed;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .header-select, .header-text {
+            display: flex;
+            align-items: center;
+            flex-grow: 0;
+        }
+        .header-text {
+            white-space: nowrap;
+            padding: 0 5px 0 20px;
+        }
+        .project-choose {
+            min-width: 200px;
+        }
+        .body-content {
+            min-height: calc(100vh - 50px - 40px);
+        }
+        .footer {
+            background: #f5f5f5;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .footer > div {
+            padding: 0 20px;
+        }
+        .footer > div:not(:last-of-type) {
+            border-right: 1px solid #ccc;
+        }
+        .config {
+            margin-top: 10px;
+        }
+
+        .panel {
+            overflow: auto;
+        }
+        .module, .module-last {}
+        .module-name {
+            border-bottom: 5px solid #eee;
+            margin-bottom: -5px;
+        }
+        .module-api {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        .module-last > .module-api:last-child {
+            border-bottom: none;
+        }
+        .module-api-index {}
+        .module-api-info {}
+        .module-api-info-basic {
+            margin: 7px 0;
+        }
+        .module-api-info-desc {
+            white-space: pre-wrap;
+            overflow: auto;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            margin-bottom: 7px;
+            padding: 7px;
+            border-radius: 4px;
+        }
+        .module-api-info-param {}
+        .module-api-info-request {}
+        .module-api-info-return {}
+        .source-info {
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f5f5f5;
+            cursor: text;
+        }
+        .modal-dialog > .source-info {
+            margin: 10px;
+            padding: 0;
+        }
+        .bottom-table {
+            margin-bottom: 10px;
+        }
+        .src-prev {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            background: #f5f5f5;
+            padding: 7px;
+        }
+        .modal-body > .src-prev {
+            position: unset;
+        }
+        .src-prev-left {
+            display: flex;
+        }
+        .src-prev-right {
+            display: flex;
+        }
+        .text-left {
+            vertical-align: middle !important;
+        }
+        .config .config-prefix, .response-example {
+            color: #337ab7;
+            text-decoration: none;
+            background-color: transparent;
+            cursor: pointer;
+        }
+        .config .config-prefix:hover, .response-example:hover {
+            color: #23527c;
+            text-decoration: underline;
+        }
+        .init-page {
+            display: none;
+        }
+        #config-prefix-url .modal-dialog {
+            top: 85px;
+        }
+        .modal-dialog {
+            width: 75%;
+        }
+        .bold {
+            font-weight: bold !important;
+        }
+        .wrap {
+            white-space: pre-wrap;
+        }
+        .green {
+            color: green !important;
+        }
+        .red {
+            color: red !important;
+        }
+        .copy-status, .copy, .no-scroll {
+            margin: 0 7px;
+        }
+        .copy, .no-scroll {
+            cursor: pointer;
+        }
+        .copy:hover, .no-scroll:hover {
+            color: rgb(100, 100, 100);
+            font-weight: bold;
+        }
+        .copy-impl {
+            opacity: 0; /* 不能设置 display:none, 否则无法选择文本 */
+            width: 0 !important;
+            height: 0 !important;
+        }
+        .row-arrow .col-md-3 {
+            opacity: 0;
+        }
+        .row-arrow .col-md-9 {
+            width: 100%;
+        }
+        .col-md-9 {
+            transition: width .5s;
+        }
+        .row-arrow .right-arrow .img {
+            transform: rotate(180deg);
+        }
+        .right-arrow {
+            position: fixed;
+            top: calc(50px + 1px + 15px);
+            right: 0;
+            border-radius: 26px 0 0 26px;
+            box-shadow: -1px 0 6px rgba(0,0,0,.2);
+            width: 26px;
+            height: 26px;
+            cursor: pointer;
+            background: #fff;
+            z-index: 2;
+        }
+        .right-arrow .img {
+            width: 26px;
+            height: 26px;
+            transition: transform .5s ease;
+        }
+
+        .bs-docs-sidebar {
+            width: inherit;
+            position: fixed;
+            margin: 15px 0;
+        }
+        .bs-docs-search {
+            margin-bottom: 20px;
+            max-width: calc(100% - 26px); /* right-arrow */
+        }
+        .bs-docs-sidebar > .nav {
+            overflow-y: auto;
+            max-height: calc(100vh - 51px - 15px - 15px - 54px); /* 100vh - header - top - bottom - search */
+        }
+        .bs-docs-sidebar .nav > li > a {
+            display: block;
+            padding: 4px 0 4px 20px;
+            font-weight: 500;
+            color: #999;
+        }
+        .bs-docs-sidebar .nav > li > a:hover,
+        .bs-docs-sidebar .nav > li > a:focus {
+            padding-left: 19px;
+            color: #A1283B;
+            text-decoration: none;
+            background-color: transparent;
+            border-left: 1px solid #A1283B;
+        }
+        .bs-docs-sidebar .nav > .active > a,
+        .bs-docs-sidebar .nav > .active:hover > a,
+        .bs-docs-sidebar .nav > .active:focus > a {
+            padding-left: 18px;
+            font-weight: bold;
+            color: #A1283B;
+            background-color: transparent;
+            border-left: 2px solid #A1283B;
+        }
+        .bs-docs-sidebar .nav .nav {
+            display: none;
+            padding-bottom: 10px;
+        }
+        .bs-docs-sidebar .nav .nav > li > a {
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 30px;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        .bs-docs-sidebar .nav .nav > li > a:hover,
+        .bs-docs-sidebar .nav .nav > li > a:focus {
+            padding-left: 29px;
+        }
+        .bs-docs-sidebar .nav .nav > .active > a,
+        .bs-docs-sidebar .nav .nav > .active:hover > a,
+        .bs-docs-sidebar .nav .nav > .active:focus > a {
+            padding-left: 28px;
+            font-weight: 500;
+        }
+        .bs-docs-sidebar .nav .nav .nav {
+            padding-bottom: 10px;
+        }
+        .bs-docs-sidebar .nav .nav .nav > li > a {
+            padding-top: 1px;
+            padding-bottom: 1px;
+            padding-left: 40px;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        .bs-docs-sidebar .nav .nav .nav > li > a:hover,
+        .bs-docs-sidebar .nav .nav .nav > li > a:focus {
+            padding-left: 39px;
+        }
+        .bs-docs-sidebar .nav > .active > ul {
+            display: block;
+        }
+        .bs-docs-sidebar .nav .nav .nav > .active > a,
+        .bs-docs-sidebar .nav .nav .nav > .active:hover > a,
+        .bs-docs-sidebar .nav .nav .nav > .active:focus > a {
+            padding-left: 38px;
+            font-weight: 500;
+        }
+        @media print {
+            .print-nil {
+                display: none;
+            }
+            .text-left, .panel {
+                overflow: unset;
+            }
+            .text-left {
+                white-space: pre-wrap;
+            }
+            .source-code {
+                max-height: none;
+            }
+        }
+        @media (max-width: 992px), print {
+            .col-md-9 {
+                width: 100%;
+            }
+            .right-arrow, .col-md-3 {
+                display: none;
+            }
+        }
+        @media (max-width: 992px) {
+            .modal-dialog {
+                width: 95%;
+            }
+        }
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+            }
+        }
+        @media (min-width: 993px) and (max-width: 1200px) {
+            .bs-docs-sidebar {
+                padding-left: 10px;
+                width: calc(25% - 10px - 3px);
+            }
+        }
+        @media (min-width: 1201px) {
+            .bs-docs-sidebar {
+                padding-left: 20px;
+                width: calc(25% - 20px - 3px);
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="config-prefix-url" class="modal fade init-page" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">%@ context.modal-title @%</h4>
+        </div>
+        <div class="modal-body">
+            <input id="prefix-url" class="form-control" placeholder="%@ context.modal-plac @%: http://www.example.com/xxx"/>
+            <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="config-btn btn btn-info">%@ context.btn-submit @%</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">%@ context.btn-close @%</button>
+        </div>
+    </div>
+</div>
+<header class="print-nil"><div class="header container"><div class="header-content"></div></div></header>
+<script id="choose-project" type="text/x-dot-template">
+    <div class="header-text">%@ choose.project @%:</div>
+    <div class="header-select input-team">
+        <select class="project-choose form-control" name="p">
+            <option value="">%@ choose.current @%</option>
+            {{ let cp = it.project; }}
+            {{~ it.projects  :p}}
+            {{ let s = (cp.toLowerCase() === p[0].toLowerCase() || cp === p[1]) ? ' selected' : ''; }}
+            <option value="{{= p[0]}}" data-url="{{= p[2]}}"{{= s}}>{{= p[1]}}</option>
+            {{~}}
+        </select>
+        <svg viewBox="0 0 16 16" class="input-select">
+            <path d="m4.427 7.427 3.396 3.396a.25.25 0 0 0 .354 0l3.396-3.396A.25.25 0 0 0 11.396 7H4.604a.25.25 0 0 0-.177.427Z"/>
+        </svg>
+    </div>
+</script>
+<main class="body-content container">
+    <div class="row">
+        <div id="url-info" class="col-md-9"></div>
+        <script id="url-render" type="text/x-dot-template">
+            {{~ it.moduleList  :module:index}}
+            <div class="{{= index + 1 === it.moduleList.length ? 'module-last' : 'module'}} search-module">
+                <span id="{{= module.name}}" class="anchor"></span>
+                <h2 class="module-name">
+                    <span>{{= index + 1}}</span> {{= module.info || ''}}
+                </h2>
+                {{~ module.urlList  :url:urlIndex}}
+                <div class="module-api search-url" data-url="{{= url.url || ''}}"
+                     data-title='{{= (url.title || "").replace(/<.*?>|"/g, " ").replace(/\s/g, " ").replace(/\s{2,}/g, " ").trim()}}'
+                     data-desc='{{= (url.desc || "").replace(/<.*?>|"/g, " ").replace(/\s/g, " ").replace(/\s{2,}/g, " ").trim()}}'
+                     data-develop='{{= (url.develop || "").replace(/<.*?>|"/g, " ").replace(/\s/g, " ").replace(/\s{2,}/g, " ").trim()}}'>
+                    <span id="{{= module.name}}-{{= url.id}}" class="anchor"></span>
+                    <h3 class="module-api-index">
+                        <span>{{= index + 1}}.{{= urlIndex + 1}}</span> {{= url.title || ''}}
+                    </h3>
+                    <div class="module-api-info">
+                        <div><code>{{= url.method || ''}} {{= url.url || ''}}</code></div>
+                        <div class="module-api-info-basic"><code>Content-Type : {{= url.contentType || ''}}</code></div>
+                        {{
+                        let moduleDesc = '';
+                        let hasDev = url.develop && url.develop !== '';
+                        if (hasDev) {
+                            moduleDesc += '%@ reqRes.develop @%: ' + url.develop;
+                        }
+                        if (url.desc && url.desc !== '') {
+                            if (hasDev) { moduleDesc += '<br>'; }
+                            moduleDesc += '%@ reqRes.desc @%: ' + url.desc;
+                        }
+
+                        let printNil = '';
+                        if (url.exampleUrl && url.exampleUrl != '') {
+                            let example = '<a target="_blank" href="' + url.exampleUrl + '">%@ reqRes.example @%</a>';
+                            if (moduleDesc !== '') {
+                                moduleDesc += '<span class="print-nil"><br><br>' + example + '</span>';
+                            } else {
+                                printNil = ' print-nil';
+                                moduleDesc += example;
+                            }
+                        }
+                        }}
+                        <div class="module-api-info-desc bottom-table{{= printNil}}">{{= moduleDesc}}</div>
+
+                        {{
+                        let globalParamList = it.tokenList || [];
+                        let urlParamList = url.paramList || [];
+                        let paramList = String(url.useGlobalParam) === '1' ? globalParamList.concat(urlParamList) : urlParamList;
+
+                        let hasDesc = false, hasExample = false, hasHeader = false;
+                        for (let i = 0; i < paramList.length; i++) {
+                            let paramDesc = paramList[i].desc;
+                            if (paramDesc !== undefined && paramDesc !== null && paramDesc !== '') { hasDesc = true; }
+
+                            let urlExample = paramList[i].example;
+                            if (urlExample !== undefined && urlExample !== null && urlExample !== '') { hasExample = true; }
+
+                            if (String(paramList[i].paramType) === '1') { hasHeader = true; }
+                        }
+                        }}
+                        {{? paramList && paramList.length > 0}}
+                        <div class="module-api-info-param bottom-table panel panel-default">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-left">%@ reqRes.param.name @%</th>
+                                    <th class="text-left">%@ reqRes.param.dataType @%</th>
+                                    <th class="text-left">%@ reqRes.param.required @%</th>
+                                    {{? hasHeader}}<th class="text-left">%@ reqRes.param.type @%</th>{{?}}
+                                    {{? hasExample}}<th class="text-left">%@ reqRes.param.example @%</th>{{?}}
+                                    {{? hasDesc}}<th class="text-left">%@ reqRes.param.desc @%</th>{{?}}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{~ paramList  :param}}
+                                <tr{{? String(param.required) === '1'}} class="bold"{{?}}{{? param.style && param.style !== ''}} style="{{= param.style}}"{{?}}>
+                                    <td class="text-left">{{= param.name || ''}}</td>
+                                    <td class="text-left">{{=
+                                        param.showDataType !== undefined && param.showDataType !== null && param.showDataType !== ''
+                                        ? param.showDataType
+                                        : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
+                                    }}</td>
+                                    <td class="text-left">{{= String(param.required) === '1' ? '✓' : '✗'}}</td>
+                                    {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                    {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
+                                    {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                        </div>
+                        {{?}}
+
+                        {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
+                        <div class="module-api-info-request source-info bottom-table">
+                            <div class="src-prev">
+                                <div class="src-prev-left bold">%@ reqRes.req.example @%</div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">%@ reqRes.req.copy @%</div>
+                                    <div class="no-scroll print-nil">%@ reqRes.req.show @%</div>
+                                </div>
+                            </div>
+                            <div class="source-code">{{= url.requestBodyJson || '' }}</div>
+                        </div>
+                        {{?}}
+
+                        <div class="module-api-info-return source-info bottom-table">
+                            <div class="src-prev">
+                                <div class="src-prev-left bold">%@ reqRes.return.example @%</div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">%@ reqRes.return.copy @%</div>
+                                    <div class="no-scroll print-nil">%@ reqRes.return.show @%</div>
+                                </div>
+                            </div>
+                            <div class="source-code">{{= url.commentJson || '' }}</div>
+                        </div>
+
+                        {{? url.returnList && url.returnList.length > 0}}
+                        <div class="bottom-table panel panel-default">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-left">%@ reqRes.return.name @%</th>
+                                    <th class="text-left">%@ reqRes.return.type @%</th>
+                                    <th class="text-left">%@ reqRes.return.desc @%</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{~ url.returnList  :rtn}}
+                                <tr>
+                                    <td class="text-left">{{= rtn.name || ''}}</td>
+                                    <td class="text-left">{{= rtn.type || ''}}</td>
+                                    <td class="text-left wrap">
+                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!%@ reqRes.return.recursive @%!!!</span>')}}
+                                    </td>
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                        </div>
+                        {{?}}
+
+                        {{
+                        let hasSelfResponse = false;
+                        let responseList;
+                        if (url.responseList && url.responseList.length > 0) {
+                            hasSelfResponse = true;
+                            responseList = url.responseList;
+                        } else if (it.responseList && it.responseList.length > 0) {
+                            responseList = it.responseList;
+                        } else {
+                            responseList = [];
+                        }
+
+                        let hasAction = false;
+                        for (let i = 0; i < responseList.length; i++) {
+                            let comment = responseList[i].comment;
+                            if (comment !== undefined && comment !== null && comment !== '') {
+                                hasAction = true;
+                            }
+                        }
+                        }}
+                        {{? responseList.length > 0}}
+                        <div class="bottom-table panel panel-default">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-left">%@ reqRes.res.code @%</th>
+                                    <th class="text-left">%@ reqRes.res.desc @%</th>
+                                    {{? hasAction}}<th class="text-left print-nil">%@ reqRes.res.opera @%</th>{{?}}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{~ responseList  :response}}
+                                <tr>
+                                    <td class="text-left">{{= response.code || ''}}</td>
+                                    <td class="text-left">{{= response.msg || ''}}</td>
+                                    {{
+                                    let comment = response.comment;
+                                    let targetId = hasSelfResponse ? (module.name + '-' + url.id + '-' + response.code) : ('global-' + response.code);
+                                    }}
+                                    {{? comment !== undefined && comment !== null && comment !== ''}}
+                                    <td class="text-left print-nil">
+                                        <span class="response-example" title="%@ reqRes.res.m1 @% {{= response.code + ': ' + response.msg}} %@ reqRes.res.m2 @%"
+                                              data-toggle="modal" data-target="#{{= targetId}}">%@ reqRes.res.example @%</span>
+                                    </td>
+                                    {{?? hasAction}}
+                                    <td class="text-left print-nil"></td>
+                                    {{?}}
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        {{? hasSelfResponse}}
+                        {{~ responseList  :response}}
+                        {{ let comment = response.comment; }}
+                        {{? comment !== undefined && comment !== null && comment !== ''}}
+                        <div id="{{= module.name}}-{{= url.id}}-{{= response.code}}" class="modal fade"
+                             tabindex="-1" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                            <div class="modal-dialog modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">
+                                        %@ reqRes.res.status.t1 @%「{{= module.info || ''}}」%@ reqRes.res.status.t2 @%「{{= url.title || ''}}」%@ reqRes.res.status.t3 @%「{{= response.code + ': ' + response.msg}}」%@ reqRes.res.status.t4 @%
+                                    </h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="source-info">
+                                        <div class="src-prev">
+                                            <div class="src-prev-left bold"></div>
+                                            <div class="src-prev-right">
+                                                <div class="copy-status green print-nil"></div>
+                                                <div class="copy print-nil">%@ reqRes.res.status.copy @%</div>
+                                                <div class="no-scroll print-nil">%@ reqRes.res.status.show @%</div>
+                                            </div>
+                                        </div>
+                                        <div class="source-code">{{= response.comment || '' }}</div>
+                                    </div>
+
+                                    {{? response.returnList && response.returnList.length > 0}}
+                                    <div class="bottom-table panel panel-default">
+                                        <table class="table table-striped table-bordered table-hover table-condensed">
+                                            <thead>
+                                            <tr>
+                                                <th class="text-left">%@ reqRes.res.return.name @%</th>
+                                                <th class="text-left">%@ reqRes.res.return.type @%</th>
+                                                <th class="text-left">%@ reqRes.res.return.desc @%</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            {{~ response.returnList  :rtn}}
+                                            <tr>
+                                                <td class="text-left">{{= rtn.name || ''}}</td>
+                                                <td class="text-left">{{= rtn.type || ''}}</td>
+                                                <td class="text-left wrap">
+                                                    {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!%@ reqRes.res.return.recursive @%!!!</span>')}}
+                                                </td>
+                                            </tr>
+                                            {{~}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {{?}}
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">%@ reqRes.res.close @%</button>
+                                </div>
+                            </div>
+                        </div>
+                        {{?}}
+                        {{~}}
+                        {{?}}
+                        {{?}}
+                    </div>
+                </div>
+                {{~}}
+            </div>
+            {{~}}
+
+            {{~ it.responseList  :response}}
+            {{ let comment = response.comment; }}
+            {{? comment !== undefined && comment !== null && comment !== ''}}
+            <div id="global-{{= response.code}}" class="modal fade" tabindex="-1"
+                 aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">
+                            %@ reqRes.global.t1 @%「{{= response.code + ': ' + response.msg}}」%@ reqRes.global.t2 @%
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="source-info">
+                            <div class="src-prev">
+                                <div class="src-prev-left bold"></div>
+                                <div class="src-prev-right">
+                                    <div class="copy-status green print-nil"></div>
+                                    <div class="copy print-nil">%@ reqRes.global.copy @%</div>
+                                    <div class="no-scroll print-nil">%@ reqRes.global.show @%</div>
+                                </div>
+                            </div>
+                            <div class="source-code">{{= response.comment || '' }}</div>
+                        </div>
+
+                        {{? response.returnList && response.returnList.length > 0}}
+                        <div class="bottom-table panel panel-default">
+                            <table class="table table-striped table-bordered table-hover table-condensed">
+                                <thead>
+                                <tr>
+                                    <th class="text-left">%@ reqRes.global.return.name @%</th>
+                                    <th class="text-left">%@ reqRes.global.return.type @%</th>
+                                    <th class="text-left">%@ reqRes.global.return.desc @%</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {{~ response.returnList  :rtn}}
+                                <tr>
+                                    <td class="text-left">{{= rtn.name || ''}}</td>
+                                    <td class="text-left">{{= rtn.type || ''}}</td>
+                                    <td class="text-left wrap">
+                                        {{= (rtn.desc || '').replace(/(!!!RECURSIVE OBJECT!!!)/, '<span class="bold red">!!!%@ reqRes.global.return.recursive @%!!!</span>')}}
+                                    </td>
+                                </tr>
+                                {{~}}
+                                </tbody>
+                            </table>
+                        </div>
+                        {{?}}
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">%@ reqRes.global.close @%</button>
+                    </div>
+                </div>
+            </div>
+            {{?}}
+            {{~}}
+        </script>
+        <div class="right-arrow print-nil init-page">
+            <svg viewBox="0 0 24 24" class="img"><path d="M8.59,16.59L13.17,12L8.59,7.41L10,6l6,6l-6,6L8.59,16.59z"/></svg>
+        </div>
+        <div class="col-md-3">
+            <div class="bs-docs-sidebar">
+                <div id="url-search-info" class="bs-docs-search input-team"></div>
+                <script id="url-search-render" type="text/x-dot-template">
+                    <input placeholder="%@ search @%" class="form-control input-field has-search" value="{{= localStorage.getItem('__global_search__') || ''}}"/>
+                    <svg viewBox="0 0 16 16" class="input-clean"><path stroke="#2c8ebb" stroke-width="1.5" d="m3 3 10 9.94m0-9.88L3 13"/></svg>
+                </script>
+                <ul id="url-nav-info" class="nav"></ul>
+                <script id="url-nav-render" type="text/x-dot-template">
+                    {{~ it.moduleList  :module:index}}
+                    <li class="search-module">
+                        <a href="#{{= module.name}}">{{= index + 1}} {{= module.info || ''}}</a>
+                        <ul class="nav">
+                            {{~ module.urlList  :url:urlIndex}}
+                            <li class="search-url" data-url="{{= url.url || ''}}"
+                                data-title='{{= (url.title || "").replace(/<.*?>|"/g, " ").replace(/\s/g, " ").replace(/ {2,}/g, " ").trim()}}'
+                                data-desc='{{= (url.desc || "").replace(/<.*?>|"/g, " ").replace(/\s/g, " ").replace(/ {2,}/g, " ").trim()}}'
+                                data-develop='{{= (url.develop || "").replace(/<.*?>|"/g, " ").replace(/\s/g, " ").replace(/ {2,}/g, " ").trim()}}'>
+                                <a href="#{{= module.name}}-{{= url.id}}">{{= index + 1}}.{{= urlIndex + 1}} {{= url.title || ''}}</a>
+                            </li>
+                            {{~}}
+                        </ul>
+                    </li>
+                    {{~}}
+                </script>
+            </div>
+        </div>
+    </div>
+</main>
+<footer></footer>
+<script id="copyright" type="text/x-dot-template">
+    <div class="footer">
+        <div class="version">%@ copyright.version @%: {{= it.version || ''}}</div>
+        <div class="statistics">%@ copyright.s1 @% {{= it.groupCount || ''}}, %@ copyright.s2 @% {{= it.apiCount || ''}}</div>
+        <div class="team">{{= it.team || ''}}</div>
+        <div class="copyright">&copy; {{= new Date().getFullYear()}} {{= it.copyright || ''}}</div>
+    </div>
+</script>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/dot/1.1.3/doT.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<script type="text/javascript">
+function isBlank(str) {
+    if (str === undefined || str === null) {
+        return true;
+    }
+    let s = String(str).trim();
+    if (s === '') {
+        return true;
+    }
+    s = s.toLowerCase();
+    return s === 'undefined' || s === 'null' || s === '';
+}
+function isNotBlank(str) {
+    return !isBlank(str);
+}
+
+function hasEnter(event) {
+    if (event.defaultPrevented) {
+        return;
+    }
+
+    let handled;
+    if (event.key !== undefined) {
+        handled = event.key.toUpperCase() === 'ENTER';
+    } else if (event.keyIdentifier !== undefined) {
+        handled = event.keyIdentifier.toUpperCase() === 'ENTER';
+    } else if (event.keyCode !== undefined) {
+        handled = event.keyCode === 13 || event.keyCode === '13';
+    } else {
+        handled = false;
+    }
+    if (handled) {
+        event.preventDefault();
+    }
+    return handled;
+}
+
+function paramToObj() {
+    let returnObj = {};
+    let search = location.search.trim();
+    if (isBlank(search)) {
+        let hash = location.hash;
+        search = hash.substring(hash.indexOf('?'));
+    }
+    if (isNotBlank(search)) {
+        if (search.startsWith('?')) {
+            search = search.substring(1);
+        }
+        search.split('&').forEach((i) => {
+            let kv = i.split('=');
+            if (kv.length > 1) {
+                returnObj[kv[0]] = decodeURIComponent(kv[1]);
+            }
+        });
+    }
+    return returnObj;
+}
+let paramObj = paramToObj();
+
+/* 页面参数: lang=zh 切换语言(包括 css 和 js 地址), q=xxx 搜索接口, p=yyy 选择项目 */
+window.onload = function() {
+    let $configPrefixUrl = $('#config-prefix-url');
+    let $rightArrow = $('.right-arrow');
+
+    $configPrefixUrl.removeClass('init-page');
+    $rightArrow.removeClass('init-page');
+
+    const cn = {
+        'search': 'url 名称 说明 或 开发',
+        'context': {
+            'modal-title': '配置请求前缀(当使用二级目录时)或在请求页添加「?context-path=xxx」',
+            'modal-plac': '如',
+            'btn-submit': '提交',
+            'btn-close': '关闭'
+        },
+        'choose': {
+            'project': '选择项目',
+            'current': '当前'
+        },
+        'reqRes': {
+            'develop': '开发',
+            'desc': '说明',
+            'example': '响应结果示例地址',
+            'param': {
+                'name': '参数名称',
+                'dataType': '数据类型',
+                'required': '必须',
+                'type': '参数类型',
+                'example': '参数示例',
+                'desc': '参数说明'
+            },
+            'req': {
+                'example': '请求示例',
+                'copy': '复制(去注释)',
+                'show': '全显'
+            },
+            'return': {
+                'example': '响应示例',
+                'copy': '复制(去注释)',
+                'show': '全显',
+                'name': '名称',
+                'type': '类型',
+                'desc': '说明',
+                'recursive': '递归实体'
+            },
+            'res': {
+                'code': '响应码',
+                'desc': '说明',
+                'opera': '操作',
+                'm1': '点击查看响应',
+                'm2': '时的示例',
+                'example': '返回示例',
+                'status': {
+                    't1': '模块',
+                    't2': '接口',
+                    't3': '响应',
+                    't4': '示例',
+                    'copy': '复制(去注释)',
+                    'show': '全显'
+                },
+                'return': {
+                    'name': '名称',
+                    'type': '类型',
+                    'desc': '说明',
+                    'recursive': '递归实体'
+                },
+                'close': '关闭'
+            },
+            'global': {
+                't1': '全局响应',
+                't2': '示例',
+                'copy': '复制(去注释)',
+                'show': '全显',
+                'return': {
+                    'name': '名称',
+                    'type': '类型',
+                    'desc': '说明',
+                    'recursive': '递归实体'
+                },
+                'close': '关闭'
+            }
+        },
+        'copyright': {
+            'version': '版本',
+            's1': '模块数量',
+            's2': '接口数据'
+        },
+        'js': {
+            'reqError': '接口返回数据有误',
+            'recursive': '递归实体',
+            'dataError': '数据为空 或 无法解析',
+            'noInfo': '无接口信息',
+            'networkError': '接口无法请求, 网络有误 或 有跨域问题',
+            'c1': '请求的上下文路径不对',
+            'c2': '配置',
+            'c3': '配置有误',
+            'c4': '删除配置',
+            'show': '全显',
+            'scroll': '滚动',
+            'copy': '复制成功',
+            'copyFail': '复制失败'
+        }
+    };
+    const en = {
+        'search': 'url name desc or develop',
+        'context': {
+            'modal-title': 'Config request prefix(When use context-path) or add "?context-path=xxx" to the request url',
+            'modal-plac': 'For example',
+            'btn-submit': 'Submit',
+            'btn-close': 'Close'
+        },
+        'choose': {
+            'project': 'Choose project',
+            'current': 'current'
+        },
+        'reqRes': {
+            'develop': 'Develop',
+            'desc': 'Desc',
+            'example': 'Result example',
+            'param': {
+                'name': 'Param name',
+                'dataType': 'Data type',
+                'required': 'Required',
+                'type': 'Param type',
+                'example': 'Param example',
+                'desc': 'Param Desc'
+            },
+            'req': {
+                'example': 'Request example',
+                'copy': 'Copy(uncomment)',
+                'show': 'No-Scroll'
+            },
+            'return': {
+                'example': 'Response example',
+                'copy': 'Copy(uncomment)',
+                'show': 'No-Scroll',
+                'name': 'Name',
+                'type': 'Type',
+                'desc': 'Desc',
+                'recursive': 'RECURSIVE OBJECT'
+            },
+            'res': {
+                'code': 'Response Code',
+                'desc': 'Desc',
+                'opera': 'Action',
+                'm1': 'Click to view response',
+                'm2': 'Example',
+                'example': 'View Response example',
+                'status': {
+                    't1': 'Module',
+                    't2': 'api',
+                    't3': 'response',
+                    't4': 'example',
+                    'copy': 'Copy(uncomment)',
+                    'show': 'No-Scroll'
+                },
+                'return': {
+                    'name': 'Return name',
+                    'type': 'Return type',
+                    'desc': 'Return desc',
+                    'recursive': 'RECURSIVE OBJECT'
+                },
+                'close': 'Close'
+            },
+            'global': {
+                't1': 'View example of global response',
+                't2': 'example',
+                'copy': 'Copy(uncomment)',
+                'show': 'No-Scroll',
+                'return': {
+                    'name': 'Return name',
+                    'type': 'Return type',
+                    'desc': 'Return desc',
+                    'recursive': 'RECURSIVE OBJECT'
+                },
+                'close': 'Close'
+            }
+        },
+        'copyright': {
+            'version': 'Version',
+            's1': 'Module',
+            's2': 'Api'
+        },
+        'js': {
+            'reqError': 'Return data error',
+            'recursive': 'RECURSIVE OBJECT',
+            'dataError': 'Empty or parse error',
+            'noInfo': 'No api info',
+            'networkError': 'Request error, Incorrect network or cross-domain error',
+            'c1': 'context-path error',
+            'c2': 'config',
+            'c3': 'config error',
+            'c4': 'delete',
+            'show': 'No-Scroll',
+            'scroll': 'Scroll',
+            'copy': 'Copy Success',
+            'copyFail': 'Copy Fail'
+        }
+    };
+
+    const languageList = {
+        'zh': cn ,
+        'zh-cn': cn ,
+        'cn': cn ,
+        'en': en ,
+        'en-uk': en ,
+        'en-us': en ,
+        'uk': en ,
+        'us': en
+    };
+    function getLangData(properties) {
+        if (isBlank(properties)) {
+            return '';
+        }
+
+        let value = String(paramObj.lang || navigator.language).replace('_', '-').toLowerCase();
+        let tmp = languageList[value] || en;
+        let i, arr = properties.split('.');
+        for (i = 0; i < arr.length; i++) {
+            tmp = tmp[arr[i].trim()];
+            if (isBlank(tmp)) {
+                return '';
+            }
+        }
+        return tmp;
+    }
+
+    function handleLanguage(data) {
+        /* %@ var @% */
+        let match = data.match(/%@([\s\S]*?)@%/g);
+        if (isBlank(match)) {
+            return data;
+        } else {
+            let returnContent = data;
+            let i, len = match.length;
+            for (i = 0; i < len; i++) {
+                let key = match[i];
+                let value = getLangData(key.substring(2, key.length - 2).trim()) || '';
+
+                returnContent = returnContent.replace(key, value);
+            }
+            return returnContent;
+        }
+    }
+    function fillLanguageData($ele, html) {
+        $ele.html(handleLanguage(html));
+    }
+
+    let localSearchKey = '__global_search__';
+    function handleSearchValue() {
+        let value = String(paramObj.q);
+        if (isNotBlank(value)) {
+            localStorage.setItem(localSearchKey, value);
+        }
+    }
+    handleSearchValue();
+
+    let localServerPathItem = '__prefix-url__';
+    function handleContextPath() {
+        let param = 'context-path=', append = '&';
+        let search = location.search.trim();
+        if (search.includes(param)) {
+            let path = search.substring(search.indexOf(param) + param.length);
+            if (isNotBlank(path)) {
+                if (path.includes(append)) {
+                    path = path.substring(0, path.indexOf(append));
+                }
+                let uri = path.toLowerCase();
+                if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
+                    path = location.protocol + '//' + location.host + (path.startsWith('/') ? '' : '/') + path;
+                }
+                localStorage.setItem(localServerPathItem, path);
+            } else {
+                localStorage.removeItem(localServerPathItem);
+            }
+        }
+    }
+    handleContextPath();
+
+    function newRequest() {
+        let url = $('#prefix-url').val();
+        if (isNotBlank(url)) {
+            if (!url.toLowerCase().startsWith('http://') && !url.toLowerCase().startsWith('https://')) {
+                url = location.protocol + '//' + url;
+            }
+            localStorage.setItem(localServerPathItem, url);
+        } else {
+            localStorage.removeItem(localServerPathItem);
+        }
+        $configPrefixUrl.modal('hide');
+        loadMulti();
+    }
+    function addLine(html) {
+        if (isBlank(html)) {
+            return '';
+        }
+        let lineHtml = '<div class="line-number">';
+        let i, lineNum = html.split(/\n/).length;
+        for (i = 1; i <= lineNum; i++) {
+            lineHtml += '<div>' + i + '</div>';
+        }
+        lineHtml += '</div>';
+        return lineHtml + '<div class="source language-json">' + html + '</div>';
+    }
+    function escapeHtml(html) {
+        return isBlank(html) ? null : html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function getDomain() {
+        let url = localStorage.getItem(localServerPathItem);
+        return isBlank(url) ? (location.protocol + '//' + location.host) : url;
+    }
+    function getProjectDomain() {
+        let projectDomain = $('.project-choose').find('option:selected').data('url');
+        return isBlank(projectDomain) ? getDomain() : projectDomain;
+    }
+
+    let chooseProjectTemplate = doT.template($('#choose-project').html());
+    let copyrightTemplate = doT.template($('#copyright').html());
+    let urlRenderTemplate = doT.template($('#url-render').html());
+    let navRenderTemplate = doT.template($('#url-nav-render').html());
+    let navSearchTemplate = doT.template($('#url-search-render').html());
+
+    loadMulti();
+
+    function loadMulti() {
+        $.ajax({
+            method: 'GET',
+            url: getDomain() + '/api/project',
+            crossDomain: true,
+            cache: false
+        }).done(function (data) {
+            if (isNotBlank(data)) {
+                let projectInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+                if (isNotBlank(projectInfo)) {
+                    $('.header').append(chooseProjectTemplate({project: paramObj.p || '', projects: projectInfo}));
+                }
+            }
+            loadData();
+        }).fail(function () {
+            loadData();
+        });
+    }
+
+    let rightArrowKey = '__right-arrow__';
+    function loadData() {
+        let $title = $('title');
+        let $headerContent = $('.header-content');
+        let $footer = $('footer');
+        let $urlInfo = $('#url-info');
+        let $urlSearchInfo = $('#url-search-info');
+        let $urlNavInfo = $('#url-nav-info');
+
+        $title.html('');
+        $headerContent.html('');
+        $footer.html('');
+        $urlInfo.html('');
+        fillLanguageData($urlSearchInfo, navSearchTemplate({}));
+        $urlNavInfo.html('');
+
+        let method = 'GET';
+        let apiInfo = '/api/info';
+        let projectDomain = getProjectDomain();
+        let requestUrl = projectDomain.endsWith(apiInfo) ? projectDomain
+            : ((projectDomain.endsWith('/') ? projectDomain.substring(0, projectDomain.length - 1) : projectDomain) + apiInfo);
+
+        $.ajax({
+            method: method,
+            url: requestUrl,
+            crossDomain: true,
+            cache: false
+        }).done(function(data) {
+            if (isNotBlank(data)) {
+                let documentInfo = ((typeof data === 'string') ? JSON.parse(data) : data);
+                let copyright = documentInfo.copyright;
+                if (isBlank(copyright)) {
+                    handleError($rightArrow, $urlInfo, handleLanguage('%@ js.reqError @%!'));
+                    return;
+                }
+
+                let title = copyright.title;
+                if (isNotBlank(title)) {
+                    $title.html(title);
+                    $headerContent.html(title);
+                }
+                fillLanguageData($footer, copyrightTemplate(copyright));
+
+
+                let doc = documentInfo.document;
+                if (isBlank(doc)) {
+                    return;
+                }
+                fillLanguageData($urlInfo, urlRenderTemplate(doc));
+                fillLanguageData($urlNavInfo, navRenderTemplate(doc));
+                $('.bs-docs-sidebar > .nav').css('max-height', 'calc(100vh - 51px - 15px - 15px - 54px)'); /* 避免切换项目时导航为显示 */
+
+                let $nav = $('.col-md-3');
+                if (localStorage.getItem(rightArrowKey) === '1') {
+                    $('.row').addClass('row-arrow');
+                }
+
+                $('.source-code').each(function() {
+                    let html = escapeHtml($(this).html());
+                    if (isNotBlank(html)) {
+                        html = html.replace(/(!!!RECURSIVE OBJECT!!!)/g, '<span class="bold red">!!!%@ js.recursive @%!!!</span>');
+                        fillLanguageData($(this), addLine(html));
+                        Prism.highlightElement($(this).find('.source')[0]);
+                    } else {
+                        fillLanguageData($(this), addLine(handleLanguage('<span class="red">%@ js.dataError @%</span>')));
+                    }
+                });
+
+                if ($nav.css('display') !== 'none') {
+                    let hash = location.hash;
+                    if (isNotBlank(hash)) {
+                        let $anchor = $(hash);
+                        if ($anchor.length > 0) {
+                            let $li = $('a[href="' + hash + '"]').parents('li');
+                            $li.addClass('active');
+                            $li.parents('li').addClass('active');
+                            $('html,body').animate({scrollTop: $anchor.offset().top}, 0);
+                        }
+                    }
+                }
+
+                handleSearch(localStorage.getItem(localSearchKey), true);
+            } else {
+                fillLanguageData($urlInfo, '<span class="red">%@ js.noInfo @%</span>');
+            }
+        }).fail(function(e) {
+            console.error(method + ' ' + requestUrl + ' fail.', e);
+            handleError($rightArrow, $urlInfo, '%@ js.networkError @%!');
+        });
+    }
+    function handleError($arrow, $ele, info) {
+        $arrow.css('display', 'none');
+        fillLanguageData($ele, '<div class="config red">' + info + '</div>' +
+            '<div class="config">%@ js.c1 @%? <span class="config-prefix" data-toggle="modal" data-target="#config-prefix-url">%@ js.c2 @%</span></div>' +
+            '<div class="config">%@ js.c3 @%? <span id="delete-prefix" class="config-prefix">%@ js.c4 @%</span></div>');
+    }
+
+    function handleSearch(value, hasGlobal) {
+        let viewClass = 'hidden';
+        let $eleModule = $('.search-module');
+        let $eleUrl = $('.search-url');
+        let search = String(value).trim();
+        if (isBlank(search)) {
+            localStorage.removeItem(localSearchKey);
+            $eleModule.removeClass(viewClass);
+            $eleUrl.removeClass(viewClass);
+        } else {
+            if (!hasGlobal) {
+                localStorage.setItem(localSearchKey, value);
+            }
+            let allSearchNum = $eleUrl.filter(function() {
+                let $url = $(this);
+                return $url.data('url').includes(search) || $url.data('title').includes(search)
+                    || $url.data('desc').includes(search) || $url.data('develop').includes(search);
+            }).length;
+            if (allSearchNum > 0) {
+                $eleModule.each(function() {
+                    let $module = $(this);
+                    let $urlInModule = $module.find('.search-url');
+                    let moduleSearchNum = $urlInModule.filter(function() {
+                        let $url = $(this);
+                        return $url.data('url').includes(search) || $url.data('title').includes(search)
+                            || $url.data('desc').includes(search) || $url.data('develop').includes(search);
+                    }).length;
+                    if (moduleSearchNum > 0) {
+                        $module.removeClass(viewClass);
+
+                        $urlInModule.each(function () {
+                            let $url = $(this);
+                            if ($url.data('url').includes(search) || $url.data('title').includes(search)
+                                || $url.data('desc').includes(search) || $url.data('develop').includes(search)) {
+                                $url.removeClass(viewClass);
+                            } else {
+                                $url.addClass(viewClass);
+                            }
+                        });
+                    } else {
+                        $module.addClass(viewClass);
+                    }
+                });
+            } else {
+                localStorage.removeItem(localSearchKey);
+                $eleModule.removeClass(viewClass);
+                $eleUrl.removeClass(viewClass);
+            }
+        }
+    }
+    function commandCopy($ele, copyValue, $copyStatus) {
+        let copyElement = document.createElement('textarea');
+        copyElement.setAttribute('readonly', 'readonly');
+        copyElement.setAttribute('class', 'copy-impl');
+        $(copyElement).html(copyValue); /* 「copyElement.value = copyValue;」 不生效 */
+
+        let $parent = $ele.parent()[0];
+        $parent.appendChild(copyElement);
+        copyElement.setSelectionRange(0, copyValue.length);
+        copyElement.select();
+        let flag = document.execCommand('copy');
+        $parent.removeChild(copyElement);
+
+        $copyStatus.text(handleLanguage(flag ? '%@ js.copy @%' : '%@ js.copyFail @%'));
+        setTimeout(function() { $copyStatus.text(''); }, 3000);
+    }
+
+    $(function() {
+        let linked = 1; /** 初始 1, 切换项目后 2, 两者都会触发 scroll, 1 在 scroll 时需要改变 active, 2 触发 scroll 时只改成 1 */
+
+        $(document.body).scrollspy({target: '.bs-docs-sidebar'});
+        $configPrefixUrl.on('show.bs.modal', function () {
+            fillLanguageData($(this), $(this).html());
+            $('#prefix-url').val(localStorage.getItem(localServerPathItem));
+        });
+
+        $(document).on('change', '.project-choose', function() {
+            linked = 2;
+            let projectUrl = $(this).find('option:selected').data('url');
+            let hash = isBlank(projectUrl) ? '' : ('?p=' + $(this).val());
+            history.replaceState({api: $(this).val()}, '', location.pathname + hash);
+            loadData();
+        });
+        $(document).on('click', '.input-clean', function() {
+            $(this).parents('.input-team').find('input,textarea,select').each(function() {
+                let $this = $(this);
+                if ($this.hasClass('has-token')) {
+                    handleToken($this, '');
+                } else {
+                    $this.val('');
+                    if ($this.hasClass('has-search')) {
+                        handleSearch('', false);
+                    } else {
+                        handleItem($this, '');
+                    }
+                }
+            });
+        });
+        $(document).on('click', '.right-arrow', function() {
+            let $row = $(this).parents('.row');
+            let $nav = $('.col-md-3');
+            let className = 'row-arrow';
+            if ($row.hasClass(className)) {
+                $nav.addClass('hidden');
+                $row.removeClass(className);
+                localStorage.removeItem(rightArrowKey);
+                $('.col-md-9').on('transitionend webkitTransitionEnd oTransitionEnd', function () {
+                    $nav.removeClass('hidden');
+                });
+            } else {
+                $row.addClass(className);
+                localStorage.setItem(rightArrowKey, '1');
+            }
+        });
+        $(document).on('click', '#delete-prefix', function() {
+            localStorage.removeItem(localServerPathItem);
+            loadMulti();
+        });
+        $(document).on('click', '.config-btn', function() {
+            newRequest();
+        });
+        $(document).on('click', '.no-scroll', function() {
+            let source = $(this).closest('.source-info').find('.source-code');
+            if (source.css('max-height') === 'none') {
+                source.css('max-height', '');
+                fillLanguageData($(this), '%@ js.show @%');
+            } else {
+                source.css('max-height', 'none');
+                fillLanguageData($(this), '%@ js.scroll @%');
+            }
+        });
+        $(document).on('click', '.copy', function() {
+            let $this = $(this);
+            let copyValue = $this.closest('.source-info').find('.source').html();
+            if (isNotBlank(copyValue)) {
+                copyValue = copyValue.replace(/<.*?>/g, '');
+                let arr = copyValue.split('\n');
+                let i, len = arr.length;
+                let strArr = [];
+                for (i = 0; i < len; i++) {
+                    strArr.push(arr[i].replace(/([ ]*?)\/\*.*?\*\/$/, ''));
+                }
+                copyValue = strArr.join('\n');
+            }
+            if (isBlank(copyValue)) {
+                return;
+            }
+            let $copyStatus = $this.prev();
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(copyValue).then(
+                    function () {
+                        $copyStatus.text(handleLanguage('%@ js.copy @%!'));
+                        setTimeout(function () { $copyStatus.text(''); }, 3000);
+                    },
+                    function () {
+                        commandCopy($this, copyValue, $copyStatus);
+                    }
+                );
+            } else {
+                commandCopy($this, copyValue, $copyStatus);
+            }
+        });
+
+        $(document).on('keydown', '#url-search-info > .has-search', function(e) {
+            if (hasEnter(e)) {
+                handleSearch($(this).val(), false);
+            }
+        });
+        $(document).on('keydown', '#prefix-url', function(e) {
+            if (hasEnter(e)) {
+                newRequest();
+            }
+        });
+
+        $(window).scroll(function() {
+            let headerHeight = 51;
+            let topBottomHeight = 30;
+            let searchHeight = 54;
+            let scrolled = 'scrolled';
+            let heightProperty = 'max-height';
+
+            let html = document.getElementsByTagName('html')[0];
+            let footer = document.getElementsByTagName('footer')[0];
+
+            let $win = $(window);
+            let $nav = $('.col-md-3');
+            let $bar = $('.bs-docs-sidebar > .nav');
+
+            let $header = $('header');
+            let scrollTop = $win.scrollTop();
+            if (scrollTop > 0) {
+                if (!$header.hasClass(scrolled)) {
+                    $header.addClass(scrolled);
+                }
+            } else {
+                $header.removeClass(scrolled);
+            }
+
+            if ($nav.css('display') !== 'none') {
+                let footerTop = footer.offsetTop;
+                let pageHeight = scrollTop + $win.height();
+                if (footerTop >= scrollTop && footerTop < pageHeight) {
+                    let footViewHeight = pageHeight - footerTop;
+                    $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + footViewHeight + searchHeight) + 'px)');
+                } else {
+                    let htmlViewHeight = (html.clientHeight - headerHeight - topBottomHeight) + 'px';
+                    if ($bar.css(heightProperty) !== htmlViewHeight) {
+                        $bar.css(heightProperty, 'calc(100vh - ' + (headerHeight + topBottomHeight + searchHeight) + 'px)');
+                    }
+                }
+
+                let navHash = $nav.find('.active > a:last').attr('href');
+                let currentHash = location.hash;
+                if (navHash !== currentHash) {
+                    let url = location.pathname + location.search;
+                    if (isBlank(navHash)) {
+                        if ($header.hasClass(scrolled) !== true) {
+                            history.replaceState({api: 'index'}, '', url);
+                        }
+                        if (linked === 1) {
+                            linked = 0;
+                            let $anchor = $(currentHash);
+                            if ($anchor.length > 0) {
+                                let $li = $('a[href="' + currentHash + '"]').parents('li');
+                                if (!$li.hasClass('active')) {
+                                    $li.addClass('active');
+                                }
+                            }
+                        } else if (linked === 2) {
+                            linked = 1;
+                        }
+                    } else {
+                        history.replaceState({api: navHash}, '', url + navHash);
+                    }
+                }
+            }
+        });
+    });
+}
+</script>
+</body>
+</html>
