@@ -6,25 +6,26 @@ import com.github.liuanxin.api.annotation.ApiParamIgnore;
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.model.DocumentParam;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @SuppressWarnings("DuplicatedCode")
 public final class ParamHandler {
 
-    private static final Lock LOCK = new ReentrantLock();
-    private static Object OBJ = null;
-    private static Method METHOD = null;
+    // spring 5 : new LocalVariableTableParameterNameDiscoverer()
+    // private static final LocalVariableTableParameterNameDiscoverer VARIABLE = new LocalVariableTableParameterNameDiscoverer();
+
+    // spring 6 : new StandardReflectionParameterNameDiscoverer()
+    /** https://github.com/spring-projects/spring-framework/issues/29559 */
+    private static final StandardReflectionParameterNameDiscoverer VARIABLE = new StandardReflectionParameterNameDiscoverer();
 
     public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
         List<DocumentParam> params = new LinkedList<>();
@@ -56,7 +57,7 @@ public final class ParamHandler {
                     // String paramName = parameter.getParameterName();
                     Method method = parameter.getMethod();
                     if (Tools.isNotNull(method)) {
-                        String[] sourceParamName = getSourceParamName(method);
+                        String[] sourceParamName = VARIABLE.getParameterNames(method);
                         if (Tools.isNotNull(sourceParamName) && sourceParamName.length > i) {
                             // if param was required, use it.
                             params.add(paramInfo(getParamName(parameter, sourceParamName[i]), parameterType,
@@ -67,65 +68,6 @@ public final class ParamHandler {
             }
         }
         return params;
-    }
-
-    /** https://github.com/spring-projects/spring-framework/issues/29559 */
-    private static String[] getSourceParamName(Method method) {
-        // spring 5 : new LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
-        // spring 6 : new StandardReflectionParameterNameDiscoverer().getParameterNames(method)
-        if (Tools.isNotNull(OBJ) && Tools.isNotNull(METHOD)) {
-            return getSourceName(method);
-        }
-
-        LOCK.lock();
-        try {
-            if (Tools.isNotNull(OBJ) && Tools.isNotNull(METHOD)) {
-                return getSourceName(method);
-            }
-
-            Class<?> clazz;
-            try {
-                clazz = Class.forName("org.springframework.core.StandardReflectionParameterNameDiscoverer");
-            } catch (ClassNotFoundException e) {
-                try {
-                    clazz = Class.forName("org.springframework.core.LocalVariableTableParameterNameDiscoverer");
-                } catch (ClassNotFoundException ex) {
-                    throw new RuntimeException("Need spring core", ex);
-                }
-            }
-
-            try {
-                // spring 5 : new LocalVariableTableParameterNameDiscoverer()
-                // spring 6 : new StandardReflectionParameterNameDiscoverer()
-                OBJ = clazz.getConstructor().newInstance();
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                throw new RuntimeException("class(" + clazz + ") can't constructor", e);
-            }
-
-            // spring 5 : new LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
-            // spring 6 : new StandardReflectionParameterNameDiscoverer().getParameterNames(method)
-            String methodName = "getParameterNames";
-            try {
-                METHOD = clazz.getDeclaredMethod(methodName);
-            } catch (NoSuchMethodException e) {
-                try {
-                    METHOD = clazz.getMethod(methodName);
-                } catch (NoSuchMethodException ex) {
-                    throw new RuntimeException("class(" + clazz + ") has no method(" + method + ")", ex);
-                }
-            }
-
-            return getSourceName(method);
-        } finally {
-            LOCK.unlock();
-        }
-    }
-    private static String[] getSourceName(Method method) {
-        try {
-            return (String[]) METHOD.invoke(OBJ, method);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException("can't get param name with:(" + method + ")", e);
-        }
     }
 
     private static String getParamName(MethodParameter parameter, String paramName) {
