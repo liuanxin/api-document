@@ -35,7 +35,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private String useGlobalParam = ApiConst.EMPTY;
     private String requestBody = ApiConst.EMPTY;
     private String basicParamRequestBody = ApiConst.EMPTY;
-    private String innerParamRequestBody = ApiConst.EMPTY;
     private List<DocumentParam> paramList;
     private List<DocumentResponse> responseList;
     private List<DocumentReturn> returnList;
@@ -157,14 +156,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     }
     public DocumentUrl setBasicParamRequestBody(String basicParamRequestBody) {
         this.basicParamRequestBody = basicParamRequestBody;
-        return this;
-    }
-
-    public String getInnerParamRequestBody() {
-        return innerParamRequestBody;
-    }
-    public DocumentUrl setInnerParamRequestBody(String innerParamRequestBody) {
-        this.innerParamRequestBody = innerParamRequestBody;
         return this;
     }
 
@@ -435,10 +426,9 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         }
 
         StringBuilder sbd = new StringBuilder();
-
         String[] split = commentJson.split(WRAP);
         if (commentInReturnExampleWithLevel) {
-            sbd = sbdCommentInReturnWithLevel(returnList, sbd, split);
+            sbdCommentInReturnWithLevel(returnList, sbd, split);
         } else {
             sbdCommentNotInReturnWithLevel(returnList, sbd, split);
         }
@@ -448,7 +438,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
         return sbd.toString();
     }
 
-    private static StringBuilder sbdCommentNotInReturnWithLevel(List<DocumentReturn> returnList, StringBuilder sbd, String[] split) {
+    private static void sbdCommentNotInReturnWithLevel(List<DocumentReturn> returnList, StringBuilder sbd, String[] split) {
         int index = 0;
         for (String comment : split) {
             sbd.append(comment);
@@ -472,10 +462,9 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             }
             sbd.append(WRAP);
         }
-        return sbd;
     }
 
-    private static StringBuilder sbdCommentInReturnWithLevel(List<DocumentReturn> returnList, StringBuilder sbd, String[] split) {
+    private static void sbdCommentInReturnWithLevel(List<DocumentReturn> returnList, StringBuilder sbd, String[] split) {
         Map<Integer, String> indexMap = indexMap(split);
         Map<String, String> commentMap = documentReturnMap(returnList);
 
@@ -489,7 +478,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             }
             sbd.append(WRAP);
         }
-        return sbd;
     }
 
     @Override

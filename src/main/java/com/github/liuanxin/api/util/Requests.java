@@ -7,6 +7,9 @@ public final class Requests {
 
     public static String getDomain() {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            return "";
+        }
 
         String scheme = requestAttributes.getRequest().getScheme();
         int port = requestAttributes.getRequest().getServerPort();
@@ -16,7 +19,7 @@ public final class Requests {
         sbd.append(scheme).append(":").append("//").append(serverName);
         boolean notHttp = ("http".equalsIgnoreCase(scheme) && port != 80);
         boolean notHttps = ("https".equalsIgnoreCase(scheme) && port != 443 && port != 80);
-        if (notHttp || notHttps) {
+        if (port > 0 && (notHttp || notHttps)) {
             sbd.append(':').append(port);
         }
         return sbd.toString();

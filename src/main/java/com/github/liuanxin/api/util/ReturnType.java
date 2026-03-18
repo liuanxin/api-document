@@ -1,15 +1,26 @@
 package com.github.liuanxin.api.util;
 
 import com.github.liuanxin.api.annotation.ApiMethod;
+import com.github.liuanxin.api.annotation.ApiParamIgnore;
 import com.github.liuanxin.api.annotation.ApiReturnType;
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.model.DocumentResponse;
+import org.springframework.core.MethodParameter;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.method.HandlerMethod;
 
 public class ReturnType {
     static String getRequestBodyParamTypeByMethod(HandlerMethod handlerMethod) {
-        Class<?>[] parameterTypes = handlerMethod.getMethod().getParameterTypes();
-        return Tools.isNotEmpty(parameterTypes) ? parameterTypes[0].getName() : ApiConst.EMPTY;
+        MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
+        if (Tools.isNotEmpty(methodParameters)) {
+            for (MethodParameter parameter : methodParameters) {
+                if (Tools.isNotNull(parameter) && Tools.isNull(parameter.getParameterAnnotation(ApiParamIgnore.class))
+                        && Tools.isNotNull(parameter.getParameterAnnotation(RequestBody.class))) {
+                    return parameter.getParameterType().getName();
+                }
+            }
+        }
+        return ApiConst.EMPTY;
     }
 
     static String getReturnTypeByMethod(HandlerMethod handlerMethod, ApiMethod apiMethod) {

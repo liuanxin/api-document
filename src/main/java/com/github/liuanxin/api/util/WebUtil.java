@@ -106,22 +106,23 @@ public final class WebUtil {
                     Set<String> methodSet = getMethod(requestMapping);
                     if (!ignoreUrl(urlSet, methodSet, copyright.getIgnoreUrlSet())) {
                         String method = handlerMethod.toString();
-                        boolean innerRequestBody = hasInnerParamRequestBody(handlerMethod);
+                        boolean isRequestBody = hasRequestBody(handlerMethod);
                         DocumentUrl document = new DocumentUrl();
                         // url
                         document.setUrl(String.join(", ", urlSet));
                         // method : get, post, put...
                         document.setMethod(String.join(", ", methodSet));
                         // param
-                        List<DocumentParam> paramList;
-                        if (innerRequestBody) {
+                        List<DocumentParam> paramList = ParamHandler.handlerParam(handlerMethod);
+                        if (isRequestBody) {
                             String paramType = ReturnType.getRequestBodyParamTypeByMethod(handlerMethod);
                             String requestBodyJson = ReturnHandler.handlerReturnJson(method, paramType);
                             List<DocumentReturn> requestBodyParamList = ReturnHandler.handlerReturn(method, paramType);
-                            document.setRequestBodyJson(DocumentUrl.commentJson(requestBodyJson, true, true, requestBodyParamList));
-                            paramList = new ArrayList<>();
-                        } else {
-                            paramList = ParamHandler.handlerParam(handlerMethod);
+                            String useJson = DocumentUrl.commentJson(requestBodyJson, true, true, requestBodyParamList);
+                            if (method.contains("TableColumn")) {
+                                LOGGER.error("request body: {}「{}」 -> 「{}」-「{}」", method, paramType, requestBodyJson, useJson);
+                            }
+                            document.setRequestBodyJson(useJson);
                         }
                         // no annotation: use global, annotation is false: not use, annotation is true: use self
                         ApiTokens apiTokens = getAnnotation(handlerMethod, ApiTokens.class);
@@ -138,16 +139,13 @@ public final class WebUtil {
                                 paramList.addAll(0, extraParams);
                             }
                         }
-                        document.setRequestBody(hasRequestBody(handlerMethod) ? "1" : ApiConst.EMPTY);
+                        document.setRequestBody(isRequestBody ? "1" : ApiConst.EMPTY);
                         document.setBasicParamRequestBody(hasBasicParamRequestBody(handlerMethod) ? "1" : ApiConst.EMPTY);
-                        document.setInnerParamRequestBody(innerRequestBody ? "1" : ApiConst.EMPTY);
                         document.setParamList(paramList);
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
                         String returnType = ReturnType.getReturnTypeByMethod(handlerMethod, apiMethod);
-                        // return param
                         document.setReturnList(ReturnHandler.handlerReturn(method, returnType));
-                        // return json
                         document.setReturnJson(ReturnHandler.handlerReturnJson(method, returnType));
 
                         boolean commentInReturn = globalCommentInReturn;
@@ -317,35 +315,27 @@ public final class WebUtil {
 
     private static boolean hasRequestBody(HandlerMethod handlerMethod) {
         MethodParameter[] parameters = handlerMethod.getMethodParameters();
-        if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
-            MethodParameter parameter = parameters[0];
-            RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-            return Tools.isNotNull(requestBody);
-        } else {
-            return false;
+        if (Tools.isNotEmpty(parameters)) {
+            for (MethodParameter parameter : parameters) {
+                RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
+                if (Tools.isNotNull(requestBody)) {
+                    return true;
+                }
+            }
         }
+        return false;
     }
 
     private static boolean hasBasicParamRequestBody(HandlerMethod handlerMethod) {
-        MethodParameter[] parameters = handlerMethod.getMethodParameters();
-        if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
-            MethodParameter parameter = parameters[0];
-            RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-            return Tools.isNotNull(requestBody) && Tools.basicType(parameter.getParameterType());
-        } else {
-            return false;
-        }
-    }
-
-    private static boolean hasInnerParamRequestBody(HandlerMethod handlerMethod) {
-        MethodParameter[] parameters = handlerMethod.getMethodParameters();
-        if (Tools.isNotEmpty(parameters) && parameters.length == 1) {
-            MethodParameter parameter = parameters[0];
-            RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-            // return Tools.isNotBlank(requestBody) &&
-            //        (Tools.innerType(parameter.getParameterType()) || Tools.innerType(parameter.getParameter().getParameterizedType()));
-            return Tools.isNotNull(requestBody);
-        }
+        /*MethodParameter[] parameters = handlerMethod.getMethodParameters();
+        if (Tools.isNotEmpty(parameters)) {
+            for (MethodParameter parameter : parameters) {
+                RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
+                if (Tools.isNotNull(requestBody) && Tools.basicType(parameter.getParameterType())) {
+                    return true;
+                }
+            }
+        }*/
         return false;
     }
 

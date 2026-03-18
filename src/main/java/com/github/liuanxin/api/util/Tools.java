@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
@@ -54,6 +55,7 @@ public class Tools {
 
             BigInteger.class.getSimpleName(), long.class,
             BigDecimal.class.getSimpleName(), double.class,
+            Serializable.class.getSimpleName(), String.class,
             String.class.getSimpleName(), String.class,
             Date.class.getSimpleName(), Date.class,
 
@@ -85,6 +87,7 @@ public class Tools {
 
             BigInteger[].class.getSimpleName(), long[].class,
             BigDecimal[].class.getSimpleName(), double[].class,
+            Serializable[].class.getSimpleName(), String[].class,
             String[].class.getSimpleName(), String[].class,
             Date[].class.getSimpleName(), Date[].class
     );
@@ -117,6 +120,7 @@ public class Tools {
 
             BigInteger.class.getSimpleName(), BigInteger.ZERO,
             BigDecimal.class.getSimpleName(), BigDecimal.ZERO,
+            Serializable.class.getSimpleName(), ApiConst.EMPTY,
             String.class.getSimpleName(), ApiConst.EMPTY,
             Date.class.getSimpleName(), ApiConst.NOW,
 
@@ -163,6 +167,7 @@ public class Tools {
             Double.class.getSimpleName(), 0D,
             BigInteger.class.getSimpleName(), BigInteger.ZERO,
             BigDecimal.class.getSimpleName(), BigDecimal.ZERO,
+            Serializable.class.getSimpleName(), ApiConst.EMPTY,
             String.class.getSimpleName(), "?"
     );
 
@@ -564,6 +569,9 @@ public class Tools {
             return defaultObj;
         }
 
+        if (clazz == Serializable.class) {
+            return isEmpty(example) ? defaultObj.toString() : example;
+        }
         if (clazz == String.class) {
             return isEmpty(example) ? defaultObj.toString() : example;
         }

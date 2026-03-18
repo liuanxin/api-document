@@ -38,7 +38,8 @@ public final class ParamHandler {
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];
-            if (Tools.isNotNull(parameter) && Tools.isNull(parameter.getParameterAnnotation(ApiParamIgnore.class))) {
+            if (Tools.isNotNull(parameter) && Tools.isNull(parameter.getParameterAnnotation(ApiParamIgnore.class))
+                    && Tools.isNull(parameter.getParameterAnnotation(RequestBody.class))) {
                 // if param not basicType, into a layer of processing
                 Class<?> parameterType = parameter.getParameterType();
                 ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
@@ -66,8 +67,10 @@ public final class ParamHandler {
                         String[] sourceParamName = getSourceParamName(method);
                         if (Tools.isNotNull(sourceParamName) && sourceParamName.length > i) {
                             // if param was required, use it.
-                            params.add(paramInfo(getParamName(parameter, sourceParamName[i]), parameterType,
-                                    apiParam, apiModel, paramRequired(parameter)));
+                            String paramName = getParamName(parameter, sourceParamName[i]);
+                            if (Tools.isNotEmpty(paramName)) {
+                                params.add(paramInfo(paramName, parameterType, apiParam, apiModel, paramRequired(parameter)));
+                            }
                         }
                     }
                 }
@@ -138,6 +141,10 @@ public final class ParamHandler {
     }
 
     private static String getParamName(MethodParameter parameter, String paramName) {
+        RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
+        if (Tools.isNotNull(requestBody)) {
+            return null;
+        }
         RequestParam requestParam = parameter.getParameterAnnotation(RequestParam.class);
         if (Tools.isNotNull(requestParam) && Tools.isNotEmpty(requestParam.value())) {
             return requestParam.value();

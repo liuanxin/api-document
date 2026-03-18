@@ -27,7 +27,7 @@ public final class ReturnHandler {
     public static final String TAB = "&nbsp;&nbsp;&nbsp;&nbsp;";
     public static final String LEVEL_APPEND = " -> ";
 
-    private static final String RESPONSE_ENTITY = ResponseEntity .class.getName();
+    private static final String RESPONSE_ENTITY = ResponseEntity.class.getName();
     private static final String CALLABLE = Callable.class.getName();
     private static final String DEFERRED_RESULT = DeferredResult.class.getName();
     private static final String WEB_ASYNC_TASK = WebAsyncTask.class.getName();
