@@ -140,7 +140,6 @@ public final class WebUtil {
                             }
                         }
                         document.setRequestBody(isRequestBody ? "1" : ApiConst.EMPTY);
-                        document.setBasicParamRequestBody(hasBasicParamRequestBody(handlerMethod) ? "1" : ApiConst.EMPTY);
                         document.setParamList(paramList);
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);
@@ -323,19 +322,6 @@ public final class WebUtil {
                 }
             }
         }
-        return false;
-    }
-
-    private static boolean hasBasicParamRequestBody(HandlerMethod handlerMethod) {
-        /*MethodParameter[] parameters = handlerMethod.getMethodParameters();
-        if (Tools.isNotEmpty(parameters)) {
-            for (MethodParameter parameter : parameters) {
-                RequestBody requestBody = parameter.getParameterAnnotation(RequestBody.class);
-                if (Tools.isNotNull(requestBody) && Tools.basicType(parameter.getParameterType())) {
-                    return true;
-                }
-            }
-        }*/
         return false;
     }
 

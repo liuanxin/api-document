@@ -2317,7 +2317,6 @@ window.onload = function() {
             if (isBlank(method)) {
                 method = hasRequestBody ? 'POST' : 'GET';
             }
-            let hasBasicParamRequestBody = String($form.attr('basic-param-request-body')) === '1';
 
             let requestBody = getEditValue($form.find('.request-data-info'));
             if (isNotBlank(requestBody)) {
@@ -2391,11 +2390,7 @@ window.onload = function() {
                     curlHtml += "&nbsp; -d '" + requestBody + "'" + line;
                 } else if (Object.getOwnPropertyNames(params).length > 0) {
                     if (hasRequestBody) {
-                        if (hasBasicParamRequestBody) {
-                            curlHtml += "&nbsp; -d '" + params[Object.keys(params)[0]] + "'" + line;
-                        } else {
-                            curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
-                        }
+                        curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
                     } else {
                         if ('GET' === method.toUpperCase()) {
                             let paramArr = [];
@@ -2481,8 +2476,6 @@ window.onload = function() {
                     settings['dataType'] = 'json';
                     if (isNotBlank(requestBody)) {
                         settings['data'] = requestBody;
-                    } else if (hasBasicParamRequestBody) {
-                        settings['data'] = Object.getOwnPropertyNames(params).length > 0 ? params[Object.keys(params)[0]] : '';
                     } else {
                         settings['data'] = JSON.stringify(params);
                     }
