@@ -118,10 +118,10 @@ public final class ParamHandler {
             // spring 6 : new StandardReflectionParameterNameDiscoverer().getParameterNames(method)
             String methodName = "getParameterNames";
             try {
-                METHOD = clazz.getDeclaredMethod(methodName);
+                METHOD = clazz.getDeclaredMethod(methodName, Method.class);
             } catch (NoSuchMethodException e) {
                 try {
-                    METHOD = clazz.getMethod(methodName);
+                    METHOD = clazz.getMethod(methodName, Method.class);
                 } catch (NoSuchMethodException ex) {
                     throw new RuntimeException("class(" + clazz + ") has no method(" + method + ")", ex);
                 }
