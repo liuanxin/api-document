@@ -1,11 +1,15 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en-US">
 <head>
     <meta charset="utf-8">
     <title>Api Document</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAD1BMVEVHcEwzZ9YzZtUzZtYzZ9aXuimUAAAABHRSTlMA40hLwZlVdgAAAD1JREFUKM9jYBi0wNDFRYjBBUq4AAVEXFwcQWxHmIALCIEJBhYHBmoJgMwG24ImIISuhYEcATSnwwUGKQAAN0oX04RzeZMAAAAASUVORK5CYII=">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/fira_code.min.css">
     <style>
         * {
             font-family: "Fira Code", "PingFang SC", "Hiragino Sans GB", "Heiti SC", "WenQuanYi Micro Hei", "Microsoft YaHei", monospace, "sans-serif", "Helvetica Neue", Helvetica, Arial, "Glyphicons Halflings" !important;
@@ -821,6 +825,11 @@
     </div>
 </script>
 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dot/1.1.3/doT.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
 <script type="text/javascript">
 function isBlank(str) {
     if (str === undefined || str === null) {
@@ -879,67 +888,6 @@ function paramToObj() {
     return returnObj;
 }
 let paramObj = paramToObj();
-let currentLanguage = String(paramObj.lang || navigator.language).toLowerCase();
-let hasCn = (currentLanguage.includes('zh') || currentLanguage.includes('cn'));
-
-function writeCss(last, cssList) {
-    cssList.forEach(function(cssUrl) {
-        let css = document.createElement('link');
-        css.setAttribute('rel', 'stylesheet');
-        css.setAttribute('href', 'https://' + cssUrl);
-        last.parentNode.insertBefore(css, last.nextSibling);
-        last = css;
-    });
-}
-function writeJs(last, jsList) {
-    jsList.forEach(function(item) {
-        let hasObj = (typeof item === 'object');
-        let jsUrl = (hasObj ? item.url : item);
-        if (isNotBlank(jsUrl)) {
-            let js = document.createElement('script');
-            js.setAttribute('type', 'text/javascript');
-            js.setAttribute('src', 'https://' + jsUrl);
-            if (hasObj) {
-                js.onload = function() { writeJs(js, item.children); };
-            }
-            last.parentNode.insertBefore(js, last.nextSibling);
-            last = js;
-        }
-    });
-}
-
-let pageCssList = hasCn ? [
-    'cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css',
-    'cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism.min.css',
-    'cdn.bootcdn.net/ajax/libs/firacode/6.2.0/fira_code.min.css'
-] : [
-    'cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css',
-    'cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css',
-    'cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/fira_code.min.css'
-];
-let pageJsList = hasCn ? [
-    {
-        url: 'cdn.bootcdn.net/ajax/libs/jquery/3.7.1/jquery.min.js',
-        children: [ 'cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js' ]
-    },
-    'cdn.bootcdn.net/ajax/libs/dot/1.1.3/doT.min.js',
-    {
-        url: 'cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js',
-        children: [ 'cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-json.min.js' ]
-    }
-] : [
-    {
-        url: 'cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js',
-        children: [ 'cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js' ]
-    },
-    'cdnjs.cloudflare.com/ajax/libs/dot/1.1.3/doT.min.js',
-    {
-        url: 'cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js',
-        children: [ 'cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js' ]
-    }
-];
-writeCss(document.getElementsByTagName('link')[0], pageCssList);
-writeJs(document.getElementById('copyright'), pageJsList);
 
 /* 页面参数: lang=zh 切换语言(包括 css 和 js 地址), q=xxx 搜索接口, p=yyy 选择项目 */
 window.onload = function() {

@@ -119,9 +119,6 @@ public final class WebUtil {
                             String requestBodyJson = ReturnHandler.handlerReturnJson(method, paramType);
                             List<DocumentReturn> requestBodyParamList = ReturnHandler.handlerReturn(method, paramType);
                             String useJson = DocumentUrl.commentJson(requestBodyJson, true, true, requestBodyParamList);
-                            if (method.contains("TableColumn")) {
-                                LOGGER.error("request body: {}「{}」 -> 「{}」-「{}」", method, paramType, requestBodyJson, useJson);
-                            }
                             document.setRequestBodyJson(useJson);
                         }
                         // no annotation: use global, annotation is false: not use, annotation is true: use self
