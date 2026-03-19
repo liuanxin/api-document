@@ -115,6 +115,7 @@ public final class WebUtil {
                         // param
                         List<DocumentParam> paramList = ParamHandler.handlerParam(handlerMethod);
                         if (isRequestBody) {
+                            document.setRequestBody("1");
                             String paramType = ReturnType.getRequestBodyParamTypeByMethod(handlerMethod);
                             String requestBodyJson = ReturnHandler.handlerReturnJson(method, paramType);
                             List<DocumentReturn> requestBodyParamList = ReturnHandler.handlerReturn(method, paramType);
@@ -136,7 +137,6 @@ public final class WebUtil {
                                 paramList.addAll(0, extraParams);
                             }
                         }
-                        document.setRequestBody(isRequestBody ? "1" : ApiConst.EMPTY);
                         document.setParamList(paramList);
 
                         ApiMethod apiMethod = handlerMethod.getMethodAnnotation(ApiMethod.class);

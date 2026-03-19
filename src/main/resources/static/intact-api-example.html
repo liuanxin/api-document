@@ -881,7 +881,6 @@
                             <div class="tab-pane fade{{? requestActive}} in active{{?}}">
                                 <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}
                                       {{? String(url.requestBody) === '1'}} request-body="1"{{?}}
-                                      {{? String(url.basicParamRequestBody) === '1'}} basic-param-request-body="1"{{?}}
                                       action="{{= url.url}}"{{? hasFile}} enctype="multipart/form-data"{{?}}>
                                     {{? paramList && paramList.length > 0}}
                                     <div class="bottom-table panel panel-default">
