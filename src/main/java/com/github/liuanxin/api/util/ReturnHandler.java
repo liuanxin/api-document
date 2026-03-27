@@ -571,7 +571,7 @@ public final class ReturnHandler {
                 setField(field, obj, fieldType.getConstructor(String.class).newInstance(example));
             } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn("Cannot constructor {}, Please add Constructor or remove Example", e.getMessage());
+                    LOGGER.warn("Cannot constructor, Please add Constructor or remove Example", e);
                 }
             }
         } else {
@@ -585,8 +585,7 @@ public final class ReturnHandler {
             new PropertyDescriptor(fieldName, obj.getClass()).getWriteMethod().invoke(obj, value);
         } catch (Exception e) {
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format("Cannot set value(%s) to field(%s) with %s, may be set method has return type",
-                        value, fieldName, obj), e);
+                LOGGER.debug("Cannot set value({}) to field({}) with {}, may be set method has return type", value, fieldName, obj, e);
             }
 
             try {
@@ -594,7 +593,7 @@ public final class ReturnHandler {
                 field.set(obj, value);
             } catch (Exception ex) {
                 if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn(String.format("Cannot assignment field %s to %s with %s", field, value, obj), ex);
+                    LOGGER.warn("Cannot assignment field {} to {} with {}", field, value, obj, ex);
                 }
             }
         }

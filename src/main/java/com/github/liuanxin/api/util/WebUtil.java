@@ -24,25 +24,22 @@ import java.util.concurrent.*;
 public final class WebUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebUtil.class);
+    private static final ThreadPoolExecutor EXECUTOR = threadPool();
 
     public static List<DocumentInfo> getProjects(Map<String, String> projectMap) {
         if (Tools.isNotEmpty(projectMap)) {
             List<DocumentInfo> returnList = new ArrayList<>();
 
-            ThreadPoolExecutor executor = threadPool(projectMap.size());
             List<Future<DocumentInfo>> futureList = new ArrayList<>();
             for (Map.Entry<String, String> entry : projectMap.entrySet()) {
                 final String name = entry.getKey();
                 final String url = entry.getValue();
                 if (Tools.isNotEmpty(name) && Tools.isNotEmpty(url)) {
-                    futureList.add(executor.submit(new Callable<DocumentInfo>() {
-                        @Override
-                        public DocumentInfo call() {
-                            String uri = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
-                            String requestInfo = HttpUtil.get(uri + ApiConst.URL_PREFIX + ApiConst.URL_INFO);
-                            ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
-                            return Tools.isNull(projectInfo) ? null : projectInfo.fillModule(name, url);
-                        }
+                    futureList.add(EXECUTOR.submit(() -> {
+                        String uri = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+                        String requestInfo = HttpUtil.get(uri + ApiConst.URL_PREFIX + ApiConst.URL_INFO);
+                        ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
+                        return Tools.isNull(projectInfo) ? null : projectInfo.fillModule(name, url);
                     }));
                 }
             }
@@ -60,19 +57,9 @@ public final class WebUtil {
             return Collections.emptyList();
         }
     }
-    public static ThreadPoolExecutor threadPool(int size) {
+    public static ThreadPoolExecutor threadPool() {
         int cpus = Runtime.getRuntime().availableProcessors();
-
-        int pool;
-        BlockingQueue<Runnable> queue;
-        if (size > cpus) {
-            pool = cpus;
-            queue = new LinkedBlockingQueue<>(size - cpus);
-        } else {
-            pool = size;
-            queue = new SynchronousQueue<>();
-        }
-        return new ThreadPoolExecutor(pool, pool, 60L, TimeUnit.SECONDS, queue);
+        return new ThreadPoolExecutor(cpus, cpus + 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(15));
     }
 
     public static DocumentCopyright copyright(DocumentCopyright copyright, List<DocumentModule> moduleList) {
@@ -133,7 +120,7 @@ public final class WebUtil {
                             for (ApiToken token : apiTokens.value()) {
                                 extraParams.add(DocumentParam.buildToken(token));
                             }
-                            if (extraParams.size() > 0) {
+                            if (Tools.isNotEmpty(extraParams)) {
                                 paramList.addAll(0, extraParams);
                             }
                         }

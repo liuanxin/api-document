@@ -52,12 +52,12 @@ public class DocumentController {
     }
 
     @GetMapping(value = ApiConst.URL_PROJECT, produces = ApiConst.PRODUCES)
-    public String getProjectInfo(String p) {
+    public String getProjectInfo(@RequestParam(value = "p", required = false) String p) {
         return copyright.getProjectInfo(p);
     }
 
     @GetMapping(value = ApiConst.URL_EXAMPLE, produces = ApiConst.PRODUCES)
-    public String urlExample(@PathVariable(ApiConst.PLACEHOLDER) String id) {
+    public String urlExample(@PathVariable(ApiConst.PLACEHOLDER) String key) {
         if (Tools.isNull(copyright) || copyright.isOnline()) {
             return ApiConst.EMPTY;
         } else {
@@ -65,7 +65,7 @@ public class DocumentController {
             if (Tools.isEmpty(url_map_cache)) {
                 return ApiConst.EMPTY;
             } else {
-                DocumentUrl document = url_map_cache.get(id);
+                DocumentUrl document = url_map_cache.get(key);
                 return Tools.isNull(document) ? ApiConst.EMPTY : document.getReturnJson();
             }
         }
