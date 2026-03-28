@@ -311,8 +311,9 @@ public final class WebUtil {
 
     private static String getExampleUrl(String param) {
         // return exampleUrl.replaceFirst("\\{.*?\\}", param);
-        String url = ApiConst.URL_PREFIX + ApiConst.URL_EXAMPLE;
-        return Requests.getDomain() + ApiConst.ID_URL_PATTERN.matcher(url).replaceFirst(param);
+        // String url = ApiConst.URL_PREFIX + ApiConst.URL_EXAMPLE;
+        // return ApiConst.ID_URL_PATTERN.matcher(url).replaceFirst(param);
+        return "";
     }
 
     private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {

@@ -503,7 +503,7 @@
                             }
                         }
                         }}
-                        <div class="module-api-info-desc bottom-table{{= printNil}}">{{= moduleDesc}}</div>
+                        {{? moduleDesc !== ''}}<div class="module-api-info-desc bottom-table{{= printNil}}">{{= moduleDesc}}</div>{{?}}
 
                         {{
                         let globalParamList = it.tokenList || [];

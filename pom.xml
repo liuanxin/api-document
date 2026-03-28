@@ -11,8 +11,8 @@
 
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.9.9</version>
-    <description>Collect api document, support to spring mvc</description>
+    <version>2.0.0</version>
+    <description>Collect API documentation, based on Spring MVC 6 and Jackson 2.</description>
 
     <developers>
         <developer>
@@ -27,7 +27,6 @@
         <slf4j.version>2.0.17</slf4j.version>
         <jackson.version>2.21.2</jackson.version>
         <spring-webmvc.version>6.2.17</spring-webmvc.version>
-        <jakarta-api.version>6.1.0</jakarta-api.version>
 
         <junit.version>6.0.3</junit.version>
     </properties>
@@ -55,13 +54,6 @@
         </dependency>
 
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>${jakarta-api.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
@@ -81,6 +73,5 @@
                 </configuration>
             </plugin>
         </plugins>
-        <defaultGoal>install</defaultGoal>
     </build>
 </project>

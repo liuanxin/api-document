@@ -651,7 +651,7 @@
                             }
                         }
                         }}
-                        <div class="module-api-info-desc bottom-table{{= printNil}}">{{= moduleDesc}}</div>
+                        {{? moduleDesc !== ''}}<div class="module-api-info-desc bottom-table{{= printNil}}">{{= moduleDesc}}</div>{{?}}
 
                         {{
                         let globalParamList = it.tokenList || [];
@@ -1060,7 +1060,7 @@
                                             <div class="src-prev-right">
                                                 <div class="copy-status green print-nil"></div>
                                                 <div class="copy print-nil">%@ reqRes.req.res.copy @%</div>
-                                                /*<div class="no-scroll print-nil">%@ reqRes.req.res.show @%</div>*/
+                                                <div class="no-scroll print-nil">%@ reqRes.req.res.show @%</div>
                                             </div>
                                         </div>
                                         <div class="result-data">
