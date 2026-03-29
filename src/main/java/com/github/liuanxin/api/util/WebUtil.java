@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
@@ -248,9 +248,9 @@ public final class WebUtil {
             }
         }
         if (urlSet.isEmpty()) {
-            PatternsRequestCondition condition = requestMapping.getPatternsCondition();
+            PathPatternsRequestCondition condition = requestMapping.getPathPatternsCondition();
             if (Tools.isNotNull(condition)) {
-                urlSet.addAll(condition.getPatterns());
+                urlSet.addAll(condition.getDirectPaths());
             }
         }
         return urlSet;

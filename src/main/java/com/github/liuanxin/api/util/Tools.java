@@ -1,13 +1,12 @@
 package com.github.liuanxin.api.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.github.liuanxin.api.constant.ApiConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectWriter;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -241,7 +240,7 @@ public class Tools {
         }
         try {
             return PRETTY_RENDER.writeValueAsString(RENDER.readValue(json, Object.class));
-        } catch (IOException e) {
+        } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
                 LOGGER.error(String.format("str(%s) to pretty json exception", json), e);
             }

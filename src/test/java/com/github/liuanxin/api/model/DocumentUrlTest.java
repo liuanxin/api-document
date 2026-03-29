@@ -1,9 +1,10 @@
 package com.github.liuanxin.api.model;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
-import static org.junit.Assert.*;
 
 public class DocumentUrlTest {
 
@@ -14,7 +15,7 @@ public class DocumentUrlTest {
         boolean commentInReturnExampleWithLevel = false;
         List<DocumentReturn> returnList = new ArrayList<>();
         String result = DocumentUrl.commentJson(returnJson, commentInReturnExample, commentInReturnExampleWithLevel, returnList);
-        assertEquals("", result);
+        Assertions.assertEquals("", result);
     }
 
     @Test
@@ -24,7 +25,7 @@ public class DocumentUrlTest {
         boolean commentInReturnExampleWithLevel = false;
         List<DocumentReturn> returnList = new ArrayList<>();
         String result = DocumentUrl.commentJson(returnJson, commentInReturnExample, commentInReturnExampleWithLevel, returnList);
-        assertEquals("", result);
+        Assertions.assertEquals("", result);
     }
 
     @Test
@@ -40,7 +41,7 @@ public class DocumentUrlTest {
                 + "  \"key\" : \"value\",  /* discription */\n"
                 + "  \"name\" : \"John\"  /* discription */\n"
                 + "}";
-        assertEquals(expectedResult, result);
+        Assertions.assertEquals(expectedResult, result);
     }
 
 
