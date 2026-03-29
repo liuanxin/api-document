@@ -6,10 +6,10 @@
 
     <groupId>io.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>2.0.0</version>
+    <version>1.0.0</version>
 
     <name>${project.artifactId}</name>
-    <description>Collect API documentation, based on java 17 and Spring MVC 6 and Jackson 2.</description>
+    <description>Collect API documentation, based on Spring boot 3.</description>
     <url>https://github.com/liuanxin/api-document</url>
 
     <licenses>
@@ -38,36 +38,19 @@
     </scm>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <slf4j.version>2.0.17</slf4j.version>
-        <jackson.version>2.21.2</jackson.version>
-        <spring-webmvc.version>6.2.17</spring-webmvc.version>
-
+        <spring-boot.version>3.5.13</spring-boot.version>
         <junit.version>6.0.3</junit.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring-webmvc.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot.version}</version>
             <scope>provided</scope>
         </dependency>
 
