@@ -17,12 +17,12 @@
 
 ** 使用
 
-添加引用
+添加引用(当前版本支持 spring boot 4)
 #+BEGIN_SRC xml
 <dependency>
     <groupId>com.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>0.9.8</version>
+    <version>3.0.0</version>
 </dependency>
 #+END_SRC
 
