@@ -6,7 +6,7 @@
 
     <groupId>io.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
 
     <name>${project.artifactId}</name>
     <description>Collect API documentation, based on Spring boot 4.</description>
