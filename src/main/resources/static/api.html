@@ -554,7 +554,7 @@
                         </div>
                         {{?}}
 
-                        {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== '' }}
+                        {{? String(url.requestBody) === '1' }}
                         <div class="module-api-info-request source-info bottom-table">
                             <div class="src-prev">
                                 <div class="src-prev-left bold">%@ reqRes.req.example @%</div>
