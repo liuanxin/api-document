@@ -6,7 +6,7 @@ import com.github.liuanxin.api.annotation.ApiParamIgnore;
 import com.github.liuanxin.api.constant.ApiConst;
 import com.github.liuanxin.api.model.DocumentParam;
 import org.springframework.core.MethodParameter;
-import org.springframework.core.StandardReflectionParameterNameDiscoverer;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.HandlerMethod;
 
@@ -20,8 +20,8 @@ import java.util.List;
 @SuppressWarnings("DuplicatedCode")
 public final class ParamHandler {
 
-    private static final StandardReflectionParameterNameDiscoverer PARAMETER_NAME_DISCOVERER =
-            new StandardReflectionParameterNameDiscoverer();
+    private static final DefaultParameterNameDiscoverer PARAMETER_NAME_DISCOVERER =
+            new DefaultParameterNameDiscoverer();
 
     public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
         List<DocumentParam> params = new LinkedList<>();

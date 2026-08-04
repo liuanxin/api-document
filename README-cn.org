@@ -3,7 +3,7 @@
 
 -----
 
-[[https://github.com/liuanxin/api-document-example][示例项目(spring boot 3)]]
+[[https://github.com/liuanxin/api-document-example][示例项目]]
 
 [[https://liuanxin.github.io/api-info.html][示例效果]] | [[https://liuanxin.github.io/api-info-example.html][前后端交互示例]]
 
@@ -17,12 +17,12 @@
 
 ** 使用
 
-添加引用(当前版本支持 spring boot 3)
+添加引用(当前版本支持 spring boot 2)
 #+BEGIN_SRC xml
 <dependency>
     <groupId>io.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>3.1.0</version>
+    <version>2.1.0</version>
 </dependency>
 #+END_SRC
 
@@ -90,7 +90,7 @@ public class ApiInfoConfig {
 如果方法上的返回类型是 List、Set 或 Map 会以 ArrayList、HashSet 及 HashMap 进行处理),
 ~ResponseEntity~ 或 ~Callable~ 或 ~DeferredResult~ 或 ~WebAsyncTask~ 会处理其定义的泛型类型(不设置将无法解析)
 
-PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项目(spring boot 3)]] 的全局处理.
+PS: 可以参考 [[https://github.com/liuanxin/api-document-example][示例项目]] 的全局处理.
 泛型请务必使用确切的类型, 如 <String> <User> 等, 如果使用 <T> <Object> 这样的类型将会无法解析.
 
 #+BEGIN_SRC java

@@ -3,7 +3,7 @@ English Readme | [[README-cn.org][中文说明]]
 
 -----
 
-[[https://github.com/liuanxin/api-document-example-en][Example project(spring boot 3)]]
+[[https://github.com/liuanxin/api-document-example-en][Example project]]
 
 [[https://liuanxin.github.io/api-info-en.html][Document example]] | [[https://liuanxin.github.io/api-info-en-example.html][Document example for Front-Back-end interaction]]
 
@@ -21,12 +21,12 @@ view desc need to be swtich(comments should be where the examples are, not toget
 
 ** Usage
 
-add maven(support spring boot 3)
+add maven(support spring boot 2)
 #+BEGIN_SRC xml
 <dependency>
     <groupId>io.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>3.1.0</version>
+    <version>2.1.0</version>
 </dependency>
 #+END_SRC
 
@@ -98,7 +98,7 @@ Set or Map will be processed by ArrayList, HashSet and HashMap),
 ~ResponseEntity~ or ~Callable~ or ~DeferredResult~ or ~WebAsyncTask~ will handle the generic type it defines
 (it will not be resolved without setting).
 
-PS: You can refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example project(spring boot 3)]].
+PS: You can refer to the global processing of [[https://github.com/liuanxin/api-document-example-en][example project]].
 For generics, be sure to use certain types, such as <String> <User> etc. If use a type like <T> <Object> will not be able to parse
 
 #+BEGIN_SRC java

@@ -6,10 +6,10 @@
 
     <groupId>io.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>3.1.0</version>
+    <version>2.1.0</version>
 
     <name>${project.artifactId}</name>
-    <description>Collect API documentation, based on Spring boot 3.</description>
+    <description>Collect API documentation, based on Spring boot 2.</description>
     <url>https://github.com/liuanxin/api-document</url>
 
     <licenses>
@@ -38,11 +38,11 @@
     </scm>
 
     <properties>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>8</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <spring-boot.version>3.5.16</spring-boot.version>
-        <junit.version>6.0.3</junit.version>
+        <spring-boot.version>2.7.18</spring-boot.version>
+        <junit.version>5.8.2</junit.version>
     </properties>
 
     <dependencies>
