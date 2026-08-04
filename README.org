@@ -24,9 +24,9 @@ view desc need to be swtich(comments should be where the examples are, not toget
 add maven(support spring boot 3)
 #+BEGIN_SRC xml
 <dependency>
-    <groupId>com.github.liuanxin</groupId>
+    <groupId>io.github.liuanxin</groupId>
     <artifactId>api-document</artifactId>
-    <version>1.0.0</version>
+    <version>3.1.0</version>
 </dependency>
 #+END_SRC
 

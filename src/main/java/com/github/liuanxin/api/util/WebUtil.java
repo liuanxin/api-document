@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.mvc.condition.PatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.util.pattern.PathPattern;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -24,42 +22,64 @@ import java.util.concurrent.*;
 public final class WebUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WebUtil.class);
-    private static final ThreadPoolExecutor EXECUTOR = threadPool();
-
     public static List<DocumentInfo> getProjects(Map<String, String> projectMap) {
         if (Tools.isNotEmpty(projectMap)) {
             List<DocumentInfo> returnList = new ArrayList<>();
 
-            List<Future<DocumentInfo>> futureList = new ArrayList<>();
-            for (Map.Entry<String, String> entry : projectMap.entrySet()) {
-                final String name = entry.getKey();
-                final String url = entry.getValue();
-                if (Tools.isNotEmpty(name) && Tools.isNotEmpty(url)) {
-                    futureList.add(EXECUTOR.submit(() -> {
-                        String uri = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
-                        String requestInfo = HttpUtil.get(uri + ApiConst.URL_PREFIX + ApiConst.URL_INFO);
-                        ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
-                        return Tools.isNull(projectInfo) ? null : projectInfo.fillModule(name, url);
-                    }));
-                }
-            }
-            for (Future<DocumentInfo> future : futureList) {
-                try {
-                    DocumentInfo info = future.get();
-                    if (Tools.isNotNull(info)) {
-                        returnList.add(info);
+            ThreadPoolExecutor executor = threadPool(projectMap.size());
+            try {
+                List<Future<DocumentInfo>> futureList = new ArrayList<>();
+                for (Map.Entry<String, String> entry : projectMap.entrySet()) {
+                    final String name = entry.getKey();
+                    final String url = entry.getValue();
+                    if (Tools.isNotEmpty(name) && Tools.isNotEmpty(url)) {
+                        futureList.add(executor.submit(new Callable<DocumentInfo>() {
+                            @Override
+                            public DocumentInfo call() {
+                                String uri = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+                                String requestInfo = HttpUtil.get(uri + ApiConst.URL_PREFIX + ApiConst.URL_INFO);
+                                ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
+                                return Tools.isNull(projectInfo) ? null : projectInfo.fillModule(name, url);
+                            }
+                        }));
                     }
-                } catch (InterruptedException | ExecutionException ignore) {
                 }
+                for (Future<DocumentInfo> future : futureList) {
+                    try {
+                        DocumentInfo info = future.get();
+                        if (Tools.isNotNull(info)) {
+                            returnList.add(info);
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    } catch (ExecutionException e) {
+                        if (LOGGER.isWarnEnabled()) {
+                            LOGGER.warn("get project document exception", e.getCause());
+                        }
+                    }
+                }
+            } finally {
+                executor.shutdownNow();
             }
             return returnList;
         } else {
             return Collections.emptyList();
         }
     }
-    public static ThreadPoolExecutor threadPool() {
+    public static ThreadPoolExecutor threadPool(int size) {
         int cpus = Runtime.getRuntime().availableProcessors();
-        return new ThreadPoolExecutor(cpus, cpus + 1, 60L, TimeUnit.SECONDS, new LinkedBlockingQueue<>(15));
+
+        int pool;
+        BlockingQueue<Runnable> queue;
+        if (size > cpus) {
+            pool = cpus;
+            queue = new LinkedBlockingQueue<>(size - cpus);
+        } else {
+            pool = size;
+            queue = new SynchronousQueue<>();
+        }
+        return new ThreadPoolExecutor(pool, pool, 60L, TimeUnit.SECONDS, queue);
     }
 
     public static DocumentCopyright copyright(DocumentCopyright copyright, List<DocumentModule> moduleList) {
@@ -206,41 +226,7 @@ public final class WebUtil {
     }
 
     private static Set<String> getUrl(RequestMappingInfo requestMapping) {
-        Set<String> urlSet = new LinkedHashSet<>();
-        /*
-        PathPatternsRequestCondition pathPatternsCondition = requestMapping.getPathPatternsCondition();
-        if (Tools.isNotBlank(pathPatternsCondition)) {
-            Set<PathPattern> patterns = pathPatternsCondition.getPatterns();
-            if (Tools.isNotEmpty(patterns)) {
-                for (PathPattern pattern : patterns) {
-                    urlSet.add(pattern.getPatternString());
-                }
-            }
-        }
-        */
-        try {
-            Object condition = requestMapping.getClass().getMethod("getPathPatternsCondition").invoke(requestMapping);
-            if (Tools.isNotNull(condition)) {
-                // noinspection unchecked
-                Set<PathPattern> patterns = (Set<PathPattern>) condition.getClass().getMethod("getPatterns").invoke(condition);
-                if (Tools.isNotEmpty(patterns)) {
-                    for (PathPattern pattern : patterns) {
-                        urlSet.add(pattern.getPatternString());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            if (LOGGER.isInfoEnabled()) {
-                LOGGER.info("getPathPatternsCondition just support with spring-mvc 5.3", e);
-            }
-        }
-        if (urlSet.isEmpty()) {
-            PatternsRequestCondition condition = requestMapping.getPatternsCondition();
-            if (Tools.isNotNull(condition)) {
-                urlSet.addAll(condition.getPatterns());
-            }
-        }
-        return urlSet;
+        return new LinkedHashSet<>(requestMapping.getPatternValues());
     }
     private static Set<String> getMethod(RequestMappingInfo requestMapping) {
         Set<String> methodSet = new LinkedHashSet<>();

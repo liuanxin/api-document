@@ -20,6 +20,9 @@ import java.util.List;
 @SuppressWarnings("DuplicatedCode")
 public final class ParamHandler {
 
+    private static final StandardReflectionParameterNameDiscoverer PARAMETER_NAME_DISCOVERER =
+            new StandardReflectionParameterNameDiscoverer();
+
     public static List<DocumentParam> handlerParam(HandlerMethod handlerMethod) {
         List<DocumentParam> params = new LinkedList<>();
         MethodParameter[] methodParameters = handlerMethod.getMethodParameters();
@@ -49,30 +52,22 @@ public final class ParamHandler {
                     // The variable name is erased when compiled by jvm, parameter.parameterName() is null
                     // When use java 8 and open options in javac -parameters, parameter.parameterName() can be get
                     // String paramName = parameter.getParameterName();
+                    String sourceName = null;
                     Method method = parameter.getMethod();
                     if (Tools.isNotNull(method)) {
-                        String[] sourceParamName = getSourceParamName(method);
+                        String[] sourceParamName = PARAMETER_NAME_DISCOVERER.getParameterNames(method);
                         if (Tools.isNotNull(sourceParamName) && sourceParamName.length > i) {
-                            // if param was required, use it.
-                            String paramName = getParamName(parameter, sourceParamName[i]);
-                            if (Tools.isNotEmpty(paramName)) {
-                                params.add(paramInfo(paramName, parameterType, apiParam, apiModel, paramRequired(parameter)));
-                            }
+                            sourceName = sourceParamName[i];
                         }
+                    }
+                    String paramName = getParamName(parameter, sourceName);
+                    if (Tools.isNotEmpty(paramName)) {
+                        params.add(paramInfo(paramName, parameterType, apiParam, apiModel, paramRequired(parameter)));
                     }
                 }
             }
         }
         return params;
-    }
-
-    /** see: <a href="https://github.com/spring-projects/spring-framework/issues/29559">...</a> */
-    private static String[] getSourceParamName(Method method) {
-        // spring 5 : new LocalVariableTableParameterNameDiscoverer().getParameterNames(method)
-        // return new LocalVariableTableParameterNameDiscoverer().getParameterNames(method);
-
-        // spring 6 : new StandardReflectionParameterNameDiscoverer().getParameterNames(method)
-        return new StandardReflectionParameterNameDiscoverer().getParameterNames(method);
     }
 
     private static String getParamName(MethodParameter parameter, String paramName) {
