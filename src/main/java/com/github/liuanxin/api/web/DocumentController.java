@@ -52,7 +52,7 @@ public class DocumentController {
     }
 
     @GetMapping(value = ApiConst.URL_PROJECT, produces = ApiConst.PRODUCES)
-    public String getProjectInfo(String p) {
+    public String getProjectInfo(@RequestParam(value = "p", required = false) String p) {
         return copyright.getProjectInfo(p);
     }
 
