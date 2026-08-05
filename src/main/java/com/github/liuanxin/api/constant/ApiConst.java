@@ -32,7 +32,6 @@ public final class ApiConst {
 
     public static final String HTTP = HP + SCHEME;
     public static final String HTTPS = HPS + SCHEME;
-    public static final String URL_SPLIT = "/";
 
 
     public static final List<String> DATES = Arrays.asList("date", "time", "datetime");

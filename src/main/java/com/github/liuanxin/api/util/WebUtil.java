@@ -34,14 +34,11 @@ public final class WebUtil {
                     final String name = entry.getKey();
                     final String url = entry.getValue();
                     if (Tools.isNotEmpty(name) && Tools.isNotEmpty(url)) {
-                        futureList.add(executor.submit(new Callable<DocumentInfo>() {
-                            @Override
-                            public DocumentInfo call() {
-                                String uri = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
-                                String requestInfo = HttpUtil.get(uri + ApiConst.URL_PREFIX + ApiConst.URL_INFO);
-                                ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
-                                return Tools.isNull(projectInfo) ? null : projectInfo.fillModule(name, url);
-                            }
+                        futureList.add(executor.submit(() -> {
+                            String uri = url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
+                            String requestInfo = HttpUtil.get(uri + ApiConst.URL_PREFIX + ApiConst.URL_INFO);
+                            ReturnInfo projectInfo = Tools.toObject(requestInfo, ReturnInfo.class);
+                            return Tools.isNull(projectInfo) ? null : projectInfo.fillModule(name, url);
                         }));
                     }
                 }
@@ -141,7 +138,7 @@ public final class WebUtil {
                             for (ApiToken token : apiTokens.value()) {
                                 extraParams.add(DocumentParam.buildToken(token));
                             }
-                            if (extraParams.size() > 0) {
+                            if (!extraParams.isEmpty()) {
                                 paramList.addAll(0, extraParams);
                             }
                         }
@@ -299,7 +296,7 @@ public final class WebUtil {
     private static String getExampleUrl(String param) {
         // return exampleUrl.replaceFirst("\\{.*?\\}", param);
         String url = ApiConst.URL_PREFIX + ApiConst.URL_EXAMPLE;
-        return Requests.getDomain() + ApiConst.ID_URL_PATTERN.matcher(url).replaceFirst(param);
+        return ApiConst.ID_URL_PATTERN.matcher(url).replaceFirst(param);
     }
 
     private static void addGroup(Map<String, DocumentModule> moduleMap, int index, String group, DocumentUrl url) {

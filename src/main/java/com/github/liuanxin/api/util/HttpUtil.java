@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -20,23 +21,10 @@ public class HttpUtil {
     private static final int TIME_OUT = 5 * 1000;
 
     public static String get(String url) {
-        return get(url, null);
-    }
-    public static String get(String url, Map<String, Object> params) {
-        return get(url, params, TIME_OUT);
+        return get(url, null, TIME_OUT);
     }
     public static String get(String url, Map<String, Object> params, int timeout) {
         return connection(url, "GET", params, timeout);
-    }
-
-    public static String post(String url) {
-        return post(url, null);
-    }
-    public static String post(String url, Map<String, Object> params) {
-        return post(url, params, TIME_OUT);
-    }
-    public static String post(String url, Map<String, Object> params, int timeout) {
-        return connection(url, "POST", params, timeout);
     }
 
     public static String handleUrl(String url) {
@@ -44,24 +32,6 @@ public class HttpUtil {
         return (!tmpUrl.startsWith(ApiConst.HTTP) && !tmpUrl.startsWith(ApiConst.HTTPS)) ? ("http://" + url) : url;
     }
 
-    public static String getDomain(String url) {
-        if (Tools.isEmpty(url)) {
-            return ApiConst.EMPTY;
-        }
-        String lowerUrl = url.toLowerCase();
-        if (lowerUrl.startsWith(ApiConst.HTTP)) {
-            String tmp = url.substring(ApiConst.HTTP.length());
-            return url.substring(ApiConst.HTTP.length(), ApiConst.HTTP.length() + getIndex(tmp));
-        } else if (lowerUrl.startsWith(ApiConst.HTTPS)) {
-            String tmp = url.substring(ApiConst.HTTPS.length());
-            return url.substring(ApiConst.HTTPS.length(), ApiConst.HTTPS.length() + (getIndex(tmp)));
-        } else if (lowerUrl.startsWith(ApiConst.SCHEME)) {
-            String tmp = url.substring(ApiConst.SCHEME.length());
-            return url.substring(ApiConst.SCHEME.length(), ApiConst.SCHEME.length() + (getIndex(tmp)));
-        } else {
-            return url.substring(0, (getIndex(url)));
-        }
-    }
     public static String getUrl(String url) {
         String lowerUrl = url.toLowerCase();
         String returnUrl;
@@ -75,12 +45,9 @@ public class HttpUtil {
         return returnUrl.endsWith("/") ? returnUrl.substring(0, returnUrl.length() - 1) : returnUrl;
     }
 
-    private static int getIndex(String tmp) {
-        return tmp.contains(ApiConst.URL_SPLIT) ? tmp.indexOf(ApiConst.URL_SPLIT) : tmp.length();
-    }
-
     private static String connection(String url, String method, Map<String, Object> params, int timeout) {
         url = handleUrl(url);
+        url = appendParams(url, params);
 
         String result = ApiConst.EMPTY;
         HttpURLConnection connection = null;
@@ -110,7 +77,7 @@ public class HttpUtil {
             }
         } catch (IOException e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(String.format("request (%s, %s) exception", method, url), e);
+                LOGGER.error("request ({}, {}) exception", method, url, e);
             }
         } finally {
             if (connection != null) {
@@ -118,6 +85,29 @@ public class HttpUtil {
             }
         }
         return result;
+    }
+    private static String appendParams(String url, Map<String, Object> params) {
+        if (Tools.isEmpty(params)) {
+            return url;
+        }
+
+        StringBuilder sbd = new StringBuilder(url);
+        boolean first = true;
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            if (Tools.isNull(entry.getKey()) || Tools.isNull(entry.getValue())) {
+                continue;
+            }
+            if (first) {
+                sbd.append(url.contains("?") ? "&" : "?");
+                first = false;
+            } else {
+                sbd.append("&");
+            }
+            sbd.append(URLEncoder.encode(entry.getKey(), StandardCharsets.UTF_8));
+            sbd.append("=");
+            sbd.append(URLEncoder.encode(String.valueOf(entry.getValue()), StandardCharsets.UTF_8));
+        }
+        return sbd.toString();
     }
     private static InputStream response(HttpURLConnection conn) {
         try {

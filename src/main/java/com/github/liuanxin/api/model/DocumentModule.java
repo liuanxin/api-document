@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-public class DocumentModule extends Document implements Comparable<DocumentModule> {
+public class DocumentModule implements Comparable<DocumentModule> {
 
     @JsonIgnore
     private int index = Integer.MAX_VALUE;
@@ -81,16 +81,28 @@ public class DocumentModule extends Document implements Comparable<DocumentModul
         }
     }
     public void fillExampleUrl(String moduleUrl) {
+        if (Tools.isEmpty(moduleUrl) || Tools.isEmpty(urlList)) {
+            return;
+        }
+        String prefix = moduleUrl.endsWith("/") ? moduleUrl.substring(0, moduleUrl.length() - 1) : moduleUrl;
         for (DocumentUrl documentUrl : urlList) {
+            if (Tools.isNull(documentUrl)) {
+                continue;
+            }
             String exampleUrl = documentUrl.getExampleUrl();
-            if (!exampleUrl.startsWith(moduleUrl)) {
-                documentUrl.setExampleUrl(moduleUrl + exampleUrl);
+            if (Tools.isNotEmpty(exampleUrl) && !absoluteUrl(exampleUrl) && !exampleUrl.startsWith(prefix)) {
+                documentUrl.setExampleUrl(prefix + (exampleUrl.startsWith("/") ? "" : "/") + exampleUrl);
             }
             String url = documentUrl.getUrl();
-            if (!exampleUrl.startsWith(moduleUrl)) {
-                documentUrl.setUrl(moduleUrl + url);
+            if (Tools.isNotEmpty(url) && !absoluteUrl(url) && !url.startsWith(prefix)) {
+                documentUrl.setUrl(prefix + (url.startsWith("/") ? "" : "/") + url);
             }
         }
+    }
+    private boolean absoluteUrl(String url) {
+        String lowerUrl = url.toLowerCase();
+        return lowerUrl.startsWith(ApiConst.HTTP) || lowerUrl.startsWith(ApiConst.HTTPS)
+                || lowerUrl.startsWith(ApiConst.SCHEME);
     }
     public void addUrl(DocumentUrl url) {
         if (Tools.isEmpty(urlList)) {

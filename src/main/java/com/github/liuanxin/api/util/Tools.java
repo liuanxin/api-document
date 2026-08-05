@@ -8,10 +8,6 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.ObjectWriter;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.ParseException;
@@ -216,7 +212,7 @@ public class Tools {
             return RENDER.writeValueAsString(obj);
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(String.format("obj(%s) to json exception", obj.toString()), e);
+                LOGGER.error("obj({}) to json exception", obj.toString(), e);
             }
             return ApiConst.EMPTY;
         }
@@ -229,7 +225,7 @@ public class Tools {
             return RENDER.readValue(json, clazz);
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(String.format("json(%s) to Object(%s) exception", json, clazz.getName()), e);
+                LOGGER.error("json({}) to Object({}) exception", json, clazz.getName(), e);
             }
             return null;
         }
@@ -242,7 +238,7 @@ public class Tools {
             return PRETTY_RENDER.writeValueAsString(RENDER.readValue(json, Object.class));
         } catch (Exception e) {
             if (LOGGER.isErrorEnabled()) {
-                LOGGER.error(String.format("str(%s) to pretty json exception", json), e);
+                LOGGER.error("str({}) to pretty json exception", json, e);
             }
             return ApiConst.EMPTY;
         }
@@ -304,13 +300,13 @@ public class Tools {
         if (isNotEmpty(method)) {
             try {
                 return obj.getClass().getDeclaredMethod(method).invoke(obj);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            } catch (Exception e) {
                 // ignore
             }
 
             try {
                 return obj.getClass().getMethod(method).invoke(obj);
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
+            } catch (Exception e1) {
                 // ignore
             }
         }
@@ -440,61 +436,6 @@ public class Tools {
     }
     static boolean notBasicType(Class<?> clazz) {
         return !basicType(clazz);
-    }
-
-    static boolean innerType(Type type) {
-        if (type instanceof ParameterizedType) {
-            Type rawType = ((ParameterizedType) type).getRawType();
-            if (rawType instanceof Class<?>) {
-                Class<?> clazz = (Class<?>) rawType;
-                if (Collection.class.isAssignableFrom(clazz)) {
-                    Type[] types = ((ParameterizedType) type).getActualTypeArguments();
-                    return (types[0] instanceof Class) && notBasicType((Class<?>) types[0]);
-                } else if (Map.class.isAssignableFrom(clazz)) {
-                    Type[] types = ((ParameterizedType) type).getActualTypeArguments();
-                    if ((types[0] instanceof Class) && notBasicType((Class<?>) types[0])) {
-                        return true;
-                    }
-                    return (types[1] instanceof Class) && notBasicType((Class<?>) types[1]);
-                } else {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    static boolean innerType(Class<?> clazz) {
-        if (basicType(clazz)) {
-            return false;
-        }
-        if (clazz == Object.class) {
-            return true;
-        }
-        List<Field> fieldList = new ArrayList<>();
-        fieldList.addAll(Arrays.asList(clazz.getFields()));
-        fieldList.addAll(Arrays.asList(clazz.getDeclaredFields()));
-        for (Field field : fieldList) {
-            Class<?> fieldType = field.getType();
-            if (notBasicType(fieldType)) {
-                if (Collection.class.isAssignableFrom(fieldType)) {
-                    Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
-                    if ((types[0] instanceof Class) && notBasicType((Class<?>) types[0])) {
-                        return true;
-                    }
-                } else if (Map.class.isAssignableFrom(fieldType)) {
-                    Type[] types = ((ParameterizedType) field.getGenericType()).getActualTypeArguments();
-                    if ((types[0] instanceof Class) && notBasicType((Class<?>) types[0])) {
-                        return true;
-                    }
-                    if ((types[1] instanceof Class) && notBasicType((Class<?>) types[1])) {
-                        return true;
-                    }
-                } else {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     static Object mapKeyDefault(Class<?> clazz) {

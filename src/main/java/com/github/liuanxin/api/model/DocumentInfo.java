@@ -84,10 +84,20 @@ public class DocumentInfo {
             Set<DocumentModule> moduleSet = Tools.isEmpty(moduleList) ? new LinkedHashSet<>() : new LinkedHashSet<>(moduleList);
 
             for (DocumentInfo info : projects) {
-                tokenSet.addAll(info.getTokenList());
-                responseSet.addAll(info.getResponseList());
-                enumMap.putAll(info.getEnumInfo());
-                moduleSet.addAll(info.getModuleList());
+                if (Tools.isNotNull(info)) {
+                    if (Tools.isNotEmpty(info.getTokenList())) {
+                        tokenSet.addAll(info.getTokenList());
+                    }
+                    if (Tools.isNotEmpty(info.getResponseList())) {
+                        responseSet.addAll(info.getResponseList());
+                    }
+                    if (Tools.isNotEmpty(info.getEnumInfo())) {
+                        enumMap.putAll(info.getEnumInfo());
+                    }
+                    if (Tools.isNotEmpty(info.getModuleList())) {
+                        moduleSet.addAll(info.getModuleList());
+                    }
+                }
             }
 
             this.tokenList = new ArrayList<>(tokenSet);

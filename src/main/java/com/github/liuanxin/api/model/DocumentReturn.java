@@ -4,7 +4,7 @@ import com.github.liuanxin.api.constant.ApiConst;
 
 import java.util.Objects;
 
-public class DocumentReturn extends Document{
+public class DocumentReturn {
 
     private String name;
     private String type;
