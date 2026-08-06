@@ -1,0 +1,19 @@
+{
+  "name": "api-document",
+  "private": true,
+  "description": "API 文档静态页面构建工具",
+  "scripts": {
+    "build:html": "node scripts/build-html.mjs"
+  },
+  "license": "GPL-3.0-only",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "^11.20.0",
+      "onFail": "download"
+    }
+  },
+  "devDependencies": {
+    "html-minifier-terser": "^7.2.0"
+  }
+}
