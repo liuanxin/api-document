@@ -64,35 +64,25 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.6.3</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
-                        <id>pnpm-install</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>pnpm</executable>
-                            <arguments>
-                                <argument>install</argument>
-                                <argument>--frozen-lockfile</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>build-html</id>
-                        <phase>generate-resources</phase>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>exec</goal>
+                            <goal>run</goal>
                         </goals>
                         <configuration>
-                            <executable>pnpm</executable>
-                            <arguments>
-                                <argument>build:html</argument>
-                            </arguments>
+                            <target>
+                                <copy todir="${project.build.outputDirectory}/static">
+                                    <fileset dir="${project.basedir}/src/main/html" includes="*.html"/>
+                                </copy>
+                                <replaceregexp match="[\r\n]+" replace=" " flags="g" byline="false" encoding="UTF-8">
+                                    <fileset dir="${project.build.outputDirectory}/static" includes="*.html"/>
+                                </replaceregexp>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>
