@@ -1213,6 +1213,9 @@ window.onload = function() {
             }
             if (isNotBlank(url.exampleUrl)) {
                 let $example = $('<div class="module-api-info-example print-nil"></div>');
+                if (hasInfo) {
+                    $example.append('<br>');
+                }
                 $('<a target="_blank" rel="noopener noreferrer"></a>')
                     .attr('href', url.exampleUrl)
                     .text(handleLanguage('%@ reqRes.example @%'))
