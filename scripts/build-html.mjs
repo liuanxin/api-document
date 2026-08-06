@@ -3,8 +3,8 @@ import { dirname } from 'node:path';
 import { minify } from 'html-minifier-terser';
 
 const files = [
-  ['src/main/html/api.html', 'src/main/resources/static/api.html'],
-  ['src/main/html/api-example.html', 'src/main/resources/static/api-example.html']
+  ['src/main/html/api.html', 'target/classes/static/api.html'],
+  ['src/main/html/api-example.html', 'target/classes/static/api-example.html']
 ];
 
 const options = {
