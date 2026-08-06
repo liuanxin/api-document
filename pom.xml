@@ -65,30 +65,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>build-html</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <copy todir="${project.build.outputDirectory}/static">
-                                    <fileset dir="${project.basedir}/src/main/html" includes="*.html"/>
-                                </copy>
-                                <replaceregexp match="[\r\n]+" replace=" " flags="g" byline="false" encoding="UTF-8">
-                                    <fileset dir="${project.build.outputDirectory}/static" includes="*.html"/>
-                                </replaceregexp>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.15.0</version>
                 <configuration>
