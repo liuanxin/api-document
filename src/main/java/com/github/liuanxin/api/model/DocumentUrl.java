@@ -31,6 +31,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     private String exampleUrl;
     private String method;
     private String url;
+    private String contentType;
 
     private String useGlobalParam = ApiConst.EMPTY;
     private String requestBody = ApiConst.EMPTY;
@@ -121,6 +122,9 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     }
 
     public String getContentType() {
+        if (Tools.isNotEmpty(contentType)) {
+            return contentType;
+        }
         if ("1".equals(requestBody)) {
             return "application/json";
         }
@@ -132,6 +136,10 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
             }
         }
         return "application/x-www-form-urlencoded";
+    }
+    public DocumentUrl setContentType(String contentType) {
+        this.contentType = contentType;
+        return this;
     }
 
     public String getUseGlobalParam() {
@@ -482,6 +490,7 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
                 Objects.equals(exampleUrl, that.exampleUrl) &&
                 Objects.equals(method, that.method) &&
                 Objects.equals(url, that.url) &&
+                Objects.equals(contentType, that.contentType) &&
                 Objects.equals(useGlobalParam, that.useGlobalParam) &&
                 Objects.equals(requestBody, that.requestBody) &&
                 Objects.equals(paramList, that.paramList) &&
@@ -490,6 +499,6 @@ public class DocumentUrl implements Comparable<DocumentUrl> {
     }
     @Override
     public int hashCode() {
-        return Objects.hash(title, desc, develop, exampleUrl, method, url, useGlobalParam, requestBody, paramList, responseList, returnList);
+        return Objects.hash(title, desc, develop, exampleUrl, method, url, contentType, useGlobalParam, requestBody, paramList, responseList, returnList);
     }
 }
