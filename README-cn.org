@@ -335,6 +335,31 @@ public class DemoVo {
 
 页面 ~http://ip:port/static/api-example.html~ 直接请求后台接口
 
+** 维护发布
+
+项目使用 ~springboot2~、~springboot3~、~springboot4~ 三个分支维护对应的 Spring Boot 版本. 为避免一次版本发布占用三次 Maven Central Release Count, 三个分支必须合并成一个 deployment 发布.
+
+每个分支先执行测试, 再只生成 bundle, 不直接上传:
+#+BEGIN_SRC shell
+mvn clean deploy -P release -DskipPublishing=true
+#+END_SRC
+
+每次构建完成后, 将 ~target/central-publishing/central-bundle.zip~ 解压到同一个空目录. 三个分支的版本目录不同, 可以直接合并. 最后从该目录重新生成一个 zip, 通过 Central Portal 或 Publisher API 一次上传并发布.
+
+例如, 每个分支构建后分别将 bundle 保存为 ~/tmp/api-document-springboot2.zip~、~/tmp/api-document-springboot3.zip~、~/tmp/api-document-springboot4.zip~, 再执行:
+#+BEGIN_SRC shell
+release_dir=$(mktemp -d)
+mkdir "$release_dir/content"
+unzip -q /tmp/api-document-springboot2.zip -d "$release_dir/content"
+unzip -q /tmp/api-document-springboot3.zip -d "$release_dir/content"
+unzip -q /tmp/api-document-springboot4.zip -d "$release_dir/content"
+(cd "$release_dir/content" && zip -qr "$release_dir/api-document-release.zip" .)
+#+END_SRC
+
+最终只上传 ~$release_dir/api-document-release.zip~. 不要分别上传三个原始 bundle.
+
+Publisher API 上传时使用 ~publishingType=AUTOMATIC~, 发布完成后确认 deployment 状态为 ~PUBLISHED~. Maven Central 当前额度和使用量以 [[https://central.sonatype.com/publishing/usage][Usage Center]] 为准.
+
 -----
 
 最终效果如下: https://liuanxin.github.io/api-info.html
