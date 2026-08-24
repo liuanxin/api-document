@@ -22,7 +22,7 @@
 
 ## 验收
 
-- 使用 `/home/ty/project/github/api-document-example` 做页面验收, 临时修改必须在验收后恢复, 不覆盖该项目原有改动.
+- 使用同级目录中的 `../api-document-example` 做页面验收, 临时修改必须在验收后恢复, 不覆盖该项目原有改动.
 - 至少验证 Header + Param + JSON 请求体、Header + Param + 纯文本请求体、multipart 三类组合, 同时检查“示例”和“请求”两个页签.
 - 页面验收必须确认 `exampleUrl` 存在, 并检查说明内容和“响应结果示例地址”之间的空行.
 - Spring Boot 2 示例项目使用 JDK 8 启动.
