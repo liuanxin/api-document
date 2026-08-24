@@ -29,7 +29,9 @@ public class WebUtilTest {
 
         Map<String, DocumentUrl> documentMap = result.getDocumentMap();
         Assertions.assertEquals(1, documentMap.size());
-        Assertions.assertEquals("/users/{id}", documentMap.values().iterator().next().getUrl());
+        DocumentUrl document = documentMap.values().iterator().next();
+        Assertions.assertEquals("/users/{id}", document.getUrl());
+        Assertions.assertEquals("/api/example/" + document.getId() + ".json", document.getExampleUrl());
     }
 
     @RestController
