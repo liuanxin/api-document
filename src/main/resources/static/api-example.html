@@ -865,6 +865,7 @@
                             <div class="tab-pane fade{{? requestActive}} in active{{?}}">
                                 <form class="module-api-info-param"{{? url.method}} method="{{= url.method}}"{{?}}
                                       {{? String(url.requestBody) === '1'}} request-body="1"{{?}}
+                                      content-type="{{= url.contentType || ''}}"
                                       action="{{= url.url}}"{{? hasFile}} enctype="multipart/form-data"{{?}}>
                                     {{? paramList && paramList.length > 0}}
                                     <div class="bottom-table panel panel-default">
@@ -988,13 +989,15 @@
                                     </div>
                                     {{?}}
 
-                                    {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== ''}}
+                                    {{? String(url.requestBody) === '1'}}
                                     <div class="bottom-table source-info">
                                         <div class="src-prev">
                                             <div class="src-prev-left">
                                                 <span class="bold">%@ reqRes.req.body.name @%</span>
+                                                {{? url.requestBodyJson !== undefined && url.requestBodyJson !== null && url.requestBodyJson !== ''}}
                                                 <span class="src-prev-req-format print-nil">%@ reqRes.req.body.format @%</span>
                                                 <span class="src-prev-req-compress print-nil">%@ reqRes.req.body.compress @%</span>
+                                                {{?}}
                                                 <span class="src-prev-req-msg red print-nil"></span>
                                             </div>
                                             <div class="src-prev-right">
@@ -1009,7 +1012,8 @@
                                         }}
                                         <div class="request-data">
                                             <div class="request-data-info" title="%@ js.tailComment @%"
-                                                 data-lpignore="true" data-name="{{= requestBodyKey}}">{{= requestBodyData}}</div>
+                                                 data-lpignore="true" data-name="{{= requestBodyKey}}"
+                                                 data-json="{{= isNotBlank(url.requestBodyJson) ? '1' : ''}}">{{= requestBodyData}}</div>
                                         </div>
                                     </div>
                                     {{?}}
@@ -1934,7 +1938,7 @@ window.onload = function() {
         session.setOptions({ tabSize: 2, useSoftTabs: false });
         session.setUseWrapMode(true);
         session.setUseWorker(false);
-        session.setMode('ace/mode/json');
+        session.setMode(String(ele.data('json')) === '1' ? 'ace/mode/json' : 'ace/mode/text');
         editor.setFontSize('14px');
         editor.setTheme('ace/theme/chrome');
         editor.setAutoScrollEditorIntoView(true);
@@ -2345,12 +2349,15 @@ window.onload = function() {
                 url = '';
             }
             let hasRequestBody = String($form.attr('request-body')) === '1';
+            let contentType = $form.attr('content-type');
+            let $requestBody = $form.find('.request-data-info');
+            let hasJsonRequestBody = String($requestBody.data('json')) === '1';
             if (isBlank(method)) {
                 method = hasRequestBody ? 'POST' : 'GET';
             }
 
-            let requestBody = getEditValue($form.find('.request-data-info'));
-            if (isNotBlank(requestBody)) {
+            let requestBody = hasRequestBody ? getEditValue($requestBody) : '';
+            if (hasJsonRequestBody && isNotBlank(requestBody)) {
                 try {
                     requestBody = JSON.stringify(JSON5.parse(requestBody));
                 } catch (e) {
@@ -2381,6 +2388,18 @@ window.onload = function() {
                 delete params[group];
             }
 
+            if (hasRequestBody && Object.getOwnPropertyNames(params).length > 0) {
+                let paramArr = [];
+                $.each(params, function(key, value) {
+                    if (isNotBlank(key) && isNotBlank(value)) {
+                        paramArr.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                    }
+                });
+                if (paramArr.length > 0) {
+                    url += (url.includes('?') ? '&' : '?') + paramArr.join('&');
+                }
+            }
+
 
             let line = ' \\\n';
             let curlHtml = 'curl -i -X ' + method + line;
@@ -2396,7 +2415,7 @@ window.onload = function() {
                 });
             }
             if (hasRequestBody) {
-                curlHtml += "&nbsp; -H 'Content-Type: application/json'" + line;
+                curlHtml += "&nbsp; -H 'Content-Type: " + contentType + "'" + line;
                 curlHtml += "&nbsp; -H 'Accept: application/json'" + line;
             }
             if (files.length > 0) {
@@ -2418,25 +2437,12 @@ window.onload = function() {
             } else {
                 if (isNotBlank(requestBody)) {
                     curlHtml += "&nbsp; -d '" + requestBody + "'" + line;
-                    if (Object.getOwnPropertyNames(params).length > 0) {
-                        let paramArr = [];
-                        $.each(params, function (key, value) {
-                            if (isNotBlank(key) && isNotBlank(value)) {
-                                paramArr.push(key + '=' + value);
-                            }
-                        });
-                        let paramStr = paramArr.join('&');
-                        if (paramStr.length > 0) {
-                            url += (url.includes('?') ? '&' : '?') + paramStr;
-                        }
-                    }
-                } else if (Object.getOwnPropertyNames(params).length > 0) {
-                    if (hasRequestBody) {
-                        curlHtml += "&nbsp; -d '" + JSON.stringify(params) + "'" + line;
+                } else if (!hasRequestBody && Object.getOwnPropertyNames(params).length > 0) {
+                    if ('GET' === method.toUpperCase()) {
                         let paramArr = [];
                         $.each(params, function(key, value) {
                             if (isNotBlank(key) && isNotBlank(value)) {
-                                paramArr.push(key + '=' + value);
+                                paramArr.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
                             }
                         });
                         let paramStr = paramArr.join('&');
@@ -2444,24 +2450,11 @@ window.onload = function() {
                             url += (url.includes('?') ? '&' : '?') + paramStr;
                         }
                     } else {
-                        if ('GET' === method.toUpperCase()) {
-                            let paramArr = [];
-                            $.each(params, function(key, value) {
-                                if (isNotBlank(key) && isNotBlank(value)) {
-                                    paramArr.push(key + '=' + value);
-                                }
-                            });
-                            let paramStr = paramArr.join('&');
-                            if (paramStr.length > 0) {
-                                url += (url.includes('?') ? '&' : '?') + paramStr;
+                        $.each(params, function(key, value) {
+                            if (isNotBlank(key) && isNotBlank(value)) {
+                                curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
                             }
-                        } else {
-                            $.each(params, function(key, value) {
-                                if (isNotBlank(key) && isNotBlank(value)) {
-                                    curlHtml += "&nbsp; -d '" + (key + '=' + value) + "'" + line;
-                                }
-                            });
-                        }
+                        });
                     }
                 }
             }
@@ -2524,12 +2517,9 @@ window.onload = function() {
                         $response.show();
                         return;
                     }
-                    settings['contentType'] = 'application/json';
-                    settings['dataType'] = 'json';
+                    settings['contentType'] = contentType;
                     if (isNotBlank(requestBody)) {
                         settings['data'] = requestBody;
-                    } else {
-                        settings['data'] = JSON.stringify(params);
                     }
                 } else {
                     settings['data'] = params;

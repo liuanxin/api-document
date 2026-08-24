@@ -44,6 +44,12 @@ public class DocumentUrlTest {
         Assertions.assertEquals(expectedResult, result);
     }
 
+    @Test
+    public void testRequestBodyContentType() {
+        DocumentUrl documentUrl = new DocumentUrl().setRequestBody("1");
+        Assertions.assertEquals("application/json", documentUrl.getContentType());
 
+        documentUrl.setContentType("text/plain");
+        Assertions.assertEquals("text/plain", documentUrl.getContentType());
+    }
 }
-

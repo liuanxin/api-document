@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -117,6 +118,10 @@ public final class WebUtil {
                         document.setUrl(String.join(", ", urlSet));
                         // method : get, post, put...
                         document.setMethod(String.join(", ", methodSet));
+                        Set<MediaType> contentTypeSet = requestMapping.getConsumesCondition().getConsumableMediaTypes();
+                        if (Tools.isNotEmpty(contentTypeSet)) {
+                            document.setContentType(contentTypeSet.iterator().next().toString());
+                        }
                         // param
                         List<DocumentParam> paramList = ParamHandler.handlerParam(handlerMethod);
                         if (isRequestBody) {
