@@ -686,7 +686,7 @@
                                             : (param.dataType !== undefined && param.dataType !== null && param.dataType !== '' ? param.dataType : '')
                                         }}</td>
                                         <td class="text-left">{{= String(param.required) === '1' ? '✓' : '✗'}}</td>
-                                        {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                        {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Param'}}</td>{{?}}
                                         {{? hasExample}}<td class="text-left wrap">{{= param.example || ''}}</td>{{?}}
                                         {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                         </tr>
@@ -980,7 +980,7 @@
                                                         ? param.showDataType
                                                         : (param.dataType && param.dataType !== '' ? param.dataType : '')
                                                 }}</td>
-                                                {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Query'}}</td>{{?}}
+                                                {{? hasHeader}}<td class="text-left">{{= String(param.paramType) === '1' ? 'Header' : 'Param'}}</td>{{?}}
                                                 {{? hasDesc}}<td class="text-left wrap">{{= param.desc || ''}}</td>{{?}}
                                             </tr>
                                             {{~}}
@@ -1266,7 +1266,7 @@ window.onload = function() {
                     'desc': '说明'
                 },
                 'req': {
-                    'example': '请求示例',
+                    'example': '请求体示例',
                     'copy': '复制(去注释)',
                     'show': '全显'
                 },
@@ -1407,7 +1407,7 @@ window.onload = function() {
                     'desc': 'Desc'
                 },
                 'req': {
-                    'example': 'Request Example',
+                    'example': 'Request body example',
                     'copy': 'Copy(uncomment)',
                     'show': 'No-Scroll'
                 },

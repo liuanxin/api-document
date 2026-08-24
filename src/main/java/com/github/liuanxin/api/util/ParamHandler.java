@@ -29,7 +29,10 @@ public final class ParamHandler {
         for (int i = 0; i < methodParameters.length; i++) {
             MethodParameter parameter = methodParameters[i];
             if (Tools.isNotNull(parameter) && Tools.isNull(parameter.getParameterAnnotation(ApiParamIgnore.class))
-                    && Tools.isNull(parameter.getParameterAnnotation(RequestBody.class))) {
+                    && Tools.isNull(parameter.getParameterAnnotation(RequestBody.class))
+                    && Tools.isNull(parameter.getParameterAnnotation(RequestAttribute.class))
+                    && Tools.isNull(parameter.getParameterAnnotation(SessionAttribute.class))
+                    && Tools.isNull(parameter.getParameterAnnotation(CookieValue.class))) {
                 // if param not basicType, into a layer of processing
                 Class<?> parameterType = parameter.getParameterType();
                 ApiParam apiParam = parameter.getParameterAnnotation(ApiParam.class);
@@ -45,7 +48,8 @@ public final class ParamHandler {
                                 && Tools.isNull(field.getAnnotation(ApiParamIgnore.class))) {
                             ApiParam fieldParam = field.getAnnotation(ApiParam.class);
                             ApiModel fieldModel = field.getAnnotation(ApiModel.class);
-                            params.add(paramInfo(field.getName(), field.getType(), fieldParam, fieldModel, false));
+                            DocumentParam param = paramInfo(field.getName(), field.getType(), fieldParam, fieldModel, false);
+                            params.add(fillParamType(param, parameter));
                         }
                     }
                 } else {
@@ -62,12 +66,20 @@ public final class ParamHandler {
                     }
                     String paramName = getParamName(parameter, sourceName);
                     if (Tools.isNotEmpty(paramName)) {
-                        params.add(paramInfo(paramName, parameterType, apiParam, apiModel, paramRequired(parameter)));
+                        DocumentParam param = paramInfo(paramName, parameterType, apiParam, apiModel, paramRequired(parameter));
+                        params.add(fillParamType(param, parameter));
                     }
                 }
             }
         }
         return params;
+    }
+
+    private static DocumentParam fillParamType(DocumentParam param, MethodParameter parameter) {
+        if (Tools.isNotNull(parameter.getParameterAnnotation(RequestHeader.class))) {
+            param.setParamType("1");
+        }
+        return param;
     }
 
     private static String getParamName(MethodParameter parameter, String paramName) {
