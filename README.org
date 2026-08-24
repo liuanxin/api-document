@@ -348,6 +348,31 @@ Run and request ~http://ip:port/static/api.html~ (spring boot don't need /static
 
 test backend url, request ~http://ip:port/static/api-example.html~
 
+** Maintenance release
+
+The ~springboot2~, ~springboot3~, and ~springboot4~ branches maintain their corresponding Spring Boot versions. To avoid consuming three Maven Central release events for one project release, publish all three branch artifacts in one deployment.
+
+Run tests on each branch, then generate a bundle without uploading it:
+#+BEGIN_SRC shell
+mvn clean deploy -P release -DskipPublishing=true
+#+END_SRC
+
+After each build, extract ~target/central-publishing/central-bundle.zip~ into the same empty directory. The version directories are different and can be merged directly. Zip that directory and upload it once through the Central Portal or Publisher API.
+
+For example, save the three generated bundles as ~/tmp/api-document-springboot2.zip~, ~/tmp/api-document-springboot3.zip~, and ~/tmp/api-document-springboot4.zip~, then run:
+#+BEGIN_SRC shell
+release_dir=$(mktemp -d)
+mkdir "$release_dir/content"
+unzip -q /tmp/api-document-springboot2.zip -d "$release_dir/content"
+unzip -q /tmp/api-document-springboot3.zip -d "$release_dir/content"
+unzip -q /tmp/api-document-springboot4.zip -d "$release_dir/content"
+(cd "$release_dir/content" && zip -qr "$release_dir/api-document-release.zip" .)
+#+END_SRC
+
+Upload only ~$release_dir/api-document-release.zip~. Do not upload the three original bundles separately.
+
+Use ~publishingType=AUTOMATIC~ for the Publisher API and verify that the deployment reaches ~PUBLISHED~. The [[https://central.sonatype.com/publishing/usage][Usage Center]] is the source of truth for current Maven Central limits and usage.
+
 -----
 
 Final document collect for this: https://liuanxin.github.io/api-info-en.html
